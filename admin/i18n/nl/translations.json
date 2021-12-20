@@ -1,0 +1,22 @@
+{
+    "Extracted %s states": "Geëxtraheerde %s staten",
+    "Frames per second": "Beelden per seconde",
+    "GA XML Export from ETS": "GA XML-export vanuit ETS",
+    "Gateway IP": "Gateway IP",
+    "How to export GA XML from ETS:": "GA XML exporteren vanuit ETS:",
+    "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export": "KNXproj worden niet ondersteund, open in ETS de groepsadressen en klik met de rechtermuisknop op groepsadressen en exporteer groepsadressen",
+    "Port": "Haven",
+    "Restarting adapter": "Adapter opnieuw opstarten...",
+    "Unsupported file format": "Niet ondersteund bestandsformaat",
+    "add only new Objects": "Alleen nieuwe objecten toevoegen",
+    "invalid IP address": "ongeldig IP-adres",
+    "invalid port number": "ongeldig poortnummer",
+    "local network interface": "lokale netwerkinterface",
+    "min 1": "minimum is 1",
+    "override object path": "objectpad overschrijven",
+    "physical KNX address": "fysiek KNX-adres",
+    "physical KNX address in format a/b/c not valid": "fysiek KNX-adres in formaat a/b/c niet geldig",
+    "this is not a number": "dit is geen nummer",
+    "using old knx path for objects": "oud knx-pad gebruiken voor objecten",
+    "using old knx path for objects (Before importing, delete old objects manually)": "het oude knx-pad voor objecten gebruiken (verwijder oude objecten handmatig voordat u ze importeert)"
+}

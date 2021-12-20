@@ -1,0 +1,117 @@
+{
+  "_from": "knx",
+  "_id": "knx@2.4.1",
+  "_inBundle": false,
+  "_integrity": "sha512-ykDni2sN5x42IX5CNxmPX9p4UbsgSaud5MD5X2uChE9ktD0Y/igKukcv3xPHHGRMTGWJTuIjsbT+AB/PGAAd8Q==",
+  "_location": "/knx",
+  "_phantomChildren": {
+    "lodash": "4.17.21"
+  },
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "knx",
+    "name": "knx",
+    "escapedName": "knx",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/knx/-/knx-2.4.1.tgz",
+  "_shasum": "b3c8a69af2daf04d3ba5556fe2895a61160b1b7b",
+  "_spec": "knx",
+  "_where": "C:\\iobroker",
+  "author": {
+    "name": "Elias Karakoulakis",
+    "email": "Elias.Karakoulakis@gmail.com"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Mattias Holmlund",
+      "email": "mattias@holmlund.se"
+    },
+    {
+      "name": "Kay Ringmann",
+      "email": "info@punktnetzwerk.net"
+    },
+    {
+      "name": "Timo Krieger",
+      "url": "https://bitbucket.org/timokri/"
+    },
+    {
+      "name": "Cédric Trévisan",
+      "url": "https://bitbucket.org/ctrevisan/"
+    },
+    {
+      "name": "Timo Müller",
+      "email": "timomueller1993@gmail.com"
+    },
+    {
+      "name": "Patrik Åkerfeldt"
+    },
+    {
+      "name": "Johannes Ritter"
+    },
+    {
+      "name": "Koen Reynaert"
+    },
+    {
+      "name": "Luca Lanziani",
+      "url": "https://lanziani.com"
+    },
+    {
+      "name": "Stefaan Seys"
+    },
+    {
+      "name": "Matthias Fechner"
+    },
+    {
+      "name": "Christian Duernberger"
+    }
+  ],
+  "dependencies": {
+    "@types/node": "^6.14.4",
+    "binary-parser": "1.1.5",
+    "binary-protocol": "0.0.0",
+    "ipaddr.js": "1.2.0",
+    "log-driver": "1.2.7",
+    "machina": "^4.0.2"
+  },
+  "deprecated": false,
+  "description": "KNXnet/IP protocol implementation for Node(>=4.x)",
+  "devDependencies": {
+    "multi-tape": "^1.6.1",
+    "tape": "^4.14.0"
+  },
+  "engines": {
+    "node": ">=6"
+  },
+  "homepage": "https://bitbucket.org/ekarak/knx.js#readme",
+  "keywords": [
+    "knx",
+    "smart home",
+    "building automation"
+  ],
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "Elias Karakoulakis",
+      "email": "elias.karakoulakis@gmail.com"
+    }
+  ],
+  "name": "knx",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://ekarak@bitbucket.org/ekarak/knx.js.git"
+  },
+  "scripts": {
+    "test": "multi-tape test/*/test-*.js"
+  },
+  "version": "2.4.1"
+}

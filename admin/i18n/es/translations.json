@@ -1,0 +1,22 @@
+{
+    "Extracted %s states": "Estados% s extraídos",
+    "Frames per second": "Cuadros por segundo",
+    "GA XML Export from ETS": "Exportación GA XML desde ETS",
+    "Gateway IP": "IP de acceso",
+    "How to export GA XML from ETS:": "Cómo exportar GA XML desde ETS:",
+    "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export": "KNXproj no es compatible, abra en ETS las direcciones del grupo y haga clic con el botón derecho en las direcciones del grupo y luego exportar la dirección del grupo.",
+    "Port": "Puerto",
+    "Restarting adapter": "Reiniciando el adaptador ...",
+    "Unsupported file format": "Formato de archivo no soportado",
+    "add only new Objects": "Agregar solo nuevos objetos",
+    "invalid IP address": "Dirección IP inválida",
+    "invalid port number": "número de puerto no válido",
+    "local network interface": "interfaz de red local",
+    "min 1": "el mínimo es 1",
+    "override object path": "anular la ruta del objeto",
+    "physical KNX address": "dirección KNX física",
+    "physical KNX address in format a/b/c not valid": "dirección KNX física en formato a / b / c no válida",
+    "this is not a number": "esto no es un numero",
+    "using old knx path for objects": "usando la vieja ruta knx para objetos",
+    "using old knx path for objects (Before importing, delete old objects manually)": "utilizando la ruta de knx antigua para los objetos (antes de importar, elimine los objetos antiguos manualmente)"
+}

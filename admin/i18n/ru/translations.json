@@ -1,0 +1,22 @@
+{
+    "Extracted %s states": "Извлечено% s состояний",
+    "Frames per second": "Кадров в секунду",
+    "GA XML Export from ETS": "Экспорт GA XML из ETS",
+    "Gateway IP": "IP шлюза",
+    "How to export GA XML from ETS:": "Как экспортировать GA XML из ETS:",
+    "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export": "KNXproj не поддерживаются, откройте в ETS групповые адреса и щелкните правой кнопкой мыши по групповым адресам, а затем экспортируйте групповые адреса.",
+    "Port": "Порт",
+    "Restarting adapter": "Перезапуск адаптера ...",
+    "Unsupported file format": "Неподдерживаемый формат файла",
+    "add only new Objects": "Добавляйте только новые объекты",
+    "invalid IP address": "неверный IP-адрес",
+    "invalid port number": "неверный номер порта",
+    "local network interface": "локальный сетевой интерфейс",
+    "min 1": "минимум 1",
+    "override object path": "переопределить путь к объекту",
+    "physical KNX address": "физический адрес KNX",
+    "physical KNX address in format a/b/c not valid": "физический адрес KNX в формате a / b / c недействителен",
+    "this is not a number": "это не число",
+    "using old knx path for objects": "использование старого пути knx для объектов",
+    "using old knx path for objects (Before importing, delete old objects manually)": "использование старого пути knx для объектов (перед импортом удалите старые объекты вручную)"
+}

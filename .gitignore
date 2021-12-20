@@ -1,0 +1,27 @@
+# No dot-directories except github/vscode
+.*/
+!.vscode/
+!.github/
+
+Gruntfile.js
+tasks
+
+*.code-workspace
+node_modules
+nbproject
+
+# npm package files
+iobroker.*.tgz
+
+Thumbs.db
+
+# i18n intermediate files
+admin/i18n/flat.txt
+admin/i18n/*/flat.txt
+
+.idea
+.git
+todo.txt
+.vscode
+iob_npm.done
+.DS_Store

@@ -1,0 +1,432 @@
+<html>
+    <head>
+        <!-- Load ioBroker scripts and styles-->
+        <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
+        <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css" />
+
+        <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css" />
+
+        <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+
+        <script type="text/javascript" src="../../js/translate.js"></script>
+        <script type="text/javascript" src="../../lib/js/materialize.js"></script>
+        <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+
+        <!-- Load our own files -->
+        <link rel="stylesheet" type="text/css" href="style.css" />
+        <script type="text/javascript" src="words.js"></script>
+
+        <style>
+            #progress {
+                display: none;
+            }
+
+            #drop-zone {
+                width: calc(100% - 10px);
+                height: calc(100% - 10px);
+                position: absolute;
+                opacity: 0.8;
+                top: 0;
+                left: 0;
+                background: #eee;
+                -webkit-border-radius: 15px;
+                -moz-border-radius: 15px;
+                border-radius: 15px;
+                z-index: 1;
+                font-size: 32px;
+                font-weight: bold;
+                text-align: center;
+                border: 5px dashed darkgray;
+            }
+
+            .dropZone-error {
+                background: #faa !important;
+                color: #f00;
+            }
+
+            /* Tooltip container */
+            .tooltip {
+                position: relative;
+                display: inline-block;
+                border-bottom: 1px dotted black;
+                /* If you want dots under the hoverable text */
+            }
+
+            /* Tooltip text */
+            .tooltip .tooltiptext {
+                visibility: hidden;
+                width: 120px;
+                background-color: black;
+                color: #fff;
+                text-align: center;
+                padding: 5px 0;
+                border-radius: 6px;
+
+                /* Position the tooltip text */
+                position: absolute;
+                z-index: 1;
+            }
+
+            /* Show the tooltip text when you mouse over the tooltip container */
+            .tooltip:hover .tooltiptext {
+                visibility: visible;
+            }
+
+            .instructions {
+                font-size: 16px;
+            }
+
+            .page {
+                height: calc(100% - 120px) !important;
+            }
+
+            .modal-header {
+                padding: 16px 16px;
+                color: #fff;
+            }
+
+            .tab-active {
+                background-color: white !important;
+                color: #39a1f4 !important;
+            }
+
+            .dialog {
+                width: 100%;
+                height: calc(100% - 64px);
+                overflow: auto;
+            }
+        </style>
+
+        <script type="text/javascript">
+            var knxprojFile = '<input type="file" id="knxprojFile" style="display: inline-block"/>';
+
+            // This will be called by the admin adapter when the settings page loads
+            function load(settings, onChange) {
+                if (!settings) return;
+
+                if (settings.gwip === undefined) settings.gwip = "127.0.0.1";
+                if (settings.gwipport === undefined) settings.gwipport = 3671;
+                if (settings.debugLevel === undefined) settings.debugLevel = 0; //todo
+                if (settings.frameInterval === undefined) settings.frameInterval = 40;
+                if (settings.bind === undefined) settings.bind = ""; //local network interface
+                if (settings.eibadr === undefined) settings.eibadr = "1.1.1";
+                if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
+
+                //fill dropdown list bind
+                getIPs(function (ips) {
+                    for (var i = 0; i < ips.length; i++) {
+                        if (ips[i].family.indexOf("ipv4") > -1 && ips[i].address !== "0.0.0.0") {
+                            $("#bind").append('<option value="' + ips[i].address + '">' + ips[i].name + "</option>");
+                        }
+                    }
+                    $("#bind.value").val(settings.bind).select();
+                });
+
+                fillSelectIPs("#adapterAddress", settings.adapterAddress, false, true);
+
+                showConfigDialog();
+
+                $(".value").each(function () {
+                    var $key = $(this);
+                    var id = $key.attr("id");
+                    if ($key.attr("type") === "checkbox") {
+                        // do not call onChange direct, because onChange could expect some arguments
+                        $key.prop("checked", settings[id]).on("change", () => onChange());
+                    } else {
+                        // do not call onChange direct, because onChange could expect some arguments
+                        $key.val(settings[id])
+                            .on("change", () => onChange())
+                            .on("keyup", () => onChange());
+                    }
+
+                    //add sanity checks
+                    $key.val(settings[id]).focusout("change", function () {
+                        if (id === "gwip") {
+                            var ip1 = $("#gwip").val();
+                            if (ValidateIPaddress(ip1)) {
+                                $("#gwip").val(ip1);
+                            } else {
+                                alert("invalid IP address");
+                            }
+                        }
+
+                        if (id === "gwipport") {
+                            var gwipport1 = $("#gwipport").val();
+                            if (ValidatePortaddress(gwipport1)) {
+                                $("#gwipport").val(gwipport1);
+                            } else {
+                                alert("invalid port number");
+                            }
+                        }
+
+                        if (id === "eibadr") {
+                            var eibadr1 = $("#eibadr").val();
+                            if (ValidateEIBaddress(eibadr1)) {
+                                $("#eibadr").val(eibadr1);
+                            } else {
+                                alert("physical KNX address in format a/b/c not valid");
+                            }
+                        }
+
+                        if (id === "frameInterval") {
+                            var fI = $("#frameInterval").val();
+                            if (!isNaN(fI * 1)) {
+                                if (fI > 0) {
+                                    $("#frameInterval").val(fI);
+                                } else {
+                                    alert("min 1");
+                                }
+                            } else {
+                                alert("This is not a number");
+                            }
+                        }
+
+                        if (id === "bind") {
+                            var bindIP = $("#bind").val();
+                            $("#bind").val(bindIP);
+                        }
+
+                        if (id === "debugLevel") {
+                            var dbgLevel = $("#debugLevel").val();
+                            $("#debugLevel").val(dbgLevel);
+                        }
+                    });
+                });
+
+                //if not alive disable buttons
+                getIsAdapterAlive(function (isAlive) {
+                    if (isAlive) {
+                        $("#knxprojFile").change(fileHandler);
+                    } else {
+                        $("#knxprojFile").prop("disabled", true);
+                        $(".file-field .btn").addClass("disabled");
+                        $(".file-field .file-path").prop("disabled", true);
+                    }
+                });
+
+                //start with no changed settings, disable save button
+                onChange(false);
+                // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
+                if (M) M.updateTextFields();
+            }
+
+            // This will be called by the admin adapter when the user presses the save button
+            function save(callback) {
+                // example: select elements with class=value and build settings object
+                var obj = {};
+                $(".value").each(function () {
+                    var $this = $(this);
+                    if ($this.attr("type") === "checkbox") {
+                        obj[$this.attr("id")] = $this.prop("checked");
+                    } else if ($this.attr("type") === "number") {
+                        obj[$this.attr("id")] = parseFloat($this.val());
+                    } else {
+                        obj[$this.attr("id")] = $this.val();
+                    }
+                });
+                sendTo(null, "reload", null);
+                callback(obj);
+            }
+
+            function fileHandler(event) {
+                event.preventDefault();
+
+                var file = event.dataTransfer ? event.dataTransfer.files[0] : event.target.files[0];
+
+                if (!file) {
+                    console.warn("invalid file object");
+                    return false;
+                }
+
+                $("#knxprojFile").prop("disabled", true);
+                $(".file-field .btn").addClass("disabled");
+                $(".file-field .file-path").prop("disabled", true);
+
+                if (file.name.split(".").pop() == "xml") {
+                    var reader = new FileReader();
+                    reader.addEventListener("load", function readFile(event) {
+                        transmitXML();
+
+                        function transmitXML() {
+                            $("#knxprojFile").replaceWith($(knxprojFile));
+                            $("#knxprojFile").change(fileHandler);
+
+                            showToast(null, _("Import started..."), null, 3000);
+                            $("#progress").show();
+                            $("#onlyAddNewObjects").addClass("disabled");
+                            sendTo(null, "import", { xml: event.target.result, onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked") }, function (result) {
+                                $("#onlyAddNewObjects").removeClass("disabled");
+                                $("#progress").hide();
+                                if (!result || result.error) {
+                                    showMessage(_("Error: ") + (result ? result.error : _("Unknown")));
+                                    sendTo(null, "reset", null);
+                                    showToast(null, _("Restarting adapter"), null, 10000);
+                                } else {
+                                    showMessage(_("Extracted %s states", result.count));
+                                    sendTo(null, "reset", null);
+                                    showToast(null, _("Restarting adapter"), null, 10000);
+                                }
+
+                                $("#knxprojFile").prop("disabled", true);
+                                $(".file-field .btn").addClass("disabled");
+                                $(".file-field .file-path").prop("disabled", true);
+                            });
+                        }
+                    });
+                    reader.readAsText(file);
+                } else if (file.name.split(".").pop() == "knxproj") {
+                    showMessage(_("KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export"));
+                    $("#onlyAddNewObjects").removeClass("disabled");
+                    $(".file-field .btn").removeClass("disabled");
+                    $(".file-field .file-path").prop("disabled", false);
+                    $("#progress").hide();
+                } else {
+                    showMessage(_("Unsupported file format"));
+                    $("#onlyAddNewObjects").removeClass("disabled");
+                    $(".file-field .btn").removeClass("disabled");
+                    $(".file-field .file-path").prop("disabled", false);
+                    $("#progress").hide();
+                }
+            }
+
+            function checkIPs(ip1, ip2) {
+                var i1 = ip1.split(".");
+                var i2 = ip2.split(".");
+                // If ipv6 or DNS name
+                if (i1.length !== i2.length || i1.length !== 4) return 1;
+                if (i1[0] !== i2[0]) return 0;
+                if (i1[1] !== i2[1]) return 1;
+                if (i1[2] !== i2[2]) return 2;
+                if (i1[3] !== i2[3]) return 3;
+                return 4;
+            }
+
+            function ValidateIPaddress(inputText) {
+                var format = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+                return !!inputText.match(format);
+            }
+
+            function ValidatePortaddress(inputText) {
+                var format = /^([1-9][0-9]{0,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$/;
+                return !!inputText.match(format);
+            }
+
+            function ValidateEIBaddress(inputText) {
+                var format = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+                return !!inputText.match(format);
+            }
+
+            //todo ??
+            $(".switch")
+                .find("input[type=checkbox]")
+                .on("change", function () {
+                    var status = $(this).prop("checked");
+                    $.ajax({
+                        url: url,
+                        type: "post",
+                        data: { status: status },
+                    });
+                });
+
+            function disableAllDialogs() {
+                $(".c-tab").removeClass("tab-active");
+                var x = document.getElementsByClassName("dialog");
+                for (var cnt = 0; cnt < x.length; cnt++) {
+                    x[cnt].style.display = "none";
+                }
+            }
+
+            function showConfigDialog() {
+                disableAllDialogs();
+                $(".dialog-config").addClass("tab-active");
+                var x = document.getElementById("configDialog");
+                x.style.display = "block";
+            }
+        </script>
+    </head>
+
+    <body>
+        <!-- you have to put your config page in a div with id adapter-container -->
+        <div class="m adapter-container">
+            <div id="configDialog" class="dialog">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="col s6 l2 input-field">
+                                <input class="value" id="gwip" type="text" />
+                                <label for="gwip" class="translate">Gateway IP</label>
+                            </div>
+                            <div class="col s6 l2 input-field">
+                                <input type="number" min="1025" max="65535" class="value" id="gwipport" />
+                                <label for="gwipport" class="translate">Port</label>
+                            </div>
+                            <div class="col s6 l2 input-field">
+                                <input id="frameInterval" class="value" type="number" min="20" max="1000" />
+                                <label for="frameInterval" class="translate">Frames per second</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="col s12 l5 input-field">
+                                <select class="value" id="bind"></select>
+                                <label class="translate" for="bind">local network interface</label>
+                            </div>
+                            <div class="col s12 l2 input-field">
+                                <input class="value" id="eibadr" type="text" />
+                                <label for="eibadr" class="translate">physical KNX address</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-content">
+                        <div class="col">
+                            <div class="row">
+                                <div class="input-field col s6 m6 l4">
+                                    <input class="value" id="onlyAddNewObjects" type="checkbox" />
+                                    <label class="translate" for="onlyAddNewObjects">add only new Objects</label>
+                                </div>
+
+                                <div class="input-field col s6 m6 l6">
+                                    <div>
+                                        <input class="value" id="adapterpathEnabled" type="checkbox" />
+                                        <label class="translate" for="adapterpathEnabled">using old knx path for objects (Before importing, delete old objects manually)</label>
+                                    </div>
+                                    <div>
+                                        <input class="value" id="adapterpath" type="text" />
+                                        <label for="adapterpath" class="translate">override object path</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col s6">
+                                <div class="file-field input-field">
+                                    <div class="btn" id="fileUploadButton">
+                                        <span class="translate">GA XML Export from ETS</span>
+                                        <input type="file" id="knxprojFile" />
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input class="file-path validate" type="text" />
+                                    </div>
+                                </div>
+
+                                <div class="progress" id="progress">
+                                    <div class="indeterminate" style="width: 70%"></div>
+                                </div>
+                            </div>
+                            <div class="col s6 l2 input-field">
+                                <h6 class="translate">How to export GA XML from ETS:</h6>
+                                <img src="./exportGA.png" alt="exportGA" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
