@@ -62,7 +62,7 @@
         "type": "protocols",
         "compact": true,
         "connectionType": "local",
-        "dataSource": "poll",
+        "dataSource": "push",
         "materialize": true,
         "dependencies": [
             {
