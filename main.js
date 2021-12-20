@@ -221,7 +221,7 @@ class openknx extends utils.Adapter {
             return;
         }
 
-        if (state.c == "self") {
+        if (state.ack) {
             //called by self, avoid loop
             //console.log('state change self id: ' + id);
             //enable this for system testing
@@ -261,24 +261,12 @@ class openknx extends utils.Adapter {
             //interface to trigger GrouValue_Read is this comment
             this.log.debug("Outgoing GroupValue_Read to " + ga + " value " + knxVal);
             this.knxConnection.read(ga);
-            if (!state.ack) {
-                this.setForeignState(id, {
-                    ack: true,
-                    c: "self",
-                });
-            }
         } else if (this.gaList.getDataById(id).common.write) {
             this.log.debug("Outgoing GroupValue_Write to " + ga + " value " + (isRaw ? rawVal : knxVal) + " from " + id);
             if (isRaw) {
                 this.knxConnection.writeRaw(ga, rawVal);
             } else {
                 this.knxConnection.write(ga, knxVal, dpt);
-            }
-            if (!state.ack) {
-                this.setForeignState(id, {
-                    ack: true,
-                    c: "self",
-                });
             }
         } else {
             this.log.warn("not configured write to ga: " + state.val);
@@ -386,7 +374,6 @@ class openknx extends utils.Adapter {
                             this.setForeignState(this.gaList.getIdByAddress(dest), {
                                 val: convertedVal,
                                 ack: true,
-                                c: "self",
                             });
                             this.log.debug("Incoming GroupValue_Response from " + src + " to " + "(" + dest + ") " + this.gaList.getDataByAddress(dest).common.name + ": " + convertedVal);
                             break;
@@ -395,7 +382,6 @@ class openknx extends utils.Adapter {
                             this.setForeignState(this.gaList.getIdByAddress(dest), {
                                 val: convertedVal,
                                 ack: true,
-                                c: "self",
                             });
                             this.log.debug(
                                 "Incoming GroupValue_Write ga: " +
