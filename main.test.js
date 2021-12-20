@@ -9,10 +9,17 @@
 
 // tslint:disable:no-unused-expression
 
+//unit under test:
+
+
 const { expect } = require("chai");
+
 // import { functionToTest } from "./moduleToTest";
 
-describe("module to test => function to test", () => {
+
+
+
+describe("module to test: main  => function to test: warnDuplicates", () => {
     // initializing logic
     const expected = 5;
 
