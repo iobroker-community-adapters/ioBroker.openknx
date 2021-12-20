@@ -1,0 +1,12 @@
+howto do systemtest with ets
+
+preparation:
+-build adapter with enabled interfaceTest in main.js
+
+-import test.jnxproj into ets
+-setup ip interface etc..
+-in diag window replay telegrams systemtest_send.xml
+-> adapter mirrors addresses 31/0/* to 31/1/*
+
+assesment: manually compare values, date datatypes might be not be received as sent (ok)
+ets seems to have an issue to display dpt23
