@@ -93,8 +93,6 @@ Autoread is set to false where it is clear from the DPT that this is a trigger s
     "type": "state",
     "common": {                                             //values here can be interpreted by iobroker
         "desc": "Basetype: 1-bit value, Subtype: switch",   //informative, from dpt
-        "min": 0,                                           //derieved from dpt
-        "max": 1,                                           //derieved from dpt
         "name": "Aussen Melder Licht schalten",             //informative description from ets export
         "read": true,                                       //default set, if false incoming bus values are not updating the object
         "role": state,                                      //default state, derieved from DPT
@@ -140,35 +138,35 @@ Where number datatype is used please note that interface values can be scaled.
 
 #### Description of all DPTs
 
-|KNX DPT        |javascript datatype                	        |special values	|value range |
-|---        |---        |---                                    |---|
-|DPT-1	    |boolean    |                                    |false, true|
-|DPT-2	    |object	    |{"priority":1 bit,"data":1 bit}	       |-|
-|DPT-3	    |object	    |{"decr_incr":1 bit,"data":2 bit}	|-|
-|DPT-18	    |object	    |{"save_recall":0,"scenenumber":0}	|
-|DPT-21	    |object	    |{"outofservice":0,"fault":0,"overridden":0,"inalarm":0,"alarmunack":0}	|-|
-|DPT-232	|object	    |{red:0..255, green:0.255, blue:0.255}	-|
-|DPT-237	|object	    |{"address":0,"addresstype":0,"readresponse":0,"lampfailure":0,"ballastfailure":0,"convertorerror":0}	|-|
-|DPT-4	    |string		||one character sent as 8-bit character|
-|DPT-16	    |string		||one character sent as 16-character string|
-|DPT-5	    |number		||8-bit unsigned value|
-|DPT-5.001	|number		||0..100 [%] scaled to 1-byte|
-|DPT-5.003	|number		||0..360 [°] scaled to 1-byte|
-|DPT-6	    |number		||8-bit signed -128..127|
-|DPT-7	    |number		||16-bit unsigned value|
-|DPT-8	    |number		||2-byte signed value |-32768..32767|
-|DPT-9	    |number		||2-byte floating point value|
-|DPT-14	    |number		||4-byte floating point value|
-|DPT-12	    |number		||4-byte unsigned value|
-|DPT-13	    |number		||4-byte signed value|
-|DPT-15	    |number		||4-byte|
-|DPT-17	    |number		||1-byte|
-|DPT-20	    |number		||1-byte|
-|DPT-238 	|number		|                         |1-byte|
-|DPT-10	    |number for Date Object		||-|
-|DPT-11	    |number for Date Object		||-|
-|DPT-19	    |number for Date Object		||-|
-|rest	    |string	    |00010203..	            |-|
+| KNX DPT   | javascript datatype    | special values                                                                                       | value range                               |
+| --------- | ---------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| DPT-1     | boolean                |                                                                                                      | false, true                               |
+| DPT-2     | object                 | {"priority":1 bit,"data":1 bit}                                                                      | -                                         |
+| DPT-3     | object                 | {"decr_incr":1 bit,"data":2 bit}                                                                     | -                                         |
+| DPT-18    | object                 | {"save_recall":0,"scenenumber":0}                                                                    |
+| DPT-21    | object                 | {"outofservice":0,"fault":0,"overridden":0,"inalarm":0,"alarmunack":0}                               | -                                         |
+| DPT-232   | object                 | {red:0..255, green:0.255, blue:0.255}	-                                                              |
+| DPT-237   | object                 | {"address":0,"addresstype":0,"readresponse":0,"lampfailure":0,"ballastfailure":0,"convertorerror":0} | -                                         |
+| DPT-4     | string                 |                                                                                                      | one character sent as 8-bit character     |
+| DPT-16    | string                 |                                                                                                      | one character sent as 16-character string |
+| DPT-5     | number                 |                                                                                                      | 8-bit unsigned value                      |
+| DPT-5.001 | number                 |                                                                                                      | 0..100 [%] scaled to 1-byte               |
+| DPT-5.003 | number                 |                                                                                                      | 0..360 [°] scaled to 1-byte               |
+| DPT-6     | number                 |                                                                                                      | 8-bit signed -128..127                    |
+| DPT-7     | number                 |                                                                                                      | 16-bit unsigned value                     |
+| DPT-8     | number                 |                                                                                                      | 2-byte signed value                       | -32768..32767 |
+| DPT-9     | number                 |                                                                                                      | 2-byte floating point value               |
+| DPT-14    | number                 |                                                                                                      | 4-byte floating point value               |
+| DPT-12    | number                 |                                                                                                      | 4-byte unsigned value                     |
+| DPT-13    | number                 |                                                                                                      | 4-byte signed value                       |
+| DPT-15    | number                 |                                                                                                      | 4-byte                                    |
+| DPT-17    | number                 |                                                                                                      | 1-byte                                    |
+| DPT-20    | number                 |                                                                                                      | 1-byte                                    |
+| DPT-238   | number                 |                                                                                                      | 1-byte                                    |
+| DPT-10    | number for Date Object |                                                                                                      | -                                         |
+| DPT-11    | number for Date Object |                                                                                                      | -                                         |
+| DPT-19    | number for Date Object |                                                                                                      | -                                         |
+| rest      | string                 | 00010203..                                                                                           | -                                         |
 
 
 Only time and date information is exchanged with KNX time based datatypes, e.g. DPT-19 has unsupported fields for signal quality  
