@@ -1,5 +1,9 @@
 howto do systemtest with ets
 
+-----------------
+routing test
+focus: basic reception and transmission, correct datatype interpretation
+-----------------
 preparation:
 -build adapter with enabled interfaceTest in main.js
 
@@ -10,3 +14,29 @@ preparation:
 
 assesment: manually compare values, date datatypes might be not be received as sent (ok)
 ets seems to have an issue to display dpt23
+
+-----------------
+check if values can be read out
+-----------------
+
+manually set of one object answer_groupValueResponse": true
+restart  adapter
+set the object value in iob
+in ets, issue Read Value command to trigger GroupValue_read
+-> adapter sends the prev. set object value
+
+assesment: manually compare in ets the received value
+
+------------------
+autoread
+------------------
+run adapter without debugger connected
+-> adapter issues for all "autoread": true objects a  GroupValue_read on starten
+
+assesment: check for gvr traffic on adapter startup in ets
+
+
+------------------
+trigger groupvalue_read in iob
+-------------------
+implement api call
