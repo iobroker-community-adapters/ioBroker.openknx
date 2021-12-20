@@ -75,7 +75,7 @@
         "gwipport": "3671",
         "eibadr": "1.1.1",
         "bind": "",
-        "frameInterval": 50,
+        "frameInterval": 50
     },
     "objects": [],
     "instanceObjects": [
