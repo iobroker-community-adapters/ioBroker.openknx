@@ -262,7 +262,7 @@ class openknx extends utils.Adapter {
             this.log.debug("Outgoing GroupValue_Read to " + ga + " value " + knxVal);
             this.knxConnection.read(ga);
             if (!state.ack) {
-                this.setForeignState(id, {
+                this.setState(id, {
                     ack: true,
                     c: "self",
                 });
@@ -275,7 +275,7 @@ class openknx extends utils.Adapter {
                 this.knxConnection.write(ga, knxVal, dpt);
             }
             if (!state.ack) {
-                this.setForeignState(id, {
+                this.setState(id, {
                     ack: true,
                     c: "self",
                 });
@@ -383,7 +383,7 @@ class openknx extends utils.Adapter {
                             break;
 
                         case "GroupValue_Response":
-                            this.setForeignState(this.gaList.getIdByAddress(dest), {
+                            this.setState(this.gaList.getIdByAddress(dest), {
                                 val: convertedVal,
                                 ack: true,
                                 c: "self",
@@ -392,7 +392,7 @@ class openknx extends utils.Adapter {
                             break;
 
                         case "GroupValue_Write":
-                            this.setForeignState(this.gaList.getIdByAddress(dest), {
+                            this.setState(this.gaList.getIdByAddress(dest), {
                                 val: convertedVal,
                                 ack: true,
                                 c: "self",
@@ -425,7 +425,7 @@ class openknx extends utils.Adapter {
         const outpath = this.mynamespace + ".test.testout";
         if (id.startsWith(inpath)) {
             const out = outpath + id.replace(inpath, "");
-            this.setForeignState(out, {
+            this.setState(out, {
                 val: state.val,
                 ack: true,
             });
