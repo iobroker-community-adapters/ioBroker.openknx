@@ -76,8 +76,6 @@
         "eibadr": "1.1.1",
         "bind": "",
         "frameInterval": 50,
-        "adapterpathEnabled": false,
-        "adapterpath": "knx.0"
     },
     "objects": [],
     "instanceObjects": [

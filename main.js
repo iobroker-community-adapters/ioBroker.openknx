@@ -48,11 +48,6 @@ class openknx extends utils.Adapter {
             return;
         }
 
-        if (this.config.adapterpathEnabled && this.config.adapterpath !== "") {
-            this.log.info("Adapter path: " + this.config.adapterpath);
-            this.mynamespace = this.config.adapterpath;
-        }
-
         // In order to get state updates, you need to subscribe to them.
         this.subscribeForeignStates(this.mynamespace + ".*");
 
