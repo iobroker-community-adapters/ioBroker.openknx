@@ -42,7 +42,8 @@
             "zh-cn": "KNX 的免费开源适配器"
         },
         "authors": [
-            "Boellner <boellnerboellner@gmail.com>"
+            "Boellner <boellnerboellner@gmail.com>",
+            "TA2k <tombox2020@gmail.com>"
         ],
         "keywords": [
             "knx free open source eib"
@@ -54,8 +55,8 @@
         "enabled": true,
         "messagebox": true,
         "subscribe": "messagebox",
-        "extIcon": "https://raw.githubusercontent.com/Boellner/ioBroker.openknx/main/admin/openknx.png",
-        "readme": "https://github.com/Boellner/ioBroker.openknx/blob/main/README.md",
+        "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.openknx/master/admin/openknx.png",
+        "readme": "https://github.com/iobroker-community-adapters/ioBroker.openknx/blob/master/README.md",
         "loglevel": "info",
         "mode": "daemon",
         "type": "protocols",
