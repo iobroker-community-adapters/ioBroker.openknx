@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "openknx",
-        "version": "0.1.8",
+        "version": "0.1.9",
         "news": {
-            "0.1.8": {
+            "0.1.9": {
                 "en": "Test Release",
                 "de": "Testfreigabe",
                 "ru": "Тестовый выпуск",
@@ -75,9 +75,7 @@
         "gwipport": "3671",
         "eibadr": "1.1.1",
         "bind": "",
-        "frameInterval": 50,
-        "adapterpathEnabled": false,
-        "adapterpath": "knx.0"
+        "frameInterval": 50
     },
     "objects": [],
     "instanceObjects": [
