@@ -6,7 +6,7 @@
     "How to export GA XML from ETS:": "Jak wyeksportować GA XML z ETS:",
     "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export": "KNXproj nie są obsługiwane, otwórz w ETS adresy grup i kliknij prawym przyciskiem adresy grup, a następnie wyeksportuj adresy grup",
     "Port": "Port",
-    "Regex to identify Status GAs (ending with status, rm, rückmeldung..)": "Regex do identyfikacji statusów GA (kończących się na status, rm, rückmeldung..)",
+    "Regex to identify Status GAs (ending with status, rm, rückmeldung..). Empty to deactivate": "Regex do identyfikacji statusów GA (kończących się na status, rm, rückmeldung...). ",
     "Restarting adapter": "Ponowne uruchamianie adaptera...",
     "Unsupported file format": "Niewspierany format pliku",
     "add only new Objects": "Dodaj tylko nowe obiekty",
