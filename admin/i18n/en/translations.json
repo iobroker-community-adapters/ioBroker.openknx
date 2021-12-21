@@ -13,7 +13,6 @@
     "invalid port number": "invalid port number",
     "local network interface": "local network interface",
     "min 1": "minimum is 1",
-    "override object path": "override object path",
     "physical KNX address": "physical KNX address",
     "physical KNX address in format a/b/c not valid": "physical KNX address in format a/b/c not valid",
     "this is not a number": "this is not a number"

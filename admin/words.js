@@ -1,5 +1,5 @@
 /*global systemDictionary:true */
-'use strict';
+"use strict";
 
 systemDictionary = {
     "Extracted %s states": {                         "en": "Extracted %s states",                             "de": "Extrahierte %s-Zustände",                         "ru": "Извлечено% s состояний",                          "pt": "Estados% s extraídos",                            "nl": "Geëxtraheerde %s staten",                         "fr": "États %s extraits",                               "it": "%s stati estratti",                               "es": "Estados% s extraídos",                            "pl": "Wyodrębnione stany %s",                           "zh-cn": "提取 %s 状态"},
@@ -21,3 +21,4 @@ systemDictionary = {
     "physical KNX address in format a/b/c not valid": {"en": "physical KNX address in format a/b/c not valid",  "de": "physikalische KNX-Adresse im Format a/b/c ungültig", "ru": "физический адрес KNX в формате a / b / c недействителен", "pt": "endereço KNX físico em formato a / b / c inválido", "nl": "fysiek KNX-adres in formaat a/b/c niet geldig",   "fr": "adresse physique KNX au format a/b/c non valide", "it": "indirizzo fisico KNX in formato a/b/c non valido", "es": "dirección KNX física en formato a / b / c no válida", "pl": "fizyczny adres KNX w formacie a/b/c nieważny",    "zh-cn": "格式为 a/b/c 的物理 KNX 地址无效"},
     "this is not a number": {                        "en": "this is not a number",                            "de": "das ist keine Zahl",                              "ru": "это не число",                                    "pt": "este não é um número",                            "nl": "dit is geen nummer",                              "fr": "ce n'est pas un nombre",                          "it": "questo non è un numero",                          "es": "esto no es un numero",                            "pl": "to nie jest liczba",                              "zh-cn": "这不是一个数字"}
 };
+
