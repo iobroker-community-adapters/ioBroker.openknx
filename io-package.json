@@ -64,9 +64,14 @@
         "connectionType": "local",
         "dataSource": "push",
         "materialize": true,
+        "plugins": {
+            "sentry": {
+                "dsn": "https://f87a314b36ef451aa291655ae13e2831@sentry.iobroker.net/165"
+            }
+        },
         "dependencies": [
             {
-                "js-controller": ">=2.0.0"
+                "js-controller": ">=3.0.0"
             }
         ]
     },
