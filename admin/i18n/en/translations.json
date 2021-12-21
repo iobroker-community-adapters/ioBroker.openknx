@@ -6,6 +6,7 @@
     "How to export GA XML from ETS:": "How to export GA XML from ETS:",
     "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export": "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export",
     "Port": "Port",
+    "Regex to identify Status GAs (ending with status, rm, rückmeldung..)": "Regex to identify Status GAs (ending with status, rm, rückmeldung..)",
     "Restarting adapter": "Restarting adapter...",
     "Unsupported file format": "Unsupported file format",
     "add only new Objects": "Add only new Objects",
@@ -13,7 +14,10 @@
     "invalid port number": "invalid port number",
     "local network interface": "local network interface",
     "min 1": "minimum is 1",
+    "override object path": "",
     "physical KNX address": "physical KNX address",
     "physical KNX address in format a/b/c not valid": "physical KNX address in format a/b/c not valid",
-    "this is not a number": "this is not a number"
+    "this is not a number": "this is not a number",
+    "using old knx path for objects": "",
+    "using old knx path for objects (Before importing, delete old objects manually)": ""
 }
