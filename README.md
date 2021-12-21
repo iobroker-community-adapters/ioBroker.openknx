@@ -5,7 +5,6 @@
 [![Downloads](https://img.shields.io/npm/dm/iobroker.openknx.svg)](https://www.npmjs.com/package/iobroker.openknx)
 ![Number of Installations](https://iobroker.live/badges/openknx-installed.svg)
 ![Current version in stable repository](https://iobroker.live/badges/openknx-stable.svg)
-[![Dependency Status](https://img.shields.io/david/iobroker-community-adapters/iobroker.openknx.svg)](https://david-dm.org/iobroker-community-adapters/iobroker.openknx)
 
 [![NPM](https://nodei.co/npm/iobroker.openknx.png?downloads=true)](https://nodei.co/npm/iobroker.openknx/)
 
@@ -51,11 +50,6 @@ Fill in physical address of the gateway in the format 1/1/1.
 ##### Add only new Objects
 If checked, the import will skip overwriting existing communication objects.
 
-##### Override object path
-The adapter uses openknx.0 for first instance as default path for Iobroker objects.
-If your curent setup has a lot of references to existing knx objects to an existing folder, then you can specify its location, for example knx.0.
-This feature will be removed in future.
-
 #### GA XML import
 1. In ETS go to Group Addresses, select export group addresse and select XML export in latest format version
 2. upload your ETS Export XML in the adapter via the GA XML-Import dialog
@@ -67,14 +61,6 @@ This settings protects the KNX bus from data flooding by limiting data frames to
 
 # howto use the adapter & basic concept
 todo
-
-# Compatibility
-This adapter has its own namespace 'openknx'.
-for existing applications, that are connected to knx signals of other knx adapters you can use the setting:  
-Override object path  
-to e.g. knx.0. A new project import will then store the data in this object tree space.
-Objects are not compatible, remove them manually before the import and disable all other knx adapters.
-Leave setting empty to use the adapters own namespace.
 
 # log level
 Enable expert mode to enable switching between different log levels. Default loglevel is info.  
@@ -101,7 +87,7 @@ Autoread is set to false where it is clear from the DPT that this is a trigger s
         "write": true                                       //default true, if set change on object is triggering knx write, succ. write sets then ack flag to true
     },
     "native": {                                             //values here can be interpreted by openknx adapter
-        "address": "0/0/7",                                 //knx address
+        "address": "0/1/2",                                 //knx address
         "answer_groupValueResponse": false,                 //default false, if set to true adapter responds with value on GroupValue_Read
         "autoread": true,                                   //default true for non trigger signals , adapter sends a GroupValue_read on start to sync its states
         "bitlength": 1,                                     //size ob knx data, derived from dpt
@@ -187,10 +173,10 @@ Communication object is triggered when a write frame is received on the bus.
 
 #### group value read
 Sending can be triggered by writing a communicaton object with comment.
-Receiving, if configured will trigger a group value response (limitation: write) of the actual c.o. value, see below
+Receiving, if configured will trigger a group value response (limitation: group value write at the moment) of the actual c.o. value, see below
 
 #### group value response
-Sending Not yet supported. Emulated if response setting is set and adapter writes a group value write.
+Sending a GroupValue_Response not yet fully supported. Emulated if response setting is set, then adapter writes a group value write.
 Receiving will update the value of the iobroker object in read is set to true.
 
 # Features
@@ -209,6 +195,9 @@ Receiving will update the value of the iobroker object in read is set to true.
 - only three level group addresses are supported
 
 ## Changelog
+### 0.1.9
+* resolved github issues since then
+
 ### 0.1.8
 * (tombox) feature: changed ui and many fixes
 * (boellner) feature: skip wrong initial disconnect warning
