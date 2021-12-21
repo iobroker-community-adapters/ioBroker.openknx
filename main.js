@@ -124,8 +124,8 @@ class openknx extends utils.Adapter {
         if (onlyAddNewObjects) {
             //if user setting Add only new Objects write only new objects
             //https://www.iobroker.net/docu/index-81.htm?page_id=5809&lang=en#extendObject
-            this.extendForeignObject(this.mynamespace + "." + objects[index]._id, objects[index], (err, obj) => {
-                //this.setForeignObjectNotExists(this.mynamespace + '.' + objects[index]._id, objects[index], (err, obj) => {
+            this.extendObject(this.mynamespace + "." + objects[index]._id, objects[index], (err, obj) => {
+                //this.setObjectNotExists(this.mynamespace + '.' + objects[index]._id, objects[index], (err, obj) => {
                 if (err) {
                     this.log.warn("error store Object " + objects[index]._id + " " + (err ? " " + err : ""));
                 }
@@ -133,7 +133,7 @@ class openknx extends utils.Adapter {
             });
         } else {
             //setObjet to overwrite all existing settings, default
-            this.setForeignObject(this.mynamespace + "." + objects[index]._id, objects[index], (err, obj) => {
+            this.setObject(this.mynamespace + "." + objects[index]._id, objects[index], (err, obj) => {
                 if (err) {
                     this.log.warn("error store Object " + objects[index]._id + (err ? " " + err : ""));
                 }
@@ -346,7 +346,7 @@ class openknx extends utils.Adapter {
                     switch (evt) {
                         case "GroupValue_Read":
                             //fetch val from addressed object and write on bus if configured to answer
-                            this.getForeignState(this.gaList.getIdByAddress(dest), (err, state) => {
+                            this.getState(this.gaList.getIdByAddress(dest), (err, state) => {
                                 if (state) {
                                     this.log.debug("Incoming GroupValue_Read from " + src + " to " + "(" + dest + ") " + this.gaList.getDataByAddress(dest).common.name);
                                     if (this.gaList.getDataByAddress(dest).native.answer_groupValueResponse) {
@@ -360,7 +360,7 @@ class openknx extends utils.Adapter {
                             break;
 
                         case "GroupValue_Response":
-                            this.setForeignState(this.gaList.getIdByAddress(dest), {
+                            this.setState(this.gaList.getIdByAddress(dest), {
                                 val: convertedVal,
                                 ack: true,
                             });
@@ -368,7 +368,7 @@ class openknx extends utils.Adapter {
                             break;
 
                         case "GroupValue_Write":
-                            this.setForeignState(this.gaList.getIdByAddress(dest), {
+                            this.setState(this.gaList.getIdByAddress(dest), {
                                 val: convertedVal,
                                 ack: true,
                             });
@@ -400,7 +400,7 @@ class openknx extends utils.Adapter {
         const outpath = this.mynamespace + ".test.testout";
         if (id.startsWith(inpath)) {
             const out = outpath + id.replace(inpath, "");
-            this.setForeignState(out, {
+            this.setState(out, {
                 val: state.val,
                 ack: true,
             });
