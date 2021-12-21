@@ -48,7 +48,10 @@ class openknx extends utils.Adapter {
             return;
         }
 
-
+        if (!this.config.gwip) {
+            this.log.warn("Gateway IP is missing please enter Gateway IP in the instance settings.");
+            return;
+        }
         // In order to get state updates, you need to subscribe to them.
         this.subscribeStates("*");
 
@@ -255,7 +258,6 @@ class openknx extends utils.Adapter {
             //interface to trigger GrouValue_Read is this comment
             this.log.debug("Outgoing GroupValue_Read to " + ga + " value " + knxVal);
             this.knxConnection.read(ga);
-
         } else if (this.gaList.getDataById(id).common.write) {
             this.log.debug("Outgoing GroupValue_Write to " + ga + " value " + (isRaw ? rawVal : knxVal) + " from " + id);
             if (isRaw) {
@@ -290,7 +292,8 @@ class openknx extends utils.Adapter {
                         for (const key of this.gaList) {
                             if (this.gaList.getDataById(key).native.address.match(/\d*\/\d*\/\d*/) && this.gaList.getDataById(key).native.dpt) {
                                 try {
-                                    const dp = new knx.Datapoint({
+                                    const dp = new knx.Datapoint(
+                                        {
                                             ga: this.gaList.getDataById(key).native.address,
                                             dpt: this.gaList.getDataById(key).native.dpt,
                                             autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
@@ -301,11 +304,11 @@ class openknx extends utils.Adapter {
                                     cnt_withDPT++;
                                     this.log.debug(
                                         "Datapoint " +
-                                        (this.gaList.getDataById(key).native.autoread ? "autoread " : "") +
-                                        "created and GroupValueWrite sent: " +
-                                        this.gaList.getDataById(key).native.address +
-                                        " " +
-                                        key
+                                            (this.gaList.getDataById(key).native.autoread ? "autoread " : "") +
+                                            "created and GroupValueWrite sent: " +
+                                            this.gaList.getDataById(key).native.address +
+                                            " " +
+                                            key
                                     );
                                 } catch (e) {
                                     this.log.warn("could not create KNX Datapoint for " + key + " with error: " + e);
@@ -331,7 +334,7 @@ class openknx extends utils.Adapter {
                 },
 
                 //KNX Bus event received
-                event: ( /** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
+                event: (/** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
                     if (src == this.config.eibadr) {
                         //called by self, avoid loop
                         //console.log('receive self ga: ', dest);
@@ -344,9 +347,12 @@ class openknx extends utils.Adapter {
                         return;
                     }
 
-                    const convertedVal = tools.isStringDPT(this.gaList.getDataByAddress(dest).native.dpt) ?
-                        this.gaList.getDpByAddress(dest).current_value :
-                        this.convertType(this.gaList.getDpByAddress(dest).current_value);
+                    let convertedVal;
+                    if (tools.isStringDPT(this.gaList.getDataByAddress(dest).native.dpt)) {
+                        convertedVal = this.gaList.getDpByAddress(dest).current_value;
+                    } else {
+                        convertedVal = this.convertType(this.gaList.getDpByAddress(dest).current_value);
+                    }
 
                     switch (evt) {
                         case "GroupValue_Read":
@@ -379,13 +385,13 @@ class openknx extends utils.Adapter {
                             });
                             this.log.debug(
                                 "Incoming GroupValue_Write ga: " +
-                                dest +
-                                "  val: " +
-                                convertedVal +
-                                " dpt: " +
-                                this.gaList.getDataByAddress(dest).native.dpt +
-                                " to Object: " +
-                                this.gaList.getIdByAddress(dest)
+                                    dest +
+                                    "  val: " +
+                                    convertedVal +
+                                    " dpt: " +
+                                    this.gaList.getDataByAddress(dest).native.dpt +
+                                    " to Object: " +
+                                    this.gaList.getIdByAddress(dest)
                             );
                             break;
 
@@ -420,7 +426,8 @@ class openknx extends utils.Adapter {
         //fill gaList object from iobroker objects
         this.getObjectView(
             "system",
-            "state", {
+            "state",
+            {
                 startkey: this.mynamespace + ".",
                 endkey: this.mynamespace + ".\u9999",
                 include_docs: true,
@@ -484,14 +491,14 @@ class DoubleKeyedMap {
             index: -1,
             data: this.data,
             next() {
-                return ++this.index < this.data.size ?
-                    {
-                        done: false,
-                        value: Array.from(this.data.keys())[this.index],
-                    } :
-                    {
-                        done: true,
-                    };
+                return ++this.index < this.data.size
+                    ? {
+                          done: false,
+                          value: Array.from(this.data.keys())[this.index],
+                      }
+                    : {
+                          done: true,
+                      };
             },
         };
     };
