@@ -15,22 +15,6 @@ This adapter serves as communication interface between Iobroker and your KNX IP 
 The adapter allows to generate the iobroker communication objects automatically by importing an ETS group address xml export.  
 All generated communication objects are initially configured readable and writeable, values are fetched from the knx bus on adapter restart.
 
-# Installation
-This is an early untested version. Please make a good backup of all your data before installation! Please do not test in critical environments.
-
-installation from shell
-
-    cd /opt/iobroker/  
-    npm i iobroker.openknx  
-    iobroker add openknx  
-
-updates
-
-    npm i iobroker.openknx  
-    iobroker upload openknx  
-
-Check the npm output for error logs. Stop the openknx adapter before update.
-
 # Adapter configuration
 ![settings](docs/pictures/setting.png)
 Press "save & close" or "save" to restart the adapter and take over the changes.
@@ -58,6 +42,34 @@ After the successful import a message shows how much objects where recognized. M
 
 #### Frames per sec
 This settings protects the KNX bus from data flooding by limiting data frames to a certain rate. Not sent frames are put into a fifo buffer.
+
+# Convert vis from knx to openknx
+### Replace Object Id in the Vis 
+
+1. Open Vis Editor
+2. Setup -> Projekt-Export/import -> Exportieren normal
+3. Open Zip File and vis-views.json in an editor
+4. Search Replace knx.0 with openknx.0
+5. Compress vis-views.json and vis-user.css in a zip file
+6. Setup -> Projekt-Export/import -> Import
+7. Move zip file in Drop Area 
+8. Projektname = main
+9. Import project
+
+### Replace Object Id in the Skripts 
+
+1. Open Scripts
+2. 3 dots -> Export all scripts
+3. Open Zip File and open the folder in a editor
+4. Search Replace knx.0 with openknx.0
+5. compress all changed files in a zip file
+6. 3 dots ->Import scripts
+7. Move zip file in Drop Area
+
+### Use aliases 
+https://www.iobroker.net/#de/documentation/dev/aliases.md
+  
+
 
 # howto use the adapter & basic concept
 todo
@@ -197,6 +209,7 @@ Receiving will update the value of the iobroker object in read is set to true.
 ## Changelog
 ### 0.1.9
 * resolved github issues since then
+* removed feature: override path of knx objects
 
 ### 0.1.8
 * (tombox) feature: changed ui and many fixes
