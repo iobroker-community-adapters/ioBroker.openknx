@@ -59,7 +59,7 @@
         "readme": "https://github.com/iobroker-community-adapters/ioBroker.openknx/blob/master/README.md",
         "loglevel": "info",
         "mode": "daemon",
-        "type": "protocols",
+        "type": "iot-systems",
         "compact": true,
         "connectionType": "local",
         "dataSource": "push",
