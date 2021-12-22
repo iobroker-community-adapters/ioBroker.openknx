@@ -231,6 +231,10 @@ class openknx extends utils.Adapter {
         let knxVal;
         let rawVal;
 
+        //check for boolean and ensure the correct datatype
+        if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "boolean") { 
+            state.val = state.val ? true: false
+        }
         //convert val into object for certain dpts
         if (tools.isDateDPT(dpt)) {
             //before composite check, date is also composite
@@ -250,8 +254,6 @@ class openknx extends utils.Adapter {
             rawVal = Buffer.from(state.val, "hex");
             isRaw = true;
             this.log.warn("Missing implementation for unhandeled DPT " + dpt + ", assuming raw values");
-        } else if (tools.isSwitchDPT(dpt)) {
-            knxVal = state.val ? true : false;
         } else {
             knxVal = state.val;
         }
