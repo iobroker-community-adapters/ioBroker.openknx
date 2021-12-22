@@ -45,6 +45,7 @@ This settings protects the KNX bus from data flooding by limiting data frames to
 
 # Convert vis from knx to openknx
 ### Replace Object Id in the Vis 
+
 1. Open Vis Editor
 2. Setup -> Projekt-Export/import -> Exportieren normal
 3. Open Zip File and vis-views.json in an editor
@@ -54,6 +55,16 @@ This settings protects the KNX bus from data flooding by limiting data frames to
 7. Move zip file in Drop Area 
 8. Projektname = main
 9. Import project
+
+### Replace Object Id in the Skripts 
+
+1. Open Scripts
+2. 3 dots -> Export all scripts
+3. Open Zip File and open the folder in a editor
+4. Search Replace knx.0 with openknx.0
+5. compress all changed files in a zip file
+6. 3 dots ->Import scripts
+7. Move zip file in Drop Area
 
 ### Use aliases 
 https://www.iobroker.net/#de/documentation/dev/aliases.md
