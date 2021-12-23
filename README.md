@@ -19,17 +19,6 @@ All generated communication objects are initially configured readable and writea
 install from IOB
   todo
 
-installation from NPM
-
-    cd /opt/iobroker/  
-    npm i iobroker.openknx  
-    iobroker add openknx  
-
-updates
-
-    npm i iobroker.openknx  
-    iobroker upload openknx  
-
 
 # Adapter configuration
 ![settings](docs/pictures/setting.png)
