@@ -19,7 +19,10 @@ Alle generierten Kommunikationsobjekte sind zunächst lesbar und schreibbar konf
 Der Adapter ist im latest/beta Repository verfügbar. Wenn dieses in den ioBroker Systemeinstellung ausgewählt ist kann der Adapter in der Adapterliste unter "openknx" gesucht und installiert werden. Eine Alternative ist im Expertenmodus das installieren über das Github Symbol möglich in dem man "von Github" auswählt und nach openknx sucht.
 
 # Adapterkonfiguration
-In den Instanzeinstellung muss mindestens die Gateway IP eingetragen werden. Dann kann man ein ETS-Export XML Datei importiert werden. Die XML kann über ETS dem Fenster Gruppenadressen mit Rechtsklick auf den oberen Ebene der Gruppenadresse exportiert werden. GA die keinem DPT zugeordnet sind werden nicht importiert. Es handelt sich dabei um GA die keinem Kommunikationsobjekt in ETS zugeordnet sind.
+In den Instanzeinstellung muss mindestens die Gateway IP eingetragen werden. Dann kann man ein ETS-Export XML Datei importiert werden. Die XML kann über ETS dem Fenster Gruppenadressen mit Rechtsklick auf den oberen Ebene der Gruppenadresse exportiert werden. GA die keinem DPT zugeordnet sind werden nicht importiert. Es handelt sich dabei um GA die keinem Kommunikationsobjekt in ETS zugeordnet sind. 
+
+# Nutzung
+ioBroker Datenpunkte können einfach mit ACK false/Nicht Bestätigt gesetzt werden. Komplexe Datenpunkt müssen im korrekt format wie zb: {"priority":0,"data":1} gesetzt werden
 
 # Fragen und Diskussion
 https://forum.iobroker.net/topic/50352/test-adapter-openknx-0-1-x
