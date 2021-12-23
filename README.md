@@ -244,9 +244,16 @@ Receiving will update the value of the iobroker object in read is set to true.
 - only three level group addresses are supported
 
 ## Changelog
-### 0.1.9
-* resolved github issues since then
+### 0.1.10 (2021-12-23)
+* fix: interface to write objects corrected
+* 
+
+### 0.1.9 (2021-12-22)
+* fix: algorith to generate the iob objects improved
+* fix: min max removed for boolean
+* fix: ackqnowledgement handling
 * removed feature: override path of knx objects
+* feature: new logo
 
 ### 0.1.8
 * (tombox) feature: changed ui and many fixes
