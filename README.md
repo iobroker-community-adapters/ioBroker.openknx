@@ -10,14 +10,53 @@
 
 **Tests:** ![Test and Release](https://github.com/iobroker-community-adapters/ioBroker.openknx/workflows/Test%20and%20Release/badge.svg)
 
-
-This adapter serves as communication interface between Iobroker and your KNX IP Gateway.
-The adapter allows to generate the iobroker communication objects automatically by importing an ETS group address xml export.  
-All generated communication objects are initially configured readable and writeable, values are fetched from the knx bus on adapter restart.
+# Deutsch
+Dieser Adapter dient als Kommunikationsschnittstelle zwischen ioBroker und einem KNX IP Gateway.
+Der Adapter ermöglicht die automatische Generierung der ioBroker Datenobjekte durch den Import eines ETS-Gruppenadressen-XML-Exports.
+Alle generierten Kommunikationsobjekte sind zunächst lesbar und schreibbar konfiguriert, Werte werden beim Neustart des Adapters vom knx-Bus geholt.
 
 # Installation
-install from IOB
-  todo
+Der Adapter ist im latest/beta Repository verfügbar. Wenn dieses in den ioBroker Systemeinstellung ausgewählt ist kann der Adapter in der Adapterliste unter "openknx" gesucht und installiert werden. Eine Alternative ist im Expertenmodus das installieren über das Github Symbol möglich in dem man "von Github" auswählt und nach openknx sucht.
+
+# Adapterkonfiguration
+In den Instanzeinstellung muss mindestens die Gateway IP eingetragen werden. Dann kann man ein ETS-Export XML Datei importiert werden. Die XML kann über ETS dem Fenster Gruppenadressen mit Rechtsklick auf den oberen Ebene der Gruppenadresse exportiert werden. GA die keinem DPT zugeordnet sind werden nicht importiert. Es handelt sich dabei um GA die keinem Kommunikationsobjekt in ETS zugeordnet sind.
+
+# Fragen und Diskussion
+https://forum.iobroker.net/topic/50352/test-adapter-openknx-0-1-x
+
+# Adaptermigration
+
+## Node Red migrieren
+- Wählen Sie im Menü auf der rechten Seite Exportieren
+- Alle Flows auswählen, herunterladen
+- im Texteditor knx.0 ersetzen mit openknx.0
+- Menü auf der rechten Seite, Import auswählen
+- Geänderte Datei auswählen
+- im Dialog Flows auswählen (Subflows, Configuration-Nodes nur wenn sie betroffen sind) -> neue Tabs werden hinzugefügt
+- alte Flows manuell löschen
+
+
+## VIS migrieren
+
+- Vis-Editor öffnen
+- Setup -> Projekt-Export/Import -> Normal exportieren
+- Entpacken der Zip-Datei und vis-views.json in einem Editor öffnen
+- Suche Ersetzen knx.0 mit openknx.0
+- Komprimieren Sie vis-views.json und vis-user.css in einer Zip-Datei
+- Setup -> Projekt-Export/Import -> Import
+- Zip-Datei in Drop-Bereich verschieben
+- Projektname = main
+- Projekt importieren
+
+## Skripte migrieren
+
+- Skripte öffnen
+- 3 Punkte -> Alle Skripte exportieren
+- Zip-Datei öffnen und den Ordner in einem Editor öffnen
+- Suche knx.0 durch openknx.0 ersetzen
+- alle geänderten Dateien in eine Zip-Datei komprimieren
+- 3 Punkte -> Skripte importieren
+- Zip-Datei in Drop-Bereich verschieben
 
 
 # Adapter configuration
