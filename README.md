@@ -59,6 +59,23 @@ https://forum.iobroker.net/topic/50352/test-adapter-openknx-0-1-x
 - Zip-Datei in Drop-Bereich verschieben
 
 
+## Grafana migrieren
+
+- Alle Dashboards durchgehen und Share/Teilen -> Exportieren -> In Datei speichern
+- im Texteditor knx.0 ersetzen. mit openknx.0
+- Um ein Dashboard zu importieren, klicken Sie im Seitenmenü auf das Symbol + und dann auf Importieren.
+- Von hier aus können Sie eine Dashboard-JSON-Datei hochladen
+- Wählen Sie Importieren (Überschreiben)
+  
+
+# English
+This adapter serves as communication interface between Iobroker and your KNX IP Gateway.
+The adapter allows to generate the iobroker communication objects automatically by importing an ETS group address xml export.  
+All generated communication objects are initially configured readable and writeable, values are fetched from the knx bus on adapter restart.
+
+# Installation
+The adapter is available in the latest / beta repository. If this is selected in the ioBroker system settings, the adapter can be searched in the adapter list under "openknx" and installed by clicking the + Symbol. An alternative is to install in expert mode via the Github symbol by selecting "from Github" and searching for openknx.
+
 # Adapter configuration
 ![settings](docs/pictures/setting.png)
 Press "save & close" or "save" to restart the adapter and take over the changes.
