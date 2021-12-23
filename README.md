@@ -10,10 +10,74 @@
 
 **Tests:** ![Test and Release](https://github.com/iobroker-community-adapters/ioBroker.openknx/workflows/Test%20and%20Release/badge.svg)
 
+# Deutsch
+Dieser Adapter dient als Kommunikationsschnittstelle zwischen ioBroker und einem KNX IP Gateway.
+Der Adapter ermöglicht die automatische Generierung der ioBroker Datenobjekte durch den Import eines ETS-Gruppenadressen-XML-Exports.
+Alle generierten Kommunikationsobjekte sind zunächst lesbar und schreibbar konfiguriert, Werte werden beim Neustart des Adapters vom knx-Bus geholt.
 
+# Installation
+Der Adapter ist im latest/beta Repository verfügbar. Wenn dieses in den ioBroker Systemeinstellung ausgewählt ist kann der Adapter in der Adapterliste unter "openknx" gesucht und installiert werden. Eine Alternative ist im Expertenmodus das installieren über das Github Symbol möglich in dem man "von Github" auswählt und nach openknx sucht.
+
+# Adapterkonfiguration
+In den Instanzeinstellung muss mindestens die Gateway IP eingetragen werden. Dann kann man ein ETS-Export XML Datei importiert werden. Die XML kann über ETS dem Fenster Gruppenadressen mit Rechtsklick auf den oberen Ebene der Gruppenadresse exportiert werden. GA die keinem DPT zugeordnet sind werden nicht importiert. Es handelt sich dabei um GA die keinem Kommunikationsobjekt in ETS zugeordnet sind. 
+
+# Nutzung
+ioBroker Datenpunkte können einfach mit ACK false/Nicht Bestätigt gesetzt werden. Komplexe Datenpunkt müssen im korrekt format wie zb: {"priority":0,"data":1} gesetzt werden
+
+# Fragen und Diskussion
+https://forum.iobroker.net/topic/50352/test-adapter-openknx-0-1-x
+
+# Adaptermigration
+
+## Node Red migrieren
+- Wählen Sie im Menü auf der rechten Seite Exportieren
+- Alle Flows auswählen, herunterladen
+- im Texteditor knx.0 ersetzen mit openknx.0
+- Menü auf der rechten Seite, Import auswählen
+- Geänderte Datei auswählen
+- im Dialog Flows auswählen (Subflows, Configuration-Nodes nur wenn sie betroffen sind) -> neue Tabs werden hinzugefügt
+- alte Flows manuell löschen
+
+
+## VIS migrieren
+
+- Vis-Editor öffnen
+- Setup -> Projekt-Export/Import -> Normal exportieren
+- Entpacken der Zip-Datei und vis-views.json in einem Editor öffnen
+- Suche Ersetzen knx.0 mit openknx.0
+- Komprimieren Sie vis-views.json und vis-user.css in einer Zip-Datei
+- Setup -> Projekt-Export/Import -> Import
+- Zip-Datei in Drop-Bereich verschieben
+- Projektname = main
+- Projekt importieren
+
+## Skripte migrieren
+
+- Skripte öffnen
+- 3 Punkte -> Alle Skripte exportieren
+- Zip-Datei öffnen und den Ordner in einem Editor öffnen
+- Suche knx.0 durch openknx.0 ersetzen
+- alle geänderten Dateien in eine Zip-Datei komprimieren
+- 3 Punkte -> Skripte importieren
+- Zip-Datei in Drop-Bereich verschieben
+
+
+## Grafana migrieren
+
+- Alle Dashboards durchgehen und Share/Teilen -> Exportieren -> In Datei speichern
+- im Texteditor knx.0 ersetzen. mit openknx.0
+- Um ein Dashboard zu importieren, klicken Sie im Seitenmenü auf das Symbol + und dann auf Importieren.
+- Von hier aus können Sie eine Dashboard-JSON-Datei hochladen
+- Wählen Sie Importieren (Überschreiben)
+  
+
+# English
 This adapter serves as communication interface between Iobroker and your KNX IP Gateway.
 The adapter allows to generate the iobroker communication objects automatically by importing an ETS group address xml export.  
 All generated communication objects are initially configured readable and writeable, values are fetched from the knx bus on adapter restart.
+
+# Installation
+The adapter is available in the latest / beta repository. If this is selected in the ioBroker system settings, the adapter can be searched in the adapter list under "openknx" and installed by clicking the + Symbol. An alternative is to install in expert mode via the Github symbol by selecting "from Github" and searching for openknx.
 
 # Adapter configuration
 ![settings](docs/pictures/setting.png)
@@ -23,7 +87,7 @@ This could take a while and can produce a higher load on your KNX-bus. This ensu
 Autoread is done on the first connection with the knx bus after an adapter start or restart, not on every knx reconnection.  
 After adapter installation, open the adapter configuration. Fill in:
 #### KNX Gateway IP
-IP of your KNX/Lan GW
+IP of your KNX IP gateway.
 
 ##### Port
 this is normally port 3671 of the KNX IP gateway.
@@ -35,7 +99,7 @@ Fill in physical address of the gateway in the format 1/1/1.
 If checked, the import will skip overwriting existing communication objects.
 
 #### GA XML import
-1. In ETS go to Group Addresses, select export group addresse and select XML export in latest format version
+1. In ETS go to Group Addresses, select export group address and select XML export in latest format version
 2. upload your ETS Export XML in the adapter via the GA XML-Import dialog
 3. Import will immediatelly start after file selection and give a status report after completion.  
 After the successful import a message shows how much objects where recognized. More detailed information could be found in the log.
@@ -43,36 +107,57 @@ After the successful import a message shows how much objects where recognized. M
 #### Frames per sec
 This settings protects the KNX bus from data flooding by limiting data frames to a certain rate. Not sent frames are put into a fifo buffer.
 
-# Convert vis from knx to openknx
-### Replace Object Id in the Vis 
+# adapter migration
 
-1. Open Vis Editor
-2. Setup -> Projekt-Export/import -> Exportieren normal
-3. Open Zip File and vis-views.json in an editor
-4. Search Replace knx.0 with openknx.0
-5. Compress vis-views.json and vis-user.css in a zip file
-6. Setup -> Projekt-Export/import -> Import
-7. Move zip file in Drop Area 
-8. Projektname = main
-9. Import project
+## migrate Node Red
+- in right side menu, select Export
+- select All Flows, Download
+- in text editor replace knx.0. with openknx.0.
+- right side menu, select import
+- select changed file
+- in the dialog select Flows (Subflows, Configuration-Nodes only if they are affected) -> new tabs get added
+- delete old flows manually
 
-### Replace Object Id in the Skripts 
 
-1. Open Scripts
-2. 3 dots -> Export all scripts
-3. Open Zip File and open the folder in a editor
-4. Search Replace knx.0 with openknx.0
-5. compress all changed files in a zip file
-6. 3 dots ->Import scripts
-7. Move zip file in Drop Area
+## migrate VIS
+- Open Vis Editor
+- Setup -> Projekt-Export/import -> Exportieren normal
+- Open Zip File and vis-views.json in an editor
+- Search Replace knx.0. with openknx.0.
+- Compress vis-views.json and vis-user.css in a zip file
+- Setup -> Projekt-Export/import -> Import
+- Move zip file in Drop Area
+- Projektname = main
+- Import project
 
-### Use aliases 
-https://www.iobroker.net/#de/documentation/dev/aliases.md
-  
+## migrate Scripts
+- Open Scripts
+- 3 dots -> Export all scripts
+- Open Zip File and open the folder in a editor
+- Search Replace knx.0 with openknx.0
+- compress all changed files in a zip file
+- 3 dots ->Import scripts
+- Move zip file in Drop Area
 
+
+## migrate Grafana
+- go through all dashboards and select share - export - save to file
+- in text editor replace knx.0. with openknx.0.
+- To import a dashboard click the + icon in the side menu, and then click Import.
+- From here you can upload a dashboard JSON file
+- select Import (Overwrite)
 
 # howto use the adapter & basic concept
-todo
+
+## ACK flags
+Application shall not set ack flag, application is notified from this adapter by the ack flag if data is updated.
+KNX Stack sets the ack flag of the linked IoBroker object on receiption of a group address.
+Sent frames on KNX do not result into a ack of the writing object.
+
+## Node Red complex datatype example
+Create a function node that connects to a ioBroker out node that connects with a KNX object of DPT2.
+  msg.payload =  {"priority":1 ,"data":0};
+  return msg;
 
 # log level
 Enable expert mode to enable switching between different log levels. Default loglevel is info.  
@@ -99,7 +184,7 @@ Autoread is set to false where it is clear from the DPT that this is a trigger s
         "write": true                                       //default true, if set change on object is triggering knx write, succ. write sets then ack flag to true
     },
     "native": {                                             //values here can be interpreted by openknx adapter
-        "address": "0/1/2",                                 //knx address
+        "address": "0/1/2",                                 //knx group address
         "answer_groupValueResponse": false,                 //default false, if set to true adapter responds with value on GroupValue_Read
         "autoread": true,                                   //default true for non trigger signals , adapter sends a GroupValue_read on start to sync its states
         "bitlength": 1,                                     //size ob knx data, derived from dpt
@@ -128,7 +213,7 @@ Where number datatype is used please note that interface values can be scaled.
     setState(
         id: string,                                     // object path
         state: State | StateValue | SettableState,
-        ack: false,                                     //set to false and will be set to true by KNX stack on send confirmation
+        ack: false,                                     //has to be set to false by convention
         c: 'GroupValue_Read'                            //optional comment, set this value to trigger a bus read to this object, given StateValue is ignored
     ): void;
 
@@ -167,7 +252,7 @@ Where number datatype is used please note that interface values can be scaled.
 | rest      | string                 | 00010203..                                                                                           | -                                         |
 
 
-Only time and date information is exchanged with KNX time based datatypes, e.g. DPT-19 has unsupported fields for signal quality  
+Only time and date information is exchanged with KNX time based datatypes, e.g. DPT-19 has unsupported fields for signal quality.  
 
 Object send and receive values are of type boolean DPT1), number (scaled, or unscaled), string.  
 DPT 2 'expects a object {"priority":0,"data":1}' receive provides a strinified object of same type.  
@@ -180,7 +265,7 @@ DPT10 is time (hh:mm:ss) plus "day of week". This concept is unavailable in JS, 
 DPT11 is date (dd/mm/yyyy): the same applies for DPT11, you'll need to ignore the time part.
 
 #### group value write
-send is triggered by writing a communication object.
+Sending is triggered by writing a communication object.
 Communication object is triggered when a write frame is received on the bus.
 
 #### group value read
