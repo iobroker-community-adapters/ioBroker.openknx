@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "openknx",
-        "version": "0.1.9",
+        "version": "0.1.10",
         "news": {
             "0.1.9": {
                 "en": "Test Release",
