@@ -140,7 +140,7 @@ class openknx extends utils.Adapter {
             });
         } else {
             //setObjet to overwrite all existing settings, default
-            this.setForeignObject(this.mynamespace + "." + objects[index]._id, objects[index], (err, obj) => {
+            this.setObject(this.mynamespace + "." + objects[index]._id, objects[index], (err, obj) => {
                 if (err) {
                     this.log.warn("error store Object " + objects[index]._id + (err ? " " + err : ""));
                 }
@@ -185,11 +185,13 @@ class openknx extends utils.Adapter {
             //before object check
             ret = val.toString("hex");
         } else if (typeof val === "object") {
-            ret = JSON.stringify(val);
+            //keep as object
+            ret = val;
         } else if (typeof val === "string") {
-            //use as is
+            //keep as string
+            ret = val;
         } else {
-            //both can handle number and boolean
+            //keep boolean and number
             ret = val;
         }
         return ret;
@@ -221,6 +223,8 @@ class openknx extends utils.Adapter {
         }
 
         if (state.ack) {
+            //ack flag is responsible to set act flag, only continue when application triggered a change without ack flag
+
             //enable this for system testing
             //this.interfaceTest(id, state);
 
@@ -239,17 +243,25 @@ class openknx extends utils.Adapter {
         let knxVal;
         let rawVal;
 
+        //check for boolean and ensure the correct datatype
+        if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "boolean") { 
+            state.val = state.val ? true: false
+        }
         //convert val into object for certain dpts
         if (tools.isDateDPT(dpt)) {
             //before composite check, date is also composite
             knxVal = new Date(state.val);
         } else if (this.gaList.getDataById(id).native.valuetype == "composite") {
-            try {
-                knxVal = JSON.parse(state.val);
-            } catch (e) {
-                this.log.warn("stateChange: unsupported value format " + state.val + " for " + ga);
-                return;
-            }
+            //input from IOB is either object or string in object notation, type of this conversion is object
+            if (typeof state.val == 'object') {
+                knxVal = state.val;
+            } else
+                try {
+                    knxVal = JSON.parse(state.val);
+                } catch (e) {
+                    this.log.warn("stateChange: unsupported value format " + state.val + " for " + ga);
+                    return;
+                }
         } else if (tools.isStringDPT(dpt)) {
             knxVal = state.val;
         } else if (tools.isUnknownDPT(dpt)) {
@@ -257,17 +269,17 @@ class openknx extends utils.Adapter {
             //bitlength is the buffers bytelength * 8.
             rawVal = Buffer.from(state.val, "hex");
             isRaw = true;
-            this.log.warn("Missing implementation for unhandeled DPT " + dpt + ", assuming raw values");
+            this.log.debug("Unhandeled DPT " + dpt + ", assuming raw value");
         } else {
             knxVal = state.val;
         }
 
         if (state.c == "GroupValue_Read") {
             //interface to trigger GrouValue_Read is this comment
-            this.log.debug("Outgoing GroupValue_Read to " + ga + " value " + knxVal);
+            this.log.debug("Outgoing GroupValue_Read to " + ga + " value " + JSON.stringify(knxVal));
             this.knxConnection.read(ga);
         } else if (this.gaList.getDataById(id).common.write) {
-            this.log.debug("Outgoing GroupValue_Write to " + ga + " value " + (isRaw ? rawVal : knxVal) + " from " + id);
+            this.log.debug("Outgoing GroupValue_Write to " + ga + " value " + (isRaw ? rawVal : JSON.stringify(knxVal)) + " from " + id);
             if (isRaw) {
                 this.knxConnection.writeRaw(ga, rawVal);
             } else {
@@ -310,14 +322,7 @@ class openknx extends utils.Adapter {
                                     );
                                     this.gaList.setDpById(key, dp);
                                     cnt_withDPT++;
-                                    this.log.debug(
-                                        "Datapoint " +
-                                            (this.gaList.getDataById(key).native.autoread ? "autoread " : "") +
-                                            "created and GroupValueWrite sent: " +
-                                            this.gaList.getDataById(key).native.address +
-                                            " " +
-                                            key
-                                    );
+                                    this.log.debug(`Datapoint ${(this.gaList.getDataById(key).native.autoread ? "autoread " : "")} created and GroupValueWrite sent: ${this.gaList.getDataById(key).native.address} ${key}`);
                                 } catch (e) {
                                     this.log.warn("could not create KNX Datapoint for " + key + " with error: " + e);
                                 }
@@ -365,7 +370,7 @@ class openknx extends utils.Adapter {
                     switch (evt) {
                         case "GroupValue_Read":
                             //fetch val from addressed object and write on bus if configured to answer
-                            this.getForeignState(this.gaList.getIdByAddress(dest), (err, state) => {
+                            this.getState(this.gaList.getIdByAddress(dest), (err, state) => {
                                 if (state) {
                                     this.log.debug("Incoming GroupValue_Read from " + src + " to " + "(" + dest + ") " + this.gaList.getDataByAddress(dest).common.name);
                                     if (this.gaList.getDataByAddress(dest).native.answer_groupValueResponse) {
@@ -383,7 +388,7 @@ class openknx extends utils.Adapter {
                                 val: convertedVal,
                                 ack: true,
                             });
-                            this.log.debug("Incoming GroupValue_Response from " + src + " to " + "(" + dest + ") " + this.gaList.getDataByAddress(dest).common.name + ": " + convertedVal);
+                            this.log.debug(`Incoming GroupValue_Response from ${src} to (${dest}) ${this.gaList.getDataByAddress(dest).common.name} :  ${convertedVal}`);
                             break;
 
                         case "GroupValue_Write":
@@ -391,16 +396,8 @@ class openknx extends utils.Adapter {
                                 val: convertedVal,
                                 ack: true,
                             });
-                            this.log.debug(
-                                "Incoming GroupValue_Write ga: " +
-                                    dest +
-                                    "  val: " +
-                                    convertedVal +
-                                    " dpt: " +
-                                    this.gaList.getDataByAddress(dest).native.dpt +
-                                    " to Object: " +
-                                    this.gaList.getIdByAddress(dest)
-                            );
+                            this.log.debug(`Incoming GroupValue_Write ga: ${dest} val: ${convertedVal}  dpt: ${this.gaList.getDataByAddress(dest).native.dpt} to Object: ${this.gaList.getIdByAddress(dest)}`);
+
                             break;
 
                         default:
@@ -421,7 +418,7 @@ class openknx extends utils.Adapter {
             const out = outpath + id.replace(inpath, "");
             this.setState(out, {
                 val: state.val,
-                ack: true,
+                ack: false,
             });
         }
     }
@@ -499,14 +496,13 @@ class DoubleKeyedMap {
             index: -1,
             data: this.data,
             next() {
-                return ++this.index < this.data.size
-                    ? {
-                          done: false,
-                          value: Array.from(this.data.keys())[this.index],
-                      }
-                    : {
-                          done: true,
-                      };
+
+                return ++this.index < this.data.size ? {
+                    done: false,
+                    value: Array.from(this.data.keys())[this.index],
+                } : {
+                    done: true,
+                };
             },
         };
     };

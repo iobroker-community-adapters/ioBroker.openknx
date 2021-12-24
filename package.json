@@ -1,6 +1,6 @@
 {
     "name": "iobroker.openknx",
-    "version": "0.1.9",
+    "version": "0.1.10",
     "description": "ioBroker knx Adapter",
     "author": "boellner",
     "homepage": "https://github.com/iobroker-community-adapters/ioBroker.openknx.git",
@@ -28,8 +28,10 @@
     },
     "dependencies": {
         "@iobroker/adapter-core": "^2.5.1",
+        "deep-clone": "^3.0.3",
         "knx": "2.4.1",
         "similarity": "^1.2.1",
+        "test": "^0.6.0",
         "underscore": "^1.8.3",
         "xmldom": "^0.1.27",
         "xpath": "0.0.23"
@@ -54,6 +56,7 @@
         "proxyquire": "^2.1.3",
         "sinon": "^12.0.1",
         "sinon-chai": "^3.7.0",
+        "testing": "^2.0.1",
         "typescript": "~4.4.4"
     },
     "main": "main.js",
@@ -70,7 +73,7 @@
         "test:js": "mocha --config test/mocharc.custom.json \"{!(node_modules|test)/**/*.test.js,*.test.js,test/**/test!(PackageFiles|Startup).js}\"",
         "test:package": "mocha test/package --exit",
         "test:unit": "mocha test/unit --exit",
-        "test:integration": "mocha test/integration --exit",
+        "test:integration": "mocha test/integration --exit --timeout 15000",
         "test": "npm run test:js && npm run test:package",
         "test:myunittest": "mocha test/test --exit",
         "check": "tsc --noEmit -p tsconfig.check.json",
