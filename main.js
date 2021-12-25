@@ -236,8 +236,8 @@ class openknx extends utils.Adapter {
         let rawVal;
 
         //check for boolean and ensure the correct datatype
-        if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "boolean") { 
-            state.val = state.val ? true: false
+        if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "boolean") {
+            state.val = state.val ? true: false;
         }
         //convert val into object for certain dpts
         if (tools.isDateDPT(dpt)) {
@@ -245,7 +245,7 @@ class openknx extends utils.Adapter {
             knxVal = new Date(state.val);
         } else if (this.gaList.getDataById(id).native.valuetype == "composite") {
             //input from IOB is either object or string in object notation, type of this conversion is object
-            if (typeof state.val == 'object') {
+            if (typeof state.val == "object") {
                 knxVal = state.val;
             } else
                 try {
@@ -483,7 +483,7 @@ class DoubleKeyedMap {
     }
 
     //key value is id
-    [Symbol.iterator] = () => {
+    [Symbol.iterator] () {
         return {
             index: -1,
             data: this.data,
@@ -497,7 +497,7 @@ class DoubleKeyedMap {
                 };
             },
         };
-    };
+    }
 }
 
 if (require.main !== module) {
