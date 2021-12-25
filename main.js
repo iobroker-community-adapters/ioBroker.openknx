@@ -450,6 +450,9 @@ class openknx extends utils.Adapter {
                         }
                     }
                     this.startKnxStack();
+
+                    //test
+                    projectImport.findStatusGAs(this, this.gaList);
                 }
             }
         );

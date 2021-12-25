@@ -31,7 +31,6 @@
         "deep-clone": "^3.0.3",
         "knx": "2.4.1",
         "similarity": "^1.2.1",
-        "test": "^0.6.0",
         "underscore": "^1.8.3",
         "xmldom": "^0.1.27",
         "xpath": "0.0.23"
