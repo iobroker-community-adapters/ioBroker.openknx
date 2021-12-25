@@ -33,6 +33,26 @@ class openknx extends utils.Adapter {
         this.on("unload", this.onUnload.bind(this));
 
         this.mynamespace = this.namespace;
+
+        //redirect log from knx.js to adapter log
+        console.log = (args) => {
+            if (args && typeof args === "string") {
+                if (args.indexOf("deferring outbound_TUNNELING_REQUEST") !== -1) {
+                    return;
+                }
+                if (args.indexOf("[debug]") !== -1) {
+                    this.log.debug(args);
+                } else if (args.indexOf("[info]") !== -1) {
+                    this.log.info(args);
+                } else if (args.indexOf("[warn]") !== -1) {
+                    this.log.warn(args);
+                } else if (args.indexOf("[error]") !== -1) {
+                    this.log.error(args);
+                } else {
+                    this.log.info(args);
+                }
+            }
+        };
     }
 
     /**
@@ -235,7 +255,7 @@ class openknx extends utils.Adapter {
 
         //check for boolean and ensure the correct datatype
         if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "boolean") {
-            state.val = state.val ? true: false;
+            state.val = state.val ? true : false;
         }
         //convert val into object for certain dpts
         if (tools.isDateDPT(dpt)) {
@@ -312,7 +332,11 @@ class openknx extends utils.Adapter {
                                     );
                                     this.gaList.setDpById(key, dp);
                                     cnt_withDPT++;
-                                    this.log.debug(`Datapoint ${(this.gaList.getDataById(key).native.autoread ? "autoread " : "")} created and GroupValueWrite sent: ${this.gaList.getDataById(key).native.address} ${key}`);
+                                    this.log.debug(
+                                        `Datapoint ${this.gaList.getDataById(key).native.autoread ? "autoread " : ""} created and GroupValueWrite sent: ${
+                                            this.gaList.getDataById(key).native.address
+                                        } ${key}`
+                                    );
                                 } catch (e) {
                                     this.log.warn("could not create KNX Datapoint for " + key + " with error: " + e);
                                 }
@@ -384,7 +408,9 @@ class openknx extends utils.Adapter {
                                 val: convertedVal,
                                 ack: true,
                             });
-                            this.log.debug(`Inbound GroupValue_Write ${dest} val: ${convertedVal}  dpt: ${this.gaList.getDataByAddress(dest).native.dpt} to Object: ${this.gaList.getIdByAddress(dest)}`);
+                            this.log.debug(
+                                `Inbound GroupValue_Write ${dest} val: ${convertedVal}  dpt: ${this.gaList.getDataByAddress(dest).native.dpt} to Object: ${this.gaList.getIdByAddress(dest)}`
+                            );
 
                             break;
 
@@ -479,18 +505,21 @@ class DoubleKeyedMap {
     }
 
     //key value is id
-    [Symbol.iterator] () {
+    [Symbol.iterator]() {
         return {
             index: -1,
             data: this.data,
             next() {
-
-                return ++this.index < this.data.size ? {
-                    done: false,
-                    value: Array.from(this.data.keys())[this.index],
-                } : {
-                    done: true,
-                };
+                if (++this.index < this.data.size) {
+                    return {
+                        done: false,
+                        value: Array.from(this.data.keys())[this.index],
+                    };
+                } else {
+                    return {
+                        done: true,
+                    };
+                }
             },
         };
     }
