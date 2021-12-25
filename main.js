@@ -48,6 +48,8 @@ class openknx extends utils.Adapter {
                     this.log.warn(args);
                 } else if (args.indexOf("[error]") !== -1) {
                     this.log.error(args);
+                }else if (args.indexOf("[trace]") !== -1) {
+                    this.log.silly(args);
                 } else {
                     this.log.info(args);
                 }
