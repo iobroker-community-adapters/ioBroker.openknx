@@ -11,7 +11,6 @@ const utils = require("@iobroker/adapter-core");
 const projectImport = require(__dirname + "/lib/projectImport");
 
 const knx = require(__dirname + "/lib/knx"); //todo copy for the moment
-const _ = require("underscore");
 const tools = require("./lib/tools.js");
 
 class openknx extends utils.Adapter {
@@ -155,7 +154,6 @@ class openknx extends utils.Adapter {
     warnDuplicates(objects) {
         const arr = [];
         const duplicates = [];
-        let message;
 
         for (const object of objects) {
             arr.push(object._id);
@@ -167,17 +165,17 @@ class openknx extends utils.Adapter {
             }
         }
 
-        message = "Object with identical Group Address name not created: " + duplicates;
+        const message = "Object with identical Group Address name not created: " + duplicates;
         if (duplicates.length) {
             this.log.warn(message);
         }
         return duplicates.length ? message : null;
     }
 
-    //obj to string and date to number for iobroker, convert to object for knx
+    //obj to string and date to number for iobroker from knx stack
     convertType(val) {
         let ret;
-        //convert, state value for iobroker to set has to be one of type "string", "number", "boolean" and not type "object"
+        //convert, state value for iobroker to set has to be one of type "string", "number", "boolean" and additionally type "object"
         if (val instanceof Date) {
             //convert Date to number
             ret = Number(new Date(val));
@@ -268,10 +266,10 @@ class openknx extends utils.Adapter {
 
         if (state.c == "GroupValue_Read") {
             //interface to trigger GrouValue_Read is this comment
-            this.log.debug("Outgoing GroupValue_Read to " + ga + " value " + JSON.stringify(knxVal));
+            this.log.debug("Outbound GroupValue_Read to " + ga + " value " + JSON.stringify(knxVal));
             this.knxConnection.read(ga);
         } else if (this.gaList.getDataById(id).common.write) {
-            this.log.debug("Outgoing GroupValue_Write to " + ga + " value " + (isRaw ? rawVal : JSON.stringify(knxVal)) + " from " + id);
+            this.log.debug("Outbound GroupValue_Write to " + ga + " value " + (isRaw ? rawVal : JSON.stringify(knxVal)) + " from " + id);
             if (isRaw) {
                 this.knxConnection.writeRaw(ga, rawVal);
             } else {
@@ -348,7 +346,7 @@ class openknx extends utils.Adapter {
 
                     /* some checks */
                     if (!this.gaList.getDpByAddress(dest)) {
-                        this.log.warn("Ignoring " + evt + " received on unknown GA: " + dest);
+                        this.log.warn("Ignoring " + evt + " received on unknown ga: " + dest);
                         return;
                     }
 
@@ -364,11 +362,9 @@ class openknx extends utils.Adapter {
                             //fetch val from addressed object and write on bus if configured to answer
                             this.getState(this.gaList.getIdByAddress(dest), (err, state) => {
                                 if (state) {
-                                    this.log.debug("Incoming GroupValue_Read from " + src + " to " + "(" + dest + ") " + this.gaList.getDataByAddress(dest).common.name);
+                                    this.log.debug("Inbound GroupValue_Read from " + src + " to " + "(" + dest + ") " + this.gaList.getDataByAddress(dest).common.name);
                                     if (this.gaList.getDataByAddress(dest).native.answer_groupValueResponse) {
-                                        //https://bitbucket.org/ekarak/knx.js/issues/83/send-groupvalue_response
-                                        //workaround, send out a write instead response
-                                        this.knxConnection.write(dest, state.val, this.gaList.getDataByAddress(dest).native.dpt);
+                                        this.knxConnection.respond(dest, state.val, this.gaList.getDataByAddress(dest).native.dpt);
                                         this.log.debug("responding with value " + state.val);
                                     }
                                 }
@@ -380,7 +376,7 @@ class openknx extends utils.Adapter {
                                 val: convertedVal,
                                 ack: true,
                             });
-                            this.log.debug(`Incoming GroupValue_Response from ${src} to (${dest}) ${this.gaList.getDataByAddress(dest).common.name} :  ${convertedVal}`);
+                            this.log.debug(`Inbound GroupValue_Response from ${src} to (${dest}) ${this.gaList.getDataByAddress(dest).common.name} :  ${convertedVal}`);
                             break;
 
                         case "GroupValue_Write":
@@ -388,7 +384,7 @@ class openknx extends utils.Adapter {
                                 val: convertedVal,
                                 ack: true,
                             });
-                            this.log.debug(`Incoming GroupValue_Write ga: ${dest} val: ${convertedVal}  dpt: ${this.gaList.getDataByAddress(dest).native.dpt} to Object: ${this.gaList.getIdByAddress(dest)}`);
+                            this.log.debug(`Inbound GroupValue_Write ${dest} val: ${convertedVal}  dpt: ${this.gaList.getDataByAddress(dest).native.dpt} to Object: ${this.gaList.getIdByAddress(dest)}`);
 
                             break;
 
