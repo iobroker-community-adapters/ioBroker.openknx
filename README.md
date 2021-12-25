@@ -274,11 +274,10 @@ Communication object is triggered when a write frame is received on the bus.
 
 #### group value read
 Sending can be triggered by writing a communicaton object with comment.
-Receiving, if configured will trigger a group value response (limitation: group value write at the moment) of the actual c.o. value, see below
+Receiving, if configured will trigger a group value response (limitation: group value write at the moment) of the actual c.o. value, see below.
 
 #### group value response
-Sending a GroupValue_Response not yet fully supported. Emulated if response setting is set, then adapter writes a group value write.
-Receiving will update the value of the iobroker object in read is set to true.
+If answer_groupValueResponse is set to true, then the adapter will reply with a GroupValue_response to a previously received GroupValue_read request.
 
 # Features
 * fast import of groupaddresses in XML format
@@ -290,7 +289,7 @@ Receiving will update the value of the iobroker object in read is set to true.
 * free open source
 
 # Known Problems
-- sends write instead of GroupValue_Response on GroupValue_Read
+- 
 
 # Limitations
 - only three level group addresses are supported
@@ -298,6 +297,7 @@ Receiving will update the value of the iobroker object in read is set to true.
 ## Changelog
 ### 0.1.11 (2021-12-..)
 * feature: remove more scene DPTs from default autoread
+* feature: sends GroupValue_Response on GroupValue_Read if configured
 
 ### 0.1.10 (2021-12-24)
 * fix: interface to write objects corrected
