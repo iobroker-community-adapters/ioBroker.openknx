@@ -366,9 +366,7 @@ class openknx extends utils.Adapter {
                                 if (state) {
                                     this.log.debug("Inbound GroupValue_Read from " + src + " to " + "(" + dest + ") " + this.gaList.getDataByAddress(dest).common.name);
                                     if (this.gaList.getDataByAddress(dest).native.answer_groupValueResponse) {
-                                        //https://bitbucket.org/ekarak/knx.js/issues/83/send-groupvalue_response
-                                        //workaround, send out a write instead response
-                                        this.knxConnection.write(dest, state.val, this.gaList.getDataByAddress(dest).native.dpt);
+                                        this.knxConnection.respond(dest, state.val, this.gaList.getDataByAddress(dest).native.dpt);
                                         this.log.debug("responding with value " + state.val);
                                     }
                                 }
