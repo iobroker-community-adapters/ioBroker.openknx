@@ -11,7 +11,6 @@ const utils = require("@iobroker/adapter-core");
 const projectImport = require(__dirname + "/lib/projectImport");
 
 const knx = require(__dirname + "/lib/knx"); //todo copy for the moment
-const _ = require("underscore");
 const tools = require("./lib/tools.js");
 
 class openknx extends utils.Adapter {
@@ -155,7 +154,6 @@ class openknx extends utils.Adapter {
     warnDuplicates(objects) {
         const arr = [];
         const duplicates = [];
-        let message;
 
         for (const object of objects) {
             arr.push(object._id);
@@ -167,7 +165,7 @@ class openknx extends utils.Adapter {
             }
         }
 
-        message = "Object with identical Group Address name not created: " + duplicates;
+        const message = "Object with identical Group Address name not created: " + duplicates;
         if (duplicates.length) {
             this.log.warn(message);
         }
@@ -236,8 +234,8 @@ class openknx extends utils.Adapter {
         let rawVal;
 
         //check for boolean and ensure the correct datatype
-        if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "boolean") { 
-            state.val = state.val ? true: false
+        if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "boolean") {
+            state.val = state.val ? true: false;
         }
         //convert val into object for certain dpts
         if (tools.isDateDPT(dpt)) {
@@ -245,7 +243,7 @@ class openknx extends utils.Adapter {
             knxVal = new Date(state.val);
         } else if (this.gaList.getDataById(id).native.valuetype == "composite") {
             //input from IOB is either object or string in object notation, type of this conversion is object
-            if (typeof state.val == 'object') {
+            if (typeof state.val == "object") {
                 knxVal = state.val;
             } else
                 try {
@@ -481,7 +479,7 @@ class DoubleKeyedMap {
     }
 
     //key value is id
-    [Symbol.iterator] = () => {
+    [Symbol.iterator] () {
         return {
             index: -1,
             data: this.data,
@@ -495,7 +493,7 @@ class DoubleKeyedMap {
                 };
             },
         };
-    };
+    }
 }
 
 if (require.main !== module) {
