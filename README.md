@@ -99,6 +99,7 @@ Fill in physical address of the gateway in the format 1/1/1.
 If checked, the import will skip overwriting existing communication objects.
 
 #### GA XML import
+![ETS export](docs/pictures/exportGA.png)
 1. In ETS go to Group Addresses, select export group address and select XML export in latest format version
 2. upload your ETS Export XML in the adapter via the GA XML-Import dialog
 3. Import will immediatelly start after file selection and give a status report after completion.  
@@ -108,7 +109,6 @@ After the successful import a message shows how much objects where recognized. M
 This settings protects the KNX bus from data flooding by limiting data frames to a certain rate. Not sent frames are put into a fifo buffer.
 
 # adapter migration
-
 ## migrate Node Red
 - in right side menu, select Export
 - select All Flows, Download
@@ -117,7 +117,6 @@ This settings protects the KNX bus from data flooding by limiting data frames to
 - select changed file
 - in the dialog select Flows (Subflows, Configuration-Nodes only if they are affected) -> new tabs get added
 - delete old flows manually
-
 
 ## migrate VIS
 - Open Vis Editor
@@ -164,7 +163,7 @@ Enable expert mode to enable switching between different log levels. Default log
 ![loglevel](docs/pictures/loglevel.png)
 
 # IOBroker Communication Object description
-
+IoBroker defines Objects to hold communication interfaces settings.  
 GA import generates a communication object folder structure following the ga main-group/middle-group scheme. Each groupaddress is an oject with following automatically generated data.
 
 IoBroker state roles (https://github.com/ioBroker/ioBroker/blob/master/doc/STATE_ROLES.md) have value 'state' by default. Some more granular values are derieved from the DPT, for example Date or Switch.
@@ -202,14 +201,13 @@ Autoread is set to false where it is clear from the DPT that this is a trigger s
     "ts": 1638913951639
     }
 
-
 # Adapter communication Interface Description
 Handeled DPTs are: 1-21,232,237,238  
 Unhandeled DPTs are written as raw buffers, the interface is a sequencial string of hexadecimal numbers. For example write '0102feff' to send values 0x01 0x02 0xfe 0xff on the bus. 
 Where number datatype is used please note that interface values can be scaled.
 
 #### API call
-
+IoBroker defines States as communication interface.
     setState(
         id: string,                                     // object path
         state: State | StateValue | SettableState,
@@ -217,10 +215,7 @@ Where number datatype is used please note that interface values can be scaled.
         c: 'GroupValue_Read'                            //optional comment, set this value to trigger a bus read to this object, given StateValue is ignored
     ): void;
 
-
-
 #### Description of all DPTs
-
 | KNX DPT   | javascript datatype    | special values                                                                                       | value range                               |
 | --------- | ---------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------- |
 | DPT-1     | boolean                |                                                                                                      | false, true                               |
@@ -250,7 +245,6 @@ Where number datatype is used please note that interface values can be scaled.
 | DPT-11    | number for Date Object |                                                                                                      | -                                         |
 | DPT-19    | number for Date Object |                                                                                                      | -                                         |
 | rest      | string                 | 00010203..                                                                                           | -                                         |
-
 
 Only time and date information is exchanged with KNX time based datatypes, e.g. DPT-19 has unsupported fields for signal quality.  
 
@@ -340,7 +334,6 @@ Receiving will update the value of the iobroker object in read is set to true.
 * (boellner) feature: import ga xml
 
 ## License
-
 					GNU GENERAL PUBLIC LICENSE
 ==========================
 Copyright (c) 2021 boellner
