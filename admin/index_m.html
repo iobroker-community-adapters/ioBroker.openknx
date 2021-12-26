@@ -100,7 +100,7 @@
     </style>
 
     <script type="text/javascript">
-        var etsFile = '<input type="file" id="etsFile" style="display: inline-block"/>';
+        var knxprojFile = '<input type="file" id="knxprojFile" style="display: inline-block"/>';
 
         // This will be called by the admin adapter when the settings page loads
         function load(settings, onChange) {
@@ -198,10 +198,10 @@
             //if not alive disable buttons
             getIsAdapterAlive(function (isAlive) {
                 if (isAlive) {
-                    $("#etsFile").change(fileHandler);
+                    $("#knxprojFile").change(fileHandler);
                     $("#createAlias").change(aliasHandler);
                 } else {
-                    $("#etsFile").prop("disabled", true);
+                    $("#knxprojFile").prop("disabled", true);
                     $("#createAlias").prop("disabled", true);
                     $(".file-field .btn").addClass("disabled");
                     $(".file-field .file-path").prop("disabled", true);
@@ -238,12 +238,15 @@
 
         function fileHandler(event) {
             event.preventDefault();
+
             var file = event.dataTransfer ? event.dataTransfer.files[0] : event.target.files[0];
+
             if (!file) {
                 console.warn("invalid file object");
                 return false;
             }
-            $("#etsFile").prop("disabled", true);
+
+            $("#knxprojFile").prop("disabled", true);
             $("#createAlias").prop("disabled", true);
             $(".file-field .btn").addClass("disabled");
             $(".file-field .file-path").prop("disabled", true);
@@ -252,8 +255,8 @@
                 var reader = new FileReader();
                 reader.addEventListener("load", function readFile(event) {
 
-                    $("#etsFile").replaceWith($(etsFile));
-                    $("#etsFile").change(fileHandler);
+                    $("#knxprojFile").replaceWith($(knxprojFile));
+                    $("#knxprojFile").change(fileHandler);
 
                     showToast(null, _("Import started..."), null, 3000);
                     $("#progress").show();
@@ -271,7 +274,7 @@
                             showToast(null, _("Restarting adapter"), null, 10000);
                         }
 
-                        $("#etsFile").prop("disabled", true);
+                        $("#knxprojFile").prop("disabled", true);
                         $("#createAlias").prop("disabled", true);
                         $(".file-field .btn").addClass("disabled");
                         $(".file-field .file-path").prop("disabled", true);
@@ -294,7 +297,8 @@
         }
 
         function aliasHandler() {
-            $("#etsFile").prop("disabled", true);
+
+            $("#knxprojFile").prop("disabled", true);
             $("#createAlias").prop("disabled", true);
             $(".file-field .btn").addClass("disabled");
             $(".file-field .file-path").prop("disabled", true);
@@ -308,7 +312,7 @@
                     sendTo(null, "reset", null);
                     showToast(null, _("Restarting adapter"), null, 10000);
                 }
-                $("#etsFile").prop("disabled", true);
+                $("#knxprojFile").prop("disabled", true);
                 $("#createAlias").prop("disabled", true);
                 $(".file-field .btn").addClass("disabled");
                 $(".file-field .file-path").prop("disabled", true);
@@ -344,38 +348,12 @@
             var x = document.getElementById("configDialog");
             x.style.display = "block";
         }
-
-        function showExtendedDialog() {
-            disableAllDialogs();
-            $('.dialog-extended').addClass('tab-active');
-            var x = document.getElementById("extendedDialog");
-            x.style.display = "block";
-        }
-
     </script>
 </head>
 
 <body>
     <!-- you have to put your config page in a div with id adapter-container -->
-
     <div class="m adapter-container">
-
-        <nav>
-            <div class="row">
-                <div class="col s12 m4 l2">
-                    <img src="openknx.png" class="logo">
-                </div>
-            </div>
-        </nav>
-        <div class="row">
-            <ul class="tabs">
-                <li class="tab col s5 dialog-config c-tab translate"><a onclick="showConfigDialog()">Basic
-                        configuration</a></li>
-                <li class="tab col s5 dialog-extended c-tab translate"><a onclick="showExtendedDialog()">Extended
-                        configuration (beta)</a></li>
-            </ul>
-        </div>
-
         <div id="configDialog" class="dialog">
             <div class="card">
                 <div class="card-content">
@@ -384,77 +362,89 @@
                             <input class="value" id="gwip" type="text" />
                             <label for="gwip" class="translate">Gateway IP</label>
                         </div>
-                        <div class="col s6 l2 input-field">
+                        <div class="col s6 l1 input-field">
                             <input type="number" min="1025" max="65535" class="value" id="gwipport" />
                             <label for="gwipport" class="translate">Port</label>
                         </div>
-                        <div class="col s6 l2 input-field">
+                        <div class="col s6 l1 input-field">
                             <input id="frameInterval" class="value" type="number" min="20" max="1000" />
                             <label for="frameInterval" class="translate">Frames per second</label>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12 l5 input-field">
+                  
+                        <div class="col s12 l3 input-field">
                             <select class="value" id="bind"></select>
                             <label class="translate" for="bind">local network interface</label>
                         </div>
-                        <div class="col s12 l2 input-field">
+                        <div class="col s12 l1 input-field">
                             <input class="value" id="eibadr" type="text" />
                             <label for="eibadr" class="translate">physical KNX address</label>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-content">
-                    <div class="col s6">
-                        <div class="input-field col s6 m6 l4">
+
+                <div class="row">
+                    <div style="display:flex">
+                        <div class="col l6">
+                        <div class="input-field">
                             <input class="value" id="onlyAddNewObjects" type="checkbox" />
                             <label class="translate" for="onlyAddNewObjects">add only new Objects</label>
                         </div>
-                        <div class="file-field input-field">
-                            <div class="btn">
-                                <span class="translate">Import XML from ETS</span>
-                                <input type="file" id="etsFile" />
+
+                        <div class="file-field input-field ">
+                            <div class="btn" id="fileUploadButton">
+                                <span class="translate">GA XML Export from ETS</span>
+                                <input type="file" id="knxprojFile" />
                             </div>
-                            <div class="file-path-wrapper">
+                            <div class="file-path-wrapper ">
                                 <input class="file-path validate" type="text" />
                             </div>
                         </div>
                         <div class="progress" id="progress">
                             <div class="indeterminate" style="width: 70%"></div>
                         </div>
+                        <a  href="https://github.com/iobroker-community-adapters/ioBroker.openknx#adaptermigration" target="_blank"><h6>Click here for a manual to migrate from knx.0 to openknx.0</h6></a>
+                      
+                    </div>
+                    <div class="col l6">
+                        <div class="input-field">
+                            <h6 class="translate">How to export GA XML from ETS:</h6>
+                            <img src="./exportGA.png" alt="exportGA" />
+                        </div>
+                    </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div id="extendedDialog" class="dialog">
-            <div class="card">
-                <div class="card-content">
+                <div class="row">
+                   
+                    </div>
                     <div class="row">
-                        <div class="input-field col s6 m6 l6">
+                    <div class="col s12"> 
+                        <h6>To merge Action and Status GA in one ioBroker Object you can let the Adapter generate  <a href="https://www.iobroker.net/#de/documentation/dev/aliases.md" target="_blank">Aliases</a></h6>
+                        <div class="input-field col s6 m6 l4">
                             <input class="value" id="statusRegex" type="text" />
                             <label class="translate" for="statusRegex">Regex to identify Status GAs (ending with
                                 status, rm, rückmeldung..).</label>
-                            <div class="file-field input-field">
-                                <div class="btn" id="createAlias" class="waves-effect waves-light btn">
-                                    <i class="material-icons right">list</i><span class="translate">generate
-                                        aliases</span>
-                                </div>
-                            </div>
+                          
+                        </div>
+                        <div class="input-field col s6 m6 l2">
+                            <input class="value" id="regexSimil" type="number" />
+                            <label class="translate" for="regexSimil">Minimum Similarity 0-1</label>
+                          
+                        </div>
+                        <div class="input-field col s6 m6 l2">
+                            <input class="value" id="aliasPath" type="text" />
+                            <label class="translate" for="aliasPath">Alias path</label>
+                          
+                        </div>
+                        <div class="col s12">
+                            <a id="createAlias" class="waves-effect waves-light btn"><i
+                                    class="material-icons right">list</i><span class="translate">generate
+                                    aliases</span></a>
                         </div>
                     </div>
-                    <!--<div class="col s6">
-                        <div class="input-field col s6 m6 l4">
-                            <input class="value" id="onlyAddNewObjects" type="checkbox" />
-                            <label class="translate" for="onlyAddNewObjects">add only new Objects</label>
-                        </div>
-                    </div>-->
+                </div>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
 </body>
 
