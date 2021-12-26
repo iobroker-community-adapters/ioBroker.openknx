@@ -127,6 +127,8 @@
             fillSelectIPs("#adapterAddress", settings.adapterAddress, false, true);
 
             showConfigDialog();
+            $("#progress").hide();
+            $("#progress2").hide();
 
             $(".value").each(function () {
                 var $key = $(this);
@@ -284,12 +286,14 @@
                 $(".file-field .btn").removeClass("disabled");
                 $(".file-field .file-path").prop("disabled", false);
                 $("#progress").hide();
+                $("#progress2").hide();
             } else {
                 showMessage(_("Unsupported file format"));
                 $("#onlyAddNewObjects").removeClass("disabled");
                 $(".file-field .btn").removeClass("disabled");
                 $(".file-field .file-path").prop("disabled", false);
                 $("#progress").hide();
+                $("#progress2").hide();
             }
         }
 
@@ -298,6 +302,7 @@
             $("#createAlias").prop("disabled", true);
             $(".file-field .btn").addClass("disabled");
             $(".file-field .file-path").prop("disabled", true);
+            $("#progress2").show();
             sendTo(null, "createAlias", null, function (result) {
                 if (!result || result.error) {
                     showMessage(_("Error"));
@@ -308,6 +313,7 @@
                     sendTo(null, "reset", null);
                     showToast(null, _("Restarting adapter"), null, 10000);
                 }
+                $("#progress2").hide();
                 $("#etsFile").prop("disabled", true);
                 $("#createAlias").prop("disabled", true);
                 $(".file-field .btn").addClass("disabled");
@@ -422,7 +428,7 @@
                             </div>
                         </div>
                         <div class="progress" id="progress">
-                            <div class="indeterminate" style="width: 70%"></div>
+                            <div class="indeterminate"></div>
                         </div>
                     </div>
                 </div>
@@ -441,6 +447,9 @@
                                 <div class="btn" id="createAlias" class="waves-effect waves-light btn">
                                     <i class="material-icons right">list</i><span class="translate">generate
                                         aliases</span>
+                                </div>
+                                <div class="progress" id="progress2">
+                                    <div class="indeterminate"></div>
                                 </div>
                             </div>
                         </div>

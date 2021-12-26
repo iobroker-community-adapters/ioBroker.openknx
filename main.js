@@ -478,7 +478,7 @@ class openknx extends utils.Adapter {
                     for (let i = res.rows.length - 1; i >= 0; i--) {
                         const id = res.rows[i].id;
                         const value = res.rows[i].value;
-                        if (value && value.native.address != undefined) {
+                        if (value && value.native && value.native.address != undefined) {
                             //add only elements from tree that are knx objects, identified by a group adress
                             this.gaList.set(id, value.native.address, res.rows[i].value);
                         }
