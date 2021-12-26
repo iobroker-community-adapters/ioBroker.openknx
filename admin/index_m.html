@@ -100,7 +100,7 @@
     </style>
 
     <script type="text/javascript">
-        var knxprojFile = '<input type="file" id="knxprojFile" style="display: inline-block"/>';
+        var etsFile = '<input type="file" id="etsFile" style="display: inline-block"/>';
 
         // This will be called by the admin adapter when the settings page loads
         function load(settings, onChange) {
@@ -198,10 +198,10 @@
             //if not alive disable buttons
             getIsAdapterAlive(function (isAlive) {
                 if (isAlive) {
-                    $("#knxprojFile").change(fileHandler);
+                    $("#etsFile").change(fileHandler);
                     $("#createAlias").change(aliasHandler);
                 } else {
-                    $("#knxprojFile").prop("disabled", true);
+                    $("#etsFile").prop("disabled", true);
                     $("#createAlias").prop("disabled", true);
                     $(".file-field .btn").addClass("disabled");
                     $(".file-field .file-path").prop("disabled", true);
@@ -246,7 +246,7 @@
                 return false;
             }
 
-            $("#knxprojFile").prop("disabled", true);
+            $("#etsFile").prop("disabled", true);
             $("#createAlias").prop("disabled", true);
             $(".file-field .btn").addClass("disabled");
             $(".file-field .file-path").prop("disabled", true);
@@ -255,8 +255,8 @@
                 var reader = new FileReader();
                 reader.addEventListener("load", function readFile(event) {
 
-                    $("#knxprojFile").replaceWith($(knxprojFile));
-                    $("#knxprojFile").change(fileHandler);
+                    $("#etsFile").replaceWith($(etsFile));
+                    $("#etsFile").change(fileHandler);
 
                     showToast(null, _("Import started..."), null, 3000);
                     $("#progress").show();
@@ -274,7 +274,7 @@
                             showToast(null, _("Restarting adapter"), null, 10000);
                         }
 
-                        $("#knxprojFile").prop("disabled", true);
+                        $("#etsFile").prop("disabled", true);
                         $("#createAlias").prop("disabled", true);
                         $(".file-field .btn").addClass("disabled");
                         $(".file-field .file-path").prop("disabled", true);
@@ -298,7 +298,7 @@
 
         function aliasHandler() {
 
-            $("#knxprojFile").prop("disabled", true);
+            $("#etsFile").prop("disabled", true);
             $("#createAlias").prop("disabled", true);
             $(".file-field .btn").addClass("disabled");
             $(".file-field .file-path").prop("disabled", true);
@@ -312,7 +312,7 @@
                     sendTo(null, "reset", null);
                     showToast(null, _("Restarting adapter"), null, 10000);
                 }
-                $("#knxprojFile").prop("disabled", true);
+                $("#etsFile").prop("disabled", true);
                 $("#createAlias").prop("disabled", true);
                 $(".file-field .btn").addClass("disabled");
                 $(".file-field .file-path").prop("disabled", true);
@@ -391,8 +391,8 @@
 
                         <div class="file-field input-field ">
                             <div class="btn" id="fileUploadButton">
-                                <span class="translate">GA XML Export from ETS</span>
-                                <input type="file" id="knxprojFile" />
+                                <span class="translate">Import XML from ETS</span>
+                                <input type="file" id="etsFile" />
                             </div>
                             <div class="file-path-wrapper ">
                                 <input class="file-path validate" type="text" />
