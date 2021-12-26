@@ -216,47 +216,52 @@ IoBroker defines States as communication interface.
     ): void;
 
 #### Description of all DPTs
-| KNX DPT   | javascript datatype    | special values                                                                                       | value range                               |
-| --------- | ---------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| DPT-1     | boolean                |                                                                                                      | false, true                               |
-| DPT-2     | object                 | {"priority":1 bit,"data":1 bit}                                                                      | -                                         |
-| DPT-3     | object                 | {"decr_incr":1 bit,"data":2 bit}                                                                     | -                                         |
-| DPT-18    | object                 | {"save_recall":0,"scenenumber":0}                                                                    |
-| DPT-21    | object                 | {"outofservice":0,"fault":0,"overridden":0,"inalarm":0,"alarmunack":0}                               | -                                         |
-| DPT-232   | object                 | {red:0..255, green:0.255, blue:0.255}	-                                                              |
-| DPT-237   | object                 | {"address":0,"addresstype":0,"readresponse":0,"lampfailure":0,"ballastfailure":0,"convertorerror":0} | -                                         |
-| DPT-4     | string                 |                                                                                                      | one character sent as 8-bit character     |
-| DPT-16    | string                 |                                                                                                      | one character sent as 16-character string |
-| DPT-5     | number                 |                                                                                                      | 8-bit unsigned value                      |
-| DPT-5.001 | number                 |                                                                                                      | 0..100 [%] scaled to 1-byte               |
-| DPT-5.003 | number                 |                                                                                                      | 0..360 [°] scaled to 1-byte               |
-| DPT-6     | number                 |                                                                                                      | 8-bit signed -128..127                    |
-| DPT-7     | number                 |                                                                                                      | 16-bit unsigned value                     |
-| DPT-8     | number                 |                                                                                                      | 2-byte signed value                       | -32768..32767 |
-| DPT-9     | number                 |                                                                                                      | 2-byte floating point value               |
-| DPT-14    | number                 |                                                                                                      | 4-byte floating point value               |
-| DPT-12    | number                 |                                                                                                      | 4-byte unsigned value                     |
-| DPT-13    | number                 |                                                                                                      | 4-byte signed value                       |
-| DPT-15    | number                 |                                                                                                      | 4-byte                                    |
-| DPT-17    | number                 |                                                                                                      | 1-byte                                    |
-| DPT-20    | number                 |                                                                                                      | 1-byte                                    |
-| DPT-238   | number                 |                                                                                                      | 1-byte                                    |
-| DPT-10    | number for Date Object |                                                                                                      | -                                         |
-| DPT-11    | number for Date Object |                                                                                                      | -                                         |
-| DPT-19    | number for Date Object |                                                                                                      | -                                         |
-| rest      | string                 | 00010203..                                                                                           | -                                         |
+
+| KNX DPT   | javascript datatype    | special values                                                                                       | value range                               |remark|
+| --------- | ---------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------- ||
+| DPT-1     | boolean                |                                                                                                      | false, true                               ||
+| DPT-2     | object                 | {"priority":1 bit,"data":1 bit}                                                                      | -                                         ||
+| DPT-3     | object                 | {"decr_incr":1 bit,"data":2 bit}                                                                     | -                                         ||
+| DPT-18    | object                 | {"save_recall":0,"scenenumber":0}                                                                    | -                                         |Datapoint Type DPT_SceneControl removed from autoread|
+| DPT-21    | object                 | {"outofservice":0,"fault":0,"overridden":0,"inalarm":0,"alarmunack":0}                               | -                                         ||
+| DPT-232   | object                 | {red:0..255, green:0.255, blue:0.255}	                                                              | -                                         ||
+| DPT-237   | object                 | {"address":0,"addresstype":0,"readresponse":0,"lampfailure":0,"ballastfailure":0,"convertorerror":0} | -                                         ||
+| DPT-4     | string                 |                                                                                                      | one character sent as 8-bit character     ||
+| DPT-16    | string                 |                                                                                                      | one character sent as 16-character string ||
+| DPT-5     | number                 |                                                                                                      | 8-bit unsigned value                      ||
+| DPT-5.001 | number                 |                                                                                                      | 0..100 [%] scaled to 1-byte               ||
+| DPT-5.003 | number                 |                                                                                                      | 0..360 [°] scaled to 1-byte               ||
+| DPT-6     | number                 |                                                                                                      | 8-bit signed -128..127                    ||
+| DPT-7     | number                 |                                                                                                      | 16-bit unsigned value                     ||
+| DPT-8     | number                 |                                                                                                      | 2-byte signed value -32768..32767         ||
+| DPT-9     | number                 |                                                                                                      | 2-byte floating point value               ||
+| DPT-14    | number                 |                                                                                                      | 4-byte floating point value               ||
+| DPT-12    | number                 |                                                                                                      | 4-byte unsigned value                     ||
+| DPT-13    | number                 |                                                                                                      | 4-byte signed value                       ||
+| DPT-15    | number                 |                                                                                                      | 4-byte                                    ||
+| DPT-17    | number                 |                                                                                                      | 1-byte                                    |DPT_SceneNumber removed from autoread|
+| DPT-20    | number                 |                                                                                                      | 1-byte                                    ||
+| DPT-238   | number                 |                                                                                                      | 1-byte                                    ||
+| DPT-10    | number for Date Object |                                                                                                      | -                                         ||
+| DPT-11    | number for Date Object |                                                                                                      | -                                         ||
+| DPT-19    | number for Date Object |                                                                                                      | -                                         ||
+| DPT-26    | string                 | e.g. 00010203..                                                                                      | -                                         |Datapoint Type DPT_SceneInfo removed from autoread|
+| DPT-238   | string                 | e.g. 00010203..                                                                                      | -                                         |DPT_SceneConfig removed from autread|
+| rest      | string                 | e.g. 00010203..                                                                                      | -                                         ||
 
 Only time and date information is exchanged with KNX time based datatypes, e.g. DPT-19 has unsupported fields for signal quality.  
 
 Object send and receive values are of type boolean DPT1), number (scaled, or unscaled), string.  
 DPT 2 'expects a object {"priority":0,"data":1}' receive provides a strinified object of same type.  
 Other joint DPTs have similar object notation.  
-DPT19 expects a Number from a Date Object, Iobroker can not handle objects, fields of KNX ko that cannot be derived from timestamp are not implemented eg. quality flags
+DPT19 expects a Number from a Date Object, Iobroker can not handle objects, fields of KNX ko that cannot be derived from timestamp are not implemented eg. quality flags.
 
 Date and time DPTs (DPT10, DPT11)  
 Please have in mind that Javascript and KNX have very different base type for time and date. 
 DPT10 is time (hh:mm:ss) plus "day of week". This concept is unavailable in JS, so you'll be getting/setting a regular Date Js object, but please remember you'll need to ignore the date, month and year. The exact same datagram that converts to "Mon, Jul 1st 12:34:56", will evaluate to a wildly different JS Date of "Mon, Jul 8th 12:34:56" one week later. Be warned! 
 DPT11 is date (dd/mm/yyyy): the same applies for DPT11, you'll need to ignore the time part.
+
+(KNX specification of DPTs https://www.knx.org/wAssets/docs/downloads/Certification/Interworking-Datapoint-types/03_07_02-Datapoint-Types-v02.02.01-AS.pdf)
 
 #### group value write
 Sending is triggered by writing a communication object.
@@ -264,11 +269,10 @@ Communication object is triggered when a write frame is received on the bus.
 
 #### group value read
 Sending can be triggered by writing a communicaton object with comment.
-Receiving, if configured will trigger a group value response (limitation: group value write at the moment) of the actual c.o. value, see below
+Receiving, if configured will trigger a group value response (limitation: group value write at the moment) of the actual c.o. value, see below.
 
 #### group value response
-Sending a GroupValue_Response not yet fully supported. Emulated if response setting is set, then adapter writes a group value write.
-Receiving will update the value of the iobroker object in read is set to true.
+If answer_groupValueResponse is set to true, then the adapter will reply with a GroupValue_response to a previously received GroupValue_read request.
 
 # Features
 * fast import of groupaddresses in XML format
@@ -280,15 +284,18 @@ Receiving will update the value of the iobroker object in read is set to true.
 * free open source
 
 # Known Problems
-- sends write instead of GroupValue_Response on GroupValue_Read
+- 
 
 # Limitations
 - only three level group addresses are supported
 
 ## Changelog
-### 0.1.10 (2021-12-23)
+### 0.1.11 (2021-12-..)
+* feature: remove more scene DPTs from default autoread
+* feature: sends GroupValue_Response on GroupValue_Read if configured
+
+### 0.1.10 (2021-12-24)
 * fix: interface to write objects corrected
-* 
 
 ### 0.1.9 (2021-12-22)
 * fix: algorith to generate the iob objects improved
