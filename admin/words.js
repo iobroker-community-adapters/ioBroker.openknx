@@ -9,7 +9,7 @@ systemDictionary = {
     "How to export GA XML from ETS:": {              "en": "How to export GA XML from ETS:",                  "de": "So exportieren Sie GA-XML aus der ETS:",          "ru": "Как экспортировать GA XML из ETS:",               "pt": "Como exportar GA XML do ETS:",                    "nl": "GA XML exporteren vanuit ETS:",                   "fr": "Comment exporter GA XML depuis ETS :",            "it": "Come esportare GA XML da ETS:",                   "es": "Cómo exportar GA XML desde ETS:",                 "pl": "Jak wyeksportować GA XML z ETS:",                 "zh-cn": "如何从 ETS 导出 GA XML："},
     "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export": {"en": "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export", "de": "KNXproj werden nicht unterstützt, bitte öffnen Sie in der ETS die Gruppenadressen und klicken Sie mit der rechten Maustaste auf Gruppenadressen und dann Gruppenadressen-Export", "ru": "KNXproj не поддерживаются, откройте в ETS групповые адреса и щелкните правой кнопкой мыши по групповым адресам, а затем экспортируйте групповые адреса.", "pt": "KNXproj não são suportados, por favor, abra no ETS o Group Adresses e clique com o botão direito nos endereços de grupo e então a exportação de endereço de grupo", "nl": "KNXproj worden niet ondersteund, open in ETS de groepsadressen en klik met de rechtermuisknop op groepsadressen en exporteer groepsadressen", "fr": "KNXproj ne sont pas pris en charge, veuillez ouvrir dans ETS les adresses de groupe et faites un clic droit sur les adresses de groupe, puis exportez l'adresse de groupe", "it": "KNXproj non sono supportati, aprire in ETS gli indirizzi di gruppo e fare clic con il pulsante destro del mouse sugli indirizzi di gruppo e quindi esportare gli indirizzi di gruppo", "es": "KNXproj no es compatible, abra en ETS las direcciones del grupo y haga clic con el botón derecho en las direcciones del grupo y luego exportar la dirección del grupo.", "pl": "KNXproj nie są obsługiwane, otwórz w ETS adresy grup i kliknij prawym przyciskiem adresy grup, a następnie wyeksportuj adresy grup", "zh-cn": "不支持KNXproj，请在ETS中打开群组地址，右键点击群组地址，然后群组地址导出"},
     "Port": {                                        "en": "Port",                                            "de": "Hafen",                                           "ru": "Порт",                                            "pt": "Porta",                                           "nl": "Haven",                                           "fr": "Port",                                            "it": "Porta",                                           "es": "Puerto",                                          "pl": "Port",                                            "zh-cn": "港口"},
-    "Regex to identify Status GAs (ending with status, rm, rückmeldung..). Empty to deactivate": {"en": "Regex to identify Status GAs (ending with status, rm, rückmeldung..) Empty to deactivate", "de": "Regex zum Erkennen von Status-GAs (Endung mit status, rm, rückmeldung..) Leer zum Deaktivieren", "ru": "Регулярное выражение для определения GA состояния (заканчивающееся на status, rm, rückmeldung ..). ", "pt": "Regex para identificar Status GAs (terminando com status, rm, rückmeldung ..). ", "nl": "Regex om Status GA's te identificeren (eindigend met status, rm, rückmeldung..). ", "fr": "Regex pour identifier les Status GA (se terminant par status, rm, rückmeldung..). ", "it": "Regex per identificare gli Status GA (che termina con status, rm, rückmeldung..). ", "es": "Regex para identificar estados GA (terminando con status, rm, rückmeldung ..). ", "pl": "Regex do identyfikacji statusów GA (kończących się na status, rm, rückmeldung...). ", "zh-cn": "用于识别状态 GA 的正则表达式（以状态、rm、rückmeldung 结尾...）。"},
+    "Regex to identify Status GAs (ending with status, rm, rückmeldung..).": {"en": "Regex to identify Status GAs (ending with status, rm, rückmeldung..)", "de": "Regex zum Erkennen von Status-GAs (Endung mit status, rm, rückmeldung..)", "ru": "Регулярное выражение для определения GA состояния (заканчивающееся на status, rm, rückmeldung ..). ", "pt": "Regex para identificar Status GAs (terminando com status, rm, rückmeldung ..). ", "nl": "Regex om Status GA's te identificeren (eindigend met status, rm, rückmeldung..). ", "fr": "Regex pour identifier les Status GA (se terminant par status, rm, rückmeldung..). ", "it": "Regex per identificare gli Status GA (che termina con status, rm, rückmeldung..). ", "es": "Regex para identificar estados GA (terminando con status, rm, rückmeldung ..). ", "pl": "Regex do identyfikacji statusów GA (kończących się na status, rm, rückmeldung...). ", "zh-cn": "用于识别状态 GA 的正则表达式（以状态、rm、rückmeldung 结尾...）。"},
     "Restarting adapter": {                          "en": "Restarting adapter...",                           "de": "Adapter neu starten...",                          "ru": "Перезапуск адаптера ...",                         "pt": "Reiniciando o adaptador ...",                     "nl": "Adapter opnieuw opstarten...",                    "fr": "Redémarrage de l'adaptateur...",                  "it": "Riavvio dell'adattatore...",                      "es": "Reiniciando el adaptador ...",                    "pl": "Ponowne uruchamianie adaptera...",                "zh-cn": "重新启动适配器..."},
     "Unsupported file format": {                     "en": "Unsupported file format",                         "de": "Nicht unterstütztes Dateiformat",                 "ru": "Неподдерживаемый формат файла",                   "pt": "Formato de arquivo não suportado",                "nl": "Niet ondersteund bestandsformaat",                "fr": "Format de fichier non pris en charge",            "it": "Formato file non supportato",                     "es": "Formato de archivo no soportado",                 "pl": "Niewspierany format pliku",                       "zh-cn": "不支持的文件格式"},
     "add only new Objects": {                        "en": "Add only new Objects",                            "de": "Nur neue Objekte hinzufügen",                     "ru": "Добавляйте только новые объекты",                 "pt": "Adicionar apenas novos objetos",                  "nl": "Alleen nieuwe objecten toevoegen",                "fr": "Ajouter uniquement de nouveaux objets",           "it": "Aggiungi solo nuovi oggetti",                     "es": "Agregar solo nuevos objetos",                     "pl": "Dodaj tylko nowe obiekty",                        "zh-cn": "仅添加新对象"},
@@ -23,4 +23,65 @@ systemDictionary = {
     "this is not a number": {                        "en": "this is not a number",                            "de": "das ist keine Zahl",                              "ru": "это не число",                                    "pt": "este não é um número",                            "nl": "dit is geen nummer",                              "fr": "ce n'est pas un nombre",                          "it": "questo non è un numero",                          "es": "esto no es un numero",                            "pl": "to nie jest liczba",                              "zh-cn": "这不是一个数字"},
     "using old knx path for objects": {              "ru": "использование старого пути knx для объектов",     "pt": "usando o caminho antigo do knx para objetos",     "nl": "oud knx-pad gebruiken voor objecten",             "fr": "utiliser l'ancien chemin knx pour les objets",    "it": "usando il vecchio percorso knx per gli oggetti",  "es": "usando la vieja ruta knx para objetos",           "pl": "używając starej ścieżki knx dla obiektów",        "zh-cn": "对对象使用旧的 knx 路径"},
     "using old knx path for objects (Before importing, delete old objects manually)": {"ru": "использование старого пути knx для объектов (перед импортом удалите старые объекты вручную)", "pt": "usando o caminho antigo do knx para objetos (antes de importar, exclua os objetos antigos manualmente)", "nl": "het oude knx-pad voor objecten gebruiken (verwijder oude objecten handmatig voordat u ze importeert)", "fr": "en utilisant l'ancien chemin knx pour les objets (Avant d'importer, supprimez les anciens objets manuellement)", "it": "utilizzando il vecchio percorso knx per gli oggetti (prima dell'importazione, elimina manualmente i vecchi oggetti)", "es": "utilizando la ruta de knx antigua para los objetos (antes de importar, elimine los objetos antiguos manualmente)", "pl": "używanie starej ścieżki knx dla obiektów (Przed importem usuń ręcznie stare obiekty)", "zh-cn": "使用对象的旧 knx 路径（导入前，手动删除旧对象）"},
+    "Minimum Similarity 0-1": {
+        "en": "Minimum Similarity 0-1",
+        "de": "Mindest Ähnlichkeit 0-1",
+        "ru": "Минимальное сходство 0-1",
+        "pt": "Similaridade mínima 0-1",
+        "nl": "Minimale gelijkenis 0-1",
+        "fr": "Similitude minimale 0-1",
+        "it": "Somiglianza minima 0-1",
+        "es": "Similitud mínima 0-1",
+        "pl": "Minimalne podobieństwo 0-1",
+        "zh-cn": "最小相似度 0-1"
+      },
+      "Alias path": {
+        "en": "Alias path",
+        "de": "Alias-Pfad",
+        "ru": "Путь псевдонима",
+        "pt": "Caminho de alias",
+        "nl": "Aliaspad",
+        "fr": "Chemin d'alias",
+        "it": "Alias percorso",
+        "es": "Ruta de alias",
+        "pl": "Ścieżka aliasu",
+        "zh-cn": "别名路径"
+      },
+      "generate aliases": {
+        "en": "generate aliases",
+        "de": "Aliase generieren",
+        "ru": "генерировать псевдонимы",
+        "pt": "gerar apelidos",
+        "nl": "aliassen genereren",
+        "fr": "générer des alias",
+        "it": "generare alias",
+        "es": "generar alias",
+        "pl": "generować aliasy",
+        "zh-cn": "生成别名"
+      },
+      "To merge Action and Status GA in one ioBroker Object you can let the Adapter generate": {
+        "en": "To merge Action and Status GA in one ioBroker Object you can let the Adapter generate",
+        "de": "Um Aktor und Zustand GA in einem ioBroker-Objekt zusammenzuführen, können Sie den Adapter Aliase generieren lassen.",
+        "ru": "Чтобы объединить Action и Status GA в один объект ioBroker, вы можете позволить адаптеру сгенерировать",
+        "pt": "Para mesclar Action e Status GA em um objeto ioBroker, você pode deixar o adaptador gerar",
+        "nl": "Om Action en Status GA in één ioBroker-object samen te voegen, kunt u de Adapter laten genereren:",
+        "fr": "Pour fusionner l'action et le statut GA dans un seul objet ioBroker, vous pouvez laisser l'adaptateur générer",
+        "it": "Per unire Action e Status GA in un oggetto ioBroker puoi lasciare che l'adattatore generi",
+        "es": "Para fusionar Acción y Estado GA en un Objeto ioBroker, puede dejar que el Adaptador genere",
+        "pl": "Aby połączyć działanie i status GA w jednym obiekcie ioBroker, możesz pozwolić adapterowi na generowanie",
+        "zh-cn": "要将 Action 和 Status GA 合并到一个 ioBroker 对象中，您可以让适配器生成"
+      },
+      "Click here for a manual to migrate from knx.0 to openknx.0": {
+        "en": "Click here for a manual to migrate from knx.0 to openknx.0",
+        "de": "Klicken Sie hier für eine Anleitung zur Migration von knx.0 zu openknx.0",
+        "ru": "Щелкните здесь, чтобы получить руководство по переходу с knx.0 на openknx.0",
+        "pt": "Clique aqui para obter um manual para migrar de knx.0 para openknx.0",
+        "nl": "Klik hier voor een handleiding om te migreren van knx.0 naar openknx.0",
+        "fr": "Cliquez ici pour un manuel de migration de knx.0 vers openknx.0",
+        "it": "Fare clic qui per un manuale per migrare da knx.0 a openknx.0",
+        "es": "Haga clic aquí para obtener un manual para migrar de knx.0 a openknx.0",
+        "pl": "Kliknij tutaj, aby uzyskać instrukcję migracji z knx.0 do openknx.0",
+        "zh-cn": "单击此处获取从 knx.0 迁移到 openknx.0 的手册"
+      }
+
 };
