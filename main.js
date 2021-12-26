@@ -107,6 +107,18 @@ class openknx extends utils.Adapter {
                         });
                     });
                     break;
+                case "createAlias":
+                    this.log.info("Create aliases...");
+                    projectImport.findStatusGAs(this, this.gaList, (count) => {
+                        if (obj.callback) {
+                            let res = {
+                                error: null,
+                                count: count,
+                            };
+                            this.sendTo(obj.from, obj.command, res, obj.callback);
+                        }
+                    });
+                    break;
                 case "reset":
                     this.log.info("Restarting...");
                     this.restart();
@@ -244,8 +256,8 @@ class openknx extends utils.Adapter {
         let rawVal;
 
         //check for boolean and ensure the correct datatype
-        if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "boolean") { 
-            state.val = state.val ? true: false
+        if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "boolean") {
+            state.val = state.val ? true : false
         }
         //convert val into object for certain dpts
         if (tools.isDateDPT(dpt)) {
@@ -312,8 +324,7 @@ class openknx extends utils.Adapter {
                         for (const key of this.gaList) {
                             if (this.gaList.getDataById(key).native.address.match(/\d*\/\d*\/\d*/) && this.gaList.getDataById(key).native.dpt) {
                                 try {
-                                    const dp = new knx.Datapoint(
-                                        {
+                                    const dp = new knx.Datapoint({
                                             ga: this.gaList.getDataById(key).native.address,
                                             dpt: this.gaList.getDataById(key).native.dpt,
                                             autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
@@ -347,7 +358,7 @@ class openknx extends utils.Adapter {
                 },
 
                 //KNX Bus event received
-                event: (/** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
+                event: ( /** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
                     if (src == this.config.eibadr) {
                         //called by self, avoid loop
                         //console.log('receive self ga: ', dest);
@@ -431,8 +442,7 @@ class openknx extends utils.Adapter {
         //fill gaList object from iobroker objects
         this.getObjectView(
             "system",
-            "state",
-            {
+            "state", {
                 startkey: this.mynamespace + ".",
                 endkey: this.mynamespace + ".\u9999",
                 include_docs: true,
@@ -450,9 +460,6 @@ class openknx extends utils.Adapter {
                         }
                     }
                     this.startKnxStack();
-
-                    //test
-                    projectImport.findStatusGAs(this, this.gaList);
                 }
             }
         );
