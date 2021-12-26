@@ -216,7 +216,6 @@ IoBroker defines States as communication interface.
     ): void;
 
 #### Description of all DPTs
-
 | KNX DPT   | javascript datatype    | special values                                                                                       | value range                               |remark|
 | --------- | ---------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------- ||
 | DPT-1     | boolean                |                                                                                                      | false, true                               ||
@@ -293,6 +292,7 @@ If answer_groupValueResponse is set to true, then the adapter will reply with a 
 ### 0.1.11 (2021-12-..)
 * feature: remove more scene DPTs from default autoread
 * feature: sends GroupValue_Response on GroupValue_Read if configured
+* feature: admin dialog with option to generate aliases (beta)
 
 ### 0.1.10 (2021-12-24)
 * fix: interface to write objects corrected
