@@ -100,10 +100,15 @@ If checked, the import will skip overwriting existing communication objects.
 
 #### GA XML import
 ![ETS export](docs/pictures/exportGA.png)
-1. In ETS go to Group Addresses, select export group address and select XML export in latest format version
+1. In ETS go to Group Addresses, select export group address and select XML export in latest format version.
+ETS4 Format is not supported, it does not contain DPTs information.
+
 2. upload your ETS Export XML in the adapter via the GA XML-Import dialog
 3. Import will immediatelly start after file selection and give a status report after completion.  
 After the successful import a message shows how much objects where recognized. More detailed information could be found in the log.
+
+Hint on ETS configuration:  
+If you have different DPT Subtypes for the GA and in the communication objets that use this GA, then the ETS seems to use the DPT Type with the lowest number. In this case manually ensure that all fields are using the same datatype.
 
 #### Frames per sec
 This settings protects the KNX bus from data flooding by limiting data frames to a certain rate. Not sent frames are put into a fifo buffer.
@@ -287,6 +292,7 @@ If answer_groupValueResponse is set to true, then the adapter will reply with a 
 
 # Limitations
 - only three level group addresses are supported
+- ETS 4 export file format is not supported
 
 ## Changelog
 ### 0.1.11 (2021-12-..)
