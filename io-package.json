@@ -81,7 +81,7 @@
         "eibadr": "1.1.1",
         "bind": "",
         "frameInterval": 50,
-        "statusRegex": "stat(e|us)|r\\u00fcckmeldung\\s|\\svalue",
+        "statusRegex": "stat(e|us)|' 'rm|rückmeldung\\s|\\svalue/",
         "regexSimil": 0.9,
         "aliasPath": "alias.0"
     },
