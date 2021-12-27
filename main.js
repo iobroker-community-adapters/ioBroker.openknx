@@ -363,7 +363,10 @@ class openknx extends utils.Adapter {
                 },
 
                 //KNX Bus event received
+                //src: KnxDeviceAddress, dest: KnxGroupAddress
                 event: (/** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
+                    let convertedVal;
+                    
                     if (src == this.config.eibadr) {
                         //called by self, avoid loop
                         //console.log('receive self ga: ', dest);
@@ -371,12 +374,15 @@ class openknx extends utils.Adapter {
                     }
 
                     /* some checks */
+                    if (dest == "0/0/0" || tools.isDeviceAddress(dest)) {
+                        //seems that knx lib does not guarantee dest group adresses
+                        return;
+                    }
                     if (!this.gaList.getDpByAddress(dest)) {
                         this.log.warn("Ignoring " + evt + " received on unknown ga: " + dest);
                         return;
                     }
-
-                    let convertedVal;
+                    
                     if (tools.isStringDPT(this.gaList.getDataByAddress(dest).native.dpt)) {
                         convertedVal = this.gaList.getDpByAddress(dest).current_value;
                     } else {
