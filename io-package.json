@@ -73,7 +73,8 @@
             {
                 "js-controller": ">=3.0.0"
             }
-        ]
+        ],
+        "tier": 2 
     },
     "native": {
         "gwip": "",
