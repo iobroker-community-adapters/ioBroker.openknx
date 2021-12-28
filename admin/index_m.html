@@ -107,11 +107,11 @@
             if (!settings) return;
 
        // Check adapter is alive
-            this.isProcessingRequest = false
+            window.isProcessingRequest = false
             this.checkInterval = setInterval(() => {
         
                 this.getIsAdapterAlive( function (isAlive) {
-                    if (isAlive && !this.isProcessingRequest) {
+                    if (isAlive && !window.isProcessingRequest) {
                     $("#onlyAddNewObjects").removeClass("disabled");
                     $(".file-field .btn").removeClass("disabled");
                     $(".file-field .file-path").prop("disabled", false);
@@ -270,7 +270,7 @@
                 $("#createAlias").addClass("disabled");
                 $(".file-field .btn").addClass("disabled");
                 $(".file-field .file-path").prop("disabled", true);
-                this.isProcessingRequest=true;
+                window.isProcessingRequest=true;
                 var reader = new FileReader();
                 reader.addEventListener("load", function readFile(event) {
                     $("#etsFile").replaceWith($(etsFile));
@@ -294,7 +294,7 @@
                             sendTo(null, "reset", null);
                             showToast(null, _("Restarting adapter"), null, 10000);
                         }
-                        this.isProcessingRequest=false;
+                        window.isProcessingRequest=false;
                     });
                 });
                 reader.readAsText(file);
@@ -314,7 +314,7 @@
             $(".file-field .btn").addClass("disabled");
             $(".file-field .file-path").prop("disabled", true);
             $("#progress2").show();
-            this.isProcessingRequest = true;
+            window.isProcessingRequest = true;
             sendTo(null, "createAlias", null, function (result) {
                 if (!result || result.error) {
                     showMessage(_("Error"));
@@ -325,7 +325,7 @@
                     sendTo(null, "reset", null);
                     showToast(null, _("Restarting adapter"), null, 10000);
                 }
-                this.isProcessingRequest=false;
+                window.isProcessingRequest=false;
                 $("#progress2").hide();
             });
         }
