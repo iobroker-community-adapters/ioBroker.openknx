@@ -281,11 +281,15 @@
                         $("#onlyAddNewObjects").removeClass("disabled");
                         $("#progress").hide();
                         if (!result || result.error) {
-                            showMessage(_(result ? result.error : _("Unknown error")));
+                            let message = "Unknown error"
+                            if (result && result.error) {
+                                message = `Extracted ${result.count} states successfully<br/><br/>\n${result.error}`
+                            }
+                            showMessage(_(message));
                             sendTo(null, "reset", null);
                             showToast(null, _("Restarting adapter"), null, 10000);
                         } else {
-                            showMessage(_("Extracted %s states", result.count));
+                            showMessage(_("Extracted %s states successfully", result.count));
                             sendTo(null, "reset", null);
                             showToast(null, _("Restarting adapter"), null, 10000);
                         }
