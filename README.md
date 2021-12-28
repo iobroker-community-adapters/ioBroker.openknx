@@ -153,12 +153,12 @@ This settings protects the KNX bus from data flooding by limiting data frames to
 
 # howto use the adapter & basic concept
 
-## ACK flags
+### ACK flags
 Application shall not set ack flag, application is notified from this adapter by the ack flag if data is updated.
 KNX Stack sets the ack flag of the linked IoBroker object on receiption of a group address.
 Sent frames on KNX do not result into a ack of the writing object.
 
-## Node Red complex datatype example
+### Node Red complex datatype example
 Create a function node that connects to a ioBroker out node that connects with a KNX object of DPT2.
   msg.payload =  {"priority":1 ,"data":0};
   return msg;
@@ -279,26 +279,34 @@ Receiving, if configured will trigger a group value response (limitation: group 
 If answer_groupValueResponse is set to true, then the adapter will reply with a GroupValue_response to a previously received GroupValue_read request.
 
 # Features
-* fast import of groupaddresses in XML format
-* stable knx stack
-* interpretation of many DPTs
-* raw read and write of unsupported DPTs
-* support of group value read and group value write, group value write as response to group value request
-* Autoread
+* stable and reliable knx stack
+* easy interface to group adresses of many DPTs, raw read and write for other DPTs
+* support of KNX group value read and group value write and group value response
 * free open source
+* no dependencies to cloud services, runs without internet access
+* Autoread on start
+* fast import of group addresses in XML format
+* create joint alias objects that react on status inputs
 
 # Known Problems
-- 
+- none
 
 # Limitations
 - only three level group addresses are supported
 - ETS 4 export file format is not supported
 
 ## Changelog
-### 0.1.11 (2021-12-..)
+### 0.1.11 (2021-12-28)
 * feature: remove more scene DPTs from default autoread
 * feature: sends GroupValue_Response on GroupValue_Read if configured
 * feature: admin dialog with option to generate aliases (beta)
+* feature: admin dialog reactivates after adapter reset
+* feature: add support for DPT 7.600
+* feature: show logs of knx library
+* fix: filter out logs with device address bus interactions
+* fix: filter ga names that are forbidden in IOB
+* fix: reply with groupvalueresponse on request, not with groupvaluewrite
+* fix: remove more scene dpts from autoread
 
 ### 0.1.10 (2021-12-24)
 * fix: interface to write objects corrected
