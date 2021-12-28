@@ -107,18 +107,19 @@
             if (!settings) return;
 
        // Check adapter is alive
+            this.isProcessingRequest = false
             this.checkInterval = setInterval(() => {
         
                 this.getIsAdapterAlive( function (isAlive) {
-                    if (isAlive) {
+                    if (isAlive && !this.isProcessingRequest) {
                     $("#onlyAddNewObjects").removeClass("disabled");
                     $(".file-field .btn").removeClass("disabled");
                     $(".file-field .file-path").prop("disabled", false);
                     $("#etsFile").prop("disabled", false);
-                    $("#createAlias").prop("disabled", false);
+                    $("#createAlias").removeClass("disabled");
                 } else {
                     $("#etsFile").prop("disabled", true);
-                    $("#createAlias").prop("disabled", true);
+                    $("#createAlias").addClass("disabled");
                     $(".file-field .btn").addClass("disabled");
                     $(".file-field .file-path").prop("disabled", true);
                 }
@@ -221,7 +222,7 @@
             getIsAdapterAlive(function (isAlive) {
                 if (!isAlive) {
                     $("#etsFile").prop("disabled", true);
-                    $("#createAlias").prop("disabled", true);
+                    $("#createAlias").addClass("disabled");
                     $(".file-field .btn").addClass("disabled");
                     $(".file-field .file-path").prop("disabled", true);
                 }
@@ -262,18 +263,18 @@
                 console.warn("invalid file object");
                 return false;
             }
-            $("#etsFile").prop("disabled", true);
-            $("#createAlias").prop("disabled", true);
-            $(".file-field .btn").addClass("disabled");
-            $(".file-field .file-path").prop("disabled", true);
+   
 
             if (file.name.split(".").pop() == "xml") {
+                $("#etsFile").prop("disabled", true);
+                $("#createAlias").addClass("disabled");
+                $(".file-field .btn").addClass("disabled");
+                $(".file-field .file-path").prop("disabled", true);
+                this.isProcessingRequest=true;
                 var reader = new FileReader();
                 reader.addEventListener("load", function readFile(event) {
-
                     $("#etsFile").replaceWith($(etsFile));
                     $("#etsFile").change(fileHandler);
-
                     showToast(null, _("Import started..."), null, 3000);
                     $("#progress").show();
                     $("#onlyAddNewObjects").addClass("disabled");
@@ -293,38 +294,27 @@
                             sendTo(null, "reset", null);
                             showToast(null, _("Restarting adapter"), null, 10000);
                         }
-
-                        $("#etsFile").prop("disabled", true);
-                        $("#createAlias").prop("disabled", true);
-                        $(".file-field .btn").addClass("disabled");
-                        $(".file-field .file-path").prop("disabled", true);
+                        this.isProcessingRequest=false;
                     });
                 });
                 reader.readAsText(file);
             } else if (file.name.split(".").pop() == "knxproj") {
                 showMessage(_("KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export"));
-                $("#onlyAddNewObjects").removeClass("disabled");
-                $(".file-field .btn").removeClass("disabled");
-                $(".file-field .file-path").prop("disabled", false);
-                $("#progress").hide();
-                $("#progress2").hide();
+         
             } else {
                 showMessage(_("Unsupported file format"));
-                $("#onlyAddNewObjects").removeClass("disabled");
-                $(".file-field .btn").removeClass("disabled");
-                $(".file-field .file-path").prop("disabled", false);
-                $("#progress").hide();
-                $("#progress2").hide();
+      
             }
         }
 
         function aliasHandler() {
 
             $("#etsFile").prop("disabled", true);
-            $("#createAlias").prop("disabled", true);
+            $("#createAlias").addClass("disabled");
             $(".file-field .btn").addClass("disabled");
             $(".file-field .file-path").prop("disabled", true);
             $("#progress2").show();
+            this.isProcessingRequest = true;
             sendTo(null, "createAlias", null, function (result) {
                 if (!result || result.error) {
                     showMessage(_("Error"));
@@ -335,11 +325,8 @@
                     sendTo(null, "reset", null);
                     showToast(null, _("Restarting adapter"), null, 10000);
                 }
+                this.isProcessingRequest=false;
                 $("#progress2").hide();
-                $("#etsFile").prop("disabled", true);
-                $("#createAlias").prop("disabled", true);
-                $(".file-field .btn").addClass("disabled");
-                $(".file-field .file-path").prop("disabled", true);
             });
         }
 
