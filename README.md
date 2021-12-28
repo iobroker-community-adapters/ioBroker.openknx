@@ -213,6 +213,7 @@ Where number datatype is used please note that interface values can be scaled.
 
 ### API call
 IoBroker defines States as communication interface.
+
     setState(
         id: string,                                     // object path
         state: State | StateValue | SettableState,
