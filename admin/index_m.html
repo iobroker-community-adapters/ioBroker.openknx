@@ -123,7 +123,7 @@
                     $(".file-field .file-path").prop("disabled", true);
                 }
                 });
-            }, 2000)
+            }, 1000)
             if (settings.gwip === undefined) settings.gwip = "127.0.0.1";
             if (settings.gwipport === undefined) settings.gwipport = 3671;
             if (settings.debugLevel === undefined) settings.debugLevel = 0; //todo
@@ -215,12 +215,11 @@
                 });
             });
 
+            $("#etsFile").change(fileHandler);
+            $("#createAlias").change(aliasHandler);
             //if not alive disable buttons
             getIsAdapterAlive(function (isAlive) {
-                if (isAlive) {
-                    $("#etsFile").change(fileHandler);
-                    $("#createAlias").change(aliasHandler);
-                } else {
+                if (!isAlive) {
                     $("#etsFile").prop("disabled", true);
                     $("#createAlias").prop("disabled", true);
                     $(".file-field .btn").addClass("disabled");
