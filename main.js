@@ -280,6 +280,11 @@ class openknx extends utils.Adapter {
         if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "boolean") {
             state.val = state.val ? true : false;
         }
+        if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "number") {
+            if (isNaN(Number(state.val))) {
+                this.log.warn("Value " +state.val + " for "+ id + " is not a number");
+            }
+        }
         //convert val into object for certain dpts
         if (tools.isDateDPT(dpt)) {
             //before composite check, date is also composite
