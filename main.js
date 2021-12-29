@@ -12,6 +12,7 @@ const projectImport = require(__dirname + "/lib/projectImport");
 
 const knx = require(__dirname + "/lib/knx"); //todo copy for the moment
 const tools = require("./lib/tools.js");
+const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 
 class openknx extends utils.Adapter {
     /**
@@ -199,7 +200,7 @@ class openknx extends utils.Adapter {
             }
         }
 
-        const message = "Object with identical Group Address name not created: " + duplicates;
+        const message = "Object with an already existing Group Address name has not been created: " + duplicates;
         if (duplicates.length) {
             this.log.warn(message);
         }
@@ -494,61 +495,6 @@ class openknx extends utils.Adapter {
                 }
             }
         );
-    }
-}
-
-class DoubleKeyedMap {
-    constructor() {
-        //id, ga
-        this.keymap = new Map();
-        //id,  iobroker object
-        this.data = new Map();
-        //id, knx dp
-        this.dp = new Map();
-    }
-    //update or add
-    set(id, address, data) {
-        this.keymap.set(address, id);
-        this.data.set(id, data);
-    }
-    //only dp returns transformed value, hold a reference to it
-    setDpById(id, dp) {
-        this.dp.set(id, dp);
-    }
-    getDpById(id) {
-        return this.dp.get(id);
-    }
-    getDpByAddress(address) {
-        return this.dp.get(this.keymap.get(address));
-    }
-    getDataById(id) {
-        return this.data.get(id);
-    }
-    getDataByAddress(address) {
-        return this.data.get(this.keymap.get(address));
-    }
-    getIdByAddress(address) {
-        return this.keymap.get(address);
-    }
-
-    //key value is id
-    [Symbol.iterator]() {
-        return {
-            index: -1,
-            data: this.data,
-            next() {
-                if (++this.index < this.data.size) {
-                    return {
-                        done: false,
-                        value: Array.from(this.data.keys())[this.index],
-                    };
-                } else {
-                    return {
-                        done: true,
-                    };
-                }
-            },
-        };
     }
 }
 
