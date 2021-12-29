@@ -1,6 +1,6 @@
 {
     "name": "iobroker.openknx",
-    "version": "0.1.11",
+    "version": "0.1.12",
     "description": "ioBroker knx Adapter",
     "author": "boellner",
     "homepage": "https://github.com/iobroker-community-adapters/ioBroker.openknx.git",
@@ -19,6 +19,7 @@
         "@iobroker/adapter-core": "^2.5.1",
         "knx": "2.4.1",
         "xmldom": "^0.6.0"
+        "similarity": "^1.2.1"
     },
     "devDependencies": {
         "@alcalzone/release-script": "^2.2.1",

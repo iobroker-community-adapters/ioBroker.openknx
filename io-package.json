@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "openknx",
-        "version": "0.1.11",
+        "version": "0.1.12",
         "news": {
             "0.1.9": {
                 "en": "Test Release",
@@ -81,7 +81,10 @@
         "gwipport": "3671",
         "eibadr": "1.1.1",
         "bind": "",
-        "frameInterval": 50
+        "frameInterval": 50,
+        "statusRegex": "stat(e|us)|' 'rm|rückmeldung\\s|\\svalue/",
+        "regexSimil": 0.9,
+        "aliasPath": "alias.0"
     },
     "objects": [],
     "instanceObjects": [

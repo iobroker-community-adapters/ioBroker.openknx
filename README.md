@@ -86,21 +86,23 @@ When starting, the adapter tries to read all GroupAdresses with have the autorea
 This could take a while and can produce a higher load on your KNX-bus. This ensures that the adapter operates with up-to-date values from the start.
 Autoread is done on the first connection with the knx bus after an adapter start or restart, not on every knx reconnection.  
 After adapter installation, open the adapter configuration. Fill in:
-#### KNX Gateway IP
+### KNX Gateway IP
 IP of your KNX IP gateway.
 
-##### Port
+### Port
 this is normally port 3671 of the KNX IP gateway.
 
-##### phys. EIB Adress
+### phys. EIB Adress
 Fill in physical address of the gateway in the format 1/1/1.
 
-##### Add only new Objects
+### Add only new Objects
 If checked, the import will skip overwriting existing communication objects.
 
-#### GA XML import
+### GA XML import
+![ETS export](docs/pictures/exportGA.png)
 1. In ETS go to Group Addresses, select export group address and select XML export in latest format version.
 ETS4 Format is not supported, it does not contain DPTs information.
+
 2. upload your ETS Export XML in the adapter via the GA XML-Import dialog
 3. Import will immediatelly start after file selection and give a status report after completion.  
 After the successful import a message shows how much objects where recognized. More detailed information could be found in the log.
@@ -108,11 +110,10 @@ After the successful import a message shows how much objects where recognized. M
 Hint on ETS configuration:  
 If you have different DPT Subtypes for the GA and in the communication objets that use this GA, then the ETS seems to use the DPT Type with the lowest number. In this case manually ensure that all fields are using the same datatype.
 
-#### Frames per sec
+### Frames per sec
 This settings protects the KNX bus from data flooding by limiting data frames to a certain rate. Not sent frames are put into a fifo buffer.
 
 # adapter migration
-
 ## migrate Node Red
 - in right side menu, select Export
 - select All Flows, Download
@@ -121,7 +122,6 @@ This settings protects the KNX bus from data flooding by limiting data frames to
 - select changed file
 - in the dialog select Flows (Subflows, Configuration-Nodes only if they are affected) -> new tabs get added
 - delete old flows manually
-
 
 ## migrate VIS
 - Open Vis Editor
@@ -153,12 +153,12 @@ This settings protects the KNX bus from data flooding by limiting data frames to
 
 # howto use the adapter & basic concept
 
-## ACK flags
+### ACK flags
 Application shall not set ack flag, application is notified from this adapter by the ack flag if data is updated.
 KNX Stack sets the ack flag of the linked IoBroker object on receiption of a group address.
 Sent frames on KNX do not result into a ack of the writing object.
 
-## Node Red complex datatype example
+### Node Red complex datatype example
 Create a function node that connects to a ioBroker out node that connects with a KNX object of DPT2.
   msg.payload =  {"priority":1 ,"data":0};
   return msg;
@@ -168,7 +168,7 @@ Enable expert mode to enable switching between different log levels. Default log
 ![loglevel](docs/pictures/loglevel.png)
 
 # IOBroker Communication Object description
-
+IoBroker defines Objects to hold communication interfaces settings.  
 GA import generates a communication object folder structure following the ga main-group/middle-group scheme. Each groupaddress is an oject with following automatically generated data.
 
 IoBroker state roles (https://github.com/ioBroker/ioBroker/blob/master/doc/STATE_ROLES.md) have value 'state' by default. Some more granular values are derieved from the DPT, for example Date or Switch.
@@ -206,13 +206,13 @@ Autoread is set to false where it is clear from the DPT that this is a trigger s
     "ts": 1638913951639
     }
 
-
 # Adapter communication Interface Description
 Handeled DPTs are: 1-21,232,237,238  
 Unhandeled DPTs are written as raw buffers, the interface is a sequencial string of hexadecimal numbers. For example write '0102feff' to send values 0x01 0x02 0xfe 0xff on the bus. 
 Where number datatype is used please note that interface values can be scaled.
 
-#### API call
+### API call
+IoBroker defines States as communication interface.
 
     setState(
         id: string,                                     // object path
@@ -221,12 +221,9 @@ Where number datatype is used please note that interface values can be scaled.
         c: 'GroupValue_Read'                            //optional comment, set this value to trigger a bus read to this object, given StateValue is ignored
     ): void;
 
-
-
-#### Description of all DPTs
-
-| KNX DPT   | javascript datatype    | special values                                                                                       | value range                               |remark|
-| --------- | ---------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------- ||
+### Description of all DPTs
+| KNX DPT   | javascript datatype    | special values                                                                                       | value range                               | remark                                              |
+| --------- | ---------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------- | --------------------------------------------------- |
 | DPT-1     | boolean                |                                                                                                      | false, true                               ||
 | DPT-2     | object                 | {"priority":1 bit,"data":1 bit}                                                                      | -                                         ||
 | DPT-3     | object                 | {"decr_incr":1 bit,"data":2 bit}                                                                     | -                                         ||
@@ -247,16 +244,15 @@ Where number datatype is used please note that interface values can be scaled.
 | DPT-12    | number                 |                                                                                                      | 4-byte unsigned value                     ||
 | DPT-13    | number                 |                                                                                                      | 4-byte signed value                       ||
 | DPT-15    | number                 |                                                                                                      | 4-byte                                    ||
-| DPT-17    | number                 |                                                                                                      | 1-byte                                    |DPT_SceneNumber removed from autoread|
+| DPT-17    | number                 |                                                                                                      | 1-byte                                    | DPT_SceneNumber removed from autoread|
 | DPT-20    | number                 |                                                                                                      | 1-byte                                    ||
 | DPT-238   | number                 |                                                                                                      | 1-byte                                    ||
 | DPT-10    | number for Date Object |                                                                                                      | -                                         ||
 | DPT-11    | number for Date Object |                                                                                                      | -                                         ||
 | DPT-19    | number for Date Object |                                                                                                      | -                                         ||
-| DPT-26    | string                 | e.g. 00010203..                                                                                      | -                                         |Datapoint Type DPT_SceneInfo removed from autoread|
-| DPT-238   | string                 | e.g. 00010203..                                                                                      | -                                         |DPT_SceneConfig removed from autread|
+| DPT-26    | string                 | e.g. 00010203..                                                                                      | -                                         | Datapoint Type DPT_SceneInfo not read by autread|
+| DPT-238   | string                 | e.g. 00010203..                                                                                      | -                                         | DPT_SceneConfig not read by autread|
 | rest      | string                 | e.g. 00010203..                                                                                      | -                                         ||
-
 
 Only time and date information is exchanged with KNX time based datatypes, e.g. DPT-19 has unsupported fields for signal quality.  
 
@@ -272,37 +268,46 @@ DPT11 is date (dd/mm/yyyy): the same applies for DPT11, you'll need to ignore th
 
 (KNX specification of DPTs https://www.knx.org/wAssets/docs/downloads/Certification/Interworking-Datapoint-types/03_07_02-Datapoint-Types-v02.02.01-AS.pdf)
 
-#### group value write
+### group value write
 Sending is triggered by writing a communication object.
 Communication object is triggered when a write frame is received on the bus.
 
-#### group value read
+### group value read
 Sending can be triggered by writing a communicaton object with comment.
 Receiving, if configured will trigger a group value response (limitation: group value write at the moment) of the actual c.o. value, see below.
 
-#### group value response
+### group value response
 If answer_groupValueResponse is set to true, then the adapter will reply with a GroupValue_response to a previously received GroupValue_read request.
 
 # Features
-* fast import of groupaddresses in XML format
-* stable knx stack
-* interpretation of many DPTs
-* raw read and write of unsupported DPTs
-* support of group value read and group value write, group value write as response to group value request
-* Autoread
+* stable and reliable knx stack
+* easy interface to group adresses of many DPTs, raw read and write for other DPTs
+* support of KNX group value read and group value write and group value response
 * free open source
+* no dependencies to cloud services, runs without internet access
+* Autoread on start
+* fast import of group addresses in XML format
+* create joint alias objects that react on status inputs
 
 # Known Problems
-- 
+- none
 
 # Limitations
 - only three level group addresses are supported
 - ETS 4 export file format is not supported
 
 ## Changelog
-### 0.1.11 (2021-12-..)
+### 0.1.11 (2021-12-28)
 * feature: remove more scene DPTs from default autoread
 * feature: sends GroupValue_Response on GroupValue_Read if configured
+* feature: admin dialog with option to generate aliases (beta)
+* feature: admin dialog reactivates after adapter reset
+* feature: add support for DPT 7.600
+* feature: show logs of knx library
+* fix: filter out logs with device address bus interactions
+* fix: filter ga names that are forbidden in IOB
+* fix: reply with groupvalueresponse on request, not with groupvaluewrite
+* fix: remove more scene dpts from autoread
 
 ### 0.1.10 (2021-12-24)
 * fix: interface to write objects corrected
@@ -351,7 +356,6 @@ If answer_groupValueResponse is set to true, then the adapter will reply with a 
 * (boellner) feature: import ga xml
 
 ## License
-
 					GNU GENERAL PUBLIC LICENSE
 ==========================
 Copyright (c) 2021 boellner
