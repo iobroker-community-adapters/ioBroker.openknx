@@ -82,9 +82,10 @@
         "eibadr": "1.1.1",
         "bind": "",
         "frameInterval": 50,
-        "statusRegex": "stat(e|us)|' 'rm|rückmeldung\\s|\\svalue/",
+        "statusRegex": "stat(e|us)| rm|rückmeldung|\\svalue",
         "regexSimil": 0.9,
-        "aliasPath": "alias.0"
+        "aliasPath": "alias.0",
+        "aliasRange": false
     },
     "objects": [],
     "instanceObjects": [
