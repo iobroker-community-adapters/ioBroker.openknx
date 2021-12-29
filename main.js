@@ -132,7 +132,7 @@ class openknx extends utils.Adapter {
                     this.log.info("Create aliases...");
                     projectImport.findStatusGAs(this, this.gaList, (count) => {
                         if (obj.callback) {
-                            let res = {
+                            const res = {
                                 error: null,
                                 count: count,
                             };
@@ -345,11 +345,11 @@ class openknx extends utils.Adapter {
                             if (this.gaList.getDataById(key).native.address.match(/\d*\/\d*\/\d*/) && this.gaList.getDataById(key).native.dpt) {
                                 try {
                                     const dp = new knx.Datapoint({
-                                            ga: this.gaList.getDataById(key).native.address,
-                                            dpt: this.gaList.getDataById(key).native.dpt,
-                                            autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
-                                        },
-                                        this.knxConnection
+                                        ga: this.gaList.getDataById(key).native.address,
+                                        dpt: this.gaList.getDataById(key).native.dpt,
+                                        autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
+                                    },
+                                    this.knxConnection
                                     );
                                     this.gaList.setDpById(key, dp);
                                     cnt_withDPT++;
@@ -386,7 +386,7 @@ class openknx extends utils.Adapter {
                 //src: KnxDeviceAddress, dest: KnxGroupAddress
                 event: (/** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
                     let convertedVal;
-                    
+
                     if (src == this.config.eibadr) {
                         //called by self, avoid loop
                         //console.log('receive self ga: ', dest);
@@ -399,10 +399,10 @@ class openknx extends utils.Adapter {
                         return;
                     }
                     if (!this.gaList.getDpByAddress(dest)) {
-                        this.log.warn("Ignoring " + evt + " received on unknown ga: " + dest);
+                        this.log.warn("Ignoring " + evt + " received on unknown GA: " + dest + ". GA was not in imported XML");
                         return;
                     }
-                    
+
                     if (tools.isStringDPT(this.gaList.getDataByAddress(dest).native.dpt)) {
                         convertedVal = this.gaList.getDpByAddress(dest).current_value;
                     } else {
