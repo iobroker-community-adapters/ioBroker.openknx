@@ -15,11 +15,24 @@
         "type": "git",
         "url": "https://github.com/iobroker-community-adapters/ioBroker.openknx"
     },
+    "dependencies_unused": {
+        "binary-parser": "^1.1.5",
+        "binary-protocol": "^0.0.0",
+        "fs": "^0.0.2",
+        "ipaddr.js": "1.2.0",
+        "ipv4.js": "^0.0.2",
+        "machina": "^2.0.0-1",
+        "similarity": "^1.1.0",
+        "xml2js": "^0.4.17",
+        "xml2js-xpath": "^0.7.0"
+    },
     "dependencies": {
         "@iobroker/adapter-core": "^2.5.1",
-        "knx": "^2.4.1",
+        "deep-clone": "^3.0.3",
+        "knx": "2.4.1",
         "similarity": "^1.2.1",
-        "xmldom": "^0.6.0",
+        "underscore": "^1.8.3",
+        "xmldom": "^0.1.27",
         "xpath": "0.0.23"
     },
     "devDependencies": {
