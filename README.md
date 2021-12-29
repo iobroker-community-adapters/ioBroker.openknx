@@ -297,6 +297,13 @@ If answer_groupValueResponse is set to true, then the adapter will reply with a 
 - ETS 4 export file format is not supported
 
 ## Changelog
+### 0.1.12 (2021-12-30)
+* feature: improve alias status search algorithm, add units
+* feature: notify user after import if no dpt subtype is set
+* fix: library did not allow to write possible 0 values to certain dpts
+* fix: admin dialog ui fixes, better presentation of some warnings
+
+
 ### 0.1.11 (2021-12-28)
 * feature: remove more scene DPTs from default autoread
 * feature: sends GroupValue_Response on GroupValue_Read if configured
