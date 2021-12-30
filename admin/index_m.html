@@ -166,7 +166,7 @@
                 $key.val(settings[id]).focusout("change", function () {
                     if (id === "gwip") {
                         var ip1 = $("#gwip").val();
-                        if (ValidateIPaddress(ip1)) {
+                        if (isIpValid(ip1)) {
                             $("#gwip").val(ip1);
                         } else {
                             alert("invalid IP address");
@@ -175,7 +175,7 @@
 
                     if (id === "gwipport") {
                         var gwipport1 = $("#gwipport").val();
-                        if (ValidatePortaddress(gwipport1)) {
+                        if (isPortValid(gwipport1)) {
                             $("#gwipport").val(gwipport1);
                         } else {
                             alert("invalid port number");
@@ -184,7 +184,7 @@
 
                     if (id === "eibadr") {
                         var eibadr1 = $("#eibadr").val();
-                        if (ValidateEIBaddress(eibadr1)) {
+                        if (isKnxAddressValid(eibadr1)) {
                             $("#eibadr").val(eibadr1);
                         } else {
                             alert("physical KNX address in format a/b/c not valid");
@@ -216,8 +216,8 @@
                 });
             });
 
-            $("#etsFile").change(fileHandler);
-            $("#createAlias").change(aliasHandler);
+            $("#etsFile").change(processXmlFile);
+            $("#createAlias").change(processAlias);
             //if not alive disable buttons
             getIsAdapterAlive(function (isAlive) {
                 if (!isAlive) {
@@ -229,7 +229,7 @@
             });
 
             $('#createAlias').on('click', function () {
-                aliasHandler();
+                processAlias();
             });
 
             //start with no changed settings, disable save button
@@ -256,7 +256,7 @@
             callback(obj);
         }
 
-        function fileHandler(event) {
+        function processXmlFile(event) {
             event.preventDefault();
             var file = event.dataTransfer ? event.dataTransfer.files[0] : event.target.files[0];
             if (!file) {
@@ -264,7 +264,6 @@
                 return false;
             }
    
-
             if (file.name.split(".").pop() == "xml") {
                 $("#etsFile").prop("disabled", true);
                 $("#createAlias").addClass("disabled");
@@ -274,7 +273,7 @@
                 var reader = new FileReader();
                 reader.addEventListener("load", function readFile(event) {
                     $("#etsFile").replaceWith($(etsFile));
-                    $("#etsFile").change(fileHandler);
+                    $("#etsFile").change(processXmlFile);
                     showToast(null, _("Import started..."), null, 3000);
                     $("#progress").show();
                     $("#onlyAddNewObjects").addClass("disabled");
@@ -300,15 +299,12 @@
                 reader.readAsText(file);
             } else if (file.name.split(".").pop() == "knxproj") {
                 showMessage(_("KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export"));
-         
             } else {
                 showMessage(_("Unsupported file format"));
-      
             }
         }
 
-        function aliasHandler() {
-
+        function processAlias() {
             $("#etsFile").prop("disabled", true);
             $("#createAlias").addClass("disabled");
             $(".file-field .btn").addClass("disabled");
@@ -330,17 +326,17 @@
             });
         }
 
-        function ValidateIPaddress(inputText) {
-            var format = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        function isIpValid(inputText) {
+            var format = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$/;
             return !!inputText.match(format);
         }
 
-        function ValidatePortaddress(inputText) {
+        function isPortValid(inputText) {
             var format = /^([1-9][0-9]{0,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$/;
             return !!inputText.match(format);
         }
 
-        function ValidateEIBaddress(inputText) {
+        function isKnxAddressValid(inputText) {
             var format = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
             return !!inputText.match(format);
         }
