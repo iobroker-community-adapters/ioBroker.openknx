@@ -42,9 +42,11 @@ jobs:
             - name: Test package files
               run: npm run test:package
 
+
             #unit tests independent of environment
             - name: Run unit tests
               run: npm run test
+
 
     # Runs adapter tests on all supported node versions and OSes
     adapter-tests:
