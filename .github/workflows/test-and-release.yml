@@ -44,7 +44,7 @@ jobs:
 
             #unit tests independent of environment
             - name: Run unit tests
-              run: npm run test:unit
+              run: npm run test
 
     # Runs adapter tests on all supported node versions and OSes
     adapter-tests:
