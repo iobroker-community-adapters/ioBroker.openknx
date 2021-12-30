@@ -113,6 +113,9 @@ If you have different DPT Subtypes for the GA and in the communication objets th
 ### Frames per sec
 This settings protects the KNX bus from data flooding by limiting data frames to a certain rate. Not sent frames are put into a fifo buffer.
 
+### Alias
+KNX devices can have ga's for state feedback that belong to a commanding ga. Some applications like certain VIS widgets expect a combined status and actuation object. You can combine these states into one alias by using a separate alias id to write to and another to read from. The menu helps to create a matching pair according to the naming convention with the given filtering rule.
+
 # adapter migration
 ## migrate Node Red
 - in right side menu, select Export
@@ -279,6 +282,21 @@ Receiving, if configured will trigger a group value response (limitation: group 
 ### group value response
 If answer_groupValueResponse is set to true, then the adapter will reply with a GroupValue_response to a previously received GroupValue_read request.
 
+### mapping to KNX Flags
+The KNX object flags define the bus behavior of the object they represent.
+6 different object flags are defined.
+
+| Flag                      | Flag de                  | Adapter usage                                     ||
+| ------------------------- | ------------------------ | ------------------------------------------------- | --------------------------------------------- |
+|C: the Communication flag  | K: Kommunikations-Flag   | always set                                        ||
+|R: the Read flag           | L: Lese-Flag             | object native.answer_groupValueResponse           ||
+|T: the Transmit flag       | Ü: Übertragen-Flag       | object common.write                               ||
+|W: the Write flag          | S: Schreiben-Flag        | object common.read                                | bus can modify the object                     |
+|U: the Update flag         | A: Aktualisieren-Flag    | object common.read                                | update object on incoming GroupValueResponses |
+|I: the Initialization flag | I: Initialisierungs-Flag | object native.autoread                            |                                               |
+
+L-Flag: Objekt antwortet auf GroupValueRead mit GroupValueResponse mit dem Wert (Lesbar). Nur ein KO je GA sollte das gesetzt haben, idealerweise derjenige, der den echten Zustand am besten kennt, üblicherweise der Aktor!
+
 # Features
 * stable and reliable knx stack
 * easy interface to group adresses of many DPTs, raw read and write for other DPTs
@@ -297,6 +315,10 @@ If answer_groupValueResponse is set to true, then the adapter will reply with a 
 - ETS 4 export file format is not supported
 
 ## Changelog
+### 0.1.13 (2021-12-30)
+* bugfix: state.value of of type object must be serialized
+* bugfix: alias algorithm error handling, takover more info to alias
+
 ### 0.1.12 (2021-12-30)
 * feature: improve alias status search algorithm, add units
 * feature: notify user after import if no dpt subtype is set

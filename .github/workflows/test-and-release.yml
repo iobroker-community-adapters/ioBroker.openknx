@@ -38,12 +38,15 @@ jobs:
 
             - name: Lint source code
               run: npm run lint
+
             - name: Test package files
               run: npm run test:package
 
-            - run: npm test
-            - run: npm run test:integration
-              
+
+            #unit tests independent of environment
+            - name: Run unit tests
+              run: npm run test
+
 
     # Runs adapter tests on all supported node versions and OSes
     adapter-tests:
@@ -68,9 +71,6 @@ jobs:
 
             - name: Install Dependencies
               run: npm install
-
-            - name: Run unit tests
-              run: npm run test:unit
 
             - name: Run integration tests (unix only)
               if: startsWith(runner.OS, 'windows') == false
