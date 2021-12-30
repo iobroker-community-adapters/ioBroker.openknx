@@ -144,6 +144,7 @@ class openknx extends utils.Adapter {
                 case "reset":
                     this.log.info("Restarting...");
                     this.restart();
+                // eslint-disable-next-line no-fallthrough
                 default:
                     this.log.warn("Unknown command: " + obj.command);
                     break;
@@ -164,8 +165,7 @@ class openknx extends utils.Adapter {
         }
         if (onlyAddNewObjects) {
             //if user setting Add only new Objects write only new objects
-            //extend object will overwrite user made element changes if known in the import, not intended
-            //this.extendObject(this.mynamespace + "." + objects[index]._id, objects[index], (err, obj) => {
+            //extend object would overwrite user made element changes if known in the import, not intended
             this.setObjectNotExists(this.mynamespace + "." + objects[index]._id, objects[index], (err, obj) => {
                 if (err) {
                     this.log.warn("error store Object " + objects[index]._id + " " + (err ? " " + err : ""));
@@ -218,13 +218,10 @@ class openknx extends utils.Adapter {
             //before object check
             ret = val.toString("hex");
         } else if (typeof val === "object") {
-            //keep as object
-            ret = val;
-        } else if (typeof val === "string") {
-            //keep as string
-            ret = val;
+            //https://github.com/ioBroker/ioBroker.docs/blob/master/docs/en/dev/objectsschema.md#states
+            ret = JSON.stringify(val);
         } else {
-            //keep boolean and number
+            //keep sring, boolean and number
             ret = val;
         }
         return ret;
@@ -290,16 +287,17 @@ class openknx extends utils.Adapter {
             //before composite check, date is also composite
             knxVal = new Date(state.val);
         } else if (this.gaList.getDataById(id).native.valuetype == "composite") {
-            //input from IOB is either object or string in object notation, type of this conversion is object
+            //input from IOB is either object or string in object notation, type of this conversion is object needed by the knx lib
             if (typeof state.val == "object") {
                 knxVal = state.val;
-            } else
+            } else {
                 try {
                     knxVal = JSON.parse(state.val);
                 } catch (e) {
                     this.log.warn("stateChange: unsupported value format " + state.val + " for " + ga);
                     return;
                 }
+            }
         } else if (tools.isStringDPT(dpt)) {
             knxVal = state.val;
         } else if (tools.isUnknownDPT(dpt)) {
