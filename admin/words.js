@@ -107,17 +107,17 @@ systemDictionary = {
         "pl": "generuj połączenia",
         "zh-cn": "产生连接"
     },
-    "This is deprecated. Please rethink to use Aliases.": {
-        "en": "This is deprecated. Please rethink to use Aliases.",
-        "de": "Dies ist veraltet. Bitte überdenken Sie die Verwendung von Aliasen.",
-        "ru": "Это устарело. Пожалуйста, подумайте еще раз, чтобы использовать псевдонимы.",
-        "pt": "Isso está obsoleto. Por favor, repense para usar aliases.",
-        "nl": "Dit wordt afgeraden. Denk er nog eens over na om aliassen te gebruiken.",
-        "fr": "Ceci est obsolète. Veuillez repenser l'utilisation des alias.",
-        "it": "Questo è deprecato. Si prega di ripensare all'uso degli alias.",
-        "es": "Esto está desaprobado. Por favor, reconsidere el uso de alias.",
-        "pl": "To jest przestarzałe. Proszę przemyśleć użycie aliasów.",
-        "zh-cn": "这已被弃用。请重新考虑使用别名。"
+    "This is deprecated. Please rethink to use Aliases. This will not supported in the future.": {
+        "en": "This is deprecated. Please rethink to use Aliases. This will not more supported in the future.",
+        "de": "Dies ist veraltet. Bitte überdenken Sie die Verwendung von Aliasen. Dieses Feature wird offiziell nicht unterstützt.",
+        "ru": "Это устарело. Пожалуйста, подумайте еще раз, чтобы использовать псевдонимы. Это больше не будет поддерживаться в будущем.",
+        "pt": "Isso está obsoleto. Por favor, repense para usar aliases. Isso não terá mais suporte no futuro.",
+        "nl": "Dit wordt afgeraden. Denk er nog eens over na om aliassen te gebruiken. Dit zal in de toekomst niet meer ondersteund worden.",
+        "fr": "Ceci est obsolète. Veuillez repenser l'utilisation des alias. Cela ne sera plus pris en charge à l'avenir.",
+        "it": "Questo è deprecato. Si prega di ripensare all'uso degli alias. Questo non sarà più supportato in futuro.",
+        "es": "Esto está desaprobado. Por favor, reconsidere el uso de alias. Esto no tendrá más apoyo en el futuro.",
+        "pl": "To jest przestarzałe. Proszę przemyśleć użycie aliasów. To nie będzie więcej obsługiwane w przyszłości.",
+        "zh-cn": "这已被弃用。请重新考虑使用别名。将来不会更多地支持这一点。"
     },
     "Deprecated": {
         "en": "Deprecated",
