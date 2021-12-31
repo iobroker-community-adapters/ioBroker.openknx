@@ -97,6 +97,9 @@
             height: calc(100% - 64px);
             overflow: auto;
         }
+        .m.react-dark .tabs .tab a.active, .m.react-dark .tabs .tab a:hover {
+            background-color: #000;
+        }
     </style>
 
     <script type="text/javascript">
@@ -117,9 +120,11 @@
                     $(".file-field .file-path").prop("disabled", false);
                     $("#etsFile").prop("disabled", false);
                     $("#createAlias").removeClass("disabled");
+                    $("#createASConnection").removeClass("disabled");
                 } else {
                     $("#etsFile").prop("disabled", true);
                     $("#createAlias").addClass("disabled");
+                    $("#createASConnection").addClass("disabled");
                     $(".file-field .btn").addClass("disabled");
                     $(".file-field .file-path").prop("disabled", true);
                 }
@@ -148,6 +153,7 @@
             showConfigDialog();
             $("#progress").hide();
             $("#progress2").hide();
+            $("#progress3").hide();
 
             $(".value").each(function () {
                 var $key = $(this);
@@ -218,11 +224,13 @@
 
             $("#etsFile").change(processXmlFile);
             $("#createAlias").change(processAlias);
+            $("#createASConnection").change(processASConnection);
             //if not alive disable buttons
             getIsAdapterAlive(function (isAlive) {
                 if (!isAlive) {
                     $("#etsFile").prop("disabled", true);
                     $("#createAlias").addClass("disabled");
+                    $("#createASConnection").addClass("disabled");
                     $(".file-field .btn").addClass("disabled");
                     $(".file-field .file-path").prop("disabled", true);
                 }
@@ -230,6 +238,9 @@
 
             $('#createAlias').on('click', function () {
                 processAlias();
+            });
+            $('#createASConnection').on('click', function () {
+                processASConnection();
             });
 
             //start with no changed settings, disable save button
@@ -267,6 +278,7 @@
             if (file.name.split(".").pop() == "xml") {
                 $("#etsFile").prop("disabled", true);
                 $("#createAlias").addClass("disabled");
+                $("#createASConnection").addClass("disabled");
                 $(".file-field .btn").addClass("disabled");
                 $(".file-field .file-path").prop("disabled", true);
                 window.isProcessingRequest=true;
@@ -307,6 +319,7 @@
         function processAlias() {
             $("#etsFile").prop("disabled", true);
             $("#createAlias").addClass("disabled");
+            $("#createASConnection").addClass("disabled");
             $(".file-field .btn").addClass("disabled");
             $(".file-field .file-path").prop("disabled", true);
             $("#progress2").show();
@@ -325,7 +338,32 @@
                 $("#progress2").hide();
             });
         }
-
+        function processASConnection() {
+            this.confirmMessage(_("This is deprecated. Please rethink to use Aliases. This will not supported in the future."), _("Deprecated"), null, function (confirmation) {
+            if (confirmation) {
+                $("#etsFile").prop("disabled", true);
+                $("#createAlias").addClass("disabled");
+                $("#createASConnection").addClass("disabled");
+                $(".file-field .btn").addClass("disabled");
+                $(".file-field .file-path").prop("disabled", true);
+                $("#progress3").show();
+                window.isProcessingRequest = true;
+                sendTo(null, "createASConnection", null, function (result) {
+                    if (!result || result.error) {
+                        showMessage(_("Error"));
+                        sendTo(null, "reset", null);
+                        showToast(null, _("Restarting adapter"), null, 10000);
+                    } else {
+                        showMessage(_("Generated %s connections", result.count));
+                        sendTo(null, "reset", null);
+                        showToast(null, _("Restarting adapter"), null, 10000);
+                    }
+                    window.isProcessingRequest = false;
+                    $("#progress3").hide();
+                });
+            }
+    });
+}
         function isIpValid(inputText) {
             var format = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$/;
             return !!inputText.match(format);
@@ -379,8 +417,8 @@
         </nav>
         <div class="row">
             <ul class="tabs">
-                <li class="tab col s5 dialog-config c-tab translate"><a onclick="showConfigDialog()">Settings and Import</a></li>
-                <li class="tab col s5 dialog-extended c-tab translate"><a onclick="showExtendedDialog()">Alias Generation</a></li>
+                <li class="tab col s5 dialog-config c-tab"><a onclick="showConfigDialog()" class="translate">Settings and Import</a></li>
+                <li class="tab col s5 dialog-extended c-tab"><a onclick="showExtendedDialog()" class="translate">Alias Generation</a></li>
             </ul>
         </div>
 
@@ -455,35 +493,62 @@
             <div class="card">
                 <div class="card-content">
                     <div class="row">
-                        <div class="col s12"> 
-                            <h6><span class="translate">To merge Action and Status GA in one ioBroker Object you can let the Adapter generate</span><span>  <a href="https://www.iobroker.net/#de/documentation/dev/aliases.md" target="_blank">Aliases</a></span></h6>
-                            <div class="input-field col s6 m6 l5">
-                                <input class="value" id="statusRegex" type="text" />
-                                <label class="translate" for="statusRegex">Regex to identify Status GAs (ending with status, rm, rückmeldung..).</label>
-                              
-                            </div>
-                            <div class="input-field col s6 m6 l2">
-                                <input class="value" id="regexSimil" type="number" />
-                                <label class="translate" for="regexSimil">Minimum Similarity 0-1</label>
-                              
-                            </div>
-                            <div class="input-field col s6 m6 l2">
-                                <input class="value" id="aliasPath" type="text" />
-                                <label class="translate" for="aliasPath">Alias path</label>
-                            </div>
-                            <div class="col s12">
-                                <a id="createAlias" class="waves-effect waves-light btn"><i
-                                        class="material-icons right">list</i><span class="translate">generate aliases</span></a>
-                            </div>
-                            <div class="input-field">
-                                <input class="value" id="aliasRange" type="checkbox" />
-                                <label class="translate" for="aliasRange">include group range in search (save first)</label>
-                            </div>
-                            <div class="progress" id="progress2">
-                                <div class="indeterminate"></div>
-                            </div>
-                            
+                        <h6><span class="translate">To find Action and Status GA pairs we assume the name is similar only status or rückmeldung is added</span></h6>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s6 m6 l5">
+                            <input class="value" id="statusRegex" type="text" />
+                            <label class="translate" for="statusRegex">Regex to identify Status GAs (ending with status, rm, rückmeldung..).</label>
                         </div>
+                        <div class="input-field col s6 m6 l2">
+                            <input class="value" id="regexSimil" type="number" />
+                            <label class="translate" for="regexSimil">Minimum Similarity 0-1</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                    <div class="row">
+                        <h6>
+                            <span class="translate">To merge Action and Status GA in one ioBroker Object you can let the Adapter generate</span
+                            ><span> <a href="https://www.iobroker.net/#de/documentation/dev/aliases.md" target="_blank">Aliases</a></span>
+                        </h6>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s6 m6 l2">
+                            <input class="value" id="aliasPath" type="text" />
+                            <label class="translate" for="aliasPath">Alias path</label>
+                        </div>
+                        <div class="col s12">
+                            <a id="createAlias" class="waves-effect waves-light btn"><i class="material-icons right">list</i><span class="translate">generate aliases</span></a>
+                        </div>
+                        <div class="input-field">
+                            <input class="value" id="aliasRange" type="checkbox" />
+                            <label class="translate" for="aliasRange">include group name in search (save first!)</label>
+                        </div>
+                        <div class="progress" id="progress2">
+                            <div class="indeterminate"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                    <div class="row">
+                        <h6>
+                            <span class="translate">DEPRECATED! Connecting Action and Status GA directly like the knx adapter</span>
+                        </h6>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <a id="createASConnection" class="waves-effect waves-light btn"><i class="material-icons right">list</i><span class="translate">generate connections</span></a>
+                        </div>
+
+                        <div class="progress" id="progress3">
+                            <div class="indeterminate"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

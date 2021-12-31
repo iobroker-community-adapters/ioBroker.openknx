@@ -34,8 +34,8 @@ systemDictionary = {
         "es": "Similitud mínima 0-1",
         "pl": "Minimalne podobieństwo 0-1",
         "zh-cn": "最小相似度 0-1"
-      },
-      "Alias path": {
+    },
+    "Alias path": {
         "en": "Alias path",
         "de": "Alias-Pfad",
         "ru": "Путь псевдонима",
@@ -46,8 +46,8 @@ systemDictionary = {
         "es": "Ruta de alias",
         "pl": "Ścieżka aliasu",
         "zh-cn": "别名路径"
-      },
-      "generate aliases": {
+    },
+    "generate aliases": {
         "en": "generate aliases",
         "de": "Aliase generieren",
         "ru": "генерировать псевдонимы",
@@ -58,8 +58,8 @@ systemDictionary = {
         "es": "generar alias",
         "pl": "generować aliasy",
         "zh-cn": "生成别名"
-      },
-      "To merge Action and Status GA in one ioBroker Object you can let the Adapter generate": {
+    },
+    "To merge Action and Status GA in one ioBroker Object you can let the Adapter generate": {
         "en": "To merge Action and Status GA in one ioBroker Object you can let the Adapter generate",
         "de": "Um Aktor und Zustand GA in einem ioBroker-Objekt zusammenzuführen, können Sie den Adapter Aliase generieren lassen.",
         "ru": "Чтобы объединить Action и Status GA в один объект ioBroker, вы можете позволить адаптеру сгенерировать",
@@ -70,8 +70,8 @@ systemDictionary = {
         "es": "Para fusionar Acción y Estado GA en un Objeto ioBroker, puede dejar que el Adaptador genere",
         "pl": "Aby połączyć działanie i status GA w jednym obiekcie ioBroker, możesz pozwolić adapterowi na generowanie",
         "zh-cn": "要将 Action 和 Status GA 合并到一个 ioBroker 对象中，您可以让适配器生成"
-      },
-      "Click here for a manual to migrate from knx.0 to openknx.0": {
+    },
+    "Click here for a manual to migrate from knx.0 to openknx.0": {
         "en": "Click here for a manual to migrate from knx.0 to openknx.0",
         "de": "Klicken Sie hier für eine Anleitung zur Migration von knx.0 zu openknx.0",
         "ru": "Щелкните здесь, чтобы получить руководство по переходу с knx.0 на openknx.0",
@@ -82,6 +82,102 @@ systemDictionary = {
         "es": "Haga clic aquí para obtener un manual para migrar de knx.0 a openknx.0",
         "pl": "Kliknij tutaj, aby uzyskać instrukcję migracji z knx.0 do openknx.0",
         "zh-cn": "单击此处获取从 knx.0 迁移到 openknx.0 的手册"
-      }
+    },
+    "DEPRECATED! Connecting Action and Status GA directly like the knx adapter": {
+        "en": "DEPRECATED! Connecting Action and Status GA directly like the knx adapter",
+        "de": "VERALTET! Action und Status GA direkt verbinden wie der knx-Adapter",
+        "ru": "УСТАРЕЛО! Подключение Action и Status GA напрямую, как адаптер knx",
+        "pt": "DESCONTINUADA! Conectando Action e Status GA diretamente como o adaptador knx",
+        "nl": "VEROUDERD! Actie en Status GA rechtstreeks verbinden zoals de knx-adapter",
+        "fr": "DÉCONSEILLÉ ! Connecter Action et Status GA directement comme l'adaptateur knx",
+        "it": "DEPRECATO! Collegamento di Action e Status GA direttamente come l'adattatore knx",
+        "es": "¡OBSOLETO! Conectando Action y Status GA directamente como el adaptador knx",
+        "pl": "PRZESTARZAŁE! Podłączanie akcji i statusu GA bezpośrednio jak adapter knx",
+        "zh-cn": "已弃用！像 knx 适配器一样直接连接 Action 和 Status GA"
+    },
+    "generate connections": {
+        "en": "generate connections",
+        "de": "Verbindungen herstellen",
+        "ru": "генерировать связи",
+        "pt": "gerar conexões",
+        "nl": "verbindingen genereren",
+        "fr": "générer des connexions",
+        "it": "generare connessioni",
+        "es": "generar conexiones",
+        "pl": "generuj połączenia",
+        "zh-cn": "产生连接"
+    },
+    "This is deprecated. Please rethink to use Aliases. This will not supported in the future.": {
+        "en": "This is deprecated. Please rethink to use Aliases. This will not more supported in the future.",
+        "de": "Dies ist veraltet. Bitte überdenken Sie die Verwendung von Aliasen. Dieses Feature wird offiziell nicht unterstützt.",
+        "ru": "Это устарело. Пожалуйста, подумайте еще раз, чтобы использовать псевдонимы. Это больше не будет поддерживаться в будущем.",
+        "pt": "Isso está obsoleto. Por favor, repense para usar aliases. Isso não terá mais suporte no futuro.",
+        "nl": "Dit wordt afgeraden. Denk er nog eens over na om aliassen te gebruiken. Dit zal in de toekomst niet meer ondersteund worden.",
+        "fr": "Ceci est obsolète. Veuillez repenser l'utilisation des alias. Cela ne sera plus pris en charge à l'avenir.",
+        "it": "Questo è deprecato. Si prega di ripensare all'uso degli alias. Questo non sarà più supportato in futuro.",
+        "es": "Esto está desaprobado. Por favor, reconsidere el uso de alias. Esto no tendrá más apoyo en el futuro.",
+        "pl": "To jest przestarzałe. Proszę przemyśleć użycie aliasów. To nie będzie więcej obsługiwane w przyszłości.",
+        "zh-cn": "这已被弃用。请重新考虑使用别名。将来不会更多地支持这一点。"
+    },
+    "Deprecated": {
+        "en": "Deprecated",
+        "de": "Veraltet",
+        "ru": "Устарело",
+        "pt": "Descontinuada",
+        "nl": "Verouderd",
+        "fr": "Obsolète",
+        "it": "Deprecato",
+        "es": "Obsoleto",
+        "pl": "Przestarzałe",
+        "zh-cn": "已弃用"
+    },
+    "Generated %s connections": {
+        "en": "Generated %s connections",
+        "de": "%s Verbindungen generiert",
+        "ru": "Создано %s  подключений",
+        "pt": "% S conexões geradas",
+        "nl": "%s verbindingen gegenereerd",
+        "fr": "%s connexions générées",
+        "it": "%s connessioni generate",
+        "es": "Conexiones %s  generadas",
+        "pl": "Wygenerowano %s połączeń",
+        "zh-cn": "生成了 %s 个连接"
+    },
+    "Alias Generation": {
+        "en": "Alias Generation",
+        "de": "Alias Generierung",
+        "ru": "Генерация псевдонима",
+        "pt": "Geração de Alias",
+        "nl": "Alias Generatie",
+        "fr": "Génération d'alias",
+        "it": "Generazione alias",
+        "es": "Generación de alias",
+        "pl": "Generowanie aliasów",
+        "zh-cn": "别名生成"
+    },
+    "Settings and Import": {
+        "en": "Settings and Import",
+        "de": "Einstellungen und Import",
+        "ru": "Настройки и импорт",
+        "pt": "Configurações e importação",
+        "nl": "Instellingen en importeren",
+        "fr": "Paramètres et importation",
+        "it": "Impostazioni e importazione",
+        "es": "Configuración e importación",
+        "pl": "Ustawienia i import",
+        "zh-cn": "设置和导入"
+    },
+    "To find Action and Status GA pairs we assume the name is similar only status or rückmeldung is added": {
+        "en": "To find Action and Status GA pairs we assume the name is similar only status or rückmeldung is added",
+        "de": "Um Action- und Status-GA-Paare zu finden, gehen wir davon aus, dass der Name ähnlich ist, nur die Endung status, rm oder rückmeldung hat",
+        "ru": "Чтобы найти пары Action и Status GA, мы предполагаем, что имя похоже, только добавлен статус или rückmeldung",
+        "pt": "Para encontrar pares de ação e status GA, presumimos que o nome é semelhante, apenas status ou rückmeldung é adicionado",
+        "nl": "Om Action en Status GA-paren te vinden, nemen we aan dat de naam vergelijkbaar is, alleen status of rückmeldung is toegevoegd",
+        "fr": "Pour trouver les paires Action et Statut GA, nous supposons que le nom est similaire, seul le statut ou rückmeldung est ajouté",
+        "it": "Per trovare le coppie Action e Status GA, supponiamo che il nome sia simile solo lo stato o viene aggiunto rückmeldung",
+        "es": "Para encontrar pares de acción y estado, asumimos que el nombre es similar solo estado o se agrega rückmeldung",
+        "pl": "Aby znaleźć pary akcji i statusu GA, zakładamy, że nazwa jest podobna, dodawany jest tylko status lub rückmeldung",
+        "zh-cn": "为了找到 Action 和 Status GA 对，我们假设名称相似，只是添加了 status 或 rückmeldung"
+    }
 
 };
