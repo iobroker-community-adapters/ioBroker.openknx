@@ -169,7 +169,7 @@ systemDictionary = {
     },
     "To find Action and Status GA pairs we assume the name is similar only status or rückmeldung is added": {
         "en": "To find Action and Status GA pairs we assume the name is similar only status or rückmeldung is added",
-        "de": "Um Action- und Status-GA-Paare zu finden, gehen wir davon aus, dass der Name ähnlich ist, nur die Endung Status oder Rückmeldung hat",
+        "de": "Um Action- und Status-GA-Paare zu finden, gehen wir davon aus, dass der Name ähnlich ist, nur die Endung status, rm oder rückmeldung hat",
         "ru": "Чтобы найти пары Action и Status GA, мы предполагаем, что имя похоже, только добавлен статус или rückmeldung",
         "pt": "Para encontrar pares de ação e status GA, presumimos que o nome é semelhante, apenas status ou rückmeldung é adicionado",
         "nl": "Om Action en Status GA-paren te vinden, nemen we aan dat de naam vergelijkbaar is, alleen status of rückmeldung is toegevoegd",
