@@ -299,7 +299,7 @@ L-Flag: Objekt antwortet auf GroupValueRead mit GroupValueResponse mit dem Wert 
 
 # Features
 * stable and reliable knx stack
-* easy interface to group adresses of many DPTs, raw read and write for other DPTs
+* Automatic encoding/deconding of KNX datagrams for most importants DPTs, raw read and write for other DPTs
 * support of KNX group value read and group value write and group value response
 * free open source
 * no dependencies to cloud services, runs without internet access
