@@ -13,6 +13,7 @@ const projectImport = require(__dirname + "/lib/projectImport");
 const knx = require(__dirname + "/lib/knx"); //todo copy for the moment
 const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
+const os = require('os');
 
 class openknx extends utils.Adapter {
     /**
@@ -49,7 +50,7 @@ class openknx extends utils.Adapter {
                     this.log.warn(args);
                 } else if (args.indexOf("[error]") !== -1) {
                     this.log.error(args);
-                }else if (args.indexOf("[trace]") !== -1) {
+                } else if (args.indexOf("[trace]") !== -1) {
                     this.log.silly(args);
                 } else {
                     this.log.info(args);
@@ -144,7 +145,7 @@ class openknx extends utils.Adapter {
                 case "reset":
                     this.log.info("Restarting...");
                     this.restart();
-                // eslint-disable-next-line no-fallthrough
+                    // eslint-disable-next-line no-fallthrough
                 default:
                     this.log.warn("Unknown command: " + obj.command);
                     break;
@@ -279,7 +280,7 @@ class openknx extends utils.Adapter {
         }
         if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "number") {
             if (isNaN(Number(state.val))) {
-                this.log.warn("Value " +state.val + " for "+ id + " is not a number");
+                this.log.warn("Value " + state.val + " for " + id + " is not a number");
             }
         }
         //convert val into object for certain dpts
@@ -331,7 +332,8 @@ class openknx extends utils.Adapter {
             ipAddr: this.config.gwip,
             ipPort: this.config.gwipport,
             physAddr: this.config.eibadr,
-            minimumDelay: this.config.frameInterval,
+            interface: this.translateInterface(this.config.localInterface),
+            minimumDelay: this.config.minimumDelay,
             //map set the log level for messsages printed on the console. This can be 'error', 'warn', 'info' (default), 'debug', or 'trace'.
             //log is written to console, not in IoB log
             loglevel: this.log.level == "silly" ? "trace" : this.log.level,
@@ -349,11 +351,11 @@ class openknx extends utils.Adapter {
                             if (this.gaList.getDataById(key).native.address.match(/\d*\/\d*\/\d*/) && this.gaList.getDataById(key).native.dpt) {
                                 try {
                                     const dp = new knx.Datapoint({
-                                        ga: this.gaList.getDataById(key).native.address,
-                                        dpt: this.gaList.getDataById(key).native.dpt,
-                                        autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
-                                    },
-                                    this.knxConnection
+                                            ga: this.gaList.getDataById(key).native.address,
+                                            dpt: this.gaList.getDataById(key).native.dpt,
+                                            autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
+                                        },
+                                        this.knxConnection
                                     );
                                     this.gaList.setDpById(key, dp);
                                     cnt_withDPT++;
@@ -386,9 +388,8 @@ class openknx extends utils.Adapter {
                 },
 
                 //KNX Bus event received
-
                 //src: KnxDeviceAddress, dest: KnxGroupAddress
-                event: (/** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
+                event: ( /** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
                     let convertedVal;
 
                     if (src == this.config.eibadr) {
@@ -396,7 +397,6 @@ class openknx extends utils.Adapter {
                         //console.log('receive self ga: ', dest);
                         return;
                     }
-
                     /* some checks */
                     if (dest == "0/0/0" || tools.isDeviceAddress(dest)) {
                         //seems that knx lib does not guarantee dest group adresses
@@ -469,8 +469,23 @@ class openknx extends utils.Adapter {
         }
     }
 
+    //admin dialog uses different name than knx lib
+    translateInterface(interfaceIp) {
+        const interfaces = os.networkInterfaces();
+
+        for (const [iface, addrs] of Object.entries(interfaces)) {
+            if (addrs)
+                for (const addr of addrs) {
+                    if (addr.address == interfaceIp) {
+                        return iface;
+                    }
+                }
+        }
+        return interfaceIp;
+    }
+
     main() {
-        this.log.info("Connecting to knx gateway:  " + this.config.gwip + ":" + this.config.gwipport + "   with phy. Adr: " + this.config.eibadr + " minimum send delay: " + this.config.frameInterval);
+        this.log.info("Connecting to knx gateway:  " + this.config.gwip + ":" + this.config.gwipport + "   with phy. Adr: " + this.config.eibadr + " minimum send delay: " + this.config.minimumDelay);
         this.log.info(utils.controllerDir);
         this.setState("info.connection", false, true);
 

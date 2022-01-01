@@ -23,79 +23,15 @@
             display: none;
         }
 
-        #drop-zone {
-            width: calc(100% - 10px);
-            height: calc(100% - 10px);
-            position: absolute;
-            opacity: 0.8;
-            top: 0;
-            left: 0;
-            background: #eee;
-            -webkit-border-radius: 15px;
-            -moz-border-radius: 15px;
-            border-radius: 15px;
-            z-index: 1;
-            font-size: 32px;
-            font-weight: bold;
-            text-align: center;
-            border: 5px dashed darkgray;
-        }
-
-        .dropZone-error {
-            background: #faa !important;
-            color: #f00;
-        }
-
-        /* Tooltip container */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            border-bottom: 1px dotted black;
-            /* If you want dots under the hoverable text */
-        }
-
-        /* Tooltip text */
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 120px;
-            background-color: black;
-            color: #fff;
-            text-align: center;
-            padding: 5px 0;
-            border-radius: 6px;
-
-            /* Position the tooltip text */
-            position: absolute;
-            z-index: 1;
-        }
-
-        /* Show the tooltip text when you mouse over the tooltip container */
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-        }
-
-        .instructions {
-            font-size: 16px;
-        }
-
-        .page {
-            height: calc(100% - 120px) !important;
-        }
-
-        .modal-header {
-            padding: 16px 16px;
-            color: #fff;
+        .dialog {
+            width: 100%;
+            height: 80%;
+            overflow: hidden;
         }
 
         .tab-active {
             background-color: white !important;
             color: #39a1f4 !important;
-        }
-
-        .dialog {
-            width: 100%;
-            height: calc(100% - 64px);
-            overflow: auto;
         }
     </style>
 
@@ -106,41 +42,41 @@
         function load(settings, onChange) {
             if (!settings) return;
 
-       // Check adapter is alive
+            // Check adapter is alive
             window.isProcessingRequest = false
             this.checkInterval = setInterval(() => {
-        
-                this.getIsAdapterAlive( function (isAlive) {
+
+                this.getIsAdapterAlive(function (isAlive) {
                     if (isAlive && !window.isProcessingRequest) {
-                    $("#onlyAddNewObjects").removeClass("disabled");
-                    $(".file-field .btn").removeClass("disabled");
-                    $(".file-field .file-path").prop("disabled", false);
-                    $("#etsFile").prop("disabled", false);
-                    $("#createAlias").removeClass("disabled");
-                } else {
-                    $("#etsFile").prop("disabled", true);
-                    $("#createAlias").addClass("disabled");
-                    $(".file-field .btn").addClass("disabled");
-                    $(".file-field .file-path").prop("disabled", true);
-                }
+                        $("#onlyAddNewObjects").removeClass("disabled");
+                        $(".file-field .btn").removeClass("disabled");
+                        $(".file-field .file-path").prop("disabled", false);
+                        $("#etsFile").prop("disabled", false);
+                        $("#createAlias").removeClass("disabled");
+                    } else {
+                        $("#etsFile").prop("disabled", true);
+                        $("#createAlias").addClass("disabled");
+                        $(".file-field .btn").addClass("disabled");
+                        $(".file-field .file-path").prop("disabled", true);
+                    }
                 });
             }, 1000)
             if (settings.gwip === undefined) settings.gwip = "127.0.0.1";
             if (settings.gwipport === undefined) settings.gwipport = 3671;
-            if (settings.debugLevel === undefined) settings.debugLevel = 0; //todo
-            if (settings.frameInterval === undefined) settings.frameInterval = 40;
-            if (settings.bind === undefined) settings.bind = ""; //local network interface
+            if (settings.minimumDelay === undefined) settings.minimumDelay = 40;
+            if (settings.localInterface === undefined) settings.localInterface = "";
+
             if (settings.eibadr === undefined) settings.eibadr = "1.1.1";
             if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
 
-            //fill dropdown list bind
+            //fill dropdown list bind from adapter-settings.js
             getIPs(function (ips) {
                 for (var i = 0; i < ips.length; i++) {
                     if (ips[i].family.indexOf("ipv4") > -1 && ips[i].address !== "0.0.0.0") {
-                        $("#bind").append('<option value="' + ips[i].address + '">' + ips[i].name + "</option>");
+                        $("#localInterface").append('<option value="' + ips[i].address + '">' + ips[i].name + "</option>");
                     }
                 }
-                $("#bind.value").val(settings.bind).select();
+                $("#localInterface.value").val(settings.localInterface).select();
             });
 
             fillSelectIPs("#adapterAddress", settings.adapterAddress, false, true);
@@ -191,27 +127,13 @@
                         }
                     }
 
-                    if (id === "frameInterval") {
-                        var fI = $("#frameInterval").val();
-                        if (!isNaN(fI * 1)) {
-                            if (fI > 0) {
-                                $("#frameInterval").val(fI);
-                            } else {
-                                alert("min 1");
-                            }
+                    if (id === "minimumDelay") {
+                        var intervall = $("#minimumDelay").val();
+                        if (Number.isFinite(intervall) && intervall >= 0 && intervall <= 1000) {
+                            $("#minimumDelay").val(intervall);
                         } else {
-                            alert("This is not a number");
+                            alert("please provide a valid minimum send delay value between 0 and 1000 [ms]");
                         }
-                    }
-
-                    if (id === "bind") {
-                        var bindIP = $("#bind").val();
-                        $("#bind").val(bindIP);
-                    }
-
-                    if (id === "debugLevel") {
-                        var dbgLevel = $("#debugLevel").val();
-                        $("#debugLevel").val(dbgLevel);
                     }
                 });
             });
@@ -263,13 +185,13 @@
                 console.warn("invalid file object");
                 return false;
             }
-   
+
             if (file.name.split(".").pop() == "xml") {
                 $("#etsFile").prop("disabled", true);
                 $("#createAlias").addClass("disabled");
                 $(".file-field .btn").addClass("disabled");
                 $(".file-field .file-path").prop("disabled", true);
-                window.isProcessingRequest=true;
+                window.isProcessingRequest = true;
                 var reader = new FileReader();
                 reader.addEventListener("load", function readFile(event) {
                     $("#etsFile").replaceWith($(etsFile));
@@ -293,7 +215,7 @@
                             sendTo(null, "reset", null);
                             showToast(null, _("Restarting adapter"), null, 10000);
                         }
-                        window.isProcessingRequest=false;
+                        window.isProcessingRequest = false;
                     });
                 });
                 reader.readAsText(file);
@@ -321,7 +243,7 @@
                     sendTo(null, "reset", null);
                     showToast(null, _("Restarting adapter"), null, 10000);
                 }
-                window.isProcessingRequest=false;
+                window.isProcessingRequest = false;
                 $("#progress2").hide();
             });
         }
@@ -332,8 +254,7 @@
         }
 
         function isPortValid(inputText) {
-            var format = /^([1-9][0-9]{0,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$/;
-            return !!inputText.match(format);
+            return (Number.isFinite(inputText) && inputText >= 0 && inputText <= 65535);
         }
 
         function isKnxAddressValid(inputText) {
@@ -355,7 +276,7 @@
             var x = document.getElementById("configDialog");
             x.style.display = "block";
         }
-        
+
         function showExtendedDialog() {
             disableAllDialogs();
             $('.dialog-extended').addClass('tab-active');
@@ -379,8 +300,10 @@
         </nav>
         <div class="row">
             <ul class="tabs">
-                <li class="tab col s5 dialog-config c-tab translate"><a onclick="showConfigDialog()">Settings and Import</a></li>
-                <li class="tab col s5 dialog-extended c-tab translate"><a onclick="showExtendedDialog()">Alias Generation</a></li>
+                <li class="tab col s5 dialog-config c-tab translate"><a onclick="showConfigDialog()">Settings and
+                        Import</a></li>
+                <li class="tab col s5 dialog-extended c-tab translate"><a onclick="showExtendedDialog()">Alias
+                        Generation</a></li>
             </ul>
         </div>
 
@@ -393,22 +316,23 @@
                             <label for="gwip" class="translate">Gateway IP</label>
                         </div>
                         <div class="col s6 l1 input-field">
-                            <input type="number" min="1025" max="65535" class="value" id="gwipport" />
+                            <input type="number" min="0" max="65535" class="value" id="gwipport" />
                             <label for="gwipport" class="translate">Port</label>
                         </div>
-                        <div class="col s6 l1 input-field">
-                            <input id="frameInterval" class="value" type="number" min="20" max="1000" />
-                            <label for="frameInterval" class="translate">Frames per second</label>
+                        
+                        <div class="col s12 l3 input-field">
+                            <input class="value" id="eibadr" type="text" />
+                            <label for="eibadr" class="translate">Physical KNX address</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col s12 l4 input-field">
-                            <select class="value" id="bind"></select>
-                            <label class="translate" for="bind">local network interface</label>
+                            <select class="value" id="localInterface"></select>
+                            <label class="translate" for="localInterface">Local IPv4 network interface</label>
                         </div>
-                        <div class="col s12 l2 input-field">
-                            <input class="value" id="eibadr" type="text" />
-                            <label for="eibadr" class="translate">physical KNX address</label>
+                        <div class="col s6 l2 input-field">
+                            <input id="minimumDelay" class="value" type="number" min="0" max="1000" />
+                            <label for="minimumDelay" class="translate">Frames per second</label>
                         </div>
                     </div>
                 </div>
@@ -435,9 +359,13 @@
                                 <div class="progress" id="progress">
                                     <div class="indeterminate" style="width: 70%"></div>
                                 </div>
-                                <a href="https://github.com/iobroker-community-adapters/ioBroker.openknx#adaptermigration" target="_blank"
-                                    ><h6><div class="translate">Click here for a manual to migrate from knx.0 to openknx.0</div></h6></a
-                                >
+                                <a href="https://github.com/iobroker-community-adapters/ioBroker.openknx#adaptermigration"
+                                    target="_blank">
+                                    <h6>
+                                        <div class="translate">Click here for a manual to migrate from knx.0 to
+                                            openknx.0</div>
+                                    </h6>
+                                </a>
                             </div>
                             <div class="col l6">
                                 <div class="input-field">
@@ -455,35 +383,42 @@
             <div class="card">
                 <div class="card-content">
                     <div class="row">
-                        <div class="col s12"> 
-                            <h6><span class="translate">To merge Action and Status GA in one ioBroker Object you can let the Adapter generate</span><span>  <a href="https://www.iobroker.net/#de/documentation/dev/aliases.md" target="_blank">Aliases</a></span></h6>
+                        <div class="col s12">
+                            <h6><span class="translate">To merge Action and Status GA in one ioBroker Object you can let
+                                    the Adapter generate</span><span> <a
+                                        href="https://www.iobroker.net/#de/documentation/dev/aliases.md"
+                                        target="_blank">Aliases</a></span></h6>
                             <div class="input-field col s6 m6 l5">
                                 <input class="value" id="statusRegex" type="text" />
-                                <label class="translate" for="statusRegex">Regex to identify Status GAs (ending with status, rm, rückmeldung..).</label>
-                              
+                                <label class="translate" for="statusRegex">Regex to identify Status GAs (ending with
+                                    status, rm, rückmeldung..).</label>
+
                             </div>
                             <div class="input-field col s6 m6 l2">
                                 <input class="value" id="regexSimil" type="number" />
                                 <label class="translate" for="regexSimil">Minimum Similarity 0-1</label>
-                              
+
                             </div>
                             <div class="input-field col s6 m6 l2">
                                 <input class="value" id="aliasPath" type="text" />
                                 <label class="translate" for="aliasPath">Alias path</label>
                             </div>
-                            <div class="col s12">
-                                <a id="createAlias" class="waves-effect waves-light btn"><i
-                                        class="material-icons right">list</i><span class="translate">generate aliases</span></a>
-                            </div>
                             <div class="input-field">
                                 <input class="value" id="aliasRange" type="checkbox" />
-                                <label class="translate" for="aliasRange">include group range in search (save first)</label>
+                                <label class="translate" for="aliasRange">include group range in search (save
+                                    first)</label>
                             </div>
+                            <div class="col s12">
+                                <a id="createAlias" class="waves-effect waves-light btn"><i
+                                        class="material-icons right">list</i><span class="translate">generate
+                                        aliases</span></a>
+                            </div>
+                            <div class="col s12"></div>
                             <div class="progress" id="progress2">
                                 <div class="indeterminate"></div>
                             </div>
-                            
                         </div>
+                    </div>
                 </div>
             </div>
         </div>
