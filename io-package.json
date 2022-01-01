@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "openknx",
-        "version": "0.1.13",
+        "version": "0.1.14",
         "news": {
             "0.1.9": {
                 "en": "Test Release",
@@ -74,14 +74,14 @@
                 "js-controller": ">=3.0.0"
             }
         ],
-        "tier": 2 
+        "tier": 2
     },
     "native": {
         "gwip": "",
         "gwipport": "3671",
         "eibadr": "1.1.1",
-        "bind": "",
-        "frameInterval": 50,
+        "localInterface": "",
+        "minimumDelay": 50,
         "statusRegex": "stat(e|us)| rm|rückmeldung|\\svalue",
         "regexSimil": 0.9,
         "aliasPath": "alias.0",
