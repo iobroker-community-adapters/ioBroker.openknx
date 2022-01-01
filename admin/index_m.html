@@ -72,7 +72,7 @@
             //fill dropdown list bind from adapter-settings.js
             getIPs(function (ips) {
                 for (var i = 0; i < ips.length; i++) {
-                    if (ips[i].family.indexOf("ipv4") > -1 && ips[i].address !== "0.0.0.0") {
+                    if (ips[i].family.indexOf("ipv4") > -1 && ips[i].address !== "0.0.0.0" && ips[i].address !== "127.0.0.1") {
                         $("#localInterface").append('<option value="' + ips[i].address + '">' + ips[i].name + "</option>");
                     }
                 }
@@ -129,8 +129,9 @@
 
                     if (id === "minimumDelay") {
                         var intervall = $("#minimumDelay").val();
-                        if (Number.isFinite(intervall) && intervall >= 0 && intervall <= 1000) {
-                            $("#minimumDelay").val(intervall);
+                        number = Number(intervall);
+                        if (Number.isFinite(number) && number >= 0 && number <= 1000) {
+                            $("#minimumDelay").val(number);
                         } else {
                             alert("please provide a valid minimum send delay value between 0 and 1000 [ms]");
                         }
@@ -254,7 +255,8 @@
         }
 
         function isPortValid(inputText) {
-            return (Number.isFinite(inputText) && inputText >= 0 && inputText <= 65535);
+            number = Number(inputText);
+            return (Number.isFinite(number) && number >= 0 && number <= 65535);
         }
 
         function isKnxAddressValid(inputText) {
