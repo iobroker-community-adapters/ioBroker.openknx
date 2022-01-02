@@ -13,7 +13,6 @@ const projectImport = require(__dirname + "/lib/projectImport");
 const knx = require(__dirname + "/lib/knx"); //todo copy for the moment
 const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
-const os = require("os");
 
 class openknx extends utils.Adapter {
     /**
