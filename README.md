@@ -313,6 +313,7 @@ L-Flag: Objekt antwortet auf GroupValueRead mit GroupValueResponse mit dem Wert 
 # Limitations
 - only three level group addresses are supported
 - ETS 4 export file format is not supported
+- KNX secure is not supported
 
 ## Changelog
 ### 0.1.13 (2021-12-30)
@@ -383,6 +384,9 @@ L-Flag: Objekt antwortet auf GroupValueRead mit GroupValueResponse mit dem Wert 
 
 ### 0.0.14
 * (boellner) feature: import ga xml
+
+### initial version
+* initial version inspired by https://www.npmjs.com/package/iobroker.knx/v/0.8.3
 
 ## License
 					GNU GENERAL PUBLIC LICENSE
