@@ -69,7 +69,7 @@
             if (settings.eibadr === undefined) settings.eibadr = "1.1.1";
             if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
 
-            //fill dropdown list bind from adapter-settings.js
+            //fill dropdown list from adapter-settings.js
             getIPs(function (ips) {
                 for (var i = 0; i < ips.length; i++) {
                     if (ips[i].family.indexOf("ipv4") > -1 && ips[i].address !== "0.0.0.0" && ips[i].address !== "127.0.0.1") {
