@@ -41,9 +41,12 @@ class openknx extends utils.Adapter {
             if (args && typeof args === "string") {
                 //handling special messages of the KNX lib
                 if (args.indexOf("deferring outbound_TUNNELING_REQUEST") !== -1) {
+                    return;
                 } else if (args.indexOf("empty internal fsm queue due to inbound_DISCONNECT_REQUEST") !== -1) {
                     this.log.warn("possible data loss due to gateway reset, consider increasing frame delay");
-                } else if (args.indexOf("[debug]") !== -1) {
+                }
+
+                if (args.indexOf("[debug]") !== -1) {
                     this.log.debug(args);
                 } else if (args.indexOf("[info]") !== -1) {
                     this.log.info(args);
