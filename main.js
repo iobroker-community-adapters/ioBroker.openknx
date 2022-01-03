@@ -18,7 +18,7 @@ const projectImport = require(__dirname + "/lib/projectImport");
 const knx = require(__dirname + "/lib/knx"); //todo copy for the moment
 const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
-const os = require('os');
+const os = require("os");
 
 class openknx extends utils.Adapter {
     /**
@@ -44,9 +44,13 @@ class openknx extends utils.Adapter {
         //redirect log from knx.js to adapter log
         console.log = (args) => {
             if (args && typeof args === "string") {
+                //handling special messages of the KNX lib
                 if (args.indexOf("deferring outbound_TUNNELING_REQUEST") !== -1) {
                     return;
+                } else if (args.indexOf("empty internal fsm queue due to inbound_DISCONNECT_REQUEST") !== -1) {
+                    this.log.warn("possible data loss due to gateway reset, consider increasing frame delay");
                 }
+
                 if (args.indexOf("[debug]") !== -1) {
                     this.log.debug(args);
                 } else if (args.indexOf("[info]") !== -1) {

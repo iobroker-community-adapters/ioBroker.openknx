@@ -30,16 +30,16 @@
             "zh-cn": "Open KNX"
         },
         "desc": {
-            "en": "free open-source-adapter for KNX",
-            "de": "kostenloser Open-Source-Adapter für KNX",
-            "ru": "бесплатный open-source-адаптер для KNX",
-            "pt": "adaptador de código aberto gratuito para KNX",
-            "nl": "gratis open-source-adapter voor KNX",
-            "fr": "adaptateur open-source gratuit pour KNX",
-            "it": "adattatore open source gratuito per KNX",
-            "es": "adaptador de código abierto gratuito para KNX",
-            "pl": "darmowy adapter open-source dla KNX",
-            "zh-cn": "KNX 的免费开源适配器"
+            "en": "new free open-source-adapter for KNX",
+            "de": "neuer kostenloser Open-Source-Adapter für KNX",
+            "ru": "новый бесплатный open-source-адаптер для KNX",
+            "pt": "novo adaptador de código aberto gratuito para KNX",
+            "nl": "nieuwe gratis open-source-adapter voor KNX",
+            "fr": "nouvel adaptateur open-source gratuit pour KNX",
+            "it": "nuovo adattatore open source gratuito per KNX",
+            "es": "nuevo adaptador de código abierto gratuito para KNX",
+            "pl": "nowy darmowy adapter open-source dla KNX",
+            "zh-cn": "用于 KNX 的新免费开源适配器"
         },
         "authors": [
             "Boellner <boellnerboellner@gmail.com>",
@@ -82,7 +82,7 @@
         "eibadr": "1.1.1",
         "localInterface": "",
         "minimumDelay": 50,
-        "statusRegex": "stat(e|us)| rm|rückmeldung|\\svalue",
+        "statusRegex": "stat(e|us)|rm|rm.|rückmeldung|\\svalue",
         "regexSimil": 0.9,
         "aliasPath": "alias.0",
         "aliasRange": false
