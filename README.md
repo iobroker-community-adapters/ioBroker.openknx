@@ -391,7 +391,7 @@ L-Flag: Objekt antwortet auf GroupValueRead mit GroupValueResponse mit dem Wert 
 ## License
 					GNU GENERAL PUBLIC LICENSE
 ==========================
-Copyright (c) 2021 boellner
+Copyright Contributors to the ioBroker.openknx project
 					   Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
