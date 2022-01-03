@@ -115,7 +115,7 @@ class openknx extends utils.Adapter {
             switch (obj.command) {
                 case "import":
                     this.log.info("Project import...");
-                    projectImport.parseInput(this, obj.message.xml, (parseError, res) => {
+                    projectImport.parseInput(this, obj.message.xml, obj.message.addNoDPTObjects, (parseError, res) => {
                         if (parseError) {
                             this.log.info("Project import error " + parseError);
                         }
@@ -221,7 +221,7 @@ class openknx extends utils.Adapter {
             ret = Number(new Date(val));
         } else if (Buffer.isBuffer(val)) {
             //before object check
-            ret = val.toString("hex");
+            ret = parseInt(val.toString("hex"),16);
         } else if (typeof val === "object") {
             //https://github.com/ioBroker/ioBroker.docs/blob/master/docs/en/dev/objectsschema.md#states
             ret = JSON.stringify(val);
@@ -309,6 +309,15 @@ class openknx extends utils.Adapter {
             //write raw buffers for unknown dpts, iterface is a hex value
             //bitlength is the buffers bytelength * 8.
             rawVal = Buffer.from(state.val, "hex");
+            try {
+                let hexValue = Number(state.val).toString(16);
+                if (hexValue.length % 2) {
+                    hexValue = "0" + hexValue;
+                }
+                rawVal = Buffer.from(hexValue, "hex");
+            } catch (error) {
+                this.log.debug("dec to hex conversion not succesful")
+            }
             isRaw = true;
             this.log.debug("Unhandeled DPT " + dpt + ", assuming raw value");
         } else {
@@ -352,11 +361,11 @@ class openknx extends utils.Adapter {
                     if (!this.autoreaddone) {
                         //do autoread on start of adapter and not every connection
                         for (const key of this.gaList) {
-                            if (this.gaList.getDataById(key).native.address.match(/\d*\/\d*\/\d*/) && this.gaList.getDataById(key).native.dpt) {
+                            if (this.gaList.getDataById(key).native.address.match(/\d*\/\d*\/\d*/) ) {
                                 try {
                                     const dp = new knx.Datapoint({
                                             ga: this.gaList.getDataById(key).native.address,
-                                            dpt: this.gaList.getDataById(key).native.dpt,
+                                            dpt: this.gaList.getDataById(key).native.dpt ? this.gaList.getDataById(key).native.dpt:"RAW",
                                             autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
                                         },
                                         this.knxConnection

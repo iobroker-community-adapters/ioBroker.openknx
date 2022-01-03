@@ -200,7 +200,7 @@
                     showToast(null, _("Import started..."), null, 3000);
                     $("#progress").show();
                     $("#onlyAddNewObjects").addClass("disabled");
-                    sendTo(null, "import", { xml: event.target.result, onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked") }, function (result) {
+                    sendTo(null, "import", { xml: event.target.result, onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked"),addNoDPTObjects: $("#addNoDPTObjects").prop("checked") }, function (result) {
                         $("#onlyAddNewObjects").removeClass("disabled");
                         $("#progress").hide();
                         if (!result || result.error) {
@@ -241,8 +241,10 @@
                     showToast(null, _("Restarting adapter"), null, 10000);
                 } else {
                     showMessage(_("Generated %s aliases", result.count));
-                    sendTo(null, "reset", null);
-                    showToast(null, _("Restarting adapter"), null, 10000);
+                    if (result.count) {
+                        sendTo(null, "reset", null);
+                        showToast(null, _("Restarting adapter"), null, 10000);
+                    }
                 }
                 window.isProcessingRequest = false;
                 $("#progress2").hide();
@@ -347,6 +349,10 @@
                                 <div class="input-field">
                                     <input class="value" id="onlyAddNewObjects" type="checkbox" />
                                     <label class="translate" for="onlyAddNewObjects">add only new Objects</label>
+                                </div>
+                                <div class="input-field">
+                                    <input class="value" id="addNoDPTObjects" type="checkbox" />
+                                    <label class="translate" for="addNoDPTObjects">add Objects without DPT</label>
                                 </div>
 
                                 <div class="file-field input-field">
