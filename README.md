@@ -318,6 +318,14 @@ L-Flag: Objekt antwortet auf GroupValueRead mit GroupValueResponse mit dem Wert 
 - KNX secure is not supported
 
 ## Changelog
+### 0.1.14 (2022-01-08)
+* feature: autodetect the KNX IP interface parameters
+* feature: create warning if DPT of alias pair does not match
+* feature: create warning in log in case of possible data loss if gateway disconnects
+* feature: better gui for import status, newline per warning, count number of succeeding ga's
+* fix: local ip interface in admin was not taken
+* fix: default regexp for status ga's corrected to match common nomenclature
+
 ### 0.1.13 (2021-12-30)
 * bugfix: state.value of of type object must be serialized
 * bugfix: alias algorithm error handling, takover more info to alias
