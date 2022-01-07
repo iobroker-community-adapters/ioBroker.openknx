@@ -271,7 +271,7 @@
                 $(".file-field .file-path").prop("disabled", true);
                 window.isProcessingRequest = true;
                 sendTo(null, "detectInterface", { ip: $("#localInterface")[0].value }, function (result) {
-                    if (!result || result.error) {
+                    if (!result || result.error || result.devicesFound == 0) {
                         showMessage(_("no KNX gateway found"));
                     } else {
                         $("#deviceName")[0].innerHTML = result.deviceName;
