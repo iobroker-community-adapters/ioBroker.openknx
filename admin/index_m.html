@@ -36,6 +36,7 @@
     </style>
 
     <script type="text/javascript">
+        //ref https://github.com/ioBroker/ioBroker.docs/blob/master/docs/en/dev/adapterdev.md#adminhtml -->
         var etsFile = '<input type="file" id="etsFile" style="display: inline-block"/>';
 
         // This will be called by the admin adapter when the settings page loads
@@ -53,9 +54,11 @@
                         $(".file-field .file-path").prop("disabled", false);
                         $("#etsFile").prop("disabled", false);
                         $("#createAlias").removeClass("disabled");
+                        $("#detectInterface").removeClass("disabled");
                     } else {
                         $("#etsFile").prop("disabled", true);
                         $("#createAlias").addClass("disabled");
+                        $("#detectInterface").addClass("disabled");
                         $(".file-field .btn").addClass("disabled");
                         $(".file-field .file-path").prop("disabled", true);
                     }
@@ -141,11 +144,13 @@
 
             $("#etsFile").change(processXmlFile);
             $("#createAlias").change(processAlias);
+            $("#detectInterface").change(processDetectInterface);
             //if not alive disable buttons
             getIsAdapterAlive(function (isAlive) {
                 if (!isAlive) {
                     $("#etsFile").prop("disabled", true);
                     $("#createAlias").addClass("disabled");
+                    $("#detectInterface").addClass("disabled");
                     $(".file-field .btn").addClass("disabled");
                     $(".file-field .file-path").prop("disabled", true);
                 }
@@ -153,6 +158,10 @@
 
             $('#createAlias').on('click', function () {
                 processAlias();
+            });
+
+            $('#detectInterface').on('click', function () {
+                processDetectInterface();
             });
 
             //start with no changed settings, disable save button
@@ -190,6 +199,7 @@
             if (file.name.split(".").pop() == "xml") {
                 $("#etsFile").prop("disabled", true);
                 $("#createAlias").addClass("disabled");
+                $("#detectInterface").addClass("disabled");
                 $(".file-field .btn").addClass("disabled");
                 $(".file-field .file-path").prop("disabled", true);
                 window.isProcessingRequest = true;
@@ -230,6 +240,7 @@
         function processAlias() {
             $("#etsFile").prop("disabled", true);
             $("#createAlias").addClass("disabled");
+            $("#detectInterface").addClass("disabled");
             $(".file-field .btn").addClass("disabled");
             $(".file-field .file-path").prop("disabled", true);
             $("#progress2").show();
@@ -247,6 +258,31 @@
                 window.isProcessingRequest = false;
                 $("#progress2").hide();
             });
+        }
+
+        function processDetectInterface() {
+            if ($("#localInterface")[0].value == "") {
+                showMessage(_("Please select your local interface first."));
+            } else {
+                $("#etsFile").prop("disabled", true);
+                $("#createAlias").addClass("disabled");
+                $("#detectInterface").addClass("disabled");
+                $(".file-field .btn").addClass("disabled");
+                $(".file-field .file-path").prop("disabled", true);
+                window.isProcessingRequest = true;
+                sendTo(null, "detectInterface", { ip: $("#localInterface")[0].value }, function (result) {
+                    if (!result || result.error) {
+                        showMessage(_("no KNX gateway found"));
+                    } else {
+                        $("#deviceName")[0].innerHTML = result.deviceName;
+                        $("#gwip").val(result.ip).change();
+                        $("#eibadr").val(result.knxAdr).change();
+                        $("#gwipport").val(result.port).change();
+                        if (result.devicesFound > 1) showMessage(_("more than one KNX gateway found"));
+                    }
+                    window.isProcessingRequest = false;
+                });
+            }
         }
 
         function isIpValid(inputText) {
@@ -295,16 +331,16 @@
 
         <nav>
             <div class="row">
-                <div class="col s12 m4 l2">
+                <div class="col s2">
                     <img src="openknx.png" class="logo">
                 </div>
             </div>
         </nav>
         <div class="row">
             <ul class="tabs">
-                <li class="tab col s5 dialog-config c-tab translate"><a onclick="showConfigDialog()">Settings and
+                <li class="tab col s3 dialog-config c-tab translate"><a onclick="showConfigDialog()">Settings and
                         Import</a></li>
-                <li class="tab col s5 dialog-extended c-tab translate"><a onclick="showExtendedDialog()">Alias
+                <li class="tab col s3 dialog-extended c-tab translate"><a onclick="showExtendedDialog()">Alias
                         Generation</a></li>
             </ul>
         </div>
@@ -317,18 +353,27 @@
                             <input class="value" id="gwip" type="text" />
                             <label for="gwip" class="translate">Gateway IP</label>
                         </div>
-                        <div class="col s6 l1 input-field">
+                        <div class="col s3 l1 input-field">
                             <input type="number" min="0" max="65535" class="value" id="gwipport" />
                             <label for="gwipport" class="translate">Port</label>
                         </div>
-                        
-                        <div class="col s12 l3 input-field">
+
+                        <div class="col s6 l3 input-field">
                             <input class="value" id="eibadr" type="text" />
                             <label for="eibadr" class="translate">Physical KNX address</label>
                         </div>
+                        <div class="col s6 l2">
+                            <a id="detectInterface" class="waves-effect waves-light btn"><i
+                                    class="material-icons right">live help</i><span class="translate">detect
+                                    interface</span></a>
+                        </div>
+                        <div class="col s12 l3">
+                            <h7 id="deviceName">
+                            </h7>
+                        </div>
                     </div>
                     <div class="row">
-                        <div class="col s12 l4 input-field">
+                        <div class="col s12 l3 input-field">
                             <select class="value" id="localInterface"></select>
                             <label class="translate" for="localInterface">Local IPv4 network interface</label>
                         </div>
@@ -342,39 +387,30 @@
             <div class="card">
                 <div class="card-content">
                     <div class="row">
-                        <div style="display: flex">
-                            <div class="col l6">
-                                <div class="input-field">
-                                    <input class="value" id="onlyAddNewObjects" type="checkbox" />
-                                    <label class="translate" for="onlyAddNewObjects">add only new Objects</label>
-                                </div>
+                        <div class="col s12 input-field">
+                            <input class="value" id="onlyAddNewObjects" type="checkbox" />
+                            <label class="translate" for="onlyAddNewObjects">add only new Objects</label>
+                        </div>
 
-                                <div class="file-field input-field">
-                                    <div class="btn" id="fileUploadButton">
-                                        <span class="translate">Import XML from ETS</span>
-                                        <input type="file" id="etsFile" />
-                                    </div>
-                                    <div class="file-path-wrapper">
-                                        <input class="file-path validate" type="text" />
-                                    </div>
-                                </div>
-                                <div class="progress" id="progress">
-                                    <div class="indeterminate" style="width: 70%"></div>
-                                </div>
-                                <a href="https://github.com/iobroker-community-adapters/ioBroker.openknx#adaptermigration"
-                                    target="_blank">
-                                    <h6>
-                                        <div class="translate">Click here for a manual to migrate from knx.0 to
-                                            openknx.0</div>
-                                    </h6>
-                                </a>
+                        <div class="col s12 m12 l6 file-field input-field">
+                            <div class="btn" id="fileUploadButton"><i class="material-icons right">input</i>
+                                <span class="translate">Import XML from ETS</span>
+                                <input type="file" id="etsFile" />
                             </div>
-                            <div class="col l6">
-                                <div class="input-field">
-                                    <h6 class="translate">How to export GA XML from ETS:</h6>
-                                    <img src="./exportGA.png" alt="exportGA" />
-                                </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" />
                             </div>
+                        </div>
+                        <div class="col s12 progress" id="progress">
+                            <div class="indeterminate" style="width: 70%"></div>
+                        </div>
+                        <div class="col s12">
+                            <a href="https://github.com/iobroker-community-adapters/ioBroker.openknx#adaptermigration"
+                                target="_blank">
+                                <h6>
+                                    <div class="translate">Click here for hints to migrate to openknx</div>
+                                </h6>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -386,46 +422,43 @@
                 <div class="card-content">
                     <div class="row">
                         <div class="col s12">
-                            <h6><span class="translate">To merge Action and Status GA in one ioBroker Object you can let
-                                    the Adapter generate</span><span> <a
+                            <h6><span class="translate">To merge action and status GA in one ioBroker object you can let
+                                    the adapter generate <a
                                         href="https://www.iobroker.net/#de/documentation/dev/aliases.md"
                                         target="_blank">Aliases</a></span></h6>
-                            <div class="input-field col s6 m6 l5">
-                                <input class="value" id="statusRegex" type="text" />
-                                <label class="translate" for="statusRegex">Regex to identify Status GAs (ending with
-                                    status, rm, rückmeldung..).</label>
+                        </div>
+                        <div class="input-field col s12 l6">
+                            <input class="value" id="statusRegex" type="text" />
+                            <label class="translate" for="statusRegex">Regex to identify Status GAs</label>
+                        </div>
+                        <div class="input-field col s6 l2">
+                            <input class="value" id="regexSimil" type="number" />
+                            <label class="translate" for="regexSimil">Minimum Similarity 0-1</label>
 
-                            </div>
-                            <div class="input-field col s6 m6 l2">
-                                <input class="value" id="regexSimil" type="number" />
-                                <label class="translate" for="regexSimil">Minimum Similarity 0-1</label>
+                        </div>
+                        <div class="input-field col s6 l2">
+                            <input class="value" id="aliasPath" type="text" />
+                            <label class="translate" for="aliasPath">Alias path</label>
+                        </div>
+                        <div class="input-field col s12">
+                            <input class="value" id="aliasRange" type="checkbox" />
+                            <label class="translate" for="aliasRange">include group range in search</label>
+                        </div>
+                        <div class="col s12">
+                            <a id="createAlias" class="waves-effect waves-light btn"><i
+                                    class="material-icons right">list</i><span class="translate">generate
+                                    aliases</span></a>
+                        </div>
 
-                            </div>
-                            <div class="input-field col s6 m6 l2">
-                                <input class="value" id="aliasPath" type="text" />
-                                <label class="translate" for="aliasPath">Alias path</label>
-                            </div>
-                            <div class="input-field">
-                                <input class="value" id="aliasRange" type="checkbox" />
-                                <label class="translate" for="aliasRange">include group range in search (save
-                                    first)</label>
-                            </div>
-                            <div class="col s12">
-                                <a id="createAlias" class="waves-effect waves-light btn"><i
-                                        class="material-icons right">list</i><span class="translate">generate
-                                        aliases</span></a>
-                            </div>
-                            <div class="col s12"></div>
-                            <div class="progress" id="progress2">
-                                <div class="indeterminate"></div>
-                            </div>
+                        <div class="col s12 progress" id="progress2">
+                            <div class="indeterminate" style="width: 70%"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
+
 </body>
 
 </html>
