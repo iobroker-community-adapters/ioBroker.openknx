@@ -53,7 +53,7 @@ class openknx extends utils.Adapter {
                 }
 
                 if (args.indexOf("[debug]") !== -1) {
-                    //this.log.debug(args);
+                    this.log.silly(args);
                 } else if (args.indexOf("[info]") !== -1) {
                     this.log.info(args);
                 } else if (args.indexOf("[warn]") !== -1) {
