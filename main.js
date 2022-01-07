@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 /*
  * Copyright Contributors to the ioBroker.openknx project
-*/
+ */
 
 "use strict";
 
@@ -19,6 +19,7 @@ const knx = require(__dirname + "/lib/knx"); //todo copy for the moment
 const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 const os = require("os");
+const detect = require("./lib/detect.js");
 
 class openknx extends utils.Adapter {
     /**
@@ -52,7 +53,7 @@ class openknx extends utils.Adapter {
                 }
 
                 if (args.indexOf("[debug]") !== -1) {
-                    this.log.debug(args);
+                    this.log.silly(args);
                 } else if (args.indexOf("[info]") !== -1) {
                     this.log.info(args);
                 } else if (args.indexOf("[warn]") !== -1) {
@@ -62,7 +63,8 @@ class openknx extends utils.Adapter {
                 } else if (args.indexOf("[trace]") !== -1) {
                     this.log.silly(args);
                 } else {
-                    this.log.info(args);
+                    //dont forward all other internal console.logs
+                    //this.log.info(args);
                 }
             }
         };
@@ -151,6 +153,22 @@ class openknx extends utils.Adapter {
                         }
                     });
                     break;
+                case "detectInterface":
+                    this.log.info("Detect Interface...");
+                    detect.detect(obj.message.ip, 0, null, (err, isFound, addr, port, knxAdr, deviceName, devicesFound) => {
+                        if (obj.callback) {
+                            const res = {
+                                error: null,
+                                ip: addr,
+                                port: port,
+                                knxAdr: knxAdr,
+                                deviceName: deviceName,
+                                devicesFound: devicesFound,
+                            };
+                            this.sendTo(obj.from, obj.command, res, obj.callback);
+                        }
+                    });
+                    break;
                 case "reset":
                     this.log.info("Restarting...");
                     this.restart();
@@ -231,7 +249,7 @@ class openknx extends utils.Adapter {
             //https://github.com/ioBroker/ioBroker.docs/blob/master/docs/en/dev/objectsschema.md#states
             ret = JSON.stringify(val);
         } else {
-            //keep sring, boolean and number
+            //keep string, boolean and number
             ret = val;
         }
         return ret;
@@ -397,7 +415,7 @@ class openknx extends utils.Adapter {
                 },
 
                 //KNX Bus event received
-                //src: KnxDeviceAddress, dest: KnxGroupAddress
+                //src: KnxDeviceAddress, dest: KnxGroupAddress, val: raw value not used, using dp interface instead
                 event: ( /** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
                     let convertedVal;
 

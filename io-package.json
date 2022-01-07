@@ -3,7 +3,7 @@
         "name": "openknx",
         "version": "0.1.14",
         "news": {
-            "0.1.9": {
+            "0.1.14": {
                 "en": "Test Release",
                 "de": "Testfreigabe",
                 "ru": "Тестовый выпуск",
@@ -30,8 +30,8 @@
             "zh-cn": "Open KNX"
         },
         "desc": {
-            "en": "new free open-source-adapter for KNX",
-            "de": "neuer kostenloser Open-Source-Adapter für KNX",
+            "en": "full featured open-source adapter for KNX",
+            "de": "kostenloser Open-Source-Adapter für KNX",
             "ru": "новый бесплатный open-source-адаптер для KNX",
             "pt": "novo adaptador de código aberto gratuito para KNX",
             "nl": "nieuwe gratis open-source-adapter voor KNX",
