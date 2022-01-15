@@ -33,6 +33,11 @@
             background-color: white !important;
             color: #39a1f4 !important;
         }
+
+        .m.react-dark .tabs .tab a.active,
+        .m.react-dark .tabs .tab a:hover {
+            background-color: #000;
+        }
     </style>
 
     <script type="text/javascript">
@@ -68,7 +73,6 @@
             if (settings.gwipport === undefined) settings.gwipport = 3671;
             if (settings.minimumDelay === undefined) settings.minimumDelay = 40;
             if (settings.localInterface === undefined) settings.localInterface = "";
-
             if (settings.eibadr === undefined) settings.eibadr = "1.1.1";
             if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
 
@@ -137,6 +141,16 @@
                             $("#minimumDelay").val(number);
                         } else {
                             alert("please provide a valid minimum send delay value between 0 and 1000 [ms]");
+                        }
+                    }
+
+                    if (id === "regexSimil") {
+                        var regexSimil = $("#regexSimil").val();
+                        number = Number(regexSimil);
+                        if (Number.isFinite(number) && number >= 0 && number <= 1) {
+                            $("#regexSimil").val(number);
+                        } else {
+                            alert("please provide a value between 0 and 1");
                         }
                     }
                 });
@@ -432,9 +446,8 @@
                             <label class="translate" for="statusRegex">Regex to identify Status GAs</label>
                         </div>
                         <div class="input-field col s6 l2">
-                            <input class="value" id="regexSimil" type="number" />
+                            <input class="value" id="regexSimil" type="text" />
                             <label class="translate" for="regexSimil">Minimum Similarity 0-1</label>
-
                         </div>
                         <div class="input-field col s6 l2">
                             <input class="value" id="aliasPath" type="text" />

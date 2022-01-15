@@ -1,15 +1,20 @@
 {
     "name": "iobroker.openknx",
-    "version": "0.1.14",
+    "version": "0.1.15",
     "description": "ioBroker knx Adapter",
     "author": "boellner",
     "homepage": "https://github.com/iobroker-community-adapters/ioBroker.openknx.git",
     "license": "GPL-3.0-only",
     "keywords": [
         "ioBroker",
-        "knx", "eib", "ets",
-        "bus", "communication",
-        "Smart Home", "home automation", "Heimautomatisierung"
+        "knx", "KNX IP Gateway", "connex", "instabus",
+        "eib",
+        "ets", "ets5", "ets4", "ets6",
+        "bus",
+        "communication", "kommunikation",
+        "Smart Home",
+        "home automation",
+        "Heimautomatisierung"
     ],
     "repository": {
         "type": "git",

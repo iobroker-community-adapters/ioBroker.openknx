@@ -12,14 +12,12 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
-
 const projectImport = require(__dirname + "/lib/projectImport");
-
 const knx = require(__dirname + "/lib/knx"); //todo copy for the moment
 const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
+const detect = require("./lib/openknx.js");
 const os = require("os");
-const detect = require("./lib/detect.js");
 
 class openknx extends utils.Adapter {
     /**
@@ -281,18 +279,11 @@ class openknx extends utils.Adapter {
         }
 
         if (state.ack) {
-            //ack flag is responsible to set act flag, only continue when application triggered a change without ack flag
+            //only continue when application triggered a change without ack flag
 
             //enable this for system testing
             //this.interfaceTest(id, state);
 
-            //check if actGa is available to set the value from status to actGa
-            if (this.gaList.getDataById(id).native.actGA) {
-                const actGa = this.gaList.getDataById(id).native.actGA;
-                const gaId = this.gaList.getIdByAddress(actGa);
-                this.log.debug("Set GA " + actGa + " to " + state.val + " from " + id);
-                this.setState(gaId, state.val, true);
-            }
             return;
         }
 
@@ -338,8 +329,8 @@ class openknx extends utils.Adapter {
             knxVal = state.val;
         }
 
-        if (state.c == "GroupValue_Read") {
-            //interface to trigger GrouValue_Read is this comment
+        if (state.c == "GroupValue_Read" || knxVal == null) {
+            //interface to trigger GrouValue_Read is this comment or null
             this.log.debug("Outbound GroupValue_Read to " + ga + " value " + JSON.stringify(knxVal));
             this.knxConnection.read(ga);
         } else if (this.gaList.getDataById(id).common.write) {
@@ -356,7 +347,7 @@ class openknx extends utils.Adapter {
 
     startKnxStack() {
         this.knxConnection = knx.Connection({
-            ipAddr: this.config.gwip,
+            ipAddr: "192.16.0.1", //this.config.gwip,
             ipPort: this.config.gwipport,
             physAddr: this.config.eibadr,
             interface: this.translateInterface(this.config.localInterface),
@@ -470,7 +461,6 @@ class openknx extends utils.Adapter {
                             this.log.debug(
                                 `Inbound GroupValue_Write ${dest} val: ${convertedVal}  dpt: ${this.gaList.getDataByAddress(dest).native.dpt} to Object: ${this.gaList.getIdByAddress(dest)}`
                             );
-
                             break;
 
                         default:
@@ -496,7 +486,7 @@ class openknx extends utils.Adapter {
         }
     }
 
-    //admin dialog uses different name than knx lib
+    //admin dialog uses different name than knx lib, translate ip to interface name
     translateInterface(interfaceIp) {
         const interfaces = os.networkInterfaces();
 
