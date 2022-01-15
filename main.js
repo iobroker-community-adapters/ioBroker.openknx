@@ -526,7 +526,11 @@ class openknx extends utils.Adapter {
                             this.gaList.set(id, value.native.address, res.rows[i].value);
                         }
                     }
-                    this.startKnxStack();
+                    try {
+                        this.startKnxStack();
+                    } catch (e) {
+                        this.log.error(`Cannot start KNX Stack ${e}`)
+                    }
                 }
             }
         );
