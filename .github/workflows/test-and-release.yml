@@ -124,8 +124,8 @@ jobs:
                   BODY="${BODY//$'\r'/'%0D'}"
                   echo "::set-output name=BODY::$BODY"
 
-      - name: Install Dependencies
-        run: npm install
+            - name: Install Dependencies
+              run: npm install
 
 #     - name: Create a clean build
 #       run: npm run build
