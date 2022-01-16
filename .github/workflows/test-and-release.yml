@@ -1,3 +1,6 @@
+# This is a composition of lint and test scripts
+# Make sure to update this file along with the others
+
 name: Test and Release
 
 # Run this job on all pushes and pull requests
@@ -7,11 +10,11 @@ on:
         branches:
             - "*"
         tags:
-            # normal versions
-            - "v[0-9]+.[0-9]+.[0-9]+"
-            # pre-releases
-            - "v[0-9]+.[0-9]+.[0-9]+-**"
-    pull_request: {}
+      # normal versions
+      - "v?[0-9]+.[0-9]+.[0-9]+"
+      # pre-releases
+      - "v?[0-9]+.[0-9]+.[0-9]+-**"
+  pull_request: {}
 
 jobs:
     # Performs quick checks before the expensive test runs
@@ -87,8 +90,8 @@ jobs:
     deploy:
         needs: [adapter-tests]
 
-        # Trigger this step only when a commit on any branch is tagged with a version number
-        if: |
+    # Trigger this step only when a commit on master is tagged with a version number
+    if: |
             contains(github.event.head_commit.message, '[skip ci]') == false &&
             github.event_name == 'push' &&
             startsWith(github.ref, 'refs/tags/v')
@@ -109,18 +112,24 @@ jobs:
 
             - name: Extract the version and commit body from the tag
               id: extract_release
-              # The body may be multiline, therefore newlines and % need to be escaped
-              run: |
-                  VERSION="${{ github.ref }}"
-                  VERSION=${VERSION##*/v}
-                  echo "::set-output name=VERSION::$VERSION"
-                  BODY=$(git show -s --format=%b)
-                  BODY="${BODY//'%'/'%25'}"
-                  BODY="${BODY//$'\n'/'%0A'}"
-                  BODY="${BODY//$'\r'/'%0D'}"
-                  echo "::set-output name=BODY::$BODY"
+        # The body may be multiline, therefore we need to escape some characters
+        run: |
+          VERSION="${{ github.ref }}"
+          VERSION=${VERSION##*/}
+          VERSION=${VERSION##*v}
+          echo "::set-output name=VERSION::$VERSION"
+          BODY=$(git show -s --format=%b)
+          BODY="${BODY//'%'/'%25'}"
+          BODY="${BODY//$'\n'/'%0A'}"
+          BODY="${BODY//$'\r'/'%0D'}"
+          echo "::set-output name=BODY::$BODY"
 
-            - name: Publish package to npm
+      - name: Install Dependencies
+        run: npm install
+
+#      - name: Create a clean build
+#        run: npm run build
+      - name: Publish package to npm
               run: |
                   npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
                   npm whoami
@@ -134,7 +143,7 @@ jobs:
                   tag_name: ${{ github.ref }}
                   release_name: Release v${{ steps.extract_release.outputs.VERSION }}
                   draft: false
-                  # Prerelease versions create prereleases on Github
+                  # Prerelease versions create prereleases on GitHub
                   prerelease: ${{ contains(steps.extract_release.outputs.VERSION, '-') }}
                   body: ${{ steps.extract_release.outputs.BODY }}
 
@@ -148,8 +157,8 @@ jobs:
             #      export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             #      export SENTRY_URL=https://sentry.iobroker.net
             #      export SENTRY_ORG=iobroker
-            #      export SENTRY_PROJECT=iobroker-ford
-            #      export SENTRY_VERSION=iobroker.ford@${{ steps.extract_release.outputs.VERSION }}
+            #      export SENTRY_PROJECT=iobroker-openknx
+            #      export SENTRY_VERSION=iobroker.openknx@${{ steps.extract_release.outputs.VERSION }}
             #      sentry-cli releases new $SENTRY_VERSION
             #      sentry-cli releases finalize $SENTRY_VERSION
             #      # Add the following line BEFORE finalize if repositories are connected in Sentry

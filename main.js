@@ -253,7 +253,7 @@ class openknx extends utils.Adapter {
         if (duplicates.length) {
             this.log.warn(message);
         }
-        return duplicates.length ? message : null;
+        return duplicates.length ? message : "";
     }
 
     //obj to string and date to number for iobroker from knx stack
