@@ -18,6 +18,9 @@ const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 const detect = require("./lib/openknx.js");
 const os = require("os");
+const {
+    listenerCount
+} = require("process");
 
 class openknx extends utils.Adapter {
     /**
@@ -121,17 +124,11 @@ class openknx extends utils.Adapter {
                 case "import":
                     this.log.info("Project import...");
                     projectImport.parseInput(this, obj.message.xml, (parseError, res) => {
-                        if (parseError) {
-                            this.log.info("Project import error " + parseError);
-                        }
                         this.updateObjects(res, 0, obj.message.onlyAddNewObjects, (updateError, length) => {
                             res = {
-                                error: parseError || updateError,
+                                error: (parseError.length == 0) ? updateError : parseError + "<br/>" + updateError,
                                 count: length,
                             };
-                            if (updateError) {
-                                this.log.info("Project import error " + updateError);
-                            }
                             this.log.info("Project import finished of " + length + " GAs");
                             if (obj.callback) {
                                 this.sendTo(obj.from, obj.command, res, obj.callback);
@@ -183,10 +180,35 @@ class openknx extends utils.Adapter {
     updateObjects(objects, index, onlyAddNewObjects, callback) {
         if (index >= objects.length) {
             //end of recursion reached
-            const err = this.warnDuplicates(objects);
-            if (typeof callback === "function") {
-                callback(err, objects.length);
-            }
+            let err = this.warnDuplicates(objects);
+
+            this.getObjectList({
+                startkey: this.namespace,
+                endkey: this.namespace + '\u9999'
+            }, (e, result) => {
+                const gas = [];
+                const duplicates = [];
+                if (result)
+                    result.rows.forEach(element => {
+                        if (element.value.hasOwnProperty("native") && element.value.native.hasOwnProperty("address"))
+                            gas.push(element.value.native.address);
+                    });
+                const tempArray = [...gas].sort();
+                for (let i = 0; i < tempArray.length; i++) {
+                    if (tempArray[i + 1] === tempArray[i]) {
+                        duplicates.push(tempArray[i]);
+                    }
+                }
+                const message = "Objects exist that have duplicase KNX addresses: " + duplicates;
+                if (duplicates.length) {
+                    this.log.warn(message);
+                    err ? err = err + "<br/>" + message : err = message;
+                }
+
+                if (typeof callback === "function") {
+                    callback(err, objects.length);
+                }
+            });
             return;
         }
         if (onlyAddNewObjects) {
@@ -211,6 +233,7 @@ class openknx extends utils.Adapter {
 
     /*
      * IOBroker Object tree cannot store 2 objects of same name, warn
+     * In ETS it is possible as long as GA is different
      */
     warnDuplicates(objects) {
         const arr = [];
@@ -226,7 +249,7 @@ class openknx extends utils.Adapter {
             }
         }
 
-        const message = "Object with an already existing Group Address name has not been created: " + duplicates;
+        const message = "New object with an already existing Group Address name has not been created: " + duplicates;
         if (duplicates.length) {
             this.log.warn(message);
         }
