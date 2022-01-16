@@ -370,7 +370,7 @@ class openknx extends utils.Adapter {
 
     startKnxStack() {
         this.knxConnection = knx.Connection({
-            ipAddr: "192.16.0.1", //this.config.gwip,
+            ipAddr: this.config.gwip,
             ipPort: this.config.gwipport,
             physAddr: this.config.eibadr,
             interface: this.translateInterface(this.config.localInterface),
