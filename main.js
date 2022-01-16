@@ -459,7 +459,7 @@ class openknx extends utils.Adapter {
                             //fetch val from addressed object and write on bus if configured to answer
                             this.getState(this.gaList.getIdByAddress(dest), (err, state) => {
                                 if (state) {
-                                    this.log.debug("Inbound GroupValue_Read from " + src + " to " + "(" + dest + ") " + this.gaList.getDataByAddress(dest).common.name);
+                                    this.log.debug("Inbound GroupValue_Read from " + src + " to " + dest + " " + this.gaList.getIdByAddress(dest));
                                     if (this.gaList.getDataByAddress(dest).native.answer_groupValueResponse) {
                                         this.knxConnection.respond(dest, state.val, this.gaList.getDataByAddress(dest).native.dpt);
                                         this.log.debug("responding with value " + state.val);
@@ -473,7 +473,7 @@ class openknx extends utils.Adapter {
                                 val: convertedVal,
                                 ack: true,
                             });
-                            this.log.debug(`Inbound GroupValue_Response from ${src} to (${dest}) ${this.gaList.getDataByAddress(dest).common.name} :  ${convertedVal}`);
+                            this.log.debug(`Inbound GroupValue_Response from ${src} to ${dest} to Object: ${this.gaList.getIdByAddress(dest)} val:  ${convertedVal} dpt: ${this.gaList.getDataByAddress(dest).native.dpt}`);
                             break;
 
                         case "GroupValue_Write":
@@ -482,7 +482,7 @@ class openknx extends utils.Adapter {
                                 ack: true,
                             });
                             this.log.debug(
-                                `Inbound GroupValue_Write ${dest} val: ${convertedVal}  dpt: ${this.gaList.getDataByAddress(dest).native.dpt} to Object: ${this.gaList.getIdByAddress(dest)}`
+                                `Inbound GroupValue_Write from ${src} to ${dest} to Object: ${this.gaList.getIdByAddress(dest)} val: ${convertedVal}  dpt: ${this.gaList.getDataByAddress(dest).native.dpt}`
                             );
                             break;
 

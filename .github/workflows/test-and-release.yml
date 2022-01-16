@@ -1,4 +1,4 @@
-# This is a composition of lint and test scripts
+# This is a composition of lint and test scripts xx
 # Make sure to update this file along with the others
 
 name: Test and Release
@@ -10,11 +10,11 @@ on:
         branches:
             - "*"
         tags:
-      # normal versions
-      - "v?[0-9]+.[0-9]+.[0-9]+"
-      # pre-releases
-      - "v?[0-9]+.[0-9]+.[0-9]+-**"
-  pull_request: {}
+          # normal versions
+          - "v?[0-9]+.[0-9]+.[0-9]+"
+          # pre-releases
+          - "v?[0-9]+.[0-9]+.[0-9]+-**"
+    pull_request: {}
 
 jobs:
     # Performs quick checks before the expensive test runs
@@ -112,23 +112,23 @@ jobs:
 
             - name: Extract the version and commit body from the tag
               id: extract_release
-        # The body may be multiline, therefore we need to escape some characters
-        run: |
-          VERSION="${{ github.ref }}"
-          VERSION=${VERSION##*/}
-          VERSION=${VERSION##*v}
-          echo "::set-output name=VERSION::$VERSION"
-          BODY=$(git show -s --format=%b)
-          BODY="${BODY//'%'/'%25'}"
-          BODY="${BODY//$'\n'/'%0A'}"
-          BODY="${BODY//$'\r'/'%0D'}"
-          echo "::set-output name=BODY::$BODY"
+            # The body may be multiline, therefore we need to escape some characters
+              run: |
+                VERSION="${{ github.ref }}"
+                VERSION=${VERSION##*/}
+                VERSION=${VERSION##*v}
+                echo "::set-output name=VERSION::$VERSION"
+                BODY=$(git show -s --format=%b)
+                BODY="${BODY//'%'/'%25'}"
+                BODY="${BODY//$'\n'/'%0A'}"
+                BODY="${BODY//$'\r'/'%0D'}"
+                echo "::set-output name=BODY::$BODY"
 
       - name: Install Dependencies
         run: npm install
 
-#      - name: Create a clean build
-#        run: npm run build
+#     - name: Create a clean build
+#       run: npm run build
       - name: Publish package to npm
               run: |
                   npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
