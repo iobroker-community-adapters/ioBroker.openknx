@@ -296,68 +296,64 @@ class openknx extends utils.Adapter {
         if (!this.gaList.getDataById(id) || !this.gaList.getDataById(id).native || !this.gaList.getDataById(id).native.address) {
             return;
         }
-        if (!(await this.getStateAsync("info.connection"))) {
-            this.log.warn("onStateChange: not connected to KNX bus");
-            return;
-        }
-
         if (state.ack) {
-            //only continue when application triggered a change without ack flag
+            //only continue when application triggered a change without ack flag, filter out reception state changes
 
             //enable this for system testing
             //this.interfaceTest(id, state);
 
             return;
         }
+        if (!(await this.getStateAsync("info.connection"))) {
+            this.log.warn("onStateChange: not connected to KNX bus");
+            return;
+        }
 
         const dpt = this.gaList.getDataById(id).native.dpt;
         const ga = this.gaList.getDataById(id).native.address;
-        let knxVal;
+        let knxVal = state.val;
         let rawVal;
 
-        //check for boolean and ensure the correct datatype
-        if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "boolean") {
-            state.val = state.val ? true : false;
-        }
-        if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type === "number") {
-            if (isNaN(Number(state.val))) {
-                this.log.warn("Value " + state.val + " for " + id + " is not a number");
+        //plausibilize against configured datatype
+        if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type == "boolean") {
+            knxVal = knxVal ? true : false;
+        } else if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type == "number") {
+            if (isNaN(Number(knxVal))) {
+                this.log.warn("Value " + knxVal + " for " + id + " is not a number");
             }
         }
         //convert val into object for certain dpts
-        if (tools.isDateDPT(dpt)) {
+        else if (tools.isDateDPT(dpt)) {
             //before composite check, date is also composite
-            knxVal = new Date(state.val);
+            knxVal = new Date(knxVal);
         } else if (this.gaList.getDataById(id).native.valuetype == "composite") {
             //input from IOB is either object or string in object notation, type of this conversion is object needed by the knx lib
-            if (typeof state.val == "object") {
-                knxVal = state.val;
-            } else {
+            if (typeof knxVal != "object") {
                 try {
-                    knxVal = JSON.parse(state.val);
+                    knxVal = JSON.parse(knxVal);
                 } catch (e) {
-                    this.log.warn("stateChange: unsupported value format " + state.val + " for " + ga);
+                    this.log.warn("stateChange: unsupported value format " + knxVal + " for " + ga);
                     return;
                 }
             }
         } else if (tools.isStringDPT(dpt)) {
-            knxVal = state.val;
+            ;
         } else if (tools.isUnknownDPT(dpt)) {
             //write raw buffers for unknown dpts, iterface is a hex value
             //bitlength is the buffers bytelength * 8.
-            rawVal = Buffer.from(state.val, "hex");
+            rawVal = Buffer.from(knxVal, "hex");
             isRaw = true;
             this.log.debug("Unhandeled DPT " + dpt + ", assuming raw value");
         } else {
-            knxVal = state.val;
+            console.error("trap - missing logic for undhandeled dpt: " + dpt);
         }
 
-        if (state.c == "GroupValue_Read" || knxVal == null) {
+        if (state.c == "GroupValue_Read" || state.val == null || state.val == "null") {
             //interface to trigger GrouValue_Read is this comment or null
-            this.log.debug("Outbound GroupValue_Read to " + ga + " value " + JSON.stringify(knxVal));
+            this.log.debug("Outbound GroupValue_Read to " + ga + " val: " + JSON.stringify(knxVal));
             this.knxConnection.read(ga);
         } else if (this.gaList.getDataById(id).common.write) {
-            this.log.debug("Outbound GroupValue_Write to " + ga + " value " + (isRaw ? rawVal : JSON.stringify(knxVal)) + " from " + id);
+            this.log.debug("Outbound GroupValue_Write to " + ga + " val: " + (isRaw ? rawVal : JSON.stringify(knxVal)) + " from " + id);
             if (isRaw) {
                 this.knxConnection.writeRaw(ga, rawVal);
             } else {
