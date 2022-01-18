@@ -321,6 +321,7 @@ class openknx extends utils.Adapter {
             if (isNaN(Number(knxVal))) {
                 this.log.warn("Value " + knxVal + " for " + id + " is not a number");
             }
+            // else take plain value
         }
         //convert val into object for certain dpts
         else if (tools.isDateDPT(dpt)) {
@@ -337,7 +338,7 @@ class openknx extends utils.Adapter {
                 }
             }
         } else if (tools.isStringDPT(dpt)) {
-            ;
+            ; //take plain value
         } else if (tools.isUnknownDPT(dpt)) {
             //write raw buffers for unknown dpts, iterface is a hex value
             //bitlength is the buffers bytelength * 8.
@@ -345,12 +346,12 @@ class openknx extends utils.Adapter {
             isRaw = true;
             this.log.debug("Unhandeled DPT " + dpt + ", assuming raw value");
         } else {
-            console.error("trap - missing logic for undhandeled dpt: " + dpt);
+            console.warn("trap - missing logic for undhandeled dpt: " + dpt);
         }
 
         if (state.c == "GroupValue_Read" || state.val == null || state.val == "null") {
             //interface to trigger GrouValue_Read is this comment or null
-            this.log.debug("Outbound GroupValue_Read to " + ga + " val: " + JSON.stringify(knxVal));
+            this.log.debug("Outbound GroupValue_Read to " + ga);
             this.knxConnection.read(ga);
         } else if (this.gaList.getDataById(id).common.write) {
             this.log.debug("Outbound GroupValue_Write to " + ga + " val: " + (isRaw ? rawVal : JSON.stringify(knxVal)) + " from " + id);
