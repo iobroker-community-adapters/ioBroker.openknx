@@ -28,6 +28,10 @@ const settings = {
 // Run integration tests - See https://github.com/ioBroker/testing for a detailed explanation and further options
 // Run tests
 // Run tests
+//      harness.states.setState(objectid, "1", (err, state) => {
+//      harness.objects.getObject(objectid, async (err, obj) => {
+//
+
 tests.integration(path.join(__dirname, ".."), {
     //            ~~~~~~~~~~~~~~~~~~~~~~~~~
     // This should be the adapter's root directory
@@ -51,7 +55,6 @@ tests.integration(path.join(__dirname, ".."), {
                     await harness.startAdapterAndWait();
 
                     testStep1(harness, reject, resolve);
-                    
                 });
             });
         });
@@ -129,8 +132,6 @@ tests.integration(path.join(__dirname, ".."), {
             });
         }
 
-
     },
-
 
 });

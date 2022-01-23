@@ -250,7 +250,7 @@ class openknx extends utils.Adapter {
         }
 
         const message = "New object with an already existing Group Address name has not been created: " + duplicates;
-        if (duplicates.length) {
+        if (duplicates.length && this.log) {
             this.log.warn(message);
         }
         return duplicates.length ? message : "";
@@ -286,15 +286,12 @@ class openknx extends utils.Adapter {
     async onStateChange(id, state) {
         let isRaw = false;
 
-        if (!id) {
-            return;
-        }
-        if (!state /*obj deleted*/ || typeof state !== "object") {
-            return;
+        if (!id || !state /*obj deleted*/ || typeof state !== "object") {
+            return "invalid input";
         }
         //not a KNX object
         if (!this.gaList.getDataById(id) || !this.gaList.getDataById(id).native || !this.gaList.getDataById(id).native.address) {
-            return;
+            return "not a KNX object";
         }
         if (state.ack) {
             //only continue when application triggered a change without ack flag, filter out reception state changes
@@ -334,11 +331,11 @@ class openknx extends utils.Adapter {
                     knxVal = JSON.parse(knxVal);
                 } catch (e) {
                     this.log.warn("stateChange: unsupported value format " + knxVal + " for " + ga);
-                    return;
+                    return "unsupported value";
                 }
             }
         } else if (tools.isStringDPT(dpt)) {
-            ; //take plain value
+            //take plain value
         } else if (tools.isUnknownDPT(dpt)) {
             //write raw buffers for unknown dpts, iterface is a hex value
             //bitlength is the buffers bytelength * 8.
@@ -349,19 +346,23 @@ class openknx extends utils.Adapter {
             console.warn("trap - missing logic for undhandeled dpt: " + dpt);
         }
 
-        if (state.c == "GroupValue_Read" || state.val == null || state.val == "null") {
+        if (state.c == "GroupValue_Read" || state.q == 0x10) {
             //interface to trigger GrouValue_Read is this comment or null
             this.log.debug("Outbound GroupValue_Read to " + ga);
             this.knxConnection.read(ga);
+            return "read";
         } else if (this.gaList.getDataById(id).common.write) {
             this.log.debug("Outbound GroupValue_Write to " + ga + " val: " + (isRaw ? rawVal : JSON.stringify(knxVal)) + " from " + id);
             if (isRaw) {
                 this.knxConnection.writeRaw(ga, rawVal);
+                return "write raw";
             } else {
                 this.knxConnection.write(ga, knxVal, dpt);
+                return "write";
             }
         } else {
             this.log.warn("not configured write to ga: " + state.val);
+            return "configuration error";
         }
     }
 
@@ -558,12 +559,16 @@ class openknx extends utils.Adapter {
 }
 
 if (require.main !== module) {
+    // this module was run directly from the command line as in node xxx.js
+
     // Export the constructor in compact mode
     /**
      * @param {Partial<utils.AdapterOptions>} [options={}]
      */
     module.exports = (options) => new openknx(options);
 } else {
+    // this module was not run directly from the command line and probably loaded by something else
+
     // otherwise start the instance directly
     new openknx();
 }
