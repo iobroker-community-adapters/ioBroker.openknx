@@ -69,7 +69,7 @@
     "scripts": {
         "test:js": "mocha --config test/mocharc.custom.json \"{!(node_modules|test)/**/*.test.js,*.test.js,test/**/test!(PackageFiles|Startup).js}\"",
         "test:package": "mocha test/package --exit",
-        "test:unit": "mocha test/unit --exit",
+        "test:unit": "mocha test/unit --exit --timeout 3000",
         "test:integration": "mocha test/integration --exit --timeout 15000",
         "test": "npm run test:js && npm run test:package",
         "check": "tsc --noEmit -p tsconfig.check.json",
