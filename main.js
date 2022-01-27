@@ -42,6 +42,8 @@ class openknx extends utils.Adapter {
         this.on("unload", this.onUnload.bind(this));
 
         this.mynamespace = this.namespace;
+        this.sentryInstance = null;
+        this.Sentry = null;
 
         //redirect log from knx.js to adapter log
         console.log = (args) => {
@@ -76,6 +78,39 @@ class openknx extends utils.Adapter {
      */
     async onReady() {
         // adapter initialization
+
+        if (this.supportsFeature && this.supportsFeature("PLUGINS")) {
+            const sentryInstance = this.getPluginInstance("sentry");
+            if (sentryInstance) {
+                const Sentry = sentryInstance.getSentryObject();
+                Sentry.init({
+                    environment: "development", //"production", todo distinguish
+                });
+                if (Sentry) {
+                    Sentry.configureScope(scope => {
+                        // eslint-disable-next-line no-unused-vars
+                        scope.addEventProcessor((event, _hint) => {
+                            if (event.exception && event.exception.values && event.exception.values[0]) {
+                                const eventData = event.exception.values[0];
+                                if (eventData.stacktrace && eventData.stacktrace.frames && Array.isArray(eventData.stacktrace.frames) && eventData.stacktrace.frames.length) {
+                                    /*
+                                    //Exclude event if own directory is included but not inside own node_modules
+                                    const ownNodeModulesDir = nodePath.join(__dirname, "node_modules");
+                                    if (!eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(__dirname) && !frame.filename.includes(ownNodeModulesDir))) {
+                                        return null;
+                                    }
+                                    */
+                                    // We have exception data and do not sorted it out, so report it
+                                    return event;
+                                }
+                            }
+                            // No exception in it ... do not report
+                            return null;
+                        });
+                    });
+                }
+            }
+        }
 
         //after installation
         if (tools.isEmptyObject(this.config)) {
@@ -164,7 +199,7 @@ class openknx extends utils.Adapter {
                         }
                     });
                     break;
-                case "reset":
+                case "restart":
                     this.log.info("Restarting...");
                     this.restart();
                     // eslint-disable-next-line no-fallthrough
@@ -184,7 +219,7 @@ class openknx extends utils.Adapter {
 
             this.getObjectList({
                 startkey: this.namespace,
-                endkey: this.namespace + '\u9999'
+                endkey: this.namespace + "\u9999"
             }, (e, result) => {
                 const gas = [];
                 const duplicates = [];
@@ -343,13 +378,24 @@ class openknx extends utils.Adapter {
             isRaw = true;
             this.log.debug("Unhandeled DPT " + dpt + ", assuming raw value");
         } else {
-            console.warn("trap - missing logic for undhandeled dpt: " + dpt);
+            const error = "trap - missing logic for undhandeled dpt: " + dpt;
+            console.warn(error);
+            if (this.sentryInstance) {
+                this.sentryInstance.getSentryObject().captureException(error);
+            }
         }
 
         if (state.c == "GroupValue_Read" || state.q == 0x10) {
             //interface to trigger GrouValue_Read is this comment or null
             this.log.debug("Outbound GroupValue_Read to " + ga);
             this.knxConnection.read(ga);
+            if (this.sentryInstance) {
+                this.Sentry && this.Sentry.withScope(scope => {
+                    scope.setLevel("info");
+                    scope.setExtra("GroupValue_Read", state.c + " " + state.q);
+                    this.Sentry.captureMessage("GroupValue_Read", "info");
+                });
+            }
             return "read";
         } else if (this.gaList.getDataById(id).common.write) {
             this.log.debug("Outbound GroupValue_Write to " + ga + " val: " + (isRaw ? rawVal : JSON.stringify(knxVal)) + " from " + id);
@@ -368,7 +414,7 @@ class openknx extends utils.Adapter {
 
     startKnxStack() {
         this.knxConnection = knx.Connection({
-            ipAddr: this.config.gwip,
+            ipAddr: this.config.gwip, //
             ipPort: this.config.gwipport,
             physAddr: this.config.eibadr,
             interface: this.translateInterface(this.config.localInterface),
@@ -550,7 +596,7 @@ class openknx extends utils.Adapter {
                     try {
                         this.startKnxStack();
                     } catch (e) {
-                        this.log.error(`Cannot start KNX Stack ${e}`)
+                        this.log.error(`Cannot start KNX Stack ${e}`);
                     }
                 }
             }
