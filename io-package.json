@@ -1,9 +1,9 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.1.15",
+    "version": "0.1.16",
     "news": {
-      "0.1.15": {
+      "0.1.16": {
         "en": "Test Release",
         "de": "Testfreigabe",
         "ru": "Тестовый выпуск",
@@ -64,6 +64,11 @@
     "connectionType": "local",
     "dataSource": "push",
     "materialize": true,
+    "plugins": {
+      "sentry": {
+          "dsn": "https://f87a314b36ef451aa291655ae13e2831@sentry.iobroker.net/165"
+      }
+  },
     "dependencies": [
       {
         "js-controller": ">=3.0.0"
