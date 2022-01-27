@@ -277,10 +277,7 @@ The KNX object flags define the bus behavior of the object they represent.
 # Monitoring and Error Tracking
 Openknx uses sentry.io for application monitoring and error tracking.
 It aids developers to better hunt bugs and gain field usage data. The identification of an user is tracked in a pseudonymised way.
-todo link to term of use
-todo data is sent to the us / germany server
-todo optin opt out
-todo howto disable
+Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed iobroker GmbH to collect diagnostic data then also your anonymous installation ID is included. This allows Sentry to group errors and show how many unique users are affected by such an error.
 
 # Features
 * stable and reliable knx stack
