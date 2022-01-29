@@ -83,10 +83,10 @@ class openknx extends utils.Adapter {
             const sentryInstance = this.getPluginInstance("sentry");
             if (sentryInstance) {
                 const Sentry = sentryInstance.getSentryObject();
-                Sentry.init({
-                    environment: "development", //"production", todo distinguish
-                });
                 if (Sentry) {
+                    Sentry.init({
+                        environment: "development", //"production", todo distinguish
+                    });
                     Sentry.configureScope(scope => {
                         // eslint-disable-next-line no-unused-vars
                         scope.addEventProcessor((event, _hint) => {
