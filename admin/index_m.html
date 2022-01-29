@@ -258,10 +258,10 @@
             $("#progress2").show();
             window.isProcessingRequest = true;
             sendTo(null, "createAlias", null, function (result) {
-                if (!result || result.error) {
+                if (!result /*|| result.error*/) {
                     showMessage(_("Error"));
                 } else {
-                    showMessage(_("Generated %s aliases", result.count));
+                    showMessage(_("Generated %s aliases.<br/>" + result.error, result.count));
                 }
                 window.isProcessingRequest = false;
                 $("#progress2").hide();
@@ -329,9 +329,7 @@
 
 <body>
     <!-- you have to put your config page in a div with id adapter-container -->
-
     <div class="m adapter-container">
-
         <nav>
             <div class="row">
                 <div class="col s2">
@@ -347,7 +345,6 @@
                         Generation</a></li>
             </ul>
         </div>
-
         <div id="configDialog" class="dialog">
             <div class="card">
                 <div class="card-content">
@@ -419,7 +416,6 @@
                 </div>
             </div>
         </div>
-
         <div id="extendedDialog" class="dialog">
             <div class="card">
                 <div class="card-content">
@@ -451,7 +447,6 @@
                                     class="material-icons right">list</i><span class="translate">generate
                                     aliases</span></a>
                         </div>
-
                         <div class="col s12 progress" id="progress2">
                             <div class="indeterminate" style="width: 70%"></div>
                         </div>

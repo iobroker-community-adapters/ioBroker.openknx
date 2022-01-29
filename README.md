@@ -298,6 +298,11 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 - only IPv4 supported
 
 ## Changelog
+### 0.1.17 (2022-01-29)
+* feature: more information in alias import dialog
+* feature: warning on startup if ga are inconsistent
+* fix: corrected object count statistics on startup
+
 ### 0.1.16 (2022-01-27)
 * feature: add back sentry
 * fix: stability alias generation

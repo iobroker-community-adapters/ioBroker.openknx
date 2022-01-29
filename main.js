@@ -173,10 +173,10 @@ class openknx extends utils.Adapter {
                     break;
                 case "createAlias":
                     this.log.info("Create aliases...");
-                    projectImport.findStatusGAs(this, this.gaList, (count) => {
+                    projectImport.findStatusGAs(this, this.gaList, (count, err) => {
                         if (obj.callback) {
                             const res = {
-                                error: null,
+                                error: err,
                                 count: count,
                             };
                             this.sendTo(obj.from, obj.command, res, obj.callback);
@@ -202,7 +202,8 @@ class openknx extends utils.Adapter {
                 case "restart":
                     this.log.info("Restarting...");
                     this.restart();
-                    // eslint-disable-next-line no-fallthrough
+                    // @ts-ignore
+                    break;
                 default:
                     this.log.warn("Unknown command: " + obj.command);
                     break;
@@ -234,7 +235,7 @@ class openknx extends utils.Adapter {
                         duplicates.push(tempArray[i]);
                     }
                 }
-                const message = "Objects exist that have duplicase KNX addresses: " + duplicates;
+                const message = "Objects were added where objects exist that have same KNX group address: " + duplicates;
                 if (duplicates.length) {
                     this.log.warn(message);
                     err ? err = err + "<br/>" + message : err = message;
@@ -284,7 +285,7 @@ class openknx extends utils.Adapter {
             }
         }
 
-        const message = "New object with an already existing Group Address name has not been created: " + duplicates;
+        const message = "New object with an already existing Group Address name has not been used: " + duplicates;
         if (duplicates.length && this.log) {
             this.log.warn(message);
         }
@@ -414,7 +415,7 @@ class openknx extends utils.Adapter {
 
     startKnxStack() {
         this.knxConnection = knx.Connection({
-            ipAddr: this.config.gwip, //
+            ipAddr: this.config.gwip,
             ipPort: this.config.gwipport,
             physAddr: this.config.eibadr,
             interface: this.translateInterface(this.config.localInterface),
@@ -428,7 +429,6 @@ class openknx extends utils.Adapter {
                     this.disconnectConfirmed = false;
                     //create new knx datapoint and bind to connection
                     //in connected in order to have autoread work
-                    let cnt_complete = 0;
                     let cnt_withDPT = 0;
                     if (!this.autoreaddone) {
                         //do autoread on start of adapter and not every connection
@@ -455,10 +455,9 @@ class openknx extends utils.Adapter {
                             } else {
                                 this.log.warn("no match for " + key);
                             }
-                            cnt_complete++;
                         }
                         this.autoreaddone = true;
-                        this.log.info("Found " + cnt_withDPT + " valid KNX datapoints of " + cnt_complete + " datapoints in adapter.");
+                        this.countObjectsNotification(cnt_withDPT);
                     }
                     this.setState("info.connection", true, true);
                     this.log.info("Connected!");
@@ -568,6 +567,16 @@ class openknx extends utils.Adapter {
         return interfaceIp;
     }
 
+    countObjectsNotification(cnt_withDPT) {
+        this.getObjectList({
+            startkey: this.namespace,
+            endkey: this.namespace + "\u9999"
+        }, (e, result) => {
+            if (result)
+                this.log.info("Found " + cnt_withDPT + " valid KNX datapoints of " + result.rows.length + " datapoints in adapter.");
+        });
+    }
+
     main() {
         this.log.info("Connecting to knx gateway:  " + this.config.gwip + ":" + this.config.gwipport + "   with phy. Adr: " + this.config.eibadr + " minimum send delay: " + this.config.minimumDelay);
         this.log.info(utils.controllerDir);
@@ -590,13 +599,21 @@ class openknx extends utils.Adapter {
                         const value = res.rows[i].value;
                         if (value && value.native && value.native.address != undefined) {
                             //add only elements from tree that are knx objects, identified by a group adress
-                            this.gaList.set(id, value.native.address, res.rows[i].value);
+                            if (this.gaList.getDataByAddress(value.native.address) != undefined)
+                                this.log.warn("Two entries have the same group address: " + this.gaList.getDataByAddress(value.native.address)._id + " " + id);
+                            else
+                                this.gaList.set(id, value.native.address, res.rows[i].value);
                         }
                     }
                     try {
                         this.startKnxStack();
                     } catch (e) {
-                        this.log.error(`Cannot start KNX Stack ${e}`);
+                        if (e.toString().indexOf("not found or has no useful IPv4 address!") !== -1)
+                            //ipaddr: the address has neither IPv6 nor IPv4 format ??
+                            //only handle certain exceptions
+                            this.log.error(`Cannot start KNX Stack ${e}`);
+                        else
+                            throw e;
                     }
                 }
             }

@@ -1,19 +1,10 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.1.16",
+    "version": "0.1.17",
     "news": {
-      "0.1.16": {
-        "en": "Test Release",
-        "de": "Testfreigabe",
-        "ru": "Тестовый выпуск",
-        "pt": "Versão de teste",
-        "nl": "Testversie",
-        "fr": "Version d'essai",
-        "it": "Rilascio di prova",
-        "es": "Lanzamiento de prueba",
-        "pl": "Wersja testowa",
-        "zh-cn": "测试发布"
+      "0.1.17": {
+        "en": "Bugfixing"
       }
     },
     "title": "Open KNX",
