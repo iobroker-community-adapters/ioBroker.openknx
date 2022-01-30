@@ -173,7 +173,7 @@ class openknx extends utils.Adapter {
                     break;
                 case "createAlias":
                     this.log.info("Create aliases...");
-                    projectImport.findStatusGAs(this, this.gaList, (count, err) => {
+                    projectImport.findStatusGAs(this, this.gaList, obj.message.aliassRegexp, obj.message.aliasSimilarity, obj.message.aliasPath, obj.message.aliasRange, (count, err) => {
                         if (obj.callback) {
                             const res = {
                                 error: err,

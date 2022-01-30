@@ -76,10 +76,11 @@
             }, 1000);
             if (settings.gwip === undefined) settings.gwip = "127.0.0.1";
             if (settings.gwipport === undefined) settings.gwipport = 3671;
-            if (settings.minimumDelay === undefined) settings.minimumDelay = 40;
-            if (settings.localInterface === undefined) settings.localInterface = "";
+            if (settings.minimumDelay === undefined) settings.minimumDelay = 50;
             if (settings.eibadr === undefined) settings.eibadr = "1.1.1";
+            
             if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
+            if (settings.localInterface === undefined) settings.localInterface = "";
 
             //fill dropdown list from adapter-settings.js
             getIPs(function (ips) {
@@ -155,14 +156,14 @@
                         }
                     }
 
-                    if (id === "regexSimil") {
-                        var regexSimil = $("#regexSimil").val();
-                        number = Number(regexSimil);
-                        if (isNumber(regexSimil) && number >= 0 && number <= 1) {
-                            $("#regexSimil").val(number);
+                    if (id === "aliasSimilarity") {
+                        var aliasSimilarity = $("#aliasSimilarity").val();
+                        number = Number(aliasSimilarity);
+                        if (isNumber(aliasSimilarity) && number >= 0 && number <= 1) {
+                            $("#aliasSimilarity").val(number);
                         } else {
                             alert("please provide a value between 0 and 1");
-                            $("#regexSimil").val(settings.regexSimil).change();
+                            $("#aliasSimilarity").val(settings.aliasSimilarity).change();
                         }
                     }
                 });
@@ -257,7 +258,7 @@
             disableAllButtons();
             $("#progress2").show();
             window.isProcessingRequest = true;
-            sendTo(null, "createAlias", null, function (result) {
+            sendTo(null, "createAlias", { aliassRegexp: $("#aliassRegexp")[0].value, aliasSimilarity: $("#aliasSimilarity")[0].value, aliasPath: $("#aliasPath")[0].value, aliasRange: $("#aliasRange")[0].value }, function (result) {
                 if (!result /*|| result.error*/) {
                     showMessage(_("Error"));
                 } else {
@@ -427,12 +428,12 @@
                                         target="_blank">Aliases</a></span></h6>
                         </div>
                         <div class="input-field col s12 l6">
-                            <input class="value" id="statusRegex" type="text" />
-                            <label class="translate" for="statusRegex">Regex to identify Status GAs</label>
+                            <input class="value" id="aliassRegexp" type="text" />
+                            <label class="translate" for="aliassRegexp">Regex to identify Status GAs</label>
                         </div>
                         <div class="input-field col s6 l2">
-                            <input class="value" id="regexSimil" type="text" />
-                            <label class="translate" for="regexSimil">Minimum Similarity 0-1</label>
+                            <input class="value" id="aliasSimilarity" type="text" />
+                            <label class="translate" for="aliasSimilarity">Minimum Similarity 0-1</label>
                         </div>
                         <div class="input-field col s6 l2">
                             <input class="value" id="aliasPath" type="text" />

@@ -74,8 +74,8 @@
     "eibadr": "1.1.1",
     "localInterface": "",
     "minimumDelay": 50,
-    "statusRegex": "stat(e|us)|rm|rm.|rückmeldung|\\svalue",
-    "regexSimil": 0.9,
+    "aliassRegexp": "stat(e|us)|rm|rm.|rückmeldung|\\svalue",
+    "aliasSimilarity": 0.9,
     "aliasPath": "alias.0",
     "aliasRange": false
   },
