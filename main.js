@@ -435,14 +435,17 @@ class openknx extends utils.Adapter {
                         for (const key of this.gaList) {
                             if (this.gaList.getDataById(key).native.address.match(/\d*\/\d*\/\d*/) && this.gaList.getDataById(key).native.dpt) {
                                 try {
-                                    const dp = new knx.Datapoint({
+                                    const datapoint = new knx.Datapoint({
                                             ga: this.gaList.getDataById(key).native.address,
                                             dpt: this.gaList.getDataById(key).native.dpt,
                                             autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
                                         },
                                         this.knxConnection
                                     );
-                                    this.gaList.setDpById(key, dp);
+                                    datapoint.on("error", (ga, dptid) => {
+                                        this.log.warn("Received data length for GA " + ga + " does not match configured " + dptid);
+                                    });
+                                    this.gaList.setDpById(key, datapoint);
                                     cnt_withDPT++;
                                     this.log.debug(
                                         `Datapoint ${this.gaList.getDataById(key).native.autoread ? "autoread " : ""} created and GroupValueWrite sent: ${
@@ -573,7 +576,7 @@ class openknx extends utils.Adapter {
             endkey: this.namespace + "\u9999"
         }, (e, result) => {
             if (result)
-                this.log.info("Found " + cnt_withDPT + " valid KNX datapoints of " + result.rows.length + " datapoints in adapter.");
+                this.log.info("Found " + cnt_withDPT + " valid KNX objects of " + result.rows.length + " objects in adapter.");
         });
     }
 
@@ -600,7 +603,7 @@ class openknx extends utils.Adapter {
                         if (value && value.native && value.native.address != undefined) {
                             //add only elements from tree that are knx objects, identified by a group adress
                             if (this.gaList.getDataByAddress(value.native.address) != undefined)
-                                this.log.warn("Two entries have the same group address: " + this.gaList.getDataByAddress(value.native.address)._id + " " + id);
+                                this.log.warn("Two entries have the same group address: " + this.gaList.getDataByAddress(value.native.address)._id + " " + id + " Please correct your configuration.");
                             else
                                 this.gaList.set(id, value.native.address, res.rows[i].value);
                         }
