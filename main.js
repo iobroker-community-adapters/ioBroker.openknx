@@ -448,9 +448,9 @@ class openknx extends utils.Adapter {
                                     this.gaList.setDpById(key, datapoint);
                                     cnt_withDPT++;
                                     this.log.debug(
-                                        `Datapoint ${this.gaList.getDataById(key).native.autoread ? "autoread " : ""} created and GroupValueWrite sent: ${
-                                            this.gaList.getDataById(key).native.address
-                                        } ${key}`
+                                        `Datapoint ${this.gaList.getDataById(key).native.autoread ? "autoread" : ""} created and GroupValueWrite sent: ${
+                                                                                this.gaList.getDataById(key).native.address
+                                                                            } ${key}`
                                     );
                                 } catch (e) {
                                     this.log.warn("could not create KNX Datapoint for " + key + " with error: " + e);
@@ -477,7 +477,10 @@ class openknx extends utils.Adapter {
                 //KNX Bus event received
                 //src: KnxDeviceAddress, dest: KnxGroupAddress, val: raw value not used, using dp interface instead
                 event: ( /** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
-                    let convertedVal;
+                    let convertedVal = [];
+
+                    let x;
+                    x = x.a/0;
 
                     if (src == this.config.eibadr) {
                         //called by self, avoid loop
@@ -489,51 +492,56 @@ class openknx extends utils.Adapter {
                         //seems that knx lib does not guarantee dest group adresses
                         return;
                     }
-                    if (!this.gaList.getDpByAddress(dest)) {
+                    if (!this.gaList.getDpsByGa(dest)) {
                         this.log.warn("Ignoring " + evt + " received on unknown GA: " + dest + ". GA was not in imported XML");
                         return;
                     }
 
-                    if (tools.isStringDPT(this.gaList.getDataByAddress(dest).native.dpt)) {
-                        convertedVal = this.gaList.getDpByAddress(dest).current_value;
-                    } else {
-                        convertedVal = this.convertType(this.gaList.getDpByAddress(dest).current_value);
-                    }
+                    for (const id of this.gaList.getIdsByGa(dest)) {
+                        const data = this.gaList.getDataById(id);
+                        const dp = this.gaList.getDpById(id);
 
-                    switch (evt) {
-                        case "GroupValue_Read":
-                            //fetch val from addressed object and write on bus if configured to answer
-                            this.getState(this.gaList.getIdByAddress(dest), (err, state) => {
-                                if (state) {
-                                    this.log.debug("Inbound GroupValue_Read from " + src + " to " + dest + " " + this.gaList.getIdByAddress(dest));
-                                    if (this.gaList.getDataByAddress(dest).native.answer_groupValueResponse) {
-                                        this.knxConnection.respond(dest, state.val, this.gaList.getDataByAddress(dest).native.dpt);
-                                        this.log.debug("responding with value " + state.val);
+                        if (tools.isStringDPT(data.native.dpt)) {
+                            convertedVal = dp.current_value;
+                        } else {
+                            convertedVal = this.convertType(dp.current_value);
+                        }
+
+                        switch (evt) {
+                            case "GroupValue_Read":
+                                //fetch val from addressed object and write on bus if configured to answer
+                                this.getState(id, (err, state) => {
+                                    if (state) {
+                                        this.log.debug("Inbound GroupValue_Read from " + src + " GA " + dest + " to " + id);
+                                        if (this.gaList.getDataById(id).native.answer_groupValueResponse) {
+                                            this.knxConnection.respond(dest, state.val, this.gaList.getDataById(id).native.dpt);
+                                            this.log.debug("responding with value " + state.val);
+                                        }
                                     }
-                                }
-                            });
-                            break;
+                                });
+                                break;
 
-                        case "GroupValue_Response":
-                            this.setState(this.gaList.getIdByAddress(dest), {
-                                val: convertedVal,
-                                ack: true,
-                            });
-                            this.log.debug(`Inbound GroupValue_Response from ${src} to ${dest} to Object: ${this.gaList.getIdByAddress(dest)} val:  ${convertedVal} dpt: ${this.gaList.getDataByAddress(dest).native.dpt}`);
-                            break;
+                            case "GroupValue_Response":
+                                this.setState(id, {
+                                    val: convertedVal,
+                                    ack: true,
+                                });
+                                this.log.debug(`Inbound GroupValue_Response from ${src} GA ${dest} to Object: ${id} val: ${convertedVal} dpt: ${data.native.dpt}`);
+                                break;
 
-                        case "GroupValue_Write":
-                            this.setState(this.gaList.getIdByAddress(dest), {
-                                val: convertedVal,
-                                ack: true,
-                            });
-                            this.log.debug(
-                                `Inbound GroupValue_Write from ${src} to ${dest} to Object: ${this.gaList.getIdByAddress(dest)} val: ${convertedVal}  dpt: ${this.gaList.getDataByAddress(dest).native.dpt}`
-                            );
-                            break;
+                            case "GroupValue_Write":
+                                this.setState(id, {
+                                    val: convertedVal,
+                                    ack: true,
+                                });
+                                this.log.debug(
+                                    `Inbound GroupValue_Write from ${src} GA ${dest} to Object: ${id} val: ${convertedVal} dpt: ${data.native.dpt}`
+                                );
+                                break;
 
-                        default:
-                            this.log.debug("received unhandeled event " + " " + evt + " " + src + " " + dest + " " + convertedVal);
+                            default:
+                                this.log.debug("received unhandeled event " + " " + evt + " " + src + " " + dest + " " + convertedVal);
+                        }
                     }
                 },
             },
@@ -581,7 +589,7 @@ class openknx extends utils.Adapter {
     }
 
     main() {
-        this.log.info("Connecting to knx gateway:  " + this.config.gwip + ":" + this.config.gwipport + "   with phy. Adr: " + this.config.eibadr + " minimum send delay: " + this.config.minimumDelay);
+        this.log.info("Connecting to knx gateway:  " + this.config.gwip + ":" + this.config.gwipport + "   with phy. Adr: " + this.config.eibadr + " minimum send delay: " + this.config.minimumDelay + " ms");
         this.log.info(utils.controllerDir);
         this.setState("info.connection", false, true);
 
@@ -602,10 +610,14 @@ class openknx extends utils.Adapter {
                         const value = res.rows[i].value;
                         if (value && value.native && value.native.address != undefined) {
                             //add only elements from tree that are knx objects, identified by a group adress
-                            if (this.gaList.getDataByAddress(value.native.address) != undefined)
-                                this.log.warn("Two entries have the same group address: " + this.gaList.getDataByAddress(value.native.address)._id + " " + id + " Please correct your configuration.");
-                            else
-                                this.gaList.set(id, value.native.address, res.rows[i].value);
+                            //todo debug
+                            if (value.native.address == "1/1/1") {
+                                let xxx;
+                            }
+
+                            this.gaList.set(id, value.native.address, res.rows[i].value);
+                            if (this.gaList.getIdsByGa(value.native.address).length > 1) //todo wird nicht gerufen
+                                this.log.info(id + "has assigned a non exclusive group address: " + value.native.address);
                         }
                     }
                     try {

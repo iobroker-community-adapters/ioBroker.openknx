@@ -236,11 +236,11 @@
                                 message = `Extracted ${result.count} states successfully<br/><br/>\n${result.error}`
                             }
                             showMessage(_(message));
-                            sendTo(null, "reload", null);
+                            sendTo(null, "restart", null);
                             showToast(null, _("Restarting adapter"), null, 10000);
                         } else {
                             showMessage(_("Extracted %s states successfully", result.count));
-                            sendTo(null, "reload", null);
+                            sendTo(null, "restart", null);
                             showToast(null, _("Restarting adapter"), null, 10000);
                         }
                         window.isProcessingRequest = false;
