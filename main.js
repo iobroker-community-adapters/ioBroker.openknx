@@ -63,6 +63,7 @@ class openknx extends utils.Adapter {
                     this.log.warn(args);
                 } else if (args.indexOf("[error]") !== -1) {
                     this.log.error(args);
+                    //todo log onsentry
                 } else if (args.indexOf("[trace]") !== -1) {
                     this.log.silly(args);
                 } else {
@@ -479,9 +480,6 @@ class openknx extends utils.Adapter {
                 event: ( /** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
                     let convertedVal = [];
 
-                    let x;
-                    x = x.a/0;
-
                     if (src == this.config.eibadr) {
                         //called by self, avoid loop
                         //console.log('receive self ga: ', dest);
@@ -610,13 +608,8 @@ class openknx extends utils.Adapter {
                         const value = res.rows[i].value;
                         if (value && value.native && value.native.address != undefined) {
                             //add only elements from tree that are knx objects, identified by a group adress
-                            //todo debug
-                            if (value.native.address == "1/1/1") {
-                                let xxx;
-                            }
-
                             this.gaList.set(id, value.native.address, res.rows[i].value);
-                            if (this.gaList.getIdsByGa(value.native.address).length > 1) //todo wird nicht gerufen
+                            if (this.gaList.getIdsByGa(value.native.address).length > 1)
                                 this.log.info(id + "has assigned a non exclusive group address: " + value.native.address);
                         }
                     }
