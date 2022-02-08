@@ -41,11 +41,12 @@ tests.integration(path.join(__dirname, ".."), {
     allowedExitCodes: [11],
 
     // Define your own tests inside defineAdditionalTests
-    // Since the tests are heavily instrumented, you need to create and use a so called "harness" to control the tests.    
+    // Since the tests are heavily instrumented, you need to create and use a so called "harness" to control the tests.
 
     defineAdditionalTests(getHarness) {
         describe("Test Objects: sendTo() xml data to import; sendTo() xml2 data to import, onlyAddNewObjects, previous database; Test Objects: sendTo() xml2 data to import, notonlyAddNewObjects, previous database", () => {
             it("Should give back a successful response; should not overwrite object value; should overwrite object value", () => {
+                // eslint-disable-next-line no-async-promise-executor
                 return new Promise(async (resolve, reject) => {
                     // Create a fresh harness instance each test!
                     const harness = getHarness();
