@@ -32,8 +32,10 @@
       "pl": "nowy darmowy adapter open-source dla KNX",
       "zh-cn": "用于 KNX 的新免费开源适配器"
     },
-    "authors": [
-      "Boellner <boellnerboellner@gmail.com>",
+    "authors":  [
+      "Boellner <boellnerboellner@gmail.com>"
+    ],
+    "contributors": [
       "TA2k <tombox2020@gmail.com>"
     ],
     "keywords": [

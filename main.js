@@ -437,11 +437,11 @@ class openknx extends utils.Adapter {
                             if (this.gaList.getDataById(key).native.address.match(/\d*\/\d*\/\d*/) && this.gaList.getDataById(key).native.dpt) {
                                 try {
                                     const datapoint = new knx.Datapoint({
-                                            ga: this.gaList.getDataById(key).native.address,
-                                            dpt: this.gaList.getDataById(key).native.dpt,
-                                            autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
-                                        },
-                                        this.knxConnection
+                                        ga: this.gaList.getDataById(key).native.address,
+                                        dpt: this.gaList.getDataById(key).native.dpt,
+                                        autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
+                                    },
+                                    this.knxConnection
                                     );
                                     datapoint.on("error", (ga, dptid) => {
                                         this.log.warn("Received data length for GA " + ga + " does not match configured " + dptid);
@@ -450,8 +450,8 @@ class openknx extends utils.Adapter {
                                     cnt_withDPT++;
                                     this.log.debug(
                                         `Datapoint ${this.gaList.getDataById(key).native.autoread ? "autoread" : ""} created and GroupValueWrite sent: ${
-                                                                                this.gaList.getDataById(key).native.address
-                                                                            } ${key}`
+                                            this.gaList.getDataById(key).native.address
+                                        } ${key}`
                                     );
                                 } catch (e) {
                                     this.log.warn("could not create KNX Datapoint for " + key + " with error: " + e);
