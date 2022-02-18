@@ -437,11 +437,11 @@ class openknx extends utils.Adapter {
                             if (this.gaList.getDataById(key).native.address.match(/\d*\/\d*\/\d*/) && this.gaList.getDataById(key).native.dpt) {
                                 try {
                                     const datapoint = new knx.Datapoint({
-                                        ga: this.gaList.getDataById(key).native.address,
-                                        dpt: this.gaList.getDataById(key).native.dpt,
-                                        autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
-                                    },
-                                    this.knxConnection
+                                            ga: this.gaList.getDataById(key).native.address,
+                                            dpt: this.gaList.getDataById(key).native.dpt,
+                                            autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
+                                        },
+                                        this.knxConnection
                                     );
                                     datapoint.on("error", (ga, dptid) => {
                                         this.log.warn("Received data length for GA " + ga + " does not match configured " + dptid);
@@ -512,7 +512,12 @@ class openknx extends utils.Adapter {
                                     if (state) {
                                         this.log.debug("Inbound GroupValue_Read from " + src + " GA " + dest + " to " + id);
                                         if (this.gaList.getDataById(id).native.answer_groupValueResponse) {
-                                            this.knxConnection.respond(dest, state.val, this.gaList.getDataById(id).native.dpt);
+                                            let stateval = state.val;
+                                            try {
+                                                // @ts-ignore
+                                                stateval = JSON.parse(state.val);
+                                            } catch (e) {}
+                                            this.knxConnection.respond(dest, stateval, this.gaList.getDataById(id).native.dpt);
                                             this.log.debug("responding with value " + state.val);
                                         }
                                     }
