@@ -162,7 +162,7 @@ class openknx extends utils.Adapter {
                     projectImport.parseInput(this, obj.message.xml, (parseError, res) => {
                         this.updateObjects(res, 0, obj.message.onlyAddNewObjects, (updateError, length) => {
                             res = {
-                                error: (parseError.length == 0) ? updateError : parseError + "<br/>" + updateError,
+                                error: (parseError && parseError.length == 0) ? updateError : (parseError ? parseError : "") + "<br/>" + updateError,
                                 count: length,
                             };
                             this.log.info("Project import finished of " + length + " GAs");
@@ -378,7 +378,7 @@ class openknx extends utils.Adapter {
             //bitlength is the buffers bytelength * 8.
             rawVal = Buffer.from(knxVal, "hex");
             isRaw = true;
-            this.log.debug("Unhandeled DPT " + dpt + ", assuming raw value");
+            this.log.info("Unhandeled DPT " + dpt + ", assuming raw value");
         } else {
             const error = "trap - missing logic for undhandeled dpt: " + dpt;
             console.warn(error);
@@ -429,35 +429,31 @@ class openknx extends utils.Adapter {
                 connected: () => {
                     this.disconnectConfirmed = false;
                     //create new knx datapoint and bind to connection
-                    //in connected in order to have autoread work
+                    //in order to have autoread work
                     let cnt_withDPT = 0;
                     if (!this.autoreaddone) {
                         //do autoread on start of adapter and not every connection
                         for (const key of this.gaList) {
-                            if (this.gaList.getDataById(key).native.address.match(/\d*\/\d*\/\d*/) && this.gaList.getDataById(key).native.dpt) {
-                                try {
-                                    const datapoint = new knx.Datapoint({
-                                            ga: this.gaList.getDataById(key).native.address,
-                                            dpt: this.gaList.getDataById(key).native.dpt,
-                                            autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
-                                        },
-                                        this.knxConnection
-                                    );
-                                    datapoint.on("error", (ga, dptid) => {
-                                        this.log.warn("Received data length for GA " + ga + " does not match configured " + dptid);
-                                    });
-                                    this.gaList.setDpById(key, datapoint);
-                                    cnt_withDPT++;
-                                    this.log.debug(
-                                        `Datapoint ${this.gaList.getDataById(key).native.autoread ? "autoread" : ""} created and GroupValueWrite sent: ${
+                            try {
+                                const datapoint = new knx.Datapoint({
+                                        ga: this.gaList.getDataById(key).native.address,
+                                        dpt: this.gaList.getDataById(key).native.dpt,
+                                        autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
+                                    },
+                                    this.knxConnection
+                                );
+                                datapoint.on("error", (ga, dptid) => {
+                                    this.log.warn("Received data length for GA " + ga + " does not match configured " + dptid);
+                                });
+                                this.gaList.setDpById(key, datapoint);
+                                cnt_withDPT++;
+                                this.log.debug(
+                                    `Datapoint ${this.gaList.getDataById(key).native.autoread ? "autoread" : ""} created and GroupValueWrite sent: ${
                                             this.gaList.getDataById(key).native.address
                                         } ${key}`
-                                    );
-                                } catch (e) {
-                                    this.log.warn("could not create KNX Datapoint for " + key + " with error: " + e);
-                                }
-                            } else {
-                                this.log.warn("no match for " + key);
+                                );
+                            } catch (e) {
+                                this.log.error("could not create KNX Datapoint for " + key + " with error: " + e);
                             }
                         }
                         this.autoreaddone = true;
@@ -477,6 +473,7 @@ class openknx extends utils.Adapter {
 
                 //KNX Bus event received
                 //src: KnxDeviceAddress, dest: KnxGroupAddress, val: raw value not used, using dp interface instead
+                // @ts-ignore
                 event: ( /** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
                     let convertedVal = [];
 
@@ -490,8 +487,8 @@ class openknx extends utils.Adapter {
                         //seems that knx lib does not guarantee dest group adresses
                         return;
                     }
-                    if (!this.gaList.getDpsByGa(dest)) {
-                        this.log.warn("Ignoring " + evt + " received on unknown GA: " + dest + ". GA was not in imported XML");
+                    if (!this.gaList.getIdsByGa(dest)) {
+                        this.log.warn("Ignoring " + evt + " received unknown GA: " + dest);
                         return;
                     }
 
@@ -592,7 +589,7 @@ class openknx extends utils.Adapter {
     }
 
     main() {
-        this.log.info("Connecting to knx gateway:  " + this.config.gwip + ":" + this.config.gwipport + "   with phy. Adr: " + this.config.eibadr + " minimum send delay: " + this.config.minimumDelay + " ms");
+        this.log.info("Connecting to knx gateway:  " + this.config.gwip + ":" + this.config.gwipport + "   with phy. Adr: " + this.config.eibadr + " minimum send delay: " + this.config.minimumDelay + " ms debug level: " + this.log.level);
         this.log.info(utils.controllerDir);
         this.setState("info.connection", false, true);
 
@@ -611,11 +608,11 @@ class openknx extends utils.Adapter {
                     for (let i = res.rows.length - 1; i >= 0; i--) {
                         const id = res.rows[i].id;
                         const value = res.rows[i].value;
-                        if (value && value.native && value.native.address != undefined) {
+                        if (value && value.native && value.native.address != undefined && value.native.address.match(/\d*\/\d*\/\d*/) && value.native.dpt) {
                             //add only elements from tree that are knx objects, identified by a group adress
                             this.gaList.set(id, value.native.address, res.rows[i].value);
                             if (this.gaList.getIdsByGa(value.native.address).length > 1)
-                                this.log.info(id + "has assigned a non exclusive group address: " + value.native.address);
+                                this.log.info(id + " has assigned a non exclusive group address: " + value.native.address);
                         }
                     }
                     try {
