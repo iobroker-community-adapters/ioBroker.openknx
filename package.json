@@ -28,7 +28,7 @@
         "url": "https://github.com/iobroker-community-adapters/ioBroker.openknx"
     },
     "dependencies": {
-        "@iobroker/adapter-core": "^2.5.1",
+        "@iobroker/adapter-core": "^2.6.0",
         "knx": "2.4.1",
         "xmldom": "^0.6.0",
         "xpath": "0.0.32",
