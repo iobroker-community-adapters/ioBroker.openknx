@@ -422,6 +422,8 @@ class openknx extends utils.Adapter {
             physAddr: this.config.eibadr,
             interface: this.translateInterface(this.config.localInterface),
             minimumDelay: this.config.minimumDelay,
+            //https://github.com/Supergiovane/node-red-contrib-knx-ultimate/issues/78, some receivers cannot handle a ack request, spec makes no difference
+            suppress_ack_ldatareq: true,
             //map set the log level for messsages printed on the console. This can be 'error', 'warn', 'info' (default), 'debug', or 'trace'.
             //log is written to console, not in IoB log
             loglevel: this.log.level == "silly" ? "trace" : this.log.level,
