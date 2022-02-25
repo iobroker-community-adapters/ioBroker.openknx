@@ -20,7 +20,8 @@ var connection = new knx.Connection( {
   // wait at least 10 millisec between each datagram
   minimumDelay: 10,
   // enable this option to suppress the acknowledge flag with outgoing L_Data.req requests. LoxOne needs this
-  suppress_ack_ldatareq: false,
+  // https://github.com/Supergiovane/node-red-contrib-knx-ultimate/issues/78, some receivers cannot handle a ack request, spec makes no difference
+  suppress_ack_ldatareq: true,
   // 14/03/2020 In tunneling mode, echoes the sent message by emitting a new emitEvent, so other object with same group address, can receive the sent message. Default is false.
   localEchoInTunneling:false,
   // define your event handlers here:

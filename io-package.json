@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.1.20",
+    "version": "0.1.21",
     "news": {
       "0.1.19": {
         "en": "Bugfixing"

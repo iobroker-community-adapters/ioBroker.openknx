@@ -21,6 +21,7 @@ const os = require("os");
 const {
     listenerCount
 } = require("process");
+const { threadId } = require("worker_threads");
 
 class openknx extends utils.Adapter {
     /**
@@ -33,9 +34,9 @@ class openknx extends utils.Adapter {
         });
         this.gaList = new DoubleKeyedMap();
         this.autoreaddone = false;
-        this.disconnectConfirmed = false;
         /* knx stack starts connection process with disconnect msg*/
         this.disconnectConfirmed = false;
+        this.connected = false;
         this.on("ready", this.onReady.bind(this));
         this.on("stateChange", this.onStateChange.bind(this));
         this.on("message", this.onMessage.bind(this));
@@ -428,6 +429,7 @@ class openknx extends utils.Adapter {
             handlers: {
                 connected: () => {
                     this.disconnectConfirmed = false;
+                    this.connected = true;
                     //create new knx datapoint and bind to connection
                     //in order to have autoread work
                     let cnt_withDPT = 0;
@@ -440,7 +442,6 @@ class openknx extends utils.Adapter {
                                         dpt: this.gaList.getDataById(key).native.dpt,
                                         autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
                                     },
-                                    this.knxConnection
                                 );
                                 datapoint.on("error", (ga, dptid) => {
                                     this.log.warn("Received data length for GA " + ga + " does not match configured " + dptid);
@@ -469,6 +470,7 @@ class openknx extends utils.Adapter {
                         this.log.warn("Connection lost");
                     }
                     this.disconnectConfirmed = true;
+                    this.connected = false;
                 },
 
                 //KNX Bus event received
@@ -476,6 +478,14 @@ class openknx extends utils.Adapter {
                 // @ts-ignore
                 event: ( /** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
                     let convertedVal = [];
+
+                    //workaround, lib can fire event without going through connected state?
+                    if (!this.connected) {
+                        this.knxConnection.Disconnect();
+                        this.startKnxStack();
+                        this.log.warn("trap");
+                        return;
+                    }
 
                     if (src == this.config.eibadr) {
                         //called by self, avoid loop
