@@ -18,12 +18,6 @@ const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 const detect = require("./lib/openknx.js");
 const os = require("os");
-const {
-    listenerCount
-} = require("process");
-const {
-    threadId
-} = require("worker_threads");
 
 class openknx extends utils.Adapter {
     /**
