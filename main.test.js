@@ -10,28 +10,63 @@
 
 // tslint:disable:no-unused-expression
 
-//unit under test:
+const main = require("./main.js");
+
+function dummy() {
+    return true;
+}
+
+class log {
+    constructor() {}
+    info(msg) {
+        console.dir(msg);
+    }
+    warn(msg) {
+        console.dir(msg);
+    }
+    silly() {}
+    debug() {}
+}
+
+class mockKnx {
+    constructor() {
+        this.Connection = new mockKnxConnection();
+    }
+}
+
+class mockKnxConnection {
+    constructor(conf) {
+
+    }
+    Disconnect() {}
+    read() {}
+    write() {}
+    writeRaw() {}
+}
+
 
 const {
     expect
 } = require("chai");
 const {
     tests,
-    utils
+    utils,
+    MockDatabase
 } = require("@iobroker/testing");
-const { adapter, database } = utils.unit.createMocks();
+const {
+    adapter,
+    database
+} = utils.unit.createMocks();
 
-// xx const main = require(__dirname + "/main");
-
-// import { functionToTest } from "./moduleToTest";
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 describe("module to test: main  => function to test: warnDuplicates", () => {
     // initializing logic
-    const expected = "New object with an already existing Group Address name has not been created: aaa";
+    const expected = "New object with an already existing Group Address name has not been used: aaa";
 
     it(`should return ${expected}`, () => {
 
-        let objects = [{
+        const objects = [{
                 _id: 'aaa',
                 type: 'state',
                 from: 'system.adapter.openknx.0'
@@ -43,8 +78,8 @@ describe("module to test: main  => function to test: warnDuplicates", () => {
             },
         ];
 
-// xx         const result = main().warnDuplicates(objects);
-// xx         expect(result).to.equal(expected);
+        const result = main.warnDuplicates(objects);
+        expect(result).to.equal(expected);
         // or using the should() syntax
         //result.should.equal(expected);
     });
@@ -54,36 +89,90 @@ describe("module to test: main  => function to test: warnDuplicates", () => {
 
 describe("module to test: main  => function to test: onStateChange", () => {
     // initializing logic
-    const expected = "not a KNX object";
+    const expected = "write";
 
-    it("compare onStateChange output to expected value", async () => {
+    it("check onStateChange triggers write", async () => {
+
+        main.setState = dummy;
+        main.getStateAsync = dummy;
+        main.getState = dummy;
+        main.knxConnection = new mockKnxConnection();
+        main.log = new log();
 
         // Create an object in the fake db we will use in this test
+        //const myid = "openknx.0.id1";
+        const namespace = main.namespace;
+        const myid = namespace + "." + "test2";
+
         const theObject = {
-            _id: "aaa",
+            _id: myid,
             type: "state",
             common: {
                 role: "whatever",
+                write: true,
+                type: "boolean",
             },
+            native: {
+                address: "99/0/0",
+                "dpt": "DPT1",
+            }
         };
-        database.publishObject(theObject);
 
-// xx         main().gaList = {};
-        //todo: add values to gaList
-        //todo: test different types, date ...
+        main.setObjectAsync(myid, theObject, () => {});
+        //await wait(100);
 
-        const id = "aaa";
+        main.config = {
+            gwip: "1.1.1.1",
+            gwipport: "1234"
+        };
+        main.setState = dummy;
+        main.main(false);
+        await wait(100);
+
         const state = {
-            val: true,
-            ack: false
+            val: "a",
+            ack: false,
+            ts: 0,
+            lc: 0
         };
- // xx        const result = await main().onStateChange(id, state);
 
- // xx        expect(result).to.equal(expected);
-
+        main.getStateAsync = dummy; //set again here it is overwritten, unlcear why
+        const result = await main.onStateChange(myid, state);
+        expect(result).to.equal(expected);
     });
 
     // ... more tests => it
 });
 
+
+describe("module to test: main  => function to test: event", () => {
+    // initializing logic
+    const expected = "ok";
+
+    it("check event reads in data", async () => {
+
+        //main.setState = dummy;
+        //main.getStateAsync = dummy;
+        //main.getState = dummy;
+        //main.knxConnection = new mockKnxConnection();
+        //main.log = new log();
+
+        main.knx = new mockKnx();
+
+
+
+        main.config = {
+            gwip: "1.1.1.1",
+            gwipport: "1234"
+        };
+        main.setState = dummy;
+        //main.main(true);
+        //main.startKnxStack();
+        await wait(100);
+
+        expect("ok").to.equal(expected);
+    });
+
+    // ... more tests => it
+});
 // ... more test suites => describe
