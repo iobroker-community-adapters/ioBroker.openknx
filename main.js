@@ -21,7 +21,9 @@ const os = require("os");
 const {
     listenerCount
 } = require("process");
-const { threadId } = require("worker_threads");
+const {
+    threadId
+} = require("worker_threads");
 
 class openknx extends utils.Adapter {
     /**
@@ -81,16 +83,16 @@ class openknx extends utils.Adapter {
     async onReady() {
         // adapter initialization
 
+        /*
         if (this.supportsFeature && this.supportsFeature("PLUGINS")) {
             const sentryInstance = this.getPluginInstance("sentry");
             if (sentryInstance) {
                 const Sentry = sentryInstance.getSentryObject();
                 if (Sentry) {
                     Sentry.init({
-                        environment: "development", //"production", todo distinguish
+                        //environment: "development", //"production", todo distinguish
                     });
                     Sentry.configureScope(scope => {
-                        // eslint-disable-next-line no-unused-vars
                         scope.addEventProcessor((event, _hint) => {
                             if (event.exception && event.exception.values && event.exception.values[0]) {
                                 const eventData = event.exception.values[0];
@@ -102,17 +104,18 @@ class openknx extends utils.Adapter {
                                         return null;
                                     }
                                     */
-                                    // We have exception data and do not sorted it out, so report it
-                                    return event;
-                                }
-                            }
-                            // No exception in it ... do not report
-                            return null;
-                        });
-                    });
-                }
-            }
-        }
+        // We have exception data and do not sorted it out, so report it
+        //                                    return event;
+        //    }
+        //}
+        // No exception in it ... do not report
+        //                            return null;
+        //                        });
+        //                    });
+        //                }
+        //            }
+        //}
+
 
         //after installation
         if (tools.isEmptyObject(this.config)) {
@@ -440,11 +443,10 @@ class openknx extends utils.Adapter {
                         for (const key of this.gaList) {
                             try {
                                 const datapoint = new knx.Datapoint({
-                                        ga: this.gaList.getDataById(key).native.address,
-                                        dpt: this.gaList.getDataById(key).native.dpt,
-                                        autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
-                                    },
-                                );
+                                    ga: this.gaList.getDataById(key).native.address,
+                                    dpt: this.gaList.getDataById(key).native.dpt,
+                                    autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
+                                }, );
                                 datapoint.on("error", (ga, dptid) => {
                                     this.log.warn("Received data length for GA " + ga + " does not match configured " + dptid);
                                 });
