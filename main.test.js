@@ -16,32 +16,68 @@ function dummy() {
     return true;
 }
 
+let callbackRes = "";
+
+function getState(id, options, callback) {
+    const err = undefined;
+    const state = {
+        val: 0
+    };
+
+    if (typeof options == "function") {
+        callbackRes = options(err, state);
+    }
+
+    if (typeof callback == "function") {
+        callbackRes = callback(err, state);
+    }
+}
+
 class log {
     constructor() {}
     info(msg) {
-        console.dir(msg);
+        //console.dir(msg);
     }
     warn(msg) {
+        console.dir(msg);
+    }
+    error(msg) {
         console.dir(msg);
     }
     silly() {}
     debug() {}
 }
 
+class Datapoint {
+    constructor(options, conn) {}
+    on() {}
+}
+
 class mockKnx {
-    constructor() {
-        this.Connection = new mockKnxConnection();
+    constructor() {}
+
+    Connection(options) {
+        this.connected = options.handlers.connected;
+        this.disconnected = options.handlers.disconnected;
+        this.event = options.handlers.event;
     }
+    // event(/** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val){}
 }
 
 class mockKnxConnection {
-    constructor(conf) {
-
+    constructor(conf) {}
+    Disconnect() {
+        console.dir("disconnect");
     }
-    Disconnect() {}
-    read() {}
-    write() {}
-    writeRaw() {}
+    read() {
+        console.dir("read");
+    }
+    write() {
+        console.dir("write");
+    }
+    writeRaw() {
+        console.dir("writeRaw");
+    }
 }
 
 
@@ -59,6 +95,7 @@ const {
 } = utils.unit.createMocks();
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+let result;
 
 describe("module to test: main  => function to test: warnDuplicates", () => {
     // initializing logic
@@ -89,43 +126,46 @@ describe("module to test: main  => function to test: warnDuplicates", () => {
 
 describe("module to test: main  => function to test: onStateChange", () => {
     // initializing logic
-    const expected = "write";
+
+    main.setState = dummy;
+    main.getStateAsync = dummy;
+    main.getState = getState;
+    main.knxConnection = new mockKnxConnection();
+    main.log = new log();
+    main.config = {
+        gwip: "1.1.1.1",
+        gwipport: "1234"
+    };
+
+    // Create an object in the fake db we will use in this test
+    //const myid = "openknx.0.id1";
+    const namespace = main.namespace;
+    const myid = namespace + "." + "test2";
+
+    const theObject = {
+        _id: myid,
+        type: "state",
+        common: {
+            role: "whatever",
+            write: true,
+            type: "boolean",
+        },
+        native: {
+            address: "99/0/0",
+            "dpt": "DPT1",
+        }
+    };
+
+    main.setObjectAsync(myid, theObject, () => {});
 
     it("check onStateChange triggers write", async () => {
 
-        main.setState = dummy;
-        main.getStateAsync = dummy;
-        main.getState = dummy;
-        main.knxConnection = new mockKnxConnection();
-        main.log = new log();
+        const expected = "write";
 
-        // Create an object in the fake db we will use in this test
-        //const myid = "openknx.0.id1";
-        const namespace = main.namespace;
-        const myid = namespace + "." + "test2";
 
-        const theObject = {
-            _id: myid,
-            type: "state",
-            common: {
-                role: "whatever",
-                write: true,
-                type: "boolean",
-            },
-            native: {
-                address: "99/0/0",
-                "dpt": "DPT1",
-            }
-        };
-
-        main.setObjectAsync(myid, theObject, () => {});
         //await wait(100);
 
-        main.config = {
-            gwip: "1.1.1.1",
-            gwipport: "1234"
-        };
-        main.setState = dummy;
+        main.setState = dummy; //set again here it is overwritten, unlcear why
         main.main(false);
         await wait(100);
 
@@ -137,7 +177,7 @@ describe("module to test: main  => function to test: onStateChange", () => {
         };
 
         main.getStateAsync = dummy; //set again here it is overwritten, unlcear why
-        const result = await main.onStateChange(myid, state);
+        result = await main.onStateChange(myid, state);
         expect(result).to.equal(expected);
     });
 
@@ -147,31 +187,39 @@ describe("module to test: main  => function to test: onStateChange", () => {
 
 describe("module to test: main  => function to test: event", () => {
     // initializing logic
-    const expected = "ok";
 
-    it("check event reads in data", async () => {
+    it("check event GroupValue_Read GroupValue_Write GroupValue_Response", async () => {
+        const expected = "GroupValue_Read";
+        const expected2 = "GroupValue_Write";
+        const expected3 = "GroupValue_Response";
 
-        //main.setState = dummy;
-        //main.getStateAsync = dummy;
-        //main.getState = dummy;
-        //main.knxConnection = new mockKnxConnection();
-        //main.log = new log();
+        const knx = new mockKnx();
+        main.knx = knx;
+        main.knx.Datapoint = Datapoint;
+        main.setState = dummy; //set again here it is overwritten, unlcear why needed
+        main.main(true);
+        await wait(50);
+        knx.connected();
+        await wait(50);
+        main.connected = true;
+        main.getState = getState; //set again here it is overwritten, unlcear why needed
+        result = knx.event("GroupValue_Read", "src", "99/0/0", "");
+        await wait(50);
 
-        main.knx = new mockKnx();
+        expect(callbackRes).to.equal(expected);
 
+        result = knx.event("GroupValue_Write", "src", "99/0/0", "");
+        await wait(50);
 
+        expect(result).to.equal(expected2);
 
-        main.config = {
-            gwip: "1.1.1.1",
-            gwipport: "1234"
-        };
-        main.setState = dummy;
-        //main.main(true);
-        //main.startKnxStack();
-        await wait(100);
+        main.connected = true;
+        result = knx.event("GroupValue_Response", "src", "99/0/0", "");
+        await wait(50);
 
-        expect("ok").to.equal(expected);
+        expect(result).to.equal(expected3);
     });
+
 
     // ... more tests => it
 });

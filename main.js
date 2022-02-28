@@ -41,6 +41,8 @@ class openknx extends utils.Adapter {
         this.mynamespace = this.namespace;
         this.sentryInstance = null;
         this.Sentry = null;
+        this.knxConnection;
+        this.knx = knx;
 
         //redirect log from knx.js to adapter log
         console.log = (args) => {
@@ -72,7 +74,7 @@ class openknx extends utils.Adapter {
     }
 
     /**
-     * Is called when databases are connected and adapter received configuration.
+     * Is called when databasesf are connected and adapter received configuration.
      */
     async onReady() {
         // adapter initialization
@@ -124,7 +126,7 @@ class openknx extends utils.Adapter {
         // In order to get state updates, you need to subscribe to them.
         this.subscribeStates("*");
 
-        this.main();
+        this.main(true);
     }
 
     /**
@@ -324,7 +326,6 @@ class openknx extends utils.Adapter {
         if (!id || !state /*obj deleted*/ || typeof state !== "object") {
             return "invalid input";
         }
-        //not a KNX object
         if (!this.gaList.getDataById(id) || !this.gaList.getDataById(id).native || !this.gaList.getDataById(id).native.address) {
             return "not a KNX object";
         }
@@ -334,11 +335,11 @@ class openknx extends utils.Adapter {
             //enable this for system testing
             //this.interfaceTest(id, state);
 
-            return;
+            return "ack is set";
         }
         if (!(await this.getStateAsync("info.connection"))) {
             this.log.warn("onStateChange: not connected to KNX bus");
-            return;
+            return "not connected to KNX bus";
         }
 
         const dpt = this.gaList.getDataById(id).native.dpt;
@@ -413,7 +414,7 @@ class openknx extends utils.Adapter {
     }
 
     startKnxStack() {
-        this.knxConnection = knx.Connection({
+        this.knxConnection = this.knx.Connection({
             ipAddr: this.config.gwip,
             ipPort: this.config.gwipport,
             physAddr: this.config.eibadr,
@@ -436,7 +437,7 @@ class openknx extends utils.Adapter {
                         //do autoread on start of adapter and not every connection
                         for (const key of this.gaList) {
                             try {
-                                const datapoint = new knx.Datapoint({
+                                const datapoint = new this.knx.Datapoint({
                                     ga: this.gaList.getDataById(key).native.address,
                                     dpt: this.gaList.getDataById(key).native.dpt,
                                     autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
@@ -478,28 +479,28 @@ class openknx extends utils.Adapter {
                 // @ts-ignore
                 event: ( /** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
                     let convertedVal = [];
-
+                    let ret;
                     //workaround, lib can fire event without going through connected state?
                     if (!this.connected) {
                         this.knxConnection.Disconnect();
                         this.startKnxStack();
-                        this.log.warn("event received before initialisation");
-                        return;
+                        const err ="event received before initialisation";
+                        this.log.warn(err);
+                        return err;
                     }
 
                     if (src == this.config.eibadr) {
                         //called by self, avoid loop
-                        //console.log('receive self ga: ', dest);
-                        return;
+                        return "receive self ga";
                     }
                     /* some checks */
                     if (dest == "0/0/0" || tools.isDeviceAddress(dest)) {
                         //seems that knx lib does not guarantee dest group adresses
-                        return;
+                        return "bad address";
                     }
                     if (!this.gaList.getIdsByGa(dest)) {
                         this.log.warn("Ignoring " + evt + " received unknown GA: " + dest);
-                        return;
+                        return "unknown GA";
                     }
 
                     for (const id of this.gaList.getIdsByGa(dest)) {
@@ -516,8 +517,10 @@ class openknx extends utils.Adapter {
                             case "GroupValue_Read":
                                 //fetch val from addressed object and write on bus if configured to answer
                                 this.getState(id, (err, state) => {
+                                    let ret;
                                     if (state) {
                                         this.log.debug("Inbound GroupValue_Read from " + src + " GA " + dest + " to " + id);
+                                        ret = "GroupValue_Read";
                                         if (this.gaList.getDataById(id).native.answer_groupValueResponse) {
                                             let stateval = state.val;
                                             try {
@@ -526,7 +529,9 @@ class openknx extends utils.Adapter {
                                             } catch (e) {}
                                             this.knxConnection.respond(dest, stateval, this.gaList.getDataById(id).native.dpt);
                                             this.log.debug("responding with value " + state.val);
+                                            ret = "GroupValue_Read Respond";
                                         }
+                                        return ret;
                                     }
                                 });
                                 break;
@@ -537,6 +542,7 @@ class openknx extends utils.Adapter {
                                     ack: true,
                                 });
                                 this.log.debug(`Inbound GroupValue_Response from ${src} GA ${dest} to Object: ${id} val: ${convertedVal} dpt: ${data.native.dpt}`);
+                                ret = "GroupValue_Response";
                                 break;
 
                             case "GroupValue_Write":
@@ -547,12 +553,15 @@ class openknx extends utils.Adapter {
                                 this.log.debug(
                                     `Inbound GroupValue_Write from ${src} GA ${dest} to Object: ${id} val: ${convertedVal} dpt: ${data.native.dpt}`
                                 );
+                                ret = "GroupValue_Write";
                                 break;
 
                             default:
                                 this.log.debug("received unhandeled event " + " " + evt + " " + src + " " + dest + " " + convertedVal);
+                                ret = "unhandeled";
                         }
                     }
+                    return ret; //last processed
                 },
             },
         });
@@ -598,7 +607,7 @@ class openknx extends utils.Adapter {
         });
     }
 
-    main() {
+    main(startKnxConnection) {
         this.log.info("Connecting to knx gateway:  " + this.config.gwip + ":" + this.config.gwipport + "   with phy. Adr: " + this.config.eibadr + " minimum send delay: " + this.config.minimumDelay + " ms debug level: " + this.log.level);
         this.log.info(utils.controllerDir);
         this.setState("info.connection", false, true);
@@ -625,6 +634,7 @@ class openknx extends utils.Adapter {
                                 this.log.info(id + " has assigned a non exclusive group address: " + value.native.address);
                         }
                     }
+                    if (startKnxConnection)
                     try {
                         this.startKnxStack();
                     } catch (e) {
@@ -641,6 +651,7 @@ class openknx extends utils.Adapter {
     }
 }
 
+
 if (require.main !== module) {
     // this module was run directly from the command line as in node xxx.js
 
@@ -648,7 +659,9 @@ if (require.main !== module) {
     /**
      * @param {Partial<utils.AdapterOptions>} [options={}]
      */
-    module.exports = (options) => new openknx(options);
+    //todo module.exports = (options) => new openknx(options);
+    module.exports = new openknx();
+
 } else {
     // this module was not run directly from the command line and probably loaded by something else
 
