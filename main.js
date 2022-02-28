@@ -659,8 +659,8 @@ if (require.main !== module) {
     /**
      * @param {Partial<utils.AdapterOptions>} [options={}]
      */
-    //todo module.exports = (options) => new openknx(options);
-    module.exports = new openknx();
+    module.exports = (options) => new openknx(options);
+    //module.exports = new openknx();
 
 } else {
     // this module was not run directly from the command line and probably loaded by something else

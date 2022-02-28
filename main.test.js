@@ -115,7 +115,7 @@ describe("module to test: main  => function to test: warnDuplicates", () => {
             },
         ];
 
-        const result = main.warnDuplicates(objects);
+        const result = main().warnDuplicates(objects);
         expect(result).to.equal(expected);
         // or using the should() syntax
         //result.should.equal(expected);
@@ -127,19 +127,19 @@ describe("module to test: main  => function to test: warnDuplicates", () => {
 describe("module to test: main  => function to test: onStateChange", () => {
     // initializing logic
 
-    main.setState = dummy;
-    main.getStateAsync = dummy;
-    main.getState = getState;
-    main.knxConnection = new mockKnxConnection();
-    main.log = new log();
-    main.config = {
+    main().setState = dummy;
+    main().getStateAsync = dummy;
+    main().getState = getState;
+    main().knxConnection = new mockKnxConnection();
+    main().log = new log();
+    main().config = {
         gwip: "1.1.1.1",
         gwipport: "1234"
     };
 
     // Create an object in the fake db we will use in this test
     //const myid = "openknx.0.id1";
-    const namespace = main.namespace;
+    const namespace = main().namespace;
     const myid = namespace + "." + "test2";
 
     const theObject = {
@@ -156,18 +156,16 @@ describe("module to test: main  => function to test: onStateChange", () => {
         }
     };
 
-    main.setObjectAsync(myid, theObject, () => {});
+    main().setObjectAsync(myid, theObject, () => {});
 
     it("check onStateChange triggers write", async () => {
 
         const expected = "write";
 
-
-        //await wait(100);
-
-        main.setState = dummy; //set again here it is overwritten, unlcear why
-        main.main(false);
-        await wait(100);
+        main().setState = dummy; //set again here it is overwritten, unlcear why
+        main().log  = new log();
+        main().main(false);
+        await wait(50);
 
         const state = {
             val: "a",
@@ -176,8 +174,8 @@ describe("module to test: main  => function to test: onStateChange", () => {
             lc: 0
         };
 
-        main.getStateAsync = dummy; //set again here it is overwritten, unlcear why
-        result = await main.onStateChange(myid, state);
+        main().getStateAsync = dummy; //set again here it is overwritten, unlcear why
+        result = await main().onStateChange(myid, state);
         expect(result).to.equal(expected);
     });
 
@@ -194,15 +192,15 @@ describe("module to test: main  => function to test: event", () => {
         const expected3 = "GroupValue_Response";
 
         const knx = new mockKnx();
-        main.knx = knx;
-        main.knx.Datapoint = Datapoint;
-        main.setState = dummy; //set again here it is overwritten, unlcear why needed
-        main.main(true);
+        main().knx = knx;
+        main().knx.Datapoint = Datapoint;
+        main().setState = dummy; //set again here it is overwritten, unlcear why needed
+        main().main(true);
         await wait(50);
         knx.connected();
         await wait(50);
-        main.connected = true;
-        main.getState = getState; //set again here it is overwritten, unlcear why needed
+        main().connected = true;
+        main().getState = getState; //set again here it is overwritten, unlcear why needed
         result = knx.event("GroupValue_Read", "src", "99/0/0", "");
         await wait(50);
 
@@ -213,7 +211,7 @@ describe("module to test: main  => function to test: event", () => {
 
         expect(result).to.equal(expected2);
 
-        main.connected = true;
+        main().connected = true;
         result = knx.event("GroupValue_Response", "src", "99/0/0", "");
         await wait(50);
 
