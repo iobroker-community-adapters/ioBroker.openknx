@@ -11,6 +11,7 @@
 // tslint:disable:no-unused-expression
 
 const main = require("./main.js");
+const m = main();
 
 function dummy() {
     return true;
@@ -34,7 +35,7 @@ function getState(id, options, callback) {
 }
 
 class log {
-    constructor() {}
+    constructor() {console.dir("constructor log ");}
     info(msg) {
         //console.dir(msg);
     }
@@ -89,6 +90,7 @@ const {
     utils,
     MockDatabase
 } = require("@iobroker/testing");
+const EventEmitter = require("events");
 const {
     adapter,
     database
@@ -115,7 +117,7 @@ describe("module to test: main  => function to test: warnDuplicates", () => {
             },
         ];
 
-        const result = main().warnDuplicates(objects);
+        const result = m.warnDuplicates(objects);
         expect(result).to.equal(expected);
         // or using the should() syntax
         //result.should.equal(expected);
@@ -127,19 +129,19 @@ describe("module to test: main  => function to test: warnDuplicates", () => {
 describe("module to test: main  => function to test: onStateChange", () => {
     // initializing logic
 
-    main().setState = dummy;
-    main().getStateAsync = dummy;
-    main().getState = getState;
-    main().knxConnection = new mockKnxConnection();
-    main().log = new log();
-    main().config = {
+    m.setState = dummy;
+    m.getStateAsync = dummy;
+    m.getState = getState;
+    m.knxConnection = new mockKnxConnection();
+    m.log = new log();
+    m.config = {
         gwip: "1.1.1.1",
         gwipport: "1234"
     };
 
-    // Create an object in the fake db we will use in this test
+    //Create an object in the fake db we will use in this test
     //const myid = "openknx.0.id1";
-    const namespace = main().namespace;
+    const namespace = m.namespace;
     const myid = namespace + "." + "test2";
 
     const theObject = {
@@ -155,16 +157,13 @@ describe("module to test: main  => function to test: onStateChange", () => {
             "dpt": "DPT1",
         }
     };
-
-    main().setObjectAsync(myid, theObject, () => {});
+    m.setObjectAsync(myid, theObject, () => {});
 
     it("check onStateChange triggers write", async () => {
 
         const expected = "write";
 
-        main().setState = dummy; //set again here it is overwritten, unlcear why
-        main().log  = new log();
-        main().main(false);
+        m.main(false);
         await wait(50);
 
         const state = {
@@ -174,8 +173,8 @@ describe("module to test: main  => function to test: onStateChange", () => {
             lc: 0
         };
 
-        main().getStateAsync = dummy; //set again here it is overwritten, unlcear why
-        result = await main().onStateChange(myid, state);
+        m.getStateAsync = dummy; //set again here it is overwritten, unlcear why
+        result = await m.onStateChange(myid, state);
         expect(result).to.equal(expected);
     });
 
@@ -187,20 +186,22 @@ describe("module to test: main  => function to test: event", () => {
     // initializing logic
 
     it("check event GroupValue_Read GroupValue_Write GroupValue_Response", async () => {
+
         const expected = "GroupValue_Read";
         const expected2 = "GroupValue_Write";
         const expected3 = "GroupValue_Response";
 
         const knx = new mockKnx();
-        main().knx = knx;
-        main().knx.Datapoint = Datapoint;
-        main().setState = dummy; //set again here it is overwritten, unlcear why needed
-        main().main(true);
+        m.knx = knx;
+        m.knx.Datapoint = Datapoint;
+        m.setState = dummy; //set again here it is overwritten, unlcear why needed
+
+        m.main(true);
         await wait(50);
         knx.connected();
         await wait(50);
-        main().connected = true;
-        main().getState = getState; //set again here it is overwritten, unlcear why needed
+        m.connected = true;
+        m.getState = getState; //set again here it is overwritten, unlcear why needed
         result = knx.event("GroupValue_Read", "src", "99/0/0", "");
         await wait(50);
 
@@ -211,7 +212,7 @@ describe("module to test: main  => function to test: event", () => {
 
         expect(result).to.equal(expected2);
 
-        main().connected = true;
+        m.connected = true;
         result = knx.event("GroupValue_Response", "src", "99/0/0", "");
         await wait(50);
 
