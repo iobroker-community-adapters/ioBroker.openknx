@@ -269,7 +269,7 @@ describe("module to test: main  => function to test: event", () => {
 
         m.knxConnection = new mockKnxConnection(); //set again here it is overwritten, unlcear why needed
         result = m.knx.event("GroupValue_Read", "src", "0/0/2", "");
-       expect(callbackRes).to.equal(expected4);
+        expect(callbackRes).to.equal(expected4);
 
     });
 
