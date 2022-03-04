@@ -11,7 +11,8 @@
 // tslint:disable:no-unused-expression
 
 const main = require("./main.js");
-const m = main();
+const config = {};
+const m = main(config);
 
 function dummy() {
     return true;
@@ -36,7 +37,6 @@ function getState(id, options, callback) {
 
 class log {
     constructor() {
-        console.dir("constructor log ");
     }
     info(msg) {
         //console.dir(msg);
