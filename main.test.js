@@ -35,7 +35,9 @@ function getState(id, options, callback) {
 }
 
 class log {
-    constructor() {console.dir("constructor log ");}
+    constructor() {
+        console.dir("constructor log ");
+    }
     info(msg) {
         //console.dir(msg);
     }
@@ -49,7 +51,7 @@ class log {
     debug() {}
 }
 
-class Datapoint {
+class mockDatapoint {
     constructor(options, conn) {}
     on() {}
 }
@@ -79,8 +81,10 @@ class mockKnxConnection {
     writeRaw() {
         console.dir("writeRaw");
     }
+    respond(grpaddr, value, dptid) {
+        console.dir("respond");
+    }
 }
-
 
 const {
     expect
@@ -132,20 +136,24 @@ describe("module to test: main  => function to test: onStateChange", () => {
     m.setState = dummy;
     m.getStateAsync = dummy;
     m.getState = getState;
-    m.knxConnection = new mockKnxConnection();
     m.log = new log();
+    m.knxConnection = new mockKnxConnection();
     m.config = {
         gwip: "1.1.1.1",
         gwipport: "1234"
     };
 
     //Create an object in the fake db we will use in this test
-    //const myid = "openknx.0.id1";
     const namespace = m.namespace;
-    const myid = namespace + "." + "test2";
+    const myid1 = namespace + "." + "test1";
+    const myid2 = namespace + "." + "test2";
+    const myid3 = namespace + "." + "test3";
+    const address1 = "0/0/1";
+    const address2 = "0/0/2";
+    const address3 = "0/0/3";
 
-    const theObject = {
-        _id: myid,
+    const theObject1 = {
+        _id: myid1,
         type: "state",
         common: {
             role: "whatever",
@@ -153,29 +161,71 @@ describe("module to test: main  => function to test: onStateChange", () => {
             type: "boolean",
         },
         native: {
-            address: "99/0/0",
+            address: address1,
             "dpt": "DPT1",
         }
     };
-    m.setObjectAsync(myid, theObject, () => {});
+    const theObject2 = {
+        _id: myid2,
+        type: "state",
+        common: {
+            role: "whatever",
+            write: true,
+            type: "boolean",
+        },
+        native: {
+            address: address2,
+            "dpt": "DPT1",
+            "answer_groupValueResponse": true,
+        }
+    };
+    const theObject3 = {
+        _id: myid3,
+        type: "state",
+        common: {
+            role: "whatever",
+            write: true,
+            type: "",
+        },
+        native: {
+            address: address3,
+            "dpt": "DPT100", //raw
+        }
+    };
+
+    m.gaList.set(myid1, address1, theObject1);
+    m.gaList.set(myid2, address2, theObject2);
+    m.gaList.set(myid3, address3, theObject3);
 
     it("check onStateChange triggers write", async () => {
 
-        const expected = "write";
+        //todo: raw, read, datatypes...
+        const expected1 = "write";
+        const expected2 = "read";
+        const expected3 = "write raw";
 
-        m.main(false);
-        await wait(50);
-
-        const state = {
+        const state1 = {
             val: "a",
             ack: false,
             ts: 0,
             lc: 0
         };
+        const state2 = {
+            val: "a",
+            ack: false,
+            ts: 0,
+            lc: 0,
+            c: "GroupValue_Read",
+        };
 
-        m.getStateAsync = dummy; //set again here it is overwritten, unlcear why
-        result = await m.onStateChange(myid, state);
-        expect(result).to.equal(expected);
+        result = await m.onStateChange(myid1, state1);
+        expect(result).to.equal(expected1);
+
+        result = await m.onStateChange(myid2, state2);
+        expect(result).to.equal(expected2);
+
+        result = await m.onStateChange(myid3, state1);
+        expect(result).to.equal(expected3);
     });
 
     // ... more tests => it
@@ -187,39 +237,44 @@ describe("module to test: main  => function to test: event", () => {
 
     it("check event GroupValue_Read GroupValue_Write GroupValue_Response", async () => {
 
+        m.setState = dummy;
+        m.getStateAsync = dummy;
+        m.getState = getState;
+        m.log = new log();
+        m.knxConnection = new mockKnxConnection();
+        m.config = {
+            gwip: "1.1.1.1",
+            gwipport: "1234"
+        };
+
         const expected = "GroupValue_Read";
         const expected2 = "GroupValue_Write";
         const expected3 = "GroupValue_Response";
+        const expected4 = "GroupValue_Read Respond";
 
-        const knx = new mockKnx();
-        m.knx = knx;
-        m.knx.Datapoint = Datapoint;
-        m.setState = dummy; //set again here it is overwritten, unlcear why needed
+        m.knx = new mockKnx();
+        m.knx.Datapoint = mockDatapoint;
+        m.knxConnection = new mockKnxConnection();
+        m.startKnxStack();
+        m.knx.connected();
 
-        m.main(true);
-        await wait(50);
-        knx.connected();
-        await wait(50);
-        m.connected = true;
-        m.getState = getState; //set again here it is overwritten, unlcear why needed
-        result = knx.event("GroupValue_Read", "src", "99/0/0", "");
-        await wait(50);
-
+        result = m.knx.event("GroupValue_Read", "src", "0/0/1", "");
         expect(callbackRes).to.equal(expected);
 
-        result = knx.event("GroupValue_Write", "src", "99/0/0", "");
-        await wait(50);
-
+        result = m.knx.event("GroupValue_Write", "src", "0/0/1", "");
         expect(result).to.equal(expected2);
 
-        m.connected = true;
-        result = knx.event("GroupValue_Response", "src", "99/0/0", "");
-        await wait(50);
-
+        result = m.knx.event("GroupValue_Response", "src", "0/0/1", "");
         expect(result).to.equal(expected3);
+
+        m.knxConnection = new mockKnxConnection(); //set again here it is overwritten, unlcear why needed
+        result = m.knx.event("GroupValue_Read", "src", "0/0/2", "");
+       expect(callbackRes).to.equal(expected4);
+
     });
 
 
     // ... more tests => it
 });
+
 // ... more test suites => describe
