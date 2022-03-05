@@ -11,14 +11,11 @@
 // tslint:disable:no-unused-expression
 
 const main = require("./main.js");
-let m = {};
-m.ioPack = {
-    common: {
-        plugins: ""
-    }
+const options = {
+    name: "iobroker",
+    dirname: "./",
 };
-m = main();
-console.dir(m);
+const m = main(options);
 
 function dummy() {
     return true;
@@ -248,7 +245,6 @@ describe("module to test: main  => function to test: onStateChange", () => {
             ts: 0,
             lc: 0
         };
-        console.dir("xxx " + m.ioPack.common);
 
         result = await m.onStateChange(myid1, state1);
         expect(result).to.equal(expected1);
