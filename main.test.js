@@ -12,6 +12,7 @@
 
 const main = require("./main.js");
 const m = main();
+m.ioPack.common.plugins = "";
 
 function dummy() {
     return true;
