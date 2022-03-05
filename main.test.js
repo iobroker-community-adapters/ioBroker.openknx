@@ -11,8 +11,7 @@
 // tslint:disable:no-unused-expression
 
 const main = require("./main.js");
-const config = {};
-const m = main(config);
+const m = main();
 
 function dummy() {
     return true;
@@ -39,7 +38,7 @@ class log {
     constructor() {
     }
     info(msg) {
-        //console.dir(msg);
+        console.dir(msg);
     }
     warn(msg) {
         console.dir(msg);
@@ -148,9 +147,11 @@ describe("module to test: main  => function to test: onStateChange", () => {
     const myid1 = namespace + "." + "test1";
     const myid2 = namespace + "." + "test2";
     const myid3 = namespace + "." + "test3";
+    const myid4 = namespace + "." + "test4";
     const address1 = "0/0/1";
     const address2 = "0/0/2";
     const address3 = "0/0/3";
+    const address4 = "0/0/4";
 
     const theObject1 = {
         _id: myid1,
@@ -171,15 +172,15 @@ describe("module to test: main  => function to test: onStateChange", () => {
         common: {
             role: "whatever",
             write: true,
-            type: "boolean",
+            type: "number",
         },
         native: {
             address: address2,
-            "dpt": "DPT1",
+            "dpt": "DPT4",
             "answer_groupValueResponse": true,
         }
     };
-    const theObject3 = {
+    const theObject3 = { //raw
         _id: myid3,
         type: "state",
         common: {
@@ -192,17 +193,35 @@ describe("module to test: main  => function to test: onStateChange", () => {
             "dpt": "DPT100", //raw
         }
     };
+    const theObject4 = { //dpt3
+        _id: myid4,
+        type: "state",
+        common: {
+            role: "whatever",
+            write: true,
+            type: "",
+        },
+        native: {
+            address: address3,
+            "dpt": "DPT3",
+            valuetype: "composite",
+        }
+    };
+
 
     m.gaList.set(myid1, address1, theObject1);
     m.gaList.set(myid2, address2, theObject2);
     m.gaList.set(myid3, address3, theObject3);
+    m.gaList.set(myid4, address4, theObject4);
 
     it("check onStateChange triggers write", async () => {
 
-        //todo: raw, read, datatypes...
+        //todo date string
+
         const expected1 = "write";
         const expected2 = "read";
         const expected3 = "write raw";
+        const expected4 = "write";
 
         const state1 = {
             val: "a",
@@ -217,6 +236,12 @@ describe("module to test: main  => function to test: onStateChange", () => {
             lc: 0,
             c: "GroupValue_Read",
         };
+        const state3 = {
+            val: '{"decr_incr":1, "data":1}',
+            ack: false,
+            ts: 0,
+            lc: 0
+        };
 
         result = await m.onStateChange(myid1, state1);
         expect(result).to.equal(expected1);
@@ -226,6 +251,9 @@ describe("module to test: main  => function to test: onStateChange", () => {
 
         result = await m.onStateChange(myid3, state1);
         expect(result).to.equal(expected3);
+
+        result = await m.onStateChange(myid4, state3);
+        expect(result).to.equal(expected4);
     });
 
     // ... more tests => it
