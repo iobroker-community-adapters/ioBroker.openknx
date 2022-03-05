@@ -11,10 +11,14 @@
 // tslint:disable:no-unused-expression
 
 const main = require("./main.js");
-const m = main();
-m.ioPack = "";
-m.ioPack.common= "";
-m.ioPack.common.plugins = "";
+let m = {};
+m.ioPack = {
+    common: {
+        plugins: ""
+    }
+};
+m = main();
+console.dir(m);
 
 function dummy() {
     return true;
@@ -38,8 +42,7 @@ function getState(id, options, callback) {
 }
 
 class log {
-    constructor() {
-    }
+    constructor() {}
     info(msg) {
         console.dir(msg);
     }
@@ -245,6 +248,7 @@ describe("module to test: main  => function to test: onStateChange", () => {
             ts: 0,
             lc: 0
         };
+        console.dir("xxx " + m.ioPack.common);
 
         result = await m.onStateChange(myid1, state1);
         expect(result).to.equal(expected1);
