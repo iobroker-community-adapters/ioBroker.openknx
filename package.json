@@ -36,7 +36,7 @@
         "xpath": "0.0.32"
     },
     "devDependencies": {
-        "@alcalzone/release-script": "^3.5.4",
+        "@alcalzone/release-script": "^3.5.6",
         "@iobroker/testing": "^2.5.6",
         "@types/chai": "^4.3.0",
         "@types/chai-as-promised": "^7.1.5",
