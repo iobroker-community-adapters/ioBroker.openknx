@@ -69,7 +69,7 @@
         "main.js"
     ],
     "scripts": {
-        "test:js": "mocha --exit --config test/mocharc.custom.json \"{!(node_modules|test)/**/*.test.js,*.test.js,test/**/test!(PackageFiles|Startup).js}\"",
+        "test:js": "mocha --exit --reporter-option maxDiffSize=50000 --config test/mocharc.custom.json \"{!(node_modules|test)/**/*.test.js,*.test.js,test/**/test!(PackageFiles|Startup).js}\"",
         "test:package": "mocha test/package --exit",
         "test:unit": "mocha test/unit --exit --timeout 3000",
         "test:integration": "mocha test/integration --exit --timeout 15000",
