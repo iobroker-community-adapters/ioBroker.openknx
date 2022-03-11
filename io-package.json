@@ -76,7 +76,7 @@
     "eibadr": "1.1.1",
     "localInterface": "",
     "minimumDelay": 50,
-    "aliassRegexp": "stat(e|us)|rm|rm.|rückmeldung|\\svalue",
+    "aliassRegexp": "[Ss]tat(e|us)(\\.|$)|[Rr]m(\\.|$)|[Rr]ückmeldung(\\.|$)|\\s[Vv]alue(\\.|$)",
     "aliasSimilarity": 0.9,
     "aliasPath": "alias.0",
     "aliasRange": false

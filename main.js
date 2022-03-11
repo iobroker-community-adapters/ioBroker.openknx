@@ -286,7 +286,7 @@ class openknx extends utils.Adapter {
             }
         }
 
-        const message = "New object with an already existing Group Address name has not been used: " + duplicates;
+        const message = "New object with an already existing Group Address name has not been created: " + duplicates;
         if (duplicates.length && this.log) {
             this.log.warn(message);
         }
@@ -358,7 +358,7 @@ class openknx extends utils.Adapter {
         }
         //convert val into object for certain dpts
         else if (tools.isDateDPT(dpt)) {
-            //before composite check, date is also composite
+            //before composite check, date is possibly composite
             knxVal = new Date(knxVal);
         } else if (this.gaList.getDataById(id).native.valuetype == "composite") {
             //input from IOB is either object or string in object notation, type of this conversion is object needed by the knx lib
@@ -521,7 +521,6 @@ class openknx extends utils.Adapter {
                                     if (state) {
                                         this.log.error("Inbound GroupValue_Read from " + src + " GA " + dest + " to " + id);
                                         ret = "GroupValue_Read";
-                                        this.log.error("xxxxz " +id +" " + JSON.stringify(this.gaList.getDataById(id)));
                                         if (this.gaList.getDataById(id).native.answer_groupValueResponse) {
                                             let stateval = state.val;
                                             try {
@@ -631,7 +630,6 @@ class openknx extends utils.Adapter {
                         if (value && value.native && value.native.address != undefined && value.native.address.match(/\d*\/\d*\/\d*/) && value.native.dpt) {
                             //add only elements from tree that are knx objects, identified by a group adress
                             this.gaList.set(id, value.native.address, res.rows[i].value);
-                            this.log.error(id);
                             if (this.gaList.getIdsByGa(value.native.address).length > 1)
                                 this.log.info(id + " has assigned a non exclusive group address: " + value.native.address);
                         }
