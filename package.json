@@ -55,13 +55,8 @@
         "proxyquire": "^2.1.3",
         "sinon": "^13.0.1",
         "sinon-chai": "^3.7.0",
-<<<<<<< HEAD
-        "typescript": "~4.5.5",
-        "iobroker.js-controller": ">=4.0.15"
-=======
         "typescript": "~4.6.2",
         "iobroker.js-controller": "4.0.19"
->>>>>>> 055bc690f36d54c14ee6e3095c45f48e00c0b81a
     },
     "main": "main.js",
     "files": [
