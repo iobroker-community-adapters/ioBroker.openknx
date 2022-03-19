@@ -22,7 +22,6 @@
     "override object path": "переопределить путь к объекту",
     "physical KNX address": "физический адрес KNX",
     "physical KNX address in format a/b/c not valid": "физический адрес KNX в формате a / b / c недействителен",
-    "this is not a number": "это не число",
-    "using old knx path for objects": "использование старого пути knx для объектов",
-    "using old knx path for objects (Before importing, delete old objects manually)": "использование старого пути knx для объектов (перед импортом удалите старые объекты вручную)"
+    "set acknowledgement flag when application writes to object": "установить флаг подтверждения, когда приложение записывает в объект",
+    "this is not a number": "это не число"
 }

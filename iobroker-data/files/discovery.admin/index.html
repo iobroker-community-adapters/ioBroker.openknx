@@ -1,0 +1,2017 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
+    <script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+    <script type="text/javascript" src="../../js/translate.js"></script>
+    <script type="text/javascript" src="../../lib/js/loStorage.js"></script>
+    <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+    <script type="text/javascript" src="words.js"></script>
+    <script type="text/javascript">
+        function showStep(step) {
+            currentStep = step;
+            if (steps[step]) steps[step]();
+            var $container = $('#container');
+            $container.find('.wizard-page').hide();
+            $('.wizard-page[data-step="' + step + '"]').show();
+        }
+        var currentStep = null;
+        var newInstances;
+        //var existingInstances;
+        var devices;
+        var repos = {};
+        var hosts = [];
+
+        var currentInstallId;
+        var $stdout = null;
+        var stdout = '';
+        var cmdCallback = null;
+        var geocoder;
+        var systemConfig;
+        var isFirst = true;
+        var mapLoaded = false;
+        var lastScan = null;
+        var isRunning = false;
+        var showConfig = []; // Show configuration dialog after the wizard is finished
+
+        function step0_initMap () {
+            var $button = $('#detectCoordinates');
+            $button.button('enable');
+
+            if (systemConfig && systemConfig.common && systemConfig.common.longitude && systemConfig.common.latitude) {
+                var map = new google.maps.Map(document.getElementById('step0_map'), {
+                    zoom: 14,
+                    center: {lat: parseFloat(systemConfig.common.latitude), lng: parseFloat(systemConfig.common.longitude)}
+                });
+                var marker = new google.maps.Marker({
+                    position: {lat: parseFloat(systemConfig.common.latitude), lng: parseFloat(systemConfig.common.longitude)},
+                    map: map,
+                    title: _('Your home')
+                });
+            }
+
+            $button.click(function () {
+                var country = $('#system_country').val();
+                var city    = $('#system_city').val();
+                var address = $('#system_address').val();
+                if (!country || !city) {
+                    showMessage(_('Please fill country and city first!'));
+                    return false;
+                }
+
+                $button.button('disable');
+                geocoder = geocoder || new google.maps.Geocoder();
+                geocoder.geocode({address: country + ' ' + city + ' ' + address}, function (results, status) {
+                    $button.button('enable');
+                    if (status === google.maps.GeocoderStatus.OK) {
+                        var changed = false;
+                        if ($('#system_latitude').val() != results[0].geometry.location.lat().toFixed(8)) {
+                            $('#system_latitude').val(results[0].geometry.location.lat().toFixed(8));
+                            changed = true;
+                        }
+                        if ($('#system_longitude').val() != results[0].geometry.location.lng().toFixed(8)) {
+                            $('#system_longitude').val(results[0].geometry.location.lng().toFixed(8));
+                            changed = true;
+                        }
+                        if (changed) {
+                            var map = new google.maps.Map(document.getElementById('step0_map'), {
+                                zoom: 14,
+                                center: {lat: parseFloat($('#system_latitude').val()), lng: parseFloat($('#system_longitude').val())}
+                            });
+                            var marker = new google.maps.Marker({
+                                position: {lat: parseFloat($('#system_latitude').val()), lng: parseFloat($('#system_longitude').val())},
+                                map: map,
+                                title: _('Your home')
+                            });
+                            $('#step0_save').button('enable');
+                            $('#step0_next').button('disable');
+                            $('#step0_save_hint').show();
+                        }
+                    } else {
+                        showMessage(_('Cannot get coordinates: %s', status), _('Error'), 'alert');
+                    }
+                });
+            });
+        }
+
+        function step0() {
+            var $button = $('#detectCoordinates');
+            if (!$button.data('inited')) {
+                $button.data('inited', true);
+                $button.button({
+                    label: _('Find coordinates...')
+                }).css('font-size', 16);
+                $button.button('disable');
+                $('#step0_save').button({
+                    label: _('Save'),
+                    icons: {
+                        primary: 'ui-icon-disk'
+                    }
+                }).click(function () {
+                    var changed = false;
+                    $('.system-settings').each(function () {
+                        var attr = $(this).attr('id').substring('system_'.length);
+                        var val  = $(this).val();
+                        if (systemConfig.common[attr] != val) {
+                            systemConfig.common[attr] = val;
+                            changed = true;
+                        }
+                    });
+                    if (!systemConfig.common.wizard) {
+                        systemConfig.common.wizard = true;
+                        changed = true;
+                    }
+                    if (changed) {
+                        socket.emit('setObject', 'system.config', systemConfig, function (err) {
+                            if (!err) {
+                                $('#step0_save').button('disable');
+                                $('#step0_next').button('enable');
+                                $('#step0_save_hint').hide();
+                            } else {
+                                showMessage(err);
+                            }
+                        });
+                    } else {
+                        $('#step0_save').button('disable');
+                        $('#step0_next').button('enable');
+                        $('#step0_save_hint').hide();
+                    }
+                });
+            } else {
+                if (!mapLoaded) {
+                    mapLoaded = true;
+                    var key1 = 'AIzaSyCIrBRZfZAE';
+                    var key2 = '_0C1OplAUy7OXhiWLoZc3eY';
+                    var key = key1 + key2;
+
+                    $('#system_address').attr('placeholder', _('Used only for coordinates detection'));
+                    // load google API
+                    $.ajax({
+                        // please do not miss use this api key!
+                        url: 'https://maps.googleapis.com/maps/api/js?key=' + key + '&signed_in=true&callback=step0_initMap',
+                        dataType: 'script',
+                        cache: true
+                    });
+                }
+            }
+            socket.emit('getObject', 'system.config', function (err, obj) {
+                var changed = false;
+                if (!obj || !obj.common) {
+                    // must be never active, but...
+                    systemConfig = {
+                        type: 'config',
+                        common: {
+                            name: 'system.config',
+                            city: '',                  // City for weather
+                            country: '',               // Country for weather
+                            longitude: '',             // longitude for javascript
+                            latitude: '',              // longitude for javascript
+                            language: '',              // Default language for adapters. Adapters can use different values.
+                            tempUnit: '°C',            // Default temperature units.
+                            currency: '',              // Default currency sign.
+                            dateFormat: 'DD.MM.YYYY',  // Default date format.
+                            isFloatComma: true,        // Default float divider ('.' - false, ',' - true)
+                            licenseConfirmed: false,   // If license agreement confirmed,
+                            defaultHistory: '',        // Default history instance
+                            wizard: false,             // flag is wizard was opened
+                            tabs: [                    // Show by default only these tabs
+                                'tab-adapters',
+                                'tab-instances',
+                                'tab-objects',
+                                'tab-log',
+                                'tab-scenes',
+                                'tab-javascript',
+                                'tab-text2command-0'
+                            ]
+                        }
+                    };
+                    changed = true;
+                } else {
+                    systemConfig = obj;
+                    systemConfig.common.city      = systemConfig.common.city      || '';
+                    systemConfig.common.country   = systemConfig.common.country   || '';
+                    systemConfig.common.longitude = systemConfig.common.longitude || '';
+                    systemConfig.common.latitude  = systemConfig.common.latitude  || '';
+                }
+
+                if (!systemConfig.common.currency) {
+                    if (systemConfig.common.language === 'ru') {
+                        systemConfig.common.currency = '₽';
+                    } else if (systemConfig.common.language === 'de') {
+                        systemConfig.common.currency = '€';
+                    } else {
+                        systemConfig.common.currency = '$';
+                    }
+                    changed = true;
+                }
+
+                for (var attr in systemConfig.common) {
+                    if (systemConfig.common.hasOwnProperty(attr)) {
+                        $('#system_' + attr).val(systemConfig.common[attr]).change(function () {
+                            $('#step0_save').button('enable');
+                            $('#step0_next').button('disable');
+                            $('#step0_save_hint').show();
+                        }).keyup(function () {
+                            $(this).trigger('change');
+                        });
+                    }
+                }
+                if (!changed) {
+                    $('#step0_save').button('disable');
+                    $('#step0_next').button('enable');
+                    $('#step0_save_hint').hide();
+                } else {
+                    $('#step0_save').button('enable');
+                    $('#step0_next').button('disable');
+                    $('#step0_save_hint').show();
+                }
+
+                if (isFirst) {
+                    isFirst = false;
+                    if (systemConfig.common.wizard) {
+                        $('#step0_next').trigger('click');
+                    } else if (!mapLoaded) {
+                        mapLoaded = true;
+                        var key1 = 'AIzaSyCIrBRZfZAE';
+                        var key2 = '_0C1OplAUy7OXhiWLoZc3eY';
+                        var key = key1 + key2;
+
+                        $('#system_address').attr('placeholder', _('Used only for coordinates detection'));
+                        // load google API
+                        $.ajax({
+                            // please do not miss use this api key!
+                            url: 'https://maps.googleapis.com/maps/api/js?key=' + key + '&signed_in=true&callback=step0_initMap',
+                            dataType: 'script',
+                            cache: true
+                        });
+                    }
+                }
+            });
+        }
+
+        // Discover all possible devices
+        function step1() {
+            var $step1 = $('#step1_discover');
+            $('#step1_help1').show();
+            $('#step1_text').hide();
+            $('#step1_result').hide();
+            $('#step1_progressbar').hide();
+
+            var $settings = $('#step1_settings');
+            if (!$settings.data('inited')) {
+                $settings.data('inited', true);
+                $settings.button({
+                    label:  _($settings.data('title')),
+                    icons: {
+                        primary: ' ui-icon-pencil'
+                    }
+                }).unbind('click').click(function () {
+                    document.location = 'settings.html' + document.location.search;
+                });
+
+                $step1.button({
+                    label:  _($step1.data('title')),
+                    icons: {
+                        primary: ' ui-icon-search'
+                    }
+                }).unbind('click').click(function () {
+                    $step1.button('disable');
+                    $('.step1-methods').prop('disabled', true);
+                    $('#step1_next').button('disable');
+                    $('#step1_help1').hide();
+                    $('#step1_help2').hide();
+                    isRunning = true;
+
+                    var options = [];
+                    var ignore  = [];
+                    $('.step1-methods').each(function () {
+                        if ($(this).prop('checked')) {
+                            options.push($(this).data('method'));
+                        } else {
+                            ignore.push($(this).data('method'));
+                        }
+                    });
+                    if (typeof Storage  !== 'undefined') {
+                        localStorage.setItem('discovery_ignore', JSON.stringify(ignore));
+                    }
+
+                    sendTo(null, 'browse', options, function (result) {
+                        $('.step1-methods').prop('disabled', false);
+
+                        isRunning = false;
+                        $('#step1_text').hide();
+                        $('#step1_result').hide();
+                        $('#step1_progressbar').hide();
+                        $('#step1_next').button('enable');
+                        $step1.button('enable');
+                        if (result.error) {
+                            showMessage(result.error, _('Error'), 'alert');
+                        } else {
+                            newInstances = result.newInstances;
+                            devices = result.devices;
+                            showStep(currentStep + 1);
+                        }
+                    });
+                });
+            }
+
+            $('#step1_next').button('disable');
+            $('#step1_help2').hide();
+
+            getIsAdapterAlive(function (isAlive) {
+                if (!isAlive) {
+                    $step1.button('disable');
+                }
+            });
+
+            sendTo(null, 'listMethods', null, function (result) {
+                var text = '<h4>' + _('Use following methods:') + '</h4>';
+
+                var ignore = [];
+                if (typeof Storage  !== 'undefined') {
+                    ignore = localStorage.getItem('discovery_ignore');
+                    if (ignore) {
+                        try {
+                            ignore = JSON.parse(ignore);
+                        } catch (r) {
+                            ignore = [];
+                        }
+                    }
+                }
+
+                if (!ignore) {
+                    ignore = [];
+                }
+
+                // because of the problem on some systems, deactivate it by default. User must to activate it actively
+                if (ignore.indexOf('serial') === -1) {
+                    ignore.push('serial');
+                }
+
+                result = result || {};
+                for (var r in result) {
+                    if (result.hasOwnProperty(r)) {
+                        text += '<input type="checkbox" class="step1-methods" data-method="' + r + '" ' + ((ignore.indexOf(r) !== -1) ? '' : 'checked') + '/>' + _(r) /*+ ' [' + result[r].type + ']' */+ '<br>';
+                    }
+                }
+
+                $('#step1_methods').html(text + '<br>').show();
+
+                socket.emit('getObject', 'system.discovery', function (err, obj) {
+                    if (obj) {
+                        if (obj.native.newInstances) {
+                            newInstances = obj.native.newInstances;
+                        }
+                        if (obj.native.devices) {
+                            devices = obj.native.devices;
+                        }
+                        if (obj.native.lastScan) lastScan = obj.native.lastScan;
+                    }
+                    if (lastScan) {
+                        $('#step1_help3').show().html(_('Last scan on %s', formatTime(new Date(lastScan))));
+                    } else {
+                        $('#step1_help3').hide();
+                    }
+
+                    if (newInstances.length) {
+                        $('#step1_next').button('enable');
+                        $('#step1_help2').show();
+                    } else {
+                        $('#step1_next').button('disable');
+                        $('#step1_help2').hide();
+                    }
+                });
+            });
+        }
+
+        function getExistingInstances(callback) {
+            socket.emit('getObjectView', 'system', 'instance', {startkey: 'system.adapter.', endkey: 'system.adapter.\u9999'}, function (err, doc) {
+                if (err) {
+                    if (callback) callback ([]);
+                } else {
+                    if (doc.rows.length === 0) {
+                        if (callback) callback ([]);
+                    } else {
+                        var res = [];
+                        for (var i = 0; i < doc.rows.length; i++) {
+                            res.push(doc.rows[i].value);
+                        }
+                        if (callback) callback (res);
+                    }
+                }
+            });
+        }
+
+        function buildComment(comment) {
+            if (!comment) {
+                return _('new');
+            }
+            if (typeof comment === 'string') return comment;
+            var text = '';
+            if (comment.add) {
+                text += _('new');
+                if (typeof comment.add === 'object' &&  + comment.add.length !== undefined) {
+                    text += ': ';
+                    if (comment.add.length <= 5) {
+                        text += comment.add.join(', ');
+                    } else {
+                        text += _('%s devices', comment.add.length);
+                    }
+                } else if (typeof comment.add === 'string' || typeof comment.add === 'number') {
+                    text += ': ';
+                    text += comment.add;
+                }
+            }
+            if (comment.changed) {
+                text += (text ? ', ' : '') + _('changed');
+                if (typeof comment.changed === 'object' &&  + comment.changed.length !== undefined) {
+                    text += ': ';
+                    if (comment.changed.length <= 5) {
+                        text += comment.changed.join(', ');
+                    } else {
+                        text += _('%s devices', comment.changed.length);
+                    }
+                } else if (typeof comment.changed === 'string' || typeof comment.changed === 'number') {
+                    text += ': ';
+                    text += comment.changed;
+                }
+            }
+            if (comment.extended) {
+                text += (text ? ', ' : '') + _('extended');
+                if (typeof comment.extended === 'object' &&  + comment.extended.length !== undefined) {
+                    text += ': ';
+                    if (comment.extended.length <= 5) {
+                        text += comment.extended.join(', ');
+                    } else {
+                        text += _('%s devices', comment.extended.length);
+                    }
+                } else if (typeof comment.extended === 'string' || typeof comment.extended === 'number') {
+                    text += ': ';
+                    text += comment.extended;
+                }
+            }
+            if (comment.text) {
+                text += (text ? ', ' : '') + comment.text;
+            }
+            return text;
+        }
+
+        function disableDependencies(id) {
+            var recheck = false;
+            // disable all that depends on it
+            for (var ii = 0; ii < newInstances.length; ii++) {
+                if (newInstances[ii].comment.required && newInstances[ii].comment.required.indexOf(id) !== -1) {
+                    var $check = $('.step2-allow[data-id="' + ii + '"]');
+                    if ($check.prop('checked')) {
+                        $check.prop('checked', false);
+                        recheck = true;
+                        disableDependencies(newInstances[ii]._id);
+                    }
+                }
+            }
+            return recheck;
+        }
+
+        function step2CheckNextAllow() {
+            var allow = false;
+            var $allow = $('.step2-allow');
+            if (this !== window) {
+                var index = $(this).data('id');
+                if ($(this).prop('checked')) {
+                    if (newInstances[index].comment && newInstances[index].comment.required) {
+                        if (typeof newInstances[index].comment.required === 'string') newInstances[index].comment.required = [newInstances[index].comment.required];
+                        for (var r = 0; r < newInstances[index].comment.required.length; r++) {
+                            for (var i = 0; i < newInstances.length; i++) {
+                                if (newInstances[i]._id === newInstances[index].comment.required[r]) {
+                                    $('.step2-allow[data-id="' + i + '"]').prop('checked', true);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // disable all that depends on it
+                    disableDependencies(newInstances[index]._id);
+                }
+            }
+
+
+            $allow.each(function () {
+                if ($(this).prop('checked')) {
+                    allow = true;
+                    return false;
+                }
+            });
+            if (allow) {
+                $('#step2_next').button('enable');
+            } else {
+                $('#step2_next').button('disable');
+            }
+        }
+
+        function step2_getHosts(callback) {
+            if (hosts && hosts.length) {
+                return callback(hosts);
+            } else {
+                socket.emit('getObjectView', 'system', 'host', {startkey: 'system.host.', endkey: 'system.host.\u9999'}, function (err, res) {
+                    if (!err && res) {
+                        hosts = [];
+                        for (var i = 0; i < res.rows.length; i++) {
+                            hosts.push(res.rows[i].id.substring('system.host.'.length));
+                        }
+                    }
+                    if (callback) callback(hosts);
+                });
+
+            }
+        }
+
+        function formatTime(a) {
+            var yyyy = a.getFullYear();
+            var mm  = a.getMonth()    < 9 ? '0' + (a.getMonth() + 1) : (a.getMonth() + 1); // getMonth() is zero-based
+            var dd  = a.getDate()    < 10 ? '0' + a.getDate()    : a.getDate();
+            var hh  = a.getHours()   < 10 ? '0' + a.getHours()   : a.getHours();
+            var min = a.getMinutes() < 10 ? '0' + a.getMinutes() : a.getMinutes();
+            var ss  = a.getSeconds() < 10 ? '0' + a.getSeconds() : a.getSeconds();
+            return yyyy + '-' + mm + '-' + dd + ' ' + hh + ':' + min  +':' + ss;
+        }
+
+        function step2_showHideInstances() {
+            $('.step2-instance').show();
+
+            if (!$('#step2-show-acknowledged').hasClass('discovery-state-active')) {
+                $('.step2-instance-acknowledged').hide();
+            }
+            if (!$('#step2-show-suggested').hasClass('discovery-state-active')) {
+                $('.step2-instance-suggested').hide();
+            }
+        }
+
+        // show list of found instances
+        // Create instances automatically
+        function step2() {
+            var $step2_selectall = $('#step2_selectall');
+            if (!$step2_selectall.data('inited')) {
+                $step2_selectall.data('inited', true);
+                $step2_selectall.button({
+                    text: false,
+                    icons: {
+                        primary: 'ui-icon-check'
+                    }
+                }).unbind('click').click(function () {
+                    $('.step2-allow').each(function () {
+                        $(this).prop('checked', true);
+                    });
+                    step2CheckNextAllow();
+                }).attr('title', _('Select all'));
+
+                $('#step2_deselectall').button({
+                    text: false,
+                    icons: {
+                        primary: 'ui-icon-minus'
+                    }
+                }).unbind('click').click(function () {
+                    $('.step2-allow').each(function () {
+                        $(this).prop('checked', false);
+                    });
+                    step2CheckNextAllow();
+                }).attr('title', _('Deselect all'));
+
+
+
+                $('#step2-show-acknowledged').button({
+                    label: _('Show not only new'),
+                    icons: {
+                        primary: 'ui-icon-circle-zoomin'
+                    }
+                }).click(function () {
+                    var isShow = $(this).hasClass('discovery-state-active');
+                    if (isShow) {
+                        $(this).removeClass('discovery-state-active');
+                    } else {
+                        $(this).addClass('discovery-state-active');
+                    }
+                    step2_showHideInstances();
+                    if (typeof storage !== 'undefined') {
+                        storage.set('wizard.show.acknowledged', $(this).hasClass('discovery-state-active'));
+                    }
+                }).attr('title', _('Show all instances'));
+
+                $('#step2-show-suggested').button({
+                    label: _('Show suggested'),
+                    icons: {
+                        primary: 'ui-icon-notice'
+                    }
+                }).click(function () {
+                    var isShow = $(this).hasClass('discovery-state-active');
+                    if (isShow) {
+                        $(this).removeClass('discovery-state-active');
+                    } else {
+                        $(this).addClass('discovery-state-active');
+                    }
+                    step2_showHideInstances();
+                    if (typeof storage !== 'undefined') {
+                        storage.set('wizard.show.suggested', $(this).hasClass('discovery-state-active'));
+                    }
+                }).attr('title', _('Show suggested'));
+
+                if (typeof storage !== 'undefined') {
+                    if (storage.get('wizard.show.acknowledged') !== false) {
+                        $('#step2-show-acknowledged').addClass('discovery-state-active');
+                    }
+                    if (storage.get('wizard.show.suggested') !== false) {
+                        $('#step2-show-suggested').addClass('discovery-state-active');
+                    }
+                }
+            }
+
+            step2_getHosts(function () {
+                var $instances = $('#step2_instances');
+
+                var text = '';
+                var hasSuggested = false;
+                var hasAcknowledged = false;
+                if (newInstances) {
+                    for (var i = 0; i < newInstances.length; i++) {
+                        if (newInstances[i].comment.ack) hasAcknowledged = true;
+                        if (newInstances[i].comment.advice) hasSuggested = true;
+
+                        text += '<tr data-id="' + i + '" class="step2-instance ' +
+                            (newInstances[i].comment.ack ? 'step2-instance-acknowledged ' : '') +
+                            (newInstances[i].comment.advice ? 'step2-instance-suggested ' : '') +
+                            '">';
+                        text += '<td><input type="checkbox" data-id="' + i + '" class="step2-allow"/></td>';
+                        text += '<td>' + newInstances[i]._id.substring('system.adapter.'.length) + '</td>';
+                        if (hosts.length > 1) {
+                            text += '<td><select class="step2-host" data-id="' + i + '" ' + (newInstances[i].common.host ? 'disabled' : '') + '>';
+                            for (var h = 0; h < hosts.length; h++) {
+                                text += '<option value="' + hosts[h] + '" ' + (newInstances[i].common.host === hosts[h] ? 'selected' : '') + '>' + hosts[h] + '</option>';
+                            }
+                            text += '</select></td>';
+                        } else {
+                            text += '<td><select class="step2-host" data-id="' + i + '" disabled><option value="' + hosts[0] + '" selected>' + hosts[0] + '</option></select></td>';
+                        }
+                        text += '<td>' + buildComment(newInstances[i].comment) + '</td>';
+                        text += '<td style="text-align: center"><input type="checkbox" data-id="' + i + '" ' + (newInstances[i].comment.ack ? 'disabled checked' : '') + ' class="step2-ack"/></td>';
+                        text += '</tr>';
+                    }
+                }
+                if (lastScan) {
+                    $('#step2_header').html(_('Create instances automatically') + ' - ' + _('Last scan on %s', formatTime(new Date(lastScan))));
+                } else {
+                    $('#step2_header').html(_('Create instances automatically'));
+                }
+
+                $instances.html(text);
+
+                var $acknowledged = $('#step2-show-acknowledged');
+                var $suggested    = $('#step2-show-suggested');
+                if (!hasAcknowledged) {
+                    $acknowledged.hide();
+                } else {
+                    $acknowledged.show();
+                }
+                if (!hasSuggested) {
+                    $suggested.hide();
+                } else {
+                    $suggested.show();
+                }
+                if (!$acknowledged.hasClass('discovery-state-active')) {
+                    $('.step2-instance-acknowledged').hide();
+                }
+                if (!$suggested.hasClass('discovery-state-active')) {
+                    $('.step2-instance-suggested').hide();
+                }
+                $('.step2-allow').change(step2CheckNextAllow);
+                $('.step2-ack').change(function () {
+                    var isShow = $('#step2-show-acknowledged').hasClass('discovery-state-active');
+                    var i = $(this).data('id');
+                    $(this).prop('disabled', true);
+                    newInstances[i].comment.ack = true;
+                    var $instance = $('.step2-instance[data-id="' + i + '"]');
+                    if (!isShow) $instance.hide();
+
+                    $instance.addClass('step2-instance-acknowledged');
+
+                    socket.emit('getObject', 'system.discovery', function (err, obj) {
+                        var found = false;
+                        if (obj && obj.native && obj.native.newInstances) {
+                            for (var n = 0; n < obj.native.newInstances.length; n++) {
+                                if (obj.native.newInstances[n]._id === newInstances[i]._id) {
+                                    found = true;
+                                    obj.native.newInstances[n].comment.ack = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (found) {
+                            socket.emit('setObject', 'system.discovery', obj, function (err) {
+                                if (err) console.error(err);
+                            });
+                        } else {
+                            showMessage(_('Please close dialog and open it anew!'), _('Unknown error'), 'alert');
+                        }
+                    });
+                });
+
+                step2CheckNextAllow();
+            });
+        }
+
+        function step3_showLicenseDialog(adapter, callback) {
+            var $dialogLicense = $('#dialog-license');
+
+            // Is adapter installed
+            if (adapter.installed || !adapter.licenseUrl) {
+                callback(true);
+                return;
+            }
+            $('#license_language').hide();
+            $('#license_diag').hide();
+            $('#license_language_label').hide();
+            $('#license_checkbox').hide();
+
+            var timeout = setTimeout(function () {
+                timeout = null;
+                callback(true);
+            }, 10000);
+
+            // Workaround
+            // https://github.com/ioBroker/ioBroker.vis/blob/master/LICENSE =>
+            // https://raw.githubusercontent.com/ioBroker/ioBroker.vis/master/LICENSE
+            if (adapter.licenseUrl.indexOf('github.com') !== -1) {
+                adapter.licenseUrl = adapter.licenseUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+            }
+
+            socket.emit('httpGet', adapter.licenseUrl, function (error, response, body) {
+                if (timeout) {
+                    clearTimeout(timeout);
+                    timeout = null;
+
+                    if (!error && body) {
+                        $dialogLicense.css({'z-index': 200});
+                        body = body.replace(/\r\n/g, '<br>');
+                        body = body.replace(/\n/g, '<br>');
+                        $('#license_text').html(body);
+                        $dialogLicense.dialog({
+                            autoOpen: true,
+                            modal: true,
+                            width: 600,
+                            height: 400,
+                            open: function (event) {
+                                $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                                $("#not-agree").focus();
+                            },
+                            buttons: [
+                                {
+                                    text: _('agree'),
+                                    click: function () {
+                                        callback && callback(true);
+                                        callback = null;
+                                        $dialogLicense.dialog('close');
+                                    }
+                                },
+                                {
+                                    id: 'not-agree',
+                                    text: _('not agree'),
+                                    click: function () {
+                                        callback && callback(false);
+                                        callback = null;
+                                        $dialogLicense.dialog('close');
+                                    }
+                                }
+                            ],
+                            close: function () {
+                                callback && callback(false);
+                                callback = null;
+                            }
+                        });
+                    } else {
+                        showMessage(_('Cannot get license agreement'), _('No internet'), 'alert');
+                        callback && callback(false);
+                        callback = null;
+                    }
+                }
+            });
+        }
+
+        function step3_waitTillInstalled(id, template, timeout, callback, count) {
+            count = count || 0;
+
+            if (template && template.common.mode !== 'daemon' && template.common.mode !== 'once') {
+                callback && callback();
+            } else {
+                socket.emit('getState', id, function (err, state) {
+                    console.log(id + '(' + count + '): ' + (state ? state.val : 'null'));
+                    if (state && state.val) {
+                        callback && callback();
+                    } else {
+                        count++;
+                        if (count * 1000 > timeout) {
+                            // may be "once" was too fast and finished in less than a second
+                            callback && callback((template && template.common.mode === 'once') ? '' : 'timeout');
+                        } else {
+                            setTimeout(function () {
+                                step3_waitTillInstalled(id, template, timeout, callback, count + 1);
+                            }, 1000);
+                        }
+                    }
+                });
+            }
+        }
+
+        function step3_getAdaptersInfo(host, callback) {
+            if (!host) return;
+
+            if (!callback) throw 'Callback cannot be null or undefined';
+
+            if (repos[host]) {
+                return callback(repos[host].curRepository, repos[host].curInstalled, host);
+            }
+
+            repos[host] = {curRepository: null, curInstalled: null};
+
+            socket.emit('sendToHost', host, 'getRepository', {}, function (_repository) {
+                if (_repository === 'permissionError') {
+                    console.error('May not read "getRepository"');
+                    _repository = {};
+                }
+
+                repos[host].curRepository = _repository || {};
+                if (repos[host].curRepository && repos[host].curInstalled) {
+                    callback(repos[host].curRepository, repos[host].curInstalled, host);
+                }
+            });
+
+            socket.emit('sendToHost', host, 'getInstalled', null, function (_installed) {
+                if (_installed === 'permissionError') {
+                    console.error('May not read "getInstalled"');
+                    _installed = {};
+                }
+
+                repos[host].curInstalled = _installed || {};
+                if (repos[host].curRepository && repos[host].curInstalled) {
+                    callback(repos[host].curRepository, repos[host].curInstalled, host);
+                }
+            });
+        }
+
+        function step3_getAdapterInfo(host, name, callback) {
+            socket.emit('sendToHost', host, 'getInstalledAdapter', name, callback);
+        }
+
+        function step3_addInstance(template, obj, wasInstalled, callback) {
+            template._id     = obj._id;
+            template.common.enabled = true;
+            template.type    = 'instance';
+            template.comment = obj.comment;
+            if (!wasInstalled) {
+                if (template && template.common.license && template.common.license !== 'MIT') {
+                    if (!template.common.licenseUrl) {
+                        template.common.licenseUrl = 'https://raw.githubusercontent.com/ioBroker/ioBroker.' + template.common.name + '/master/LICENSE'
+                    }
+                    if (typeof template.common.licenseUrl === 'object') {
+                        template.common.licenseUrl = template.common.licenseUrl[systemLang] || template.common.licenseUrl.en;
+                    }
+                    // Workaround
+                    // https://github.com/ioBroker/ioBroker.vis/blob/master/LICENSE =>
+                    // https://raw.githubusercontent.com/ioBroker/ioBroker.vis/master/LICENSE
+                    if (template.common.licenseUrl.indexOf('github.com') !== -1) {
+                        template.common.licenseUrl = template.common.licenseUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+                    }
+                    // Show license dialog!
+                    step3_showLicenseDialog(template.common, function (isAgree) {
+                        if (isAgree) {
+                            step3_addInstance(template, obj, true, callback);
+                        } else {
+                            $('.step3-progress[data-id="' + template._id + '"]').html(_('license not agree')).removeClass('process').addClass('error');
+                            callback && callback(_('license not agree'));
+                        }
+                    });
+                    return;
+                }
+            }
+
+            for (var c in obj.common) {
+                if (obj.common.hasOwnProperty(c)) template.common[c] = obj.common[c];
+            }
+            for (var n in obj.native) {
+                if (obj.native.hasOwnProperty(n)) template.native[n] = obj.native[n];
+            }
+            var $text = $('.step3-progress[data-id="' + obj._id + '"]');
+            $text.html(_('check parameters')).addClass('warn');
+            step3_askParameters(template, function (err, template) {
+                if (!template) {
+                    $text.html(_('canceled')).removeClass('process').addClass('warn');
+                    callback && callback(err || 'No template');
+                    return;
+                }
+                $text.html(_('wait till installed')).addClass('warn');
+                template = JSON.parse(JSON.stringify(template));
+                if (template.comment) delete template.comment;
+
+                socket.emit('setObject', template._id, template, function (err) {
+                    step3_waitTillInstalled(obj._id + '.alive', template, 20000, function (err) {
+                        if (err) {
+                            $text.html(_('timeout by install')).removeClass('process').addClass('error');
+                            callback && callback(err);
+                        } else {
+                            // Remove it from list
+                            socket.emit('getObject', 'system.discovery', function (err, discObj) {
+                                var changed = false;
+                                if (discObj && discObj.native.newInstances) {
+                                    // remove obj.native.newInstances
+                                    for (var i = 0; i < discObj.native.newInstances.length; i++) {
+                                        if (template._id === discObj.native.newInstances[i]._id) {
+                                            discObj.native.newInstances.splice(i, 1);
+                                            changed = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (changed) {
+                                    newInstances = discObj.native.newInstances;
+                                    socket.emit('setObject', 'system.discovery', discObj, function (err) {
+                                        $text.html(_('started')).addClass('success').removeClass('process').removeClass('warn');
+                                        callback && callback();
+                                    });
+                                } else {
+                                    $text.html(_('started')).addClass('success').removeClass('process').removeClass('warn');
+                                    if (obj.comment.showConfig) {
+                                        showConfig.push(obj._id);
+                                    }
+                                    callback && callback();
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        }
+
+        function getParam(name, obj) {
+            var parts = name.split('.');
+            do {
+                var attr = parts.shift();
+                if (typeof obj === 'object') {
+                    obj = obj[attr];
+                } else {
+                    obj = undefined;
+                    break;
+                }
+            } while (parts.length);
+
+            return obj;
+        }
+
+        function setParam(name, obj, value) {
+            var parts = name.split('.');
+            if (parts.length === 1) {
+                obj[name] = value;
+                return;
+            }
+
+            do {
+                var attr = parts.shift();
+                if (!parts.length) {
+                    obj[attr] = value;
+                    break;
+                }
+                if (typeof obj === 'object') {
+                    obj = obj[attr];
+                } else {
+                    obj = {};
+                    break;
+                }
+            } while (parts.length);
+        }
+
+        /*
+         Types of parameters:
+         - type=password, def=default value
+         - type=checkbox, def=default value
+         - type=select, options={value1: TextValule1, value2=TextValue2}
+         - type=link, def = URL
+         - type=comment, style="CSS style", def=text
+         - type=text
+
+         - name = Name of attribute like "native.ip" or "native.port"
+         - title = Title of input
+         */
+        function step3_askParameters(obj, callback) {
+            if (obj.comment && obj.comment.inputs) {
+                // check if all required parameters are set
+                var params = [];
+                for (var p = 0; p < obj.comment.inputs.length; p++) {
+                    var name = obj.comment.inputs[p].name;
+                    var val = name ? getParam(obj.comment.inputs[p].name, obj) : '';
+                    if (name === undefined || val === undefined || val === obj.comment.inputs[p].def) {
+                        params.push(obj.comment.inputs[p]);
+                    }
+                }
+
+                if (params.length) {
+                    var text = '<table>';
+                    text += '<tr class="param-line"><td>' + _('Description') + '</td><td>' + buildComment(obj.comment) + '</td></tr>';
+
+                    for (var pp = 0; pp < params.length; pp++) {
+                        text += '<tr class="param-line">';
+                        text += '<td>' + _(params[pp].title) + (params[pp].title ? ':' : '') + ' </td><td>';
+                        if (params[pp].type === 'password') {
+                            text += '<input data-required="' + !!params[pp].required + '" data-name="' + params[pp].name + '" value="' + (params[pp].def !== undefined ? params[pp].def : '') + '" class="params" type="password"/></td>';
+                            text += '</tr><tr class="param-line"><td>' + _('passwordRepeat') + '</td>';
+                            text += '<td><input data-required="' + !!params[pp].required + '" data-name="' + params[pp].name + '" value="' + (params[pp].def !== undefined ? params[pp].def : '') + '" class="passRepeat" type="password"/>';
+                        } else if (params[pp].type === 'checkbox') {
+                            text += '<input data-required="' + !!params[pp].required + '" data-name="' + params[pp].name + '" type="checkbox" ' + (params[pp].def ? 'checked' : '') + ' class="params" />';
+                        } else if (params[pp].type === 'select') {
+                            text += '<select data-required="' + !!params[pp].required + '" data-name="' + params[pp].name + '" class="params">';
+                            for (var op in params[pp].options) {
+                                if (!params[pp].options.hasOwnProperty(op)) continue;
+                                text += '<option value="' + op + '" ' + (params[pp].def === op ? 'selected' : '') + '>' + (params[pp].options[op] !== null ? params[pp].options[op] : op) + '</option>';
+                            }
+                            text += '</select>';
+                        } else if (params[pp].type === 'link') {
+                            text += '<a href="' + (params[pp].link || params[pp].def) + '" target="' + params[pp].title.replace(/\s/g, '_') + '">' + (params[pp].link || params[pp].def) + '</a>';
+                        } else if (params[pp].type === 'comment') {
+                            text += '<span style="' + (params[pp].style || '') + '">' + (params[pp].comment || params[pp].def) + '</span>';
+                        } else{
+                            text += '<input data-required="' + !!params[pp].required + '" data-name="' + params[pp].name + '" value="' + (params[pp].def !== undefined ? params[pp].def : '') + '" class="params" />';
+                        }
+                        text += '</td></tr>';
+                    }
+                    text += '</table>';
+                    var $dialog = $('#dialog-parameters');
+                    $dialog.html(text);
+                    $dialog.dialog('option', 'title', _('Edit parameters for %s', obj._id.substring('system.adapter.'.length)));
+                    //$dialog.dialog('option', 'height', 150 + params.length * 40);
+                    //$('.ui-dialog[aria-describedby="dialog-parameters"]').css('height', '90%');
+                    $dialog.data('callback', callback);
+                    $dialog.data('obj', obj);
+                    $dialog.dialog('open');
+                } else {
+                    callback(null, obj);
+                }
+            } else {
+                callback(null, obj);
+            }
+        }
+
+        function step3_cmdExec(host, cmd, callback) {
+            /*        $stdout.val('');
+             $dialogCommand.dialog('open');
+             stdout = '$ ./iobroker ' + cmd;
+             $stdout.val(stdout);
+             // genereate the unique id to coordinate the outputs
+             cmdCallback = callback;*/
+            currentInstallId = Math.floor(Math.random() * 0xFFFFFFE) + 1;
+            cmdCallback = callback;
+
+            socket.emit('cmdExec', host, currentInstallId, cmd, function (err) {
+                if (err) {
+                    cmdCallback && cmdCallback(err);
+                    stdout += '\n' + _(err);
+                    if ($stdout) $stdout.val(stdout);
+                    cmdCallback = null;
+                } else {
+                    if (cmdCallback) cmdCallback();
+                }
+            });
+        }
+
+        function step3_addAdapter(host, name, callback) {
+            step3_getAdaptersInfo(host, function (repo, installed) {
+                var _obj = repo[name];
+
+                if (!_obj) _obj = installed[name];
+
+                if (_obj && _obj.license && _obj.license !== 'MIT') {
+                    // Show license dialog!
+                    step3_showLicenseDialog(_obj, function (isAgree) {
+                        if (isAgree) {
+                            step3_cmdExec(host, 'install ' + name, function (exitCode) {
+                                callback && callback(exitCode !== 51 ? exitCode : 0); // 1 is yet installed
+                            });
+                        } else {
+                            callback && callback(_('license not agree'));
+                        }
+                    });
+                } else {
+                    step3_cmdExec(host, 'install ' + name, function (exitCode) {
+                        callback && callback(exitCode !== 51 ? exitCode : 0);
+                    });
+                }
+            });
+        }
+
+        function step3_processInstance(task, callback) {
+            $('.step3-progress[data-id="' + task._id + '"]').html(_('Install package')).addClass('process');
+
+            // get Object
+            socket.emit('getObject', task._id, function (err, obj) {
+                if (obj && task.comment.add) {
+                    $('.step3-progress[data-id="' + task._id + '"]').html(_('yet exists')).removeClass('process').addClass('error');
+                    callback && callback();
+                } else {
+                    if (obj) {
+                        // we changing the existing instance
+                        step3_addInstance(obj, task, false, callback);
+                    } else {
+                        // try to get system.adapter.NAME
+                        var name = task._id.split('.');
+                        name.pop();
+                        name = name.join('.');
+
+                        // if adapter installed or not
+                        socket.emit('getObject', name, function (err, template) {
+                            if (template) {
+                                step3_addInstance(template, task, false, callback);
+                            } else {
+                                name = name.substring('system.adapter.'.length);
+                                if (repos && repos[task.common.host] && repos[task.common.host].curInstalled[name]) {
+                                    step3_getAdapterInfo(task.common.host, name, function (template) {
+                                        if (err) {
+                                            $('.step3-progress[data-id="' + task._id + '"]').html(_('Error: %s', err)).removeClass('process').addClass('error');
+                                            callback && callback(err);
+                                        } else {
+                                            if (!template.native) {
+                                                // add adapter
+                                                step3_addAdapter(task.common.host, name, function (err) {
+                                                    if (err) {
+                                                        $('.step3-progress[data-id="' + task._id + '"]').html(_('Error: %s', err)).removeClass('process').addClass('error');
+                                                        callback && callback(err);
+                                                    } else {
+                                                        repos[task.common.host] = null;
+                                                        step3_getAdapterInfo(task.common.host, name, function (template) {
+                                                            if (template) {
+                                                                if (template.instanceObjects !== undefined) delete template.instanceObjects;
+                                                                if (template.objects !== undefined) delete template.objects;
+                                                                if (template._existing !== undefined) delete template._existing;
+                                                                step3_addInstance(template, task, true, callback);
+                                                            } else {
+                                                                $('.step3-progress[data-id="' + task._id + '"]').html(_('No io-package.json found')).removeClass('process').addClass('error');
+                                                                callback && callback(_('No io-package.json found'));
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            } else {
+                                                step3_addInstance(template, task, false, callback);
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    // add adapter
+                                    step3_addAdapter(task.common.host, name, function (err) {
+                                        if (err) {
+                                            $('.step3-progress[data-id="' + task._id + '"]').html(_('Error: %s', err)).removeClass('process').addClass('error');
+                                            callback && callback(err);
+                                        } else {
+                                            repos[task.common.host] = null;
+                                            step3_getAdapterInfo(task.common.host, name, function (template) {
+                                                if (template) {
+                                                    if (template.instanceObjects !== undefined) delete template.instanceObjects;
+                                                    if (template.objects !== undefined) delete template.objects;
+                                                    if (template._existing !== undefined) delete template._existing;
+                                                    step3_addInstance(template, task, true, callback);
+                                                } else {
+                                                    $('.step3-progress[data-id="' + task._id + '"]').html(_('No io-package.json found')).removeClass('process').addClass('error');
+                                                    callback && callback(_('No io-package.json found'));
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        function step3_processInstances(instances, errors, callback) {
+            if (!instances || !instances.length) {
+                callback();
+                return;
+            }
+            var task  = instances.shift();
+            var found = false;
+
+            if (task.comment.required) {
+                for (var r = 0; r < task.comment.required.length; r++) {
+                    if (errors.indexOf(task.comment.required[r]) !== -1) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (found) {
+                $('.step3-progress[data-id="' + task._id + '"]').html(_('Some dependencies are not installed')).removeClass('process').addClass('error');
+                setTimeout(function () {
+                    step3_processInstances(instances, errors, callback)
+                }, 0);
+                return;
+            }
+
+            step3_processInstance(task, function (err) {
+                if (err) errors.push(task._id);
+
+                setTimeout(function () {
+                    step3_processInstances(instances, errors, callback)
+                }, 0);
+            });
+        }
+
+        function step3() {
+            var text = '';
+            var instances = [];
+            showConfig = [];
+            $('#step3_prev').button('disable');
+            var $details = $('#step3_show_details');
+
+            if (!$details.data('inited')) {
+                $details.data('inited', true);
+                $details.button({
+                    label: _($details.data('title')),
+                    icons: {
+                        primary: 'ui-icon-comment'
+                    }
+                }).unbind('click').click(function () {
+                    if ($stdout.is(':visible')) {
+                        $stdout.hide();
+                    } else {
+                        $stdout.show();
+                    }
+                });
+                var $dialog = $('#dialog-parameters');
+                $dialog.dialog({
+                    autoOpen:   false,
+                    modal:      true,
+                    width:      '80%',
+//                    height:     '90%',
+                    open:       function (event) {
+                        $(event.target).parent().find('.ui-dialog-titlebar-close .ui-button-text').html('');
+                    },
+                    buttons:    [
+                        {
+                            text: _('Ok'),
+                            click: function () {
+                                var $dialog = $('#dialog-parameters');
+                                var obj = $dialog.data('obj');
+                                var error = false;
+                                $dialog.find('.params').each(function () {
+                                    var name = $(this).data('name');
+                                    var val;
+                                    if ($(this).attr('type') === 'checkbox') {
+                                        val = $(this).prop('checked');
+                                    } else {
+                                        val = $(this).val();
+                                    }
+                                    if ($(this).prop('type') === 'password') {
+                                        if (val !== $dialog.find('.passRepeat[data-name="' + name + '"]').val()) {
+                                            showMessage(_('Passwords does not match'), _('Error'), 'alert');
+                                            error = true;
+                                            return;
+                                        }
+                                    }
+                                    if ($(this).data('required') && !val) {
+                                        showMessage(_('Parameter %s is mandatory!', name));
+                                        error = true;
+                                        return;
+                                    }
+                                    setParam(name, obj, val);
+                                });
+                                if (!error) {
+                                    $dialog.dialog('close');
+                                    var callback = $dialog.data('callback');
+                                    if (callback && typeof callback === 'function') {
+                                        $dialog.data('callback', null);
+                                        $dialog.data('obj', null);
+                                        callback(null, obj);
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            text: _('Cancel'),
+                            click: function () {
+                                var $dialog = $('#dialog-parameters');
+                                $dialog.dialog('close');
+                                var callback = $dialog.data('callback');
+                                if (callback && typeof callback === 'function') {
+                                    $dialog.data('callback', null);
+                                    callback(null, null);
+                                }
+                            }
+                        }
+                    ]
+                });
+            }
+
+            $('.step2-allow').each(function () {
+                if ($(this).prop('checked')) {
+                    var i = $(this).data('id');
+                    instances.push(newInstances[i]);
+                    newInstances[i].common.host = $('.step2-host[data-id="' + i + '"]').val();
+                }
+            });
+
+            var noInputsNoRequires  = [];
+            var inputsNoRequires = [];
+            var requires   = [];
+
+            for (var t = 0; t < instances.length; t++) {
+                var i = instances[t].comment.license || instances[t].comment.inputs;
+                if (!i && !instances[t].comment.required) {
+                    noInputsNoRequires.push(instances[t]);
+                } else if (!instances[t].comment.required && i) {
+                    inputsNoRequires.push(instances[t]);
+                } else {
+                    requires.push(instances[t]);
+                }
+            }
+
+            // 1 inputs, no requires
+            // 2 no inputs, no requires
+            // 3 requires
+            // sort requires by number
+            requires.sort(function (a, b) {
+                if (a.comment.required.length > b.comment.required.length) return 1;
+                if (a.comment.required.length < b.comment.required.length) return -1;
+                return 0;
+            });
+            instances = inputsNoRequires.concat(noInputsNoRequires).concat(requires);
+
+            for (var k = 0; k < instances.length; k++) {
+                text += '<tr>';
+                text += '<td>' + instances[k]._id.substring('system.adapter.'.length) + '</td>';
+                text += '<td data-id="' + instances[k]._id + '" class="step3-progress">' + _('create instance') + '</td>';
+                text += '</tr>';
+            }
+            $('#step3_instances').html(text);
+
+            step3_processInstances(instances, [], function () {
+                $('#step3_prev').button('enable');
+            });
+        }
+
+        function load(settings, onChange) {
+            $('.header').hide();
+            // step 0
+
+            $('.bottom-next').each(function () {
+                $(this).button({
+                    label: _($(this).data('title')),
+                    icons: {
+                        primary: 'ui-icon-seek-next'
+                    }
+                }).click(function () {
+                    showStep(currentStep + 1);
+                });
+            });
+
+            $('.bottom-prev').each(function () {
+                $(this).button({
+                    label: _($(this).data('title')),
+                    icons: {
+                        primary: 'ui-icon-seek-prev'
+                    }
+                }).click(function () {
+                    showStep(currentStep - 1);
+                });
+            });
+
+            $('.bottom-close').each(function () {
+                $(this).button({
+                    label: _($(this).data('title')),
+                    icons: {
+                        primary: 'ui-icon-closethick'
+                    }
+                }).click(function () {
+                    if (typeof parent !== 'undefined' && parent && parent.$iframeDialog) {
+                        parent.showConfig = JSON.parse(JSON.stringify(showConfig));
+                    }
+
+                    window.close();
+                    if (typeof parent !== 'undefined' && parent && parent.$iframeDialog) {
+                        parent.$iframeDialog.dialog('close');
+                    }
+                });
+            });
+
+            showStep(0);
+            $stdout = $('#stdout');
+
+            socket.emit('subscribeStates',  'discovery.' + instance + '.*');
+            socket.on('stateChange', function (id, state) {
+                if (state && state.ack && state.val !== null && state.val !== 'null') {
+                    if (id === 'discovery.' + instance + '.devicesProgress') {
+                        $('#step1_text').show().html(_('Lookup devices') + ' - ' + state.val + '%');
+                        $('#step1_progressbar').show().progressbar({value: state.val});
+                    } else
+                    if (id === 'discovery.' + instance + '.servicesProgress') {
+                        $('#step1_text').show().html(_('Lookup services') + ' - ' + state.val + '%');
+                        $('#step1_progressbar').show().progressbar({value: state.val});
+                    } else
+                    if (id === 'discovery.' + instance + '.instancesFound') {
+                        $('#step1_result').show().html(_('Found services', state.val));
+                    } else
+                    if (id === 'discovery.' + instance + '.devicesFound') {
+                        $('#step1_result').show().html(_('Found devices', state.val));
+                    }
+                    else
+                    if (id === 'discovery.' + instance + '.scanRunning') {
+                        if (!state.val && !isRunning) {
+                            step1();
+                        }
+                    }
+                }
+            });
+
+            socket.on('cmdStdout', function (_id, text) {
+                if (currentInstallId === _id) {
+                    stdout += '\n' + text;
+                    $stdout.val(stdout);
+                    $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+                }
+            });
+
+            socket.on('cmdStderr', function (_id, text) {
+                if (currentInstallId === _id) {
+                    stdout += '\nERROR: ' + text;
+                    if ($stdout) {
+                        $stdout.val(stdout);
+                        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+                    }
+                }
+            });
+
+            socket.on('cmdExit', function (_id, exitCode) {
+                if (currentInstallId === _id) {
+                    exitCode = parseInt(exitCode, 10);
+                    stdout += '\n' + (exitCode !== 0 ? 'ERROR: ' : '') + 'process exited with code ' + exitCode;
+                    if ($stdout) {
+                        $stdout.val(stdout);
+                        $stdout.scrollTop($stdout[0].scrollHeight - $stdout.height());
+                    }
+                    if (cmdCallback) {
+                        cmdCallback(exitCode);
+                        cmdCallback = null;
+                    }
+                }
+            });
+
+            onChange(false);
+        }
+
+        function save(callback) {
+            // do nothing
+            callback();
+        }
+
+        var steps = [
+            step0,
+            step1,
+            step2,
+            step3
+        ];
+    </script>
+    <style>
+        .discovery-state-active {
+            background: lightgreen;
+        }
+        .wizard-header {
+            width: calc(100% - 6px - 1rem);
+            position: absolute;
+            top: 0;
+            height: 3rem;
+            padding-left: 1rem;
+        }
+        .wizard-content {
+            width: calc(100% - 26px);
+            position: absolute;
+            top: 3rem;
+            height: calc(100% - 6rem - 20px);
+            padding: 10px;
+            overflow: auto;
+        }
+        .wizard-footer {
+            width: calc(100% - 16px);
+            position: absolute;
+            bottom: 0;
+            height: calc(3rem - 10px);
+            padding: 5px;
+            background: black;
+            text-align: right;
+        }
+        .wizard-table {
+            width: 100%;
+        }
+        .wizard-table th {
+            background: #338ce6;
+            color: white;
+            text-align: left;
+        }
+        .wizard-table tr:nth-child(even) {
+            background: #CCC;
+        }
+        .wizard-table tr:nth-child(odd) {
+            background: #FFF;
+        }
+        #step3_instances td, #step3_instances th {
+            padding-left: 5px;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+        .warn {
+            color: orange;
+        }
+        .process {
+            color: orange;
+            font-weight: bold;
+        }
+        #step1_settings {
+            float: left;
+        }
+        .param-line {
+            height: 27px;
+        }
+        .param-line input {
+            margin-bottom: 2px;
+        }
+        .value {
+            width: 200px;
+        }
+        .ui-progressbar-value {
+            background: #338ce6 !important;
+        }
+        #step1_progressbar {
+            background: white;
+        }
+        #step0_save_hint {
+            display: block;
+            position: absolute;
+            bottom: 5px;
+            right: 150px;
+            color: #f36767;
+            font-size: 18px;
+            animation: blinker 2s linear infinite;
+        }
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+<div style="width: 100%; height: 100%" id="container">
+    <!-- System settings -->
+    <div data-step="0" class="wizard-page" style="display: none">
+        <div class="wizard-header ui-widget-header">
+            <h3 class="translate">System settings</h3>
+        </div>
+        <div class="wizard-content">
+            <table style="width: 100%">
+                <tr>
+                    <td style="width: 50%"><table>
+                        <tr><td><label class="translate" for="system_language">System language:</label></td>
+                            <td>
+                                <select id="system_language" class="system-settings value">
+                                    <option value="en">English</option>
+                                    <option value="de">Deutsch</option>
+                                    <option value="ru">русский</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr><td><label class="translate" for="system_tempUnit">Temperature units:</label></td>
+                            <td>
+                                <select id="system_tempUnit" class="system-settings value">
+                                    <option value="°C">°C</option>
+                                    <option value="°F">°F</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr><td><label class="translate" for="system_currency">Currency:</label></td>
+                            <td>
+                                <input type="text" size="5" maxlength="5" id="system_currency" class="system-settings value"/>
+                            </td>
+                        </tr>
+                        <tr><td><label class="translate" for="system_dateFormat">Date format:</label></td>
+                            <td>
+                                <select id="system_dateFormat" class="system-settings value">
+                                    <option value="DD.MM.YYYY" class="translate">DD.MM.YYYY</option>
+                                    <option value="DD.MM.YY"   class="translate">DD.MM.YY</option>
+                                    <option value="DD/MM/YYYY" class="translate">DD/MM/YYYY</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr><td ><label class="translate" for="system_isFloatComma">Float divider:</label></td>
+                            <td>
+                                <select id="system_isFloatComma" class="system-settings value">
+                                    <option value="true"  class="translate">comma</option>
+                                    <option value="false" class="translate">point</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <!--tr><td><label class="translate" for="system_defaultHistory">Default history instance:</label></td>
+                            <td>
+                                <select id="system_defaultHistory" class="system-settings value">
+                                </select>
+                            </td>
+                        </tr-->
+                        <!--tr><td><label class="translate" for="system_activeRepo">Active repository:</label></td>
+                            <td>
+                                <select id="system_activeRepo" class="system-settings value">
+                                </select>
+                            </td>
+                        </tr-->
+                        <tr><td><label class="translate" for="system_country">Country:</label></td>
+                            <td>
+                                <select id="system_country" class="system-settings value">
+                                    <option value="">Please select country</option>
+                                    <option value="Germany" class="translate">Germany</option>
+                                    <option value="Austria" class="translate">Austria</option>
+                                    <option value="Switzerland" class="translate">Switzerland</option>
+                                    <option value="Russian Federation" class="translate">Russian Federation</option>
+                                    <option value="Ukraine" class="translate">Ukraine</option>
+                                    <option value="Belarus" class="translate">Belarus</option>
+                                    <option value="Afghanistan" class="translate">Afghanistan</option>
+                                    <option value="Albania" class="translate">Albania</option>
+                                    <option value="Algeria" class="translate">Algeria</option>
+                                    <option value="American Samoa" class="translate">American Samoa</option>
+                                    <option value="Andorra" class="translate">Andorra</option>
+                                    <option value="Angola" class="translate">Angola</option>
+                                    <option value="Anguilla" class="translate">Anguilla</option>
+                                    <option value="Antarctica" class="translate">Antarctica</option>
+                                    <option value="Antigua and Barbuda" class="translate">Antigua and Barbuda</option>
+                                    <option value="Argentina" class="translate">Argentina</option>
+                                    <option value="Armenia" class="translate">Armenia</option>
+                                    <option value="Aruba" class="translate">Aruba</option>
+                                    <option value="Australia" class="translate">Australia</option>
+                                    <option value="Azerbaijan" class="translate">Azerbaijan</option>
+                                    <option value="Bahamas" class="translate">Bahamas</option>
+                                    <option value="Bahrain" class="translate">Bahrain</option>
+                                    <option value="Bangladesh" class="translate">Bangladesh</option>
+                                    <option value="Barbados" class="translate">Barbados</option>
+                                    <option value="Belgium" class="translate">Belgium</option>
+                                    <option value="Belize" class="translate">Belize</option>
+                                    <option value="Benin" class="translate">Benin</option>
+                                    <option value="Bermuda" class="translate">Bermuda</option>
+                                    <option value="Bhutan" class="translate">Bhutan</option>
+                                    <option value="Bolivia" class="translate">Bolivia</option>
+                                    <option value="Bosnia and Herzegovina" class="translate">Bosnia and Herzegovina</option>
+                                    <option value="Botswana" class="translate">Botswana</option>
+                                    <option value="Bouvet Island" class="translate">Bouvet Island</option>
+                                    <option value="Brazil" class="translate">Brazil</option>
+                                    <option value="British Indian Ocean Territory" class="translate">British Indian Ocean Territory</option>
+                                    <option value="Brunei Darussalam" class="translate">Brunei Darussalam</option>
+                                    <option value="Bulgaria" class="translate">Bulgaria</option>
+                                    <option value="Burkina Faso" class="translate">Burkina Faso</option>
+                                    <option value="Burundi" class="translate">Burundi</option>
+                                    <option value="Cambodia" class="translate">Cambodia</option>
+                                    <option value="Cameroon" class="translate">Cameroon</option>
+                                    <option value="Canada" class="translate">Canada</option>
+                                    <option value="Cape Verde" class="translate">Cape Verde</option>
+                                    <option value="Cayman Islands" class="translate">Cayman Islands</option>
+                                    <option value="Central African Republic" class="translate">Central African Republic</option>
+                                    <option value="Chad" class="translate">Chad</option>
+                                    <option value="Chile" class="translate">Chile</option>
+                                    <option value="China" class="translate">China</option>
+                                    <option value="Christmas Island" class="translate">Christmas Island</option>
+                                    <option>Cocos (Keeling) Islands</option>
+                                    <option value="Colombia" class="translate">Colombia</option>
+                                    <option value="Comoros" class="translate">Comoros</option>
+                                    <option value="Congo" class="translate">Congo</option>
+                                    <option value="Cook Islands" class="translate">Cook Islands</option>
+                                    <option value="Costa Rica" class="translate">Costa Rica</option>
+                                    <option>Croatia (Hrvatska)</option>
+                                    <option value="Cuba" class="translate">Cuba</option>
+                                    <option value="Cyprus" class="translate">Cyprus</option>
+                                    <option value="Czech Republic" class="translate">Czech Republic</option>
+                                    <option value="Denmark" class="translate">Denmark</option>
+                                    <option value="Djibouti" class="translate">Djibouti</option>
+                                    <option value="Dominica" class="translate">Dominica</option>
+                                    <option value="Dominican Republic" class="translate">Dominican Republic</option>
+                                    <option value="East Timor" class="translate">East Timor</option>
+                                    <option value="Ecuador" class="translate">Ecuador</option>
+                                    <option value="Egypt" class="translate">Egypt</option>
+                                    <option value="El Salvador" class="translate">El Salvador</option>
+                                    <option value="Equatorial Guinea" class="translate">Equatorial Guinea</option>
+                                    <option value="Eritrea" class="translate">Eritrea</option>
+                                    <option value="Estonia" class="translate">Estonia</option>
+                                    <option value="Ethiopia" class="translate">Ethiopia</option>
+                                    <option>Falkland Islands (Malvinas)</option>
+                                    <option value="Faroe Islands" class="translate">Faroe Islands</option>
+                                    <option value="Fiji" class="translate">Fiji</option>
+                                    <option value="Finland" class="translate">Finland</option>
+                                    <option value="France" class="translate">France</option>
+                                    <option>France, Metropolitan</option>
+                                    <option value="French Guiana" class="translate">French Guiana</option>
+                                    <option value="French Polynesia" class="translate">French Polynesia</option>
+                                    <option value="French Southern Territories" class="translate">French Southern Territories</option>
+                                    <option value="Gabon" class="translate">Gabon</option>
+                                    <option value="Gambia" class="translate">Gambia</option>
+                                    <option value="Georgia" class="translate">Georgia</option>
+                                    <option value="Ghana" class="translate">Ghana</option>
+                                    <option value="Gibraltar" class="translate">Gibraltar</option>
+                                    <option value="Guernsey" class="translate">Guernsey</option>
+                                    <option value="Greece" class="translate">Greece</option>
+                                    <option value="Greenland" class="translate">Greenland</option>
+                                    <option value="Grenada" class="translate">Grenada</option>
+                                    <option value="Guadeloupe" class="translate">Guadeloupe</option>
+                                    <option value="Guam" class="translate">Guam</option>
+                                    <option value="Guatemala" class="translate">Guatemala</option>
+                                    <option value="Guinea" class="translate">Guinea</option>
+                                    <option>Guinea-Bissau</option>
+                                    <option value="Guyana" class="translate">Guyana</option>
+                                    <option value="Haiti" class="translate">Haiti</option>
+                                    <option value="Heard and Mc Donald Islands" class="translate">Heard and Mc Donald Islands</option>
+                                    <option value="Honduras" class="translate">Honduras</option>
+                                    <option value="Hong Kong" class="translate">Hong Kong</option>
+                                    <option value="Hungary" class="translate">Hungary</option>
+                                    <option value="Iceland" class="translate">Iceland</option>
+                                    <option value="India" class="translate">India</option>
+                                    <option value="Isle of Man" class="translate">Isle of Man</option>
+                                    <option value="Indonesia" class="translate">Indonesia</option>
+                                    <option>Iran (Islamic Republic of)</option>
+                                    <option value="Iraq" class="translate">Iraq</option>
+                                    <option value="Ireland" class="translate">Ireland</option>
+                                    <option value="Israel" class="translate">Israel</option>
+                                    <option value="Italy" class="translate">Italy</option>
+                                    <option value="Ivory Coast" class="translate">Ivory Coast</option>
+                                    <option value="Jersey" class="translate">Jersey</option>
+                                    <option value="Jamaica" class="translate">Jamaica</option>
+                                    <option value="Japan" class="translate">Japan</option>
+                                    <option value="Jordan" class="translate">Jordan</option>
+                                    <option value="Kazakhstan" class="translate">Kazakhstan</option>
+                                    <option value="Kenya" class="translate">Kenya</option>
+                                    <option value="Kiribati" class="translate">Kiribati</option>
+                                    <option>Korea, Democratic People''s Republic of</option>
+                                    <option>Korea, Republic of</option>
+                                    <option value="Kosovo" class="translate">Kosovo</option>
+                                    <option value="Kuwait" class="translate">Kuwait</option>
+                                    <option value="Kyrgyzstan" class="translate">Kyrgyzstan</option>
+                                    <option>Lao People''s Democratic Republic</option>
+                                    <option value="Latvia" class="translate">Latvia</option>
+                                    <option value="Lebanon" class="translate">Lebanon</option>
+                                    <option value="Lesotho" class="translate">Lesotho</option>
+                                    <option value="Liberia" class="translate">Liberia</option>
+                                    <option value="Libyan Arab Jamahiriya" class="translate">Libyan Arab Jamahiriya</option>
+                                    <option value="Liechtenstein" class="translate">Liechtenstein</option>
+                                    <option value="Lithuania" class="translate">Lithuania</option>
+                                    <option value="Luxembourg" class="translate">Luxembourg</option>
+                                    <option value="Macau" class="translate">Macau</option>
+                                    <option value="Macedonia" class="translate">Macedonia</option>
+                                    <option value="Madagascar" class="translate">Madagascar</option>
+                                    <option value="Malawi" class="translate">Malawi</option>
+                                    <option value="Malaysia" class="translate">Malaysia</option>
+                                    <option value="Maldives" class="translate">Maldives</option>
+                                    <option value="Mali" class="translate">Mali</option>
+                                    <option value="Malta" class="translate">Malta</option>
+                                    <option value="Marshall Islands" class="translate">Marshall Islands</option>
+                                    <option value="Martinique" class="translate">Martinique</option>
+                                    <option value="Mauritania" class="translate">Mauritania</option>
+                                    <option value="Mauritius" class="translate">Mauritius</option>
+                                    <option value="Mayotte" class="translate">Mayotte</option>
+                                    <option value="Mexico" class="translate">Mexico</option>
+                                    <option>Micronesia, Federated States of</option>
+                                    <option>Moldova, Republic of</option>
+                                    <option value="Monaco" class="translate">Monaco</option>
+                                    <option value="Mongolia" class="translate">Mongolia</option>
+                                    <option value="Montenegro" class="translate">Montenegro</option>
+                                    <option value="Montserrat" class="translate">Montserrat</option>
+                                    <option value="Morocco" class="translate">Morocco</option>
+                                    <option value="Mozambique" class="translate">Mozambique</option>
+                                    <option value="Myanmar" class="translate">Myanmar</option>
+                                    <option value="Namibia" class="translate">Namibia</option>
+                                    <option value="Nauru" class="translate">Nauru</option>
+                                    <option value="Nepal" class="translate">Nepal</option>
+                                    <option value="Netherlands" class="translate">Netherlands</option>
+                                    <option value="Netherlands Antilles" class="translate">Netherlands Antilles</option>
+                                    <option value="New Caledonia" class="translate">New Caledonia</option>
+                                    <option value="New Zealand" class="translate">New Zealand</option>
+                                    <option value="Nicaragua" class="translate">Nicaragua</option>
+                                    <option value="Niger" class="translate">Niger</option>
+                                    <option value="Nigeria" class="translate">Nigeria</option>
+                                    <option value="Niue" class="translate">Niue</option>
+                                    <option value="Norfolk Island" class="translate">Norfolk Island</option>
+                                    <option value="Northern Mariana Islands" class="translate">Northern Mariana Islands</option>
+                                    <option value="Norway" class="translate">Norway</option>
+                                    <option value="Oman" class="translate">Oman</option>
+                                    <option value="Pakistan" class="translate">Pakistan</option>
+                                    <option value="Palau" class="translate">Palau</option>
+                                    <option value="Palestine" class="translate">Palestine</option>
+                                    <option value="Panama" class="translate">Panama</option>
+                                    <option value="Papua New Guinea" class="translate">Papua New Guinea</option>
+                                    <option value="Paraguay" class="translate">Paraguay</option>
+                                    <option value="Peru" class="translate">Peru</option>
+                                    <option value="Philippines" class="translate">Philippines</option>
+                                    <option value="Pitcairn" class="translate">Pitcairn</option>
+                                    <option value="Poland" class="translate">Poland</option>
+                                    <option value="Portugal" class="translate">Portugal</option>
+                                    <option value="Puerto Rico" class="translate">Puerto Rico</option>
+                                    <option value="Qatar" class="translate">Qatar</option>
+                                    <option value="Reunion" class="translate">Reunion</option>
+                                    <option value="Romania" class="translate">Romania</option>
+                                    <option value="Rwanda" class="translate">Rwanda</option>
+                                    <option value="Saint Kitts and Nevis" class="translate">Saint Kitts and Nevis</option>
+                                    <option value="Saint Lucia" class="translate">Saint Lucia</option>
+                                    <option value="Saint Vincent and the Grenadines" class="translate">Saint Vincent and the Grenadines</option>
+                                    <option value="Samoa" class="translate">Samoa</option>
+                                    <option value="San Marino" class="translate">San Marino</option>
+                                    <option value="Sao Tome and Principe" class="translate">Sao Tome and Principe</option>
+                                    <option value="Saudi Arabia" class="translate">Saudi Arabia</option>
+                                    <option value="Senegal" class="translate">Senegal</option>
+                                    <option value="Serbia" class="translate">Serbia</option>
+                                    <option value="Seychelles" class="translate">Seychelles</option>
+                                    <option value="Sierra Leone" class="translate">Sierra Leone</option>
+                                    <option value="Singapore" class="translate">Singapore</option>
+                                    <option value="Slovakia" class="translate">Slovakia</option>
+                                    <option value="Slovenia" class="translate">Slovenia</option>
+                                    <option value="Solomon Islands" class="translate">Solomon Islands</option>
+                                    <option value="Somalia" class="translate">Somalia</option>
+                                    <option value="South Africa" class="translate">South Africa</option>
+                                    <option value="South Georgia South Sandwich Islands" class="translate">South Georgia South Sandwich Islands</option>
+                                    <option value="Spain" class="translate">Spain</option>
+                                    <option value="Sri Lanka" class="translate">Sri Lanka</option>
+                                    <option>St. Helena</option>
+                                    <option>St. Pierre and Miquelon</option>
+                                    <option value="Sudan" class="translate">Sudan</option>
+                                    <option value="Suriname" class="translate">Suriname</option>
+                                    <option value="Svalbard and Jan Mayen Islands" class="translate">Svalbard and Jan Mayen Islands</option>
+                                    <option value="Swaziland" class="translate">Swaziland</option>
+                                    <option value="Sweden" class="translate">Sweden</option>
+                                    <option value="Syrian Arab Republic" class="translate">Syrian Arab Republic</option>
+                                    <option value="Taiwan" class="translate">Taiwan</option>
+                                    <option value="Tajikistan" class="translate">Tajikistan</option>
+                                    <option>Tanzania, United Republic of</option>
+                                    <option value="Thailand" class="translate">Thailand</option>
+                                    <option value="Togo" class="translate">Togo</option>
+                                    <option value="Tokelau" class="translate">Tokelau</option>
+                                    <option value="Tonga" class="translate">Tonga</option>
+                                    <option value="Trinidad and Tobago" class="translate">Trinidad and Tobago</option>
+                                    <option value="Tunisia" class="translate">Tunisia</option>
+                                    <option value="Turkey" class="translate">Turkey</option>
+                                    <option value="Turkmenistan" class="translate">Turkmenistan</option>
+                                    <option value="Turks and Caicos Islands" class="translate">Turks and Caicos Islands</option>
+                                    <option value="Tuvalu" class="translate">Tuvalu</option>
+                                    <option value="Uganda" class="translate">Uganda</option>
+                                    <option value="United Arab Emirates" class="translate">United Arab Emirates</option>
+                                    <option value="United Kingdom" class="translate">United Kingdom</option>
+                                    <option value="United States" class="translate">United States</option>
+                                    <option value="United States minor outlying islands" class="translate">United States minor outlying islands</option>
+                                    <option value="Uruguay" class="translate">Uruguay</option>
+                                    <option value="Uzbekistan" class="translate">Uzbekistan</option>
+                                    <option value="Vanuatu" class="translate">Vanuatu</option>
+                                    <option value="Vatican City State" class="translate">Vatican City State</option>
+                                    <option value="Venezuela" class="translate">Venezuela</option>
+                                    <option value="Vietnam" class="translate">Vietnam</option>
+                                    <option>Virgin Islands (British)</option>
+                                    <option>Virgin Islands (U.S.)</option>
+                                    <option value="Wallis and Futuna Islands" class="translate">Wallis and Futuna Islands</option>
+                                    <option value="Western Sahara" class="translate">Western Sahara</option>
+                                    <option value="Yemen" class="translate">Yemen</option>
+                                    <option value="Zaire" class="translate">Zaire</option>
+                                    <option value="Zambia" class="translate">Zambia</option>
+                                    <option value="Zimbabwe" class="translate">Zimbabwe</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr><td><label class="translate" for="system_city">City:</label></td>
+                            <td>
+                                <input id="system_city" class="system-settings value" style="width: 250px;" />
+                            </td>
+                        </tr>
+                        <tr><td><label class="translate" for="system_address">Address:</label></td>
+                            <td>
+                                <input id="system_address" style="width: 250px;"/>
+                            </td>
+                        </tr>
+                        <tr><td></td>
+                            <td>
+                                <button id="detectCoordinates"></button>
+                            </td>
+                        </tr>
+                        <tr><td><label class="translate" for="system_latitude">Latitude:</label></td>
+                            <td>
+                                <input id="system_latitude" class="system-settings value" />
+                            </td>
+                        </tr>
+                        <tr><td><label class="translate" for="system_longitude">Longitude:</label></td>
+                            <td>
+                                <input id="system_longitude" class="system-settings value" />
+                            </td>
+                        </tr>
+                    </table></td>
+                    <td style="width: 50%; height: 200px"><div id="step0_map" style="width: 100%; height: 100%"></div></td>
+                </tr>
+            </table>
+            <div id="step0_save_hint" class="translate">save-hint</div>
+        </div>
+        <div class="wizard-footer">
+            <button id="step0_save" class="bottom-buttons" data-title="Next"></button>
+            <button id="step0_next" class="bottom-buttons bottom-next" data-title="Next"></button>
+            <button id="step0_close" class="bottom-buttons bottom-close" data-title="Close"></button>
+        </div>
+    </div>
+    <!-- Discover all possible devices -->
+    <div data-step="1" class="wizard-page" style="display: none">
+        <div class="wizard-header ui-widget-header">
+            <h3 class="translate">Discover all possible devices</h3>
+        </div>
+        <div class="wizard-content">
+            <div id="step1_help1" class="translate">step1_help1</div>
+            <div id="step1_help2" class="translate" style="display: none">step1_help2</div>
+            <div id="step1_help3" class="translate" style="display: none"></div>
+            <div id="step1_methods" style="display: none"></div>
+            <div id="step1_text" style="display: none"></div>
+            <div id="step1_progressbar" style="display: none"></div>
+            <div id="step1_result" style="display: none"></div>
+        </div>
+        <div class="wizard-footer">
+            <button id="step1_settings" class="bottom-buttons" data-title="Settings"></button>
+            <button id="step1_discover" class="bottom-buttons ui-state-active" data-title="Discover"></button>
+            <button id="step1_prev"  class="bottom-buttons bottom-prev"  data-title="Back"></button>
+            <button id="step1_next" class="bottom-buttons bottom-next" data-title="Next"></button>
+            <button id="step1_close" class="bottom-buttons bottom-close" data-title="Close"></button>
+        </div>
+    </div>
+    <!-- Create instances automatically -->
+    <div data-step="2" class="wizard-page" style="display: none">
+        <div class="wizard-header ui-widget-header">
+            <h3 class="translate" id="step2_header">Create instances automatically</h3>
+        </div>
+        <div class="wizard-content">
+            <button style="display: inline-block; height: 24px;" data-title="Select all" id="step2_selectall"></button>
+            <button style="display: inline-block; height: 24px;" data-title="Deselect all" id="step2_deselectall"></button>
+            <button style="display: inline-block; height: 24px; font-size: 12px;" data-title="Show all" id="step2-show-acknowledged"></button>
+            <button style="display: inline-block; height: 24px; font-size: 12px;" data-title="Show suggested too" id="step2-show-suggested"></button>
+            <table class="wizard-table">
+                <thead>
+                <tr>
+                    <th class="translate" style="width: 70px">Use</th>
+                    <th class="translate" style="width: 150px">Instance</th>
+                    <th class="translate">Host</th>
+                    <th class="translate">Description</th>
+                    <th class="translate translateT" title="Do not show this instance any more" style="width: 50px">Ignore</th>
+                </tr>
+                </thead>
+                <tbody id="step2_instances">
+
+                </tbody>
+            </table>
+        </div>
+        <div class="wizard-footer">
+            <button id="step2_prev"  class="bottom-buttons bottom-prev"  data-title="Back"></button>
+            <button id="step2_next"  class="bottom-buttons bottom-next ui-state-active"  data-title="Create instances"></button>
+            <button id="step2_close" class="bottom-buttons bottom-close" data-title="Close"></button>
+        </div>
+    </div>
+    <!-- Install adapters -->
+    <div data-step="3" class="wizard-page" style="display: none">
+        <div class="wizard-header ui-widget-header">
+            <h3 class="translate">Install adapters</h3>
+        </div>
+        <div class="wizard-content">
+            <table class="wizard-table">
+                <thead>
+                <tr>
+                    <th class="translate" style="width: 200px">Instance</th>
+                    <th class="translate">Progress</th>
+                </tr>
+                </thead>
+                <tbody id="step3_instances">
+                </tbody>
+            </table>
+            <button id="step3_show_details" data-title="Details"></button>
+            <textarea style="font-family: courier, monospace; font-size: 11px; resize: none; display: none" id="stdout" disabled="disabled" cols="120" rows="10"></textarea>
+        </div>
+        <div class="wizard-footer">
+            <button id="step3_prev"  class="bottom-buttons bottom-prev"  data-title="Back"></button>
+            <button id="step3_close" class="bottom-buttons bottom-close ui-state-active" data-title="Finish"></button>
+        </div>
+    </div>
+</div>
+<div id="dialog-license" title="license agreement" class="translateT" style="display: none; z-index: 102">
+    <table><tr><td id="license_language_label"><label class="translate" for="license_language">Select language</label></td>
+        <td><select id="license_language">
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="ru">русский</option>
+        </select></td></tr>
+    </table>
+    <input id="license_diag" type="checkbox"/><span class="translate" id="license_checkbox" style="color:red">license_checkbox</span>
+    <h3 id="license_terms" class="translate">License terms</h3>
+    <div id="license_text" style="width: 100%"></div>
+</div>
+
+<div id="dialog-parameters" style="display: none; z-index: 102">
+</div>
+
+</body>
+</html>

@@ -22,7 +22,8 @@
     "override object path": "",
     "physical KNX address": "physical KNX address",
     "physical KNX address in format a/b/c not valid": "physical KNX address in format a/b/c not valid",
+    "set acknowledgement flag when application writes to object": "set acknowledgement flag when application writes to object",
     "this is not a number": "this is not a number",
-    "using old knx path for objects": "",
-    "using old knx path for objects (Before importing, delete old objects manually)": ""
+    "set acknowledgement flag when application writes to object": "set acknowledgement flag when application writes to object"
+    
 }

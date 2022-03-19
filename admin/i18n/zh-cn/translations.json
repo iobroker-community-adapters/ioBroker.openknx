@@ -22,7 +22,6 @@
     "override object path": "覆盖对象路径",
     "physical KNX address": "物理 KNX 地址",
     "physical KNX address in format a/b/c not valid": "格式为 a/b/c 的物理 KNX 地址无效",
-    "this is not a number": "这不是一个数字",
-    "using old knx path for objects": "对对象使用旧的 knx 路径",
-    "using old knx path for objects (Before importing, delete old objects manually)": "使用对象的旧 knx 路径（导入前，手动删除旧对象）"
+    "set acknowledgement flag when application writes to object": "当应用程序写入对象时设置确认标志",
+    "this is not a number": "这不是一个数字"
 }

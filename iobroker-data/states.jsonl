@@ -1,0 +1,6 @@
+{"k":"**META**","v":{"states.protocolVersion":"4"}}
+{"k":"system.host.Matthias-PC.plugins.sentry.enabled","v":{"val":true,"ack":true,"ts":1647367393641,"q":0,"from":"system.host.Matthias-PC.plugins.sentry","lc":1647367393641}}
+{"k":"system.adapter.admin.upload","v":{"val":0,"ack":true,"ts":1647367395160,"q":0,"lc":1647367395160}}
+{"k":"admin.0.info.connection","v":{"val":"","ack":true,"ts":1647367396012,"q":0,"from":"system.host.Matthias-PC.cli","lc":1647367396012}}
+{"k":"admin.0.info.updatesList","v":{"val":"","ack":true,"ts":1647367396028,"q":0,"from":"system.host.Matthias-PC.cli","lc":1647367396028}}
+{"k":"system.adapter.discovery.upload","v":{"val":0,"ack":true,"ts":1647367396124,"q":0,"lc":1647367396124}}

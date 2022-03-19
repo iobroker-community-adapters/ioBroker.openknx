@@ -22,7 +22,6 @@
     "override object path": "sovrascrivere il percorso dell'oggetto",
     "physical KNX address": "indirizzo fisico KNX",
     "physical KNX address in format a/b/c not valid": "indirizzo fisico KNX in formato a/b/c non valido",
-    "this is not a number": "questo non è un numero",
-    "using old knx path for objects": "usando il vecchio percorso knx per gli oggetti",
-    "using old knx path for objects (Before importing, delete old objects manually)": "utilizzando il vecchio percorso knx per gli oggetti (prima dell'importazione, elimina manualmente i vecchi oggetti)"
+    "set acknowledgement flag when application writes to object": "imposta il flag di riconoscimento quando l'applicazione scrive nell'oggetto",
+    "this is not a number": "questo non è un numero"
 }

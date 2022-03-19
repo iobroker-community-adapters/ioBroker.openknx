@@ -1,0 +1,160 @@
+2022-03-15 20:30:04.668  - [31merror[39m: openknx.0 (14440) adapter disabled
+2022-03-15 20:30:04.717  - [32minfo[39m: openknx.0 (14440) starting. Version 0.1.23 in C:/iobroker/node_modules/iobroker.openknx, node: v12.16.3, js-controller: 4.0.19
+2022-03-15 20:30:04.727  - [32minfo[39m: openknx.0 (14440) Connecting to knx gateway:  192.168.0.10:3671   with phy. Adr: 1.1.123 minimum send delay: 100 ms debug level: debug
+2022-03-15 20:30:04.728  - [32minfo[39m: openknx.0 (14440) C:\iobroker\node_modules\iobroker.openknx\node_modules\iobroker.js-controller
+2022-03-15 20:30:04.815  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/61 openknx.0.test.testin_status.ohne
+2022-03-15 20:30:04.818  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/60 openknx.0.test.testin_status.dpt_5
+2022-03-15 20:30:04.820  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/59 openknx.0.test.testin_status.dpt1_status
+2022-03-15 20:30:04.821  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/58 openknx.0.test.testin_status.dpt_275_100
+2022-03-15 20:30:04.823  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/57 openknx.0.test.testin_status.dpt_275
+2022-03-15 20:30:04.824  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/56 openknx.0.test.testin_status.dpt_255
+2022-03-15 20:30:04.826  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/55 openknx.0.test.testin_status.dpt_252
+2022-03-15 20:30:04.828  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/54 openknx.0.test.testin_status.dpt_251
+2022-03-15 20:30:04.831  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/53 openknx.0.test.testin_status.dpt_250
+2022-03-15 20:30:04.834  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/52 openknx.0.test.testin_status.dpt_249
+2022-03-15 20:30:04.838  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/51 openknx.0.test.testin_status.dpt_246
+2022-03-15 20:30:04.842  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/50 openknx.0.test.testin_status.dpt_245
+2022-03-15 20:30:04.844  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/49 openknx.0.test.testin_status.dpt_244
+2022-03-15 20:30:04.846  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/48 openknx.0.test.testin_status.dpt_242
+2022-03-15 20:30:04.849  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/47 openknx.0.test.testin_status.dpt_240
+2022-03-15 20:30:04.851  - [34mdebug[39m: openknx.0 (14440) Datapoint  created and GroupValueWrite sent: 31/0/46 openknx.0.test.testin_status.dpt_238
+2022-03-15 20:30:04.853  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/45 openknx.0.test.testin_status.dpt_237
+2022-03-15 20:30:04.863  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/44 openknx.0.test.testin_status.dpt_236
+2022-03-15 20:30:04.865  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/43 openknx.0.test.testin_status.dpt_235
+2022-03-15 20:30:04.866  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/42 openknx.0.test.testin_status.dpt_234
+2022-03-15 20:30:04.868  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/41 openknx.0.test.testin_status.dpt_232
+2022-03-15 20:30:04.870  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/40 openknx.0.test.testin_status.dpt_230
+2022-03-15 20:30:04.871  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/39 openknx.0.test.testin_status.dpt_229
+2022-03-15 20:30:04.872  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/38 openknx.0.test.testin_status.dpt_225
+2022-03-15 20:30:04.873  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/37 openknx.0.test.testin_status.dpt_222
+2022-03-15 20:30:04.875  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/36 openknx.0.test.testin_status.dpt_219
+2022-03-15 20:30:04.876  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/35 openknx.0.test.testin_status.dpt_217
+2022-03-15 20:30:04.878  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/34 openknx.0.test.testin_status.dpt_206
+2022-03-15 20:30:04.880  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/33 openknx.0.test.testin_status.dpt_30
+2022-03-15 20:30:04.882  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/32 openknx.0.test.testin_status.dpt_27
+2022-03-15 20:30:04.883  - [34mdebug[39m: openknx.0 (14440) Datapoint  created and GroupValueWrite sent: 31/0/31 openknx.0.test.testin_status.dpt_26
+2022-03-15 20:30:04.884  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/30 openknx.0.test.testin_status.dpt_25
+2022-03-15 20:30:04.885  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/29 openknx.0.test.testin_status.dpt_29_010
+2022-03-15 20:30:04.887  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/28 openknx.0.test.testin_status.dpt_23
+2022-03-15 20:30:04.888  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/27 openknx.0.test.testin_status.dpt_29
+2022-03-15 20:30:04.889  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/25 openknx.0.test.testin_status.dpt_22
+2022-03-15 20:30:04.891  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/24 openknx.0.test.testin_status.dpt_21
+2022-03-15 20:30:04.892  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/23 openknx.0.test.testin_status.dpt_20
+2022-03-15 20:30:04.893  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/22 openknx.0.test.testin_status.dpt_19
+2022-03-15 20:30:04.897  - [34mdebug[39m: openknx.0 (14440) Datapoint  created and GroupValueWrite sent: 31/0/21 openknx.0.test.testin_status.dpt_18
+2022-03-15 20:30:04.899  - [34mdebug[39m: openknx.0 (14440) Datapoint  created and GroupValueWrite sent: 31/0/20 openknx.0.test.testin_status.dpt_17
+2022-03-15 20:30:04.901  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/19 openknx.0.test.testin_status.dpt_16
+2022-03-15 20:30:04.903  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/18 openknx.0.test.testin_status.dpt_15
+2022-03-15 20:30:04.905  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/17 openknx.0.test.testin_status.dpt_14
+2022-03-15 20:30:04.907  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/16 openknx.0.test.testin_status.dpt_13
+2022-03-15 20:30:04.910  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/15 openknx.0.test.testin_status.dpt_12
+2022-03-15 20:30:04.916  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/14 openknx.0.test.testin_status.dpt_11_001
+2022-03-15 20:30:04.919  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/13 openknx.0.test.testin_status.dpt_10
+2022-03-15 20:30:04.921  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/12 openknx.0.test.testin_status.dpt_9
+2022-03-15 20:30:04.923  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/11 openknx.0.test.testin_status.dpt_8
+2022-03-15 20:30:04.926  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/10 openknx.0.test.testin_status.dpt_7
+2022-03-15 20:30:04.944  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/9 openknx.0.test.testin_status.dpt_6
+2022-03-15 20:30:04.946  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/8 openknx.0.test.testin_status.dpt_5_001
+2022-03-15 20:30:04.957  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/7 openknx.0.test.testin_status.dpt_4_001
+2022-03-15 20:30:04.960  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/6 openknx.0.test.testin_status.dpt3_007
+2022-03-15 20:30:04.964  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/5 openknx.0.test.testin_status.dpt_2_1
+2022-03-15 20:30:04.971  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/4 openknx.0.test.testin_status.dpt1_001
+2022-03-15 20:30:04.977  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/3 openknx.0.test.testin_status.dpt_3
+2022-03-15 20:30:04.979  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/2 openknx.0.test.testin_status.dpt_2
+2022-03-15 20:30:04.984  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/1 openknx.0.test.testin_status.dpt1
+2022-03-15 20:30:04.994  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/0/0 openknx.0.test.testin_status.dpt1_024
+2022-03-15 20:30:05.008  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/60 openknx.0.test.testout.ohne
+2022-03-15 20:30:05.012  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/58 openknx.0.test.testout.dpt1_status
+2022-03-15 20:30:05.014  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/14 openknx.0.test.testout.dpt_11_001
+2022-03-15 20:30:05.018  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/8 openknx.0.test.testout.dpt_5_001
+2022-03-15 20:30:05.029  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/57 openknx.0.test.testout.dpt_275_100
+2022-03-15 20:30:05.031  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/56 openknx.0.test.testout.dpt_275
+2022-03-15 20:30:05.032  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/55 openknx.0.test.testout.dpt_255
+2022-03-15 20:30:05.035  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/54 openknx.0.test.testout.dpt_252
+2022-03-15 20:30:05.038  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/53 openknx.0.test.testout.dpt_251
+2022-03-15 20:30:05.039  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/52 openknx.0.test.testout.dpt_250
+2022-03-15 20:30:05.041  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/51 openknx.0.test.testout.dpt_249
+2022-03-15 20:30:05.043  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/50 openknx.0.test.testout.dpt_246
+2022-03-15 20:30:05.045  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/49 openknx.0.test.testout.dpt_245
+2022-03-15 20:30:05.048  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/48 openknx.0.test.testout.dpt_244
+2022-03-15 20:30:05.050  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/47 openknx.0.test.testout.dpt_242
+2022-03-15 20:30:05.052  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/46 openknx.0.test.testout.dpt_240
+2022-03-15 20:30:05.053  - [34mdebug[39m: openknx.0 (14440) Datapoint  created and GroupValueWrite sent: 31/1/45 openknx.0.test.testout.dpt_238
+2022-03-15 20:30:05.054  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/44 openknx.0.test.testout.dpt_237
+2022-03-15 20:30:05.055  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/43 openknx.0.test.testout.dpt_236
+2022-03-15 20:30:05.056  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/42 openknx.0.test.testout.dpt_235
+2022-03-15 20:30:05.058  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/41 openknx.0.test.testout.dpt_234
+2022-03-15 20:30:05.059  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/40 openknx.0.test.testout.dpt_232
+2022-03-15 20:30:05.060  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/39 openknx.0.test.testout.dpt_230
+2022-03-15 20:30:05.063  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/38 openknx.0.test.testout.dpt_229
+2022-03-15 20:30:05.068  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/37 openknx.0.test.testout.dpt_225
+2022-03-15 20:30:05.071  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/36 openknx.0.test.testout.dpt_222
+2022-03-15 20:30:05.073  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/35 openknx.0.test.testout.dpt_219
+2022-03-15 20:30:05.075  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/34 openknx.0.test.testout.dpt_217
+2022-03-15 20:30:05.076  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/33 openknx.0.test.testout.dpt_206
+2022-03-15 20:30:05.090  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/32 openknx.0.test.testout.dpt_30
+2022-03-15 20:30:05.101  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/31 openknx.0.test.testout.dpt_27
+2022-03-15 20:30:05.104  - [34mdebug[39m: openknx.0 (14440) Datapoint  created and GroupValueWrite sent: 31/1/30 openknx.0.test.testout.dpt_26
+2022-03-15 20:30:05.106  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/29 openknx.0.test.testout.dpt_25
+2022-03-15 20:30:05.107  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/28 openknx.0.test.testout.dpt_29_010
+2022-03-15 20:30:05.109  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/27 openknx.0.test.testout.dpt_23
+2022-03-15 20:30:05.110  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/26 openknx.0.test.testout.dpt_29
+2022-03-15 20:30:05.112  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/25 openknx.0.test.testout.dpt_22
+2022-03-15 20:30:05.114  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/24 openknx.0.test.testout.dpt_21
+2022-03-15 20:30:05.116  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/23 openknx.0.test.testout.dpt_20
+2022-03-15 20:30:05.117  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/22 openknx.0.test.testout.dpt_19
+2022-03-15 20:30:05.118  - [34mdebug[39m: openknx.0 (14440) Datapoint  created and GroupValueWrite sent: 31/1/21 openknx.0.test.testout.dpt_18
+2022-03-15 20:30:05.119  - [34mdebug[39m: openknx.0 (14440) Datapoint  created and GroupValueWrite sent: 31/1/20 openknx.0.test.testout.dpt_17
+2022-03-15 20:30:05.121  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/19 openknx.0.test.testout.dpt_16
+2022-03-15 20:30:05.123  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/18 openknx.0.test.testout.dpt_15
+2022-03-15 20:30:05.125  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/17 openknx.0.test.testout.dpt_14
+2022-03-15 20:30:05.127  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/16 openknx.0.test.testout.dpt_13
+2022-03-15 20:30:05.130  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/15 openknx.0.test.testout.dpt_12
+2022-03-15 20:30:05.131  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/13 openknx.0.test.testout.dpt_10
+2022-03-15 20:30:05.132  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/12 openknx.0.test.testout.dpt_9
+2022-03-15 20:30:05.133  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/11 openknx.0.test.testout.dpt_8
+2022-03-15 20:30:05.134  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/10 openknx.0.test.testout.dpt_7
+2022-03-15 20:30:05.135  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/9 openknx.0.test.testout.dpt_6
+2022-03-15 20:30:05.136  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/59 openknx.0.test.testout.dpt_5
+2022-03-15 20:30:05.136  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/7 openknx.0.test.testout.dpt_4_001
+2022-03-15 20:30:05.137  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/6 openknx.0.test.testout.dpt3_007
+2022-03-15 20:30:05.138  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/5 openknx.0.test.testout.dpt_2_1
+2022-03-15 20:30:05.139  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/4 openknx.0.test.testout.dpt1_001
+2022-03-15 20:30:05.141  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/3 openknx.0.test.testout.dpt_3
+2022-03-15 20:30:05.142  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/2 openknx.0.test.testout.dpt_2
+2022-03-15 20:30:05.143  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/1 openknx.0.test.testout.dpt1
+2022-03-15 20:30:05.144  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/1/0 openknx.0.test.testout.dpt1_024
+2022-03-15 20:30:05.146  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/2/2 openknx.0.test.test.Neue_Gruppenadresse
+2022-03-15 20:30:05.147  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/2/1 openknx.0.test.test.yy
+2022-03-15 20:30:05.149  - [34mdebug[39m: openknx.0 (14440) Datapoint autoread created and GroupValueWrite sent: 31/2/0 openknx.0.test.test.xx
+2022-03-15 20:30:05.150  - [32minfo[39m: openknx.0 (14440) Connected!
+2022-03-15 20:30:05.245  - [32minfo[39m: openknx.0 (14440) Found 125 valid KNX objects of 127 objects in adapter.
+2022-03-15 20:31:54.700  - [34mdebug[39m: openknx.0 (14440) Outbound GroupValue_Write to 31/1/1 val: false from openknx.0.test.testout.dpt1
+2022-03-15 20:32:05.134  - [34mdebug[39m: openknx.0 (14440) Outbound GroupValue_Write to 31/1/1 val: false from openknx.0.test.testout.dpt1
+2022-03-15 20:32:27.579  - [34mdebug[39m: openknx.0 (14440) Outbound GroupValue_Write to 31/1/1 val: false from openknx.0.test.testout.dpt1
+2022-03-15 20:33:40.663  - [34mdebug[39m: openknx.0 (14440) Outbound GroupValue_Write to 31/1/1 val: false from openknx.0.test.testout.dpt1
+2022-03-15 20:34:14.119  - [34mdebug[39m: openknx.0 (14440) Outbound GroupValue_Write to 31/1/1 val: false from openknx.0.test.testout.dpt1
+2022-03-15 20:35:44.484  - [34mdebug[39m: openknx.0 (14440) Outbound GroupValue_Write to 31/1/1 val: false from openknx.0.test.testout.dpt1
+2022-03-15 20:39:05.117  - [33mwarn[39m: openknx.0 (14440) possible data loss due to gateway reset, consider increasing frame delay
+2022-03-15 20:39:05.135  - [32minfo[39m: openknx.0 (14440) [info] 2022-03-15 19:39:05.117 empty internal fsm queue due to inbound_DISCONNECT_REQUEST: 
+2022-03-15 20:39:05.201  - [33mwarn[39m: openknx.0 (14440) Connection lost
+2022-03-15 20:39:05.219  - [32minfo[39m: openknx.0 (14440) Connected!
+2022-03-15 20:39:05.246  - [32minfo[39m: openknx.0 (14440) Connected!
+2022-03-15 20:39:41.118  - [34mdebug[39m: openknx.0 (14440) Outbound GroupValue_Write to 31/1/1 val: false from openknx.0.test.testout.dpt1
+2022-03-15 20:40:52.295  - [34mdebug[39m: openknx.0 (14440) Outbound GroupValue_Write to 31/1/1 val: true from openknx.0.test.testout.dpt1
+2022-03-15 21:26:09.970  - [33mwarn[39m: openknx.0 (14440) [warn] 2022-03-15 20:26:09.969 connection timed out, retrying...
+2022-03-15 21:26:12.977  - [33mwarn[39m: openknx.0 (14440) [warn] 2022-03-15 20:26:12.977 connection timed out, retrying...
+2022-03-15 21:28:31.155  - [33mwarn[39m: openknx.0 (14440) Connection lost
+2022-03-15 21:28:34.171  - [33mwarn[39m: openknx.0 (14440) [warn] 2022-03-15 20:28:34.171 connection timed out, retrying...
+2022-03-15 21:28:37.177  - [33mwarn[39m: openknx.0 (14440) [warn] 2022-03-15 20:28:37.177 connection timed out, retrying...
+2022-03-15 21:28:37.185  - [32minfo[39m: openknx.0 (14440) Connected!
+2022-03-15 22:16:20.008  - [33mwarn[39m: openknx.0 (14440) [warn] 2022-03-15 21:16:20.008 connection timed out, retrying...
+2022-03-15 22:16:20.063  - [32minfo[39m: openknx.0 (14440) Connected!
+2022-03-15 22:16:24.413  - [33mwarn[39m: openknx.0 (14440) possible data loss due to gateway reset, consider increasing frame delay
+2022-03-15 22:16:24.415  - [32minfo[39m: openknx.0 (14440) [info] 2022-03-15 21:16:24.413 empty internal fsm queue due to inbound_DISCONNECT_REQUEST: 
+2022-03-15 22:16:24.423  - [32minfo[39m: openknx.0 (14440) Connected!
+2022-03-15 23:04:32.948  - [33mwarn[39m: openknx.0 (14440) [warn] 2022-03-15 22:04:32.948 connection timed out, retrying...
+2022-03-15 23:04:32.954  - [32minfo[39m: openknx.0 (14440) Connected!
+2022-03-15 23:04:42.089  - [33mwarn[39m: openknx.0 (14440) possible data loss due to gateway reset, consider increasing frame delay
+2022-03-15 23:04:42.090  - [32minfo[39m: openknx.0 (14440) [info] 2022-03-15 22:04:42.089 empty internal fsm queue due to inbound_DISCONNECT_REQUEST: 
+2022-03-15 23:04:42.096  - [32minfo[39m: openknx.0 (14440) Connected!

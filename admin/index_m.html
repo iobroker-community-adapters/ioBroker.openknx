@@ -64,6 +64,7 @@
                 this.getIsAdapterAlive(function (isAlive) {
                     if (isAlive && !window.isProcessingRequest) {
                         $("#onlyAddNewObjects").removeClass("disabled");
+                        $("#setAckOnWrite").removeClass("disabled");
                         $(".file-field .btn").removeClass("disabled");
                         $(".file-field .file-path").prop("disabled", false);
                         $("#etsFile").prop("disabled", false);
@@ -78,9 +79,9 @@
             if (settings.gwipport === undefined) settings.gwipport = 3671;
             if (settings.minimumDelay === undefined) settings.minimumDelay = 50;
             if (settings.eibadr === undefined) settings.eibadr = "1.1.1";
-
             if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
             if (settings.localInterface === undefined) settings.localInterface = "";
+            if (settings.setAckOnWrite === undefined) settings.setAckOnWrite = false;
 
             //fill dropdown list from adapter-settings.js
             getIPs(function (ips) {
@@ -381,6 +382,13 @@
                             <label for="minimumDelay" class="translate">Frames delay [ms]</label>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col s12 input-field">
+                            <input class="value" id="setAckOnWrite" type="checkbox" />
+                            <label class="translate" for="setAckOnWrite">set acknowledgement flag when application writes to object</label>
+                        </div>
+                        
+                    </div>
                 </div>
             </div>
             <div class="card">
@@ -402,14 +410,6 @@
                         </div>
                         <div class="col s12 progress" id="progress">
                             <div class="indeterminate" style="width: 70%"></div>
-                        </div>
-                        <div class="col s12">
-                            <a href="https://github.com/iobroker-community-adapters/ioBroker.openknx#adaptermigration"
-                                target="_blank">
-                                <h6>
-                                    <div class="translate">Click here for hints to migrate to openknx</div>
-                                </h6>
-                            </a>
                         </div>
                     </div>
                 </div>

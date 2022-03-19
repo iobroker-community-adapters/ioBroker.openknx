@@ -1,0 +1,123 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../lib/css/jqGrid/ui.jqgrid-4.5.4.css"/>
+<link rel="stylesheet" type="text/css" href="../../lib/css/jquery.multiselect-1.13.css"/>
+<script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+<script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
+<script type="text/javascript" src="../../lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js"></script>
+<script type="text/javascript" src="../../lib/js/jqGrid/grid.locale-all.js"></script>
+
+<link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+<script type="text/javascript" src="../../js/translate.js"></script>
+<script type="text/javascript" src="../../js/adapter-settings.js"></script>
+<script type="text/javascript" src="words.js"></script>
+<style>
+    .wizard-footer {
+        width: calc(100% - 16px);
+        position: absolute;
+        bottom: 0;
+        height: calc(3rem - 10px);
+        padding: 5px;
+        background: black;
+        text-align: right;
+    }
+    #wizard_link {
+        float: left;
+    }
+</style>
+<!-- you have to define 2 functions in the global scope: -->
+<script type="text/javascript">
+    function setValue(id, value, onChange) {
+        var $value = $('#' + id + '.value');
+
+        if ($value.attr('type') === 'checkbox') {
+            $value.prop('checked', value).change(function() {
+                onChange();
+            });
+        } else {
+            $value.val(value).change(function() {
+                onChange();
+            }).keyup(function() {
+                // Chack that only numbers entered
+                if ($(this).hasClass('number')) {
+                    var val = $(this).val();
+                    if (val) {
+                        var newVal = '';
+                        for (var i = 0; i < val.length; i++) {
+                            if (val[i] >= '0' && val[i] <= '9') {
+                                newVal += val[i];
+                            }
+                        }
+
+                        if (val != newVal) $(this).val(newVal);
+                    }
+                }
+
+                onChange();
+            });
+        }
+    }
+
+    // the function loadSettings has to exist ...
+    function load(settings, onChange) {
+        if (!settings) return;
+
+        for (var key in settings) {
+            setValue(key, settings[key], onChange);
+        }
+
+        var $wizard = $('#wizard_link');
+        $wizard.button({
+            label:  _('Wizard'),
+            icons: {
+                primary: ' ui-icon-search'
+            }
+        }).click(function () {
+            document.location = 'index.html' + document.location.search;
+        }).css('height', '37px');
+
+        onChange(false);
+    }
+
+    // ... and the function save has to exist.
+    // you have to make sure the callback is called with the settings object as first param!
+    function save(callback) {
+        // example: select elements with class=value and build settings object
+        var obj = {};
+        $('.value').each(function () {
+            var $this = $(this);
+            if ($this.attr('type') === 'checkbox') {
+                obj[$this.attr('id')] = $this.prop('checked');
+            } else {
+                obj[$this.attr('id')] = $this.val();
+            }
+        });
+
+        callback(obj);
+    }
+</script>
+</head>
+<body>
+<div id="adapter-container">
+
+    <table><tr>
+        <td><img src="discovery.png" width="64" height="64"></td>
+        <td style="padding-top: 20px;padding-left: 10px"><h3 class="translate">Discovery adapter settings</h3></td>
+    </tr></table>
+    <table>
+        <tr><td colspan="2"><h4 class="translate">Ping settings</h4></td></tr>
+        <tr><td><label  class="translate" for="pingTimeout"></label>Ping timeout[ms]:</td><td><input class="value number" id="pingTimeout" size="6"/></td></tr>
+        <tr><td><label  class="translate" for="pingBlock"></label>Ping block:</td><td><input class="value number" id="pingBlock" size="6"/></td></tr>
+        <tr><td><label  class="translate" for="pingOwnIP"></label>Ping own IP (e.g. for docker usage):</td><td><input class="value" id="pingOwnIP" size="15"/></td></tr>
+        <tr><td><label  class="translate" for="pingOwnNetmask"></label>Ping own Netmask (e.g. for docker usage):</td><td><input class="value number" id="pingOwnNetmask" size="15"/></td></tr>
+        <tr><td colspan="2"><h4 class="translate">UPnP settings</h4></td></tr>
+        <tr><td><label  class="translate" for="upnpTimeout"></label>UPnP timeout[ms]:</td><td><input class="value number" id="upnpTimeout" size="6"/></td></tr>
+    </table>
+    <div class="wizard-footer">
+        <button id="wizard_link">Wizard</button>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 7
+    },
+    "auditLog": "C:\\iobroker\\node_modules\\iobroker.openknx\\log\\iobroker-audit.json",
+    "files": [
+        {
+            "date": 1647372601648,
+            "name": "C:\\iobroker\\node_modules\\iobroker.openknx\\log\\iobroker.2022-03-15.log",
+            "hash": "a675cfdc9519580c0bc79e90855d61c9"
+        },
+        {
+            "date": 1647386528824,
+            "name": "C:\\iobroker\\node_modules\\iobroker.openknx\\log\\iobroker.2022-03-16.log",
+            "hash": "23e9e54cda06b6fa860447d286c461e0"
+        },
+        {
+            "date": 1647471796279,
+            "name": "C:\\iobroker\\node_modules\\iobroker.openknx\\log\\iobroker.2022-03-17.log",
+            "hash": "ccfd8544003accd18935932457213830"
+        },
+        {
+            "date": 1647558270939,
+            "name": "C:\\iobroker\\node_modules\\iobroker.openknx\\log\\iobroker.2022-03-18.log",
+            "hash": "a4805253a00ae7cc914db6452401d177"
+        },
+        {
+            "date": 1647690717811,
+            "name": "C:\\iobroker\\node_modules\\iobroker.openknx\\log\\iobroker.2022-03-19.log",
+            "hash": "223318e40498a1b2e2e00aefc2fec326"
+        }
+    ],
+    "hashType": "md5"
+}

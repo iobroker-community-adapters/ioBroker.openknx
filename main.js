@@ -401,10 +401,16 @@ class openknx extends utils.Adapter {
         } else if (this.gaList.getDataById(id).common.write) {
             this.log.debug("Outbound GroupValue_Write to " + ga + " val: " + (isRaw ? rawVal : JSON.stringify(knxVal)) + " from " + id);
             if (isRaw) {
-                this.knxConnection.writeRaw(ga, rawVal);
+                this.knxConnection.writeRaw(ga, rawVal, () => {
+                    if (this.config.setAckOnWrite)
+                        this.setState(id, state, true);
+                });
                 return "write raw";
             } else {
-                this.knxConnection.write(ga, knxVal, dpt);
+                this.knxConnection.write(ga, knxVal, dpt, () => {
+                    if (this.config.setAckOnWrite)
+                        this.setState(id, state, true);
+                });
                 return "write";
             }
         } else {

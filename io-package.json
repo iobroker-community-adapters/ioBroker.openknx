@@ -1,108 +1,116 @@
 {
-  "common": {
-    "name": "openknx",
-    "version": "0.1.23",
-    "news": {
-      "0.1.23": {
-        "en": "Bugfixing"
-      }
+    "common": {
+        "name": "openknx",
+        "version": "0.1.23",
+        "news": {
+            "0.1.23": {
+                "en": "Bugfixing",
+                "de": "Fehler beheben",
+                "ru": "Исправление ошибок",
+                "pt": "Corrigindo erro",
+                "nl": "Bugfixing",
+                "fr": "Correction de bogues",
+                "it": "Correzione di bug",
+                "es": "Corrección de errores",
+                "pl": "Naprawa błędów",
+                "zh-cn": "错误修复"
+            }
+        },
+        "title": "Open KNX",
+        "titleLang": {
+            "en": "Open KNX",
+            "de": "Open KNX",
+            "ru": "Open KNX",
+            "pt": "Open KNX",
+            "nl": "Open KNX",
+            "fr": "Open KNX",
+            "it": "Open KNX",
+            "es": "Open KNX",
+            "pl": "Open KNX",
+            "zh-cn": "Open KNX"
+        },
+        "desc": {
+            "en": "full featured open-source adapter for KNX",
+            "de": "Kostenloser Open-Source-Adapter, der die KNX Kommunikation über ein IP Gateway ermöglicht.",
+            "ru": "новый бесплатный open-source-адаптер для KNX",
+            "pt": "novo adaptador de código aberto gratuito para KNX",
+            "nl": "nieuwe gratis open-source-adapter voor KNX",
+            "fr": "nouvel adaptateur open-source gratuit pour KNX",
+            "it": "nuovo adattatore open source gratuito per KNX",
+            "es": "nuevo adaptador de código abierto gratuito para KNX",
+            "pl": "nowy darmowy adapter open-source dla KNX",
+            "zh-cn": "用于 KNX 的新免费开源适配器"
+        },
+        "authors": [
+            "Boellner <boellnerboellner@gmail.com>"
+        ],
+        "contributors": [
+        ],
+        "keywords": [
+            "knx free open source eib"
+        ],
+        "license": "GPL-3.0-only",
+        "platform": "Javascript/Node.js",
+        "main": "main.js",
+        "icon": "openknx.png",
+        "enabled": true,
+        "messagebox": true,
+        "subscribe": "messagebox",
+        "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.openknx/master/admin/openknx.png",
+        "readme": "https://github.com/iobroker-community-adapters/ioBroker.openknx/blob/master/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "iot-systems",
+        "compact": true,
+        "connectionType": "local",
+        "dataSource": "push",
+        "materialize": true,
+        "plugins": {
+            "sentry": {
+                "dsn": "https://f87a314b36ef451aa291655ae13e2831@sentry.iobroker.net/165"
+            }
+        },
+        "dependencies": [
+            {
+                "js-controller": ">=3.0.0"
+            }
+        ],
+        "tier": 2,
+        "installedFrom": "iobroker.openknx"
     },
-    "title": "Open KNX",
-    "titleLang": {
-      "en": "Open KNX",
-      "de": "Open KNX",
-      "ru": "Open KNX",
-      "pt": "Open KNX",
-      "nl": "Open KNX",
-      "fr": "Open KNX",
-      "it": "Open KNX",
-      "es": "Open KNX",
-      "pl": "Open KNX",
-      "zh-cn": "Open KNX"
+    "native": {
+        "gwip": "",
+        "gwipport": "3671",
+        "eibadr": "1.1.1",
+        "localInterface": "",
+        "minimumDelay": 50,
+        "aliassRegexp": "[Ss]tat(e|us)(\\.|$)|[Rr]m(\\.|$)|[Rr]ückmeldung(\\.|$)|\\s[Vv]alue(\\.|$)",
+        "aliasSimilarity": 0.9,
+        "aliasPath": "alias.0",
+        "aliasRange": false
     },
-    "desc": {
-      "en": "full featured open-source adapter for KNX",
-      "de": "Kostenloser Open-Source-Adapter, der die KNX Kommunikation über ein IP Gateway ermöglicht.",
-      "ru": "новый бесплатный open-source-адаптер для KNX",
-      "pt": "novo adaptador de código aberto gratuito para KNX",
-      "nl": "nieuwe gratis open-source-adapter voor KNX",
-      "fr": "nouvel adaptateur open-source gratuit pour KNX",
-      "it": "nuovo adattatore open source gratuito per KNX",
-      "es": "nuevo adaptador de código abierto gratuito para KNX",
-      "pl": "nowy darmowy adapter open-source dla KNX",
-      "zh-cn": "用于 KNX 的新免费开源适配器"
-    },
-    "authors":  [
-      "Boellner <boellnerboellner@gmail.com>"
-    ],
-    "contributors": [
-      "TA2k <tombox2020@gmail.com>"
-    ],
-    "keywords": [
-      "knx free open source eib"
-    ],
-    "license": "GPL-3.0-only",
-    "platform": "Javascript/Node.js",
-    "main": "main.js",
-    "icon": "openknx.png",
-    "enabled": true,
-    "messagebox": true,
-    "subscribe": "messagebox",
-    "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.openknx/master/admin/openknx.png",
-    "readme": "https://github.com/iobroker-community-adapters/ioBroker.openknx/blob/master/README.md",
-    "loglevel": "info",
-    "mode": "daemon",
-    "type": "iot-systems",
-    "compact": true,
-    "connectionType": "local",
-    "dataSource": "push",
-    "materialize": true,
-    "plugins": {
-      "sentry": {
-          "dsn": "https://f87a314b36ef451aa291655ae13e2831@sentry.iobroker.net/165"
-      }
-  },
-    "dependencies": [
-      {
-        "js-controller": ">=3.0.0"
-      }
-    ],
-    "tier": 2,
-    "installedFrom": "iobroker.openknx"
-  },
-  "native": {
-    "gwip": "",
-    "gwipport": "3671",
-    "eibadr": "1.1.1",
-    "localInterface": "",
-    "minimumDelay": 50,
-    "aliassRegexp": "[Ss]tat(e|us)(\\.|$)|[Rr]m(\\.|$)|[Rr]ückmeldung(\\.|$)|\\s[Vv]alue(\\.|$)",
-    "aliasSimilarity": 0.9,
-    "aliasPath": "alias.0",
-    "aliasRange": false
-  },
-  "objects": [],
-  "instanceObjects": [
-    {
-      "_id": "info",
-      "type": "channel",
-      "common": {
-        "name": "Information"
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.connection",
-      "type": "state",
-      "common": {
-        "role": "indicator.connected",
-        "name": "KNX Gateway connected",
-        "type": "boolean",
-        "read": true,
-        "write": false,
-        "def": false
-      },
-      "native": {}
-    }
-  ]
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "KNX Gateway connected",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        }
+    ]
 }

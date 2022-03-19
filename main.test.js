@@ -21,6 +21,16 @@ function dummy() {
     return true;
 }
 
+let setStateAck;
+function setState(id, state) {
+
+    if (state) {
+        setStateAck = state.ack;
+        //console.dir("setState state ack: " + JSON.stringify(state.ack ));
+    }
+    return true;
+}
+
 let callbackRes = "";
 
 function getState(id, options, callback) {
@@ -106,6 +116,7 @@ const {
 } = utils.unit.createMocks();
 
 let result;
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 describe("module to test: main  => function to test: warnDuplicates", () => {
     // initializing logic
@@ -137,7 +148,7 @@ describe("module to test: main  => function to test: warnDuplicates", () => {
 describe("module to test: main  => function to test: onStateChange", () => {
     // initializing logic
 
-    m.setState = dummy;
+    m.setState = setState;
     m.getStateAsync = dummy;
     m.getState = getState;
     m.log = new log();
@@ -263,11 +274,21 @@ describe("module to test: main  => function to test: onStateChange", () => {
             ts: 0,
             lc: 0
         };
+        const state4 = {
+            val: 123,
+            ack: false,
+            ts: 0,
+            lc: 0,
+            q: 0x10,
+        };
 
         result = await m.onStateChange(myid1, state1);
         expect(result).to.equal(expected1);
 
         result = await m.onStateChange(myid2, state2);
+        expect(result).to.equal(expected2);
+
+        result = await m.onStateChange(myid2, state4);
         expect(result).to.equal(expected2);
 
         result = await m.onStateChange(myid3, state1);
@@ -290,7 +311,7 @@ describe("module to test: main  => function to test: event", () => {
 
     it("check event GroupValue_Read GroupValue_Write GroupValue_Response", async () => {
 
-        m.setState = dummy;
+        m.setState = setState;
         m.getStateAsync = dummy;
         m.getState = getState;
         m.log = new log();
@@ -311,18 +332,26 @@ describe("module to test: main  => function to test: event", () => {
         m.startKnxStack();
         m.knx.connected();
 
+        setStateAck = "";
         result = m.knx.event("GroupValue_Read", "src", "0/0/1", "");
         expect(callbackRes).to.equal(expected);
+        expect(setStateAck).to.equal("");
 
+        setStateAck = "";
         result = m.knx.event("GroupValue_Write", "src", "0/0/1", "");
         expect(result).to.equal(expected2);
+        expect(setStateAck).to.equal(true);
 
+        setStateAck = "";
         result = m.knx.event("GroupValue_Response", "src", "0/0/1", "");
         expect(result).to.equal(expected3);
+        expect(setStateAck).to.equal(true);
 
+        setStateAck = "";
         m.knxConnection = new mockKnxConnection(); //set again here it is overwritten, unlcear why needed
         result = m.knx.event("GroupValue_Read", "src", "0/0/2", "");
         expect(callbackRes).to.equal(expected4);
+        expect(setStateAck).to.equal("");
 
     });
 
