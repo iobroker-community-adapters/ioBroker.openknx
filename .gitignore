@@ -9,6 +9,8 @@ tasks
 *.code-workspace
 node_modules
 nbproject
+log
+iobroker-data
 
 # npm package files
 iobroker.*.tgz
