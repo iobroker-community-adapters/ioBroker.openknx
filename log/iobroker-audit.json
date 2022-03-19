@@ -29,6 +29,11 @@
             "date": 1647690717811,
             "name": "C:\\iobroker\\node_modules\\iobroker.openknx\\log\\iobroker.2022-03-19.log",
             "hash": "223318e40498a1b2e2e00aefc2fec326"
+        },
+        {
+            "date": 1647719958648,
+            "name": "C:\\iobroker\\node_modules\\ioBroker.openknx\\log\\iobroker.2022-03-19.log",
+            "hash": "bec3db16fdf3fd632501a40981d2019d"
         }
     ],
     "hashType": "md5"

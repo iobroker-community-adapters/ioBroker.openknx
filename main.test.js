@@ -282,6 +282,7 @@ describe("module to test: main  => function to test: onStateChange", () => {
             q: 0x10,
         };
 
+        m.getStateAsync = dummy; //again
         result = await m.onStateChange(myid1, state1);
         expect(result).to.equal(expected1);
 
