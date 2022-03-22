@@ -30,7 +30,7 @@
     "dependencies": {
         "@iobroker/adapter-core": "^2.6.0",
         "js-controller": "0.0.6",
-        "knx": "2.4.1",
+        "knx": "2.5.1",
         "similarity": "^1.2.1",
         "xmldom": "^0.6.0",
         "xpath": "0.0.32"
