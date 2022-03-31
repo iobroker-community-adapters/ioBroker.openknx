@@ -307,7 +307,7 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 ## Changelog
 ### 0.1.24 (2022-03-31)
-* feature: support for latin1 charset in dpt4 dpt16
+* feature: support for latin1 charset in dpt16
 
 ### 0.1.23 (2022-03-19)
 * feature: change default regexp for alias
