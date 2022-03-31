@@ -485,7 +485,7 @@ class openknx extends utils.Adapter {
                 // @ts-ignore
                 event: ( /** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
                     let convertedVal = [];
-                    let ret;
+                    let ret = "unknown";
                     //workaround, lib can fire event without going through connected state?
                     if (!this.connected) {
                         this.knxConnection.Disconnect();
@@ -525,7 +525,7 @@ class openknx extends utils.Adapter {
                                 this.getState(id, (err, state) => {
                                     let ret;
                                     if (state) {
-                                        this.log.error("Inbound GroupValue_Read from " + src + " GA " + dest + " to " + id);
+                                        this.log.debug("Inbound GroupValue_Read from " + src + " GA " + dest + " to " + id);
                                         ret = "GroupValue_Read";
                                         if (this.gaList.getDataById(id).native.answer_groupValueResponse) {
                                             let stateval = state.val;
