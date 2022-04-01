@@ -403,13 +403,13 @@ class openknx extends utils.Adapter {
             if (isRaw) {
                 this.knxConnection.writeRaw(ga, rawVal, () => {
                     if (this.config.setAckOnWrite)
-                        this.setState(id, state, true);
+                        this.setState(id, {ack: true});
                 });
                 return "write raw";
             } else {
                 this.knxConnection.write(ga, knxVal, dpt, () => {
                     if (this.config.setAckOnWrite)
-                        this.setState(id, state, true);
+                        this.setState(id, {ack: true});
                 });
                 return "write";
             }
