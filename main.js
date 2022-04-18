@@ -32,7 +32,6 @@ class openknx extends utils.Adapter {
         this.autoreaddone = false;
         /* knx stack starts connection process with disconnect msg*/
         this.disconnectConfirmed = false;
-        this.connected = false;
         this.on("ready", this.onReady.bind(this));
         this.on("stateChange", this.onStateChange.bind(this));
         this.on("message", this.onMessage.bind(this));
@@ -78,40 +77,6 @@ class openknx extends utils.Adapter {
      */
     async onReady() {
         // adapter initialization
-
-        /*
-        if (this.supportsFeature && this.supportsFeature("PLUGINS")) {
-            const sentryInstance = this.getPluginInstance("sentry");
-            if (sentryInstance) {
-                const Sentry = sentryInstance.getSentryObject();
-                if (Sentry) {
-                    Sentry.init({
-                        //environment: "development", //"production", todo distinguish
-                    });
-                    Sentry.configureScope(scope => {
-                        scope.addEventProcessor((event, _hint) => {
-                            if (event.exception && event.exception.values && event.exception.values[0]) {
-                                const eventData = event.exception.values[0];
-                                if (eventData.stacktrace && eventData.stacktrace.frames && Array.isArray(eventData.stacktrace.frames) && eventData.stacktrace.frames.length) {
-                                    /*
-                                    //Exclude event if own directory is included but not inside own node_modules
-                                    const ownNodeModulesDir = nodePath.join(__dirname, "node_modules");
-                                    if (!eventData.stacktrace.frames.find(frame => frame.filename && frame.filename.includes(__dirname) && !frame.filename.includes(ownNodeModulesDir))) {
-                                        return null;
-                                    }
-                                    */
-        // We have exception data and do not sorted it out, so report it
-        //                                    return event;
-        //    }
-        //}
-        // No exception in it ... do not report
-        //                            return null;
-        //                        });
-        //                    });
-        //                }
-        //            }
-        //}
-
 
         //after installation
         if (tools.isEmptyObject(this.config)) {
@@ -329,6 +294,10 @@ class openknx extends utils.Adapter {
         if (!this.gaList.getDataById(id) || !this.gaList.getDataById(id).native || !this.gaList.getDataById(id).native.address) {
             return "not a KNX object";
         }
+        if(this.knxConnection == undefined) {
+            return "KNX not started";
+        }
+
         if (state.ack) {
             //only continue when application triggered a change without ack flag, filter out reception state changes
 
@@ -375,6 +344,10 @@ class openknx extends utils.Adapter {
         } else if (tools.isUnknownDPT(dpt)) {
             //write raw buffers for unknown dpts, iterface is a hex value
             //bitlength is the buffers bytelength * 8.
+            if (typeof (knxVal) != "string") {
+                this.log.warn("unsupported datatype for raw value");
+                return "unsupported datatype";
+            }
             rawVal = Buffer.from(knxVal, "hex");
             isRaw = true;
             this.log.info("Unhandeled DPT " + dpt + ", assuming raw value");
@@ -435,7 +408,6 @@ class openknx extends utils.Adapter {
             handlers: {
                 connected: () => {
                     this.disconnectConfirmed = false;
-                    this.connected = true;
                     //create new knx datapoint and bind to connection
                     //in order to have autoread work
                     let cnt_withDPT = 0;
@@ -477,7 +449,9 @@ class openknx extends utils.Adapter {
                         this.log.warn("Connection lost");
                     }
                     this.disconnectConfirmed = true;
-                    this.connected = false;
+                },
+                error: (connstatus) => {
+                    this.log.warn(connstatus);
                 },
 
                 //KNX Bus event received
@@ -486,14 +460,6 @@ class openknx extends utils.Adapter {
                 event: ( /** @type {string} */ evt, /** @type {string} */ src, /** @type {string} */ dest, /** @type {string} */ val) => {
                     let convertedVal = [];
                     let ret = "unknown";
-                    //workaround, lib can fire event without going through connected state?
-                    if (!this.connected) {
-                        this.knxConnection.Disconnect();
-                        this.startKnxStack();
-                        const err ="event received before initialisation";
-                        this.log.warn(err);
-                        return err;
-                    }
 
                     if (src == this.config.eibadr) {
                         //called by self, avoid loop
@@ -641,16 +607,16 @@ class openknx extends utils.Adapter {
                         }
                     }
                     if (startKnxConnection)
-                    try {
-                        this.startKnxStack();
-                    } catch (e) {
-                        if (e.toString().indexOf("not found or has no useful IPv4 address!") !== -1)
-                            //ipaddr: the address has neither IPv6 nor IPv4 format ??
-                            //only handle certain exceptions
-                            this.log.error(`Cannot start KNX Stack ${e}`);
-                        else
-                            throw e;
-                    }
+                        try {
+                            this.startKnxStack();
+                        } catch (e) {
+                            if (e.toString().indexOf("not found or has no useful IPv4 address!") !== -1)
+                                //ipaddr: the address has neither IPv6 nor IPv4 format ??
+                                //only handle certain exceptions
+                                this.log.error(`Cannot start KNX Stack ${e}`);
+                            else
+                                throw e;
+                        }
                 }
             }
         );
