@@ -61,7 +61,12 @@ class openknx extends utils.Adapter {
                     this.log.warn(args);
                 } else if (args.indexOf("[error]") !== -1) {
                     this.log.error(args);
-                    //todo log onsentry
+                    if (this.sentryInstance) {
+                        this.Sentry && this.Sentry.withScope(scope => {
+                            scope.setLevel("error");
+                            scope.setExtra("error message", args);
+                            this.Sentry.captureMessage("knx library error event", "error");
+                        });
                 } else if (args.indexOf("[trace]") !== -1) {
                     this.log.silly(args);
                 } else {
@@ -77,6 +82,18 @@ class openknx extends utils.Adapter {
      */
     async onReady() {
         // adapter initialization
+        if (this.supportsFeature && this.supportsFeature("PLUGINS")) {
+            const sentryInstance = this.getPluginInstance("sentry");
+            if (sentryInstance) {
+                const Sentry = sentryInstance.getSentryObject();
+                if (Sentry) {
+                    Sentry.init({
+                        //environment: "development", //"production"
+                        environment: "production"
+                    });
+                }
+            }
+        }
 
         //after installation
         if (tools.isEmptyObject(this.config)) {
@@ -294,7 +311,7 @@ class openknx extends utils.Adapter {
         if (!this.gaList.getDataById(id) || !this.gaList.getDataById(id).native || !this.gaList.getDataById(id).native.address) {
             return "not a KNX object";
         }
-        if(this.knxConnection == undefined) {
+        if (this.knxConnection == undefined) {
             return "KNX not started";
         }
 
@@ -376,13 +393,17 @@ class openknx extends utils.Adapter {
             if (isRaw) {
                 this.knxConnection.writeRaw(ga, rawVal, () => {
                     if (this.config.setAckOnWrite)
-                        this.setState(id, {ack: true});
+                        this.setState(id, {
+                            ack: true
+                        });
                 });
                 return "write raw";
             } else {
                 this.knxConnection.write(ga, knxVal, dpt, () => {
                     if (this.config.setAckOnWrite)
-                        this.setState(id, {ack: true});
+                        this.setState(id, {
+                            ack: true
+                        });
                 });
                 return "write";
             }
@@ -416,11 +437,11 @@ class openknx extends utils.Adapter {
                         for (const key of this.gaList) {
                             try {
                                 const datapoint = new this.knx.Datapoint({
-                                    ga: this.gaList.getDataById(key).native.address,
-                                    dpt: this.gaList.getDataById(key).native.dpt,
-                                    autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
-                                },
-                                this.knxConnection
+                                        ga: this.gaList.getDataById(key).native.address,
+                                        dpt: this.gaList.getDataById(key).native.dpt,
+                                        autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
+                                    },
+                                    this.knxConnection
                                 );
                                 datapoint.on("error", (ga, dptid) => {
                                     this.log.warn("Received data length for GA " + ga + " does not match configured " + dptid);

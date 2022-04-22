@@ -306,6 +306,9 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 - only IPv4 supported
 
 ## Changelog
+### 0.1.26 (2022-04-)
+* fix: cleanup dependencies
+
 ### 0.1.25 (2022-04-18)
 * feature: datatype check for raw value
 * feature: check if knx is connected before usage
@@ -439,7 +442,7 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 * (boellner) feature: import ga xml
 
 ### initial version
-* initial version inspired by https://www.npmjs.com/package/iobroker.knx/v/0.8.3
+* initial version from https://www.npmjs.com/package/iobroker.knx/v/0.8.3
 
 ## License
 					GNU GENERAL PUBLIC LICENSE

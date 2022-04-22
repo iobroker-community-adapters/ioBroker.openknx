@@ -1,19 +1,11 @@
 {
     "common": {
         "name": "openknx",
-        "version": "0.1.25",
+        "version": "0.1.26",
         "news": {
-            "0.1.25": {
-                "en": "Bugfixing",
-                "de": "Fehler beheben",
-                "ru": "Исправление ошибок",
-                "pt": "Corrigindo erro",
-                "nl": "Bugfixing",
-                "fr": "Correction de bogues",
-                "it": "Correzione di bug",
-                "es": "Corrección de errores",
-                "pl": "Naprawa błędów",
-                "zh-cn": "错误修复"
+            "0.1.26": {
+                "en": "see https://www.npmjs.com/package/iobroker.openknx",
+                "de": "https://www.npmjs.com/package/iobroker.openknx"
             }
         },
         "title": "Open KNX",
