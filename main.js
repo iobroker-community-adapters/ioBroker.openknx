@@ -67,6 +67,7 @@ class openknx extends utils.Adapter {
                             scope.setExtra("error message", args);
                             this.Sentry.captureMessage("knx library error event", "error");
                         });
+                    }
                 } else if (args.indexOf("[trace]") !== -1) {
                     this.log.silly(args);
                 } else {
