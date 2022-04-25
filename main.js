@@ -50,7 +50,7 @@ class openknx extends utils.Adapter {
                 if (args.indexOf("deferring outbound_TUNNELING_REQUEST") !== -1) {
                     return;
                 } else if (args.indexOf("empty internal fsm queue due to inbound_DISCONNECT_REQUEST") !== -1) {
-                    this.log.warn("possible data loss due to gateway reset, consider increasing frame delay");
+                    //this.log.warn("possible data loss due to gateway reset, consider increasing frame delay");
                 }
 
                 if (args.indexOf("[debug]") !== -1) {
@@ -450,7 +450,7 @@ class openknx extends utils.Adapter {
                                 this.gaList.setDpById(key, datapoint);
                                 cnt_withDPT++;
                                 this.log.debug(
-                                    `Datapoint ${this.gaList.getDataById(key).native.autoread ? "autoread" : ""} created and GroupValueWrite sent: ${
+                                    `Datapoint ${this.gaList.getDataById(key).native.autoread ? "autoread " : ""}created and GroupValueWrite sent: ${
                                         this.gaList.getDataById(key).native.address
                                     } ${key}`
                                 );
@@ -476,6 +476,20 @@ class openknx extends utils.Adapter {
                     this.log.warn(connstatus);
                 },
 
+                //l_data.con, confirmation set bei receiver with set ga s flag
+                confirmed: (dest, confirmed) => {
+                    for (const id of this.gaList.getIdsByGa(dest)) {
+                        if (confirmed) //if unconfirmed keep ack at false
+                            this.setState(id, {
+                                ack: true,
+                            });
+                        if (confirmed)
+                            this.log.debug(`confirmation true received for ${dest}`);
+                        else
+                            this.log.info(`confirmation false received for ${dest}`);
+                    }
+                },
+
                 //KNX Bus event received
                 //src: KnxDeviceAddress, dest: KnxGroupAddress, val: raw value not used, using dp interface instead
                 // @ts-ignore
@@ -493,7 +507,7 @@ class openknx extends utils.Adapter {
                         return "bad address";
                     }
                     if (!this.gaList.getIdsByGa(dest)) {
-                        this.log.warn("Ignoring " + evt + " received unknown GA: " + dest);
+                        this.log.warn(`Ignoring ${evt} received unknown GA: ${dest}`);
                         return "unknown GA";
                     }
 
@@ -513,7 +527,7 @@ class openknx extends utils.Adapter {
                                 this.getState(id, (err, state) => {
                                     let ret;
                                     if (state) {
-                                        this.log.debug("Inbound GroupValue_Read from " + src + " GA " + dest + " to " + id);
+                                        this.log.debug(`Inbound GroupValue_Read from ${src} GA ${dest} to ${id}`);
                                         ret = "GroupValue_Read";
                                         if (this.gaList.getDataById(id).native.answer_groupValueResponse) {
                                             let stateval = state.val;
@@ -522,7 +536,7 @@ class openknx extends utils.Adapter {
                                                 stateval = JSON.parse(state.val);
                                             } catch (e) {}
                                             this.knxConnection.respond(dest, stateval, this.gaList.getDataById(id).native.dpt);
-                                            this.log.error("responding with value " + state.val);
+                                            this.log.debug("responding with value " + state.val);
                                             ret = "GroupValue_Read Respond";
                                         }
                                         return ret;

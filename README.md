@@ -307,7 +307,7 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 ## Changelog
 ### 0.1.26 (2022-04-)
-* fix: cleanup dependencies
+* fix:  remove error log when answering to GroupValueRead: #183 
 
 ### 0.1.25 (2022-04-18)
 * feature: datatype check for raw value
