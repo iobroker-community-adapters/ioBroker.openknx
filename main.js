@@ -30,8 +30,6 @@ class openknx extends utils.Adapter {
         });
         this.gaList = new DoubleKeyedMap();
         this.autoreaddone = false;
-        /* knx stack starts connection process with disconnect msg*/
-        this.disconnectConfirmed = false;
         this.on("ready", this.onReady.bind(this));
         this.on("stateChange", this.onStateChange.bind(this));
         this.on("message", this.onMessage.bind(this));
@@ -124,7 +122,7 @@ class openknx extends utils.Adapter {
             // ...
             // clearInterval(interval1);
 
-            this.disconnectConfirmed = false;
+            this.startup = true;
             if (this.knxConnection) {
                 this.knxConnection.Disconnect();
             }
@@ -393,18 +391,10 @@ class openknx extends utils.Adapter {
             this.log.debug("Outbound GroupValue_Write to " + ga + " val: " + (isRaw ? rawVal : JSON.stringify(knxVal)) + " from " + id);
             if (isRaw) {
                 this.knxConnection.writeRaw(ga, rawVal, () => {
-                    if (this.config.setAckOnWrite)
-                        this.setState(id, {
-                            ack: true
-                        });
                 });
                 return "write raw";
             } else {
                 this.knxConnection.write(ga, knxVal, dpt, () => {
-                    if (this.config.setAckOnWrite)
-                        this.setState(id, {
-                            ack: true
-                        });
                 });
                 return "write";
             }
@@ -415,10 +405,11 @@ class openknx extends utils.Adapter {
     }
 
     startKnxStack() {
+        this.startup = true;
         this.knxConnection = this.knx.Connection({
             ipAddr: this.config.gwip,
             ipPort: this.config.gwipport,
-            physAddr: this.config.eibadr,
+            physAddr: "0.0.0",
             interface: this.translateInterface(this.config.localInterface),
             minimumDelay: this.config.minimumDelay,
             //https://github.com/Supergiovane/node-red-contrib-knx-ultimate/issues/78, some receivers cannot handle a ack request, spec makes no difference
@@ -429,7 +420,6 @@ class openknx extends utils.Adapter {
             //debug:
             handlers: {
                 connected: () => {
-                    this.disconnectConfirmed = false;
                     //create new knx datapoint and bind to connection
                     //in order to have autoread work
                     let cnt_withDPT = 0;
@@ -467,10 +457,11 @@ class openknx extends utils.Adapter {
 
                 disconnected: () => {
                     this.setState("info.connection", false, true);
-                    if (this.disconnectConfirmed) {
+                    if (this.startup != true) {
+                        //do not warn on initial startup or shutdown
                         this.log.warn("Connection lost");
                     }
-                    this.disconnectConfirmed = true;
+                    this.startup = false;
                 },
                 error: (connstatus) => {
                     this.log.warn(connstatus);
@@ -497,10 +488,12 @@ class openknx extends utils.Adapter {
                     let convertedVal = [];
                     let ret = "unknown";
 
+                    /*
                     if (src == this.config.eibadr) {
-                        //called by self, avoid loop
+                        //L_data.ind of own L_data.req
                         return "receive self ga";
-                    }
+                    }*/
+
                     /* some checks */
                     if (dest == "0/0/0" || tools.isDeviceAddress(dest)) {
                         //seems that knx lib does not guarantee dest group adresses
