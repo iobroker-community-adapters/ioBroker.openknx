@@ -30,8 +30,6 @@ class openknx extends utils.Adapter {
         });
         this.gaList = new DoubleKeyedMap();
         this.autoreaddone = false;
-        /* knx stack starts connection process with disconnect msg*/
-        this.disconnectConfirmed = false;
         this.on("ready", this.onReady.bind(this));
         this.on("stateChange", this.onStateChange.bind(this));
         this.on("message", this.onMessage.bind(this));
@@ -50,7 +48,7 @@ class openknx extends utils.Adapter {
                 if (args.indexOf("deferring outbound_TUNNELING_REQUEST") !== -1) {
                     return;
                 } else if (args.indexOf("empty internal fsm queue due to inbound_DISCONNECT_REQUEST") !== -1) {
-                    this.log.warn("possible data loss due to gateway reset, consider increasing frame delay");
+                    //this.log.warn("possible data loss due to gateway reset, consider increasing frame delay");
                 }
 
                 if (args.indexOf("[debug]") !== -1) {
@@ -61,7 +59,13 @@ class openknx extends utils.Adapter {
                     this.log.warn(args);
                 } else if (args.indexOf("[error]") !== -1) {
                     this.log.error(args);
-                    //todo log onsentry
+                    if (this.sentryInstance) {
+                        this.Sentry && this.Sentry.withScope(scope => {
+                            scope.setLevel("error");
+                            scope.setExtra("error message", args);
+                            this.Sentry.captureMessage("knx library error event", "error");
+                        });
+                    }
                 } else if (args.indexOf("[trace]") !== -1) {
                     this.log.silly(args);
                 } else {
@@ -77,6 +81,18 @@ class openknx extends utils.Adapter {
      */
     async onReady() {
         // adapter initialization
+        if (this.supportsFeature && this.supportsFeature("PLUGINS")) {
+            const sentryInstance = this.getPluginInstance("sentry");
+            if (sentryInstance) {
+                const Sentry = sentryInstance.getSentryObject();
+                if (Sentry) {
+                    Sentry.init({
+                        //environment: "development", //"production"
+                        environment: "production"
+                    });
+                }
+            }
+        }
 
         //after installation
         if (tools.isEmptyObject(this.config)) {
@@ -106,7 +122,7 @@ class openknx extends utils.Adapter {
             // ...
             // clearInterval(interval1);
 
-            this.disconnectConfirmed = false;
+            this.startup = true;
             if (this.knxConnection) {
                 this.knxConnection.Disconnect();
             }
@@ -294,7 +310,7 @@ class openknx extends utils.Adapter {
         if (!this.gaList.getDataById(id) || !this.gaList.getDataById(id).native || !this.gaList.getDataById(id).native.address) {
             return "not a KNX object";
         }
-        if(this.knxConnection == undefined) {
+        if (this.knxConnection == undefined) {
             return "KNX not started";
         }
 
@@ -375,14 +391,10 @@ class openknx extends utils.Adapter {
             this.log.debug("Outbound GroupValue_Write to " + ga + " val: " + (isRaw ? rawVal : JSON.stringify(knxVal)) + " from " + id);
             if (isRaw) {
                 this.knxConnection.writeRaw(ga, rawVal, () => {
-                    if (this.config.setAckOnWrite)
-                        this.setState(id, {ack: true});
                 });
                 return "write raw";
             } else {
                 this.knxConnection.write(ga, knxVal, dpt, () => {
-                    if (this.config.setAckOnWrite)
-                        this.setState(id, {ack: true});
                 });
                 return "write";
             }
@@ -393,10 +405,11 @@ class openknx extends utils.Adapter {
     }
 
     startKnxStack() {
+        this.startup = true;
         this.knxConnection = this.knx.Connection({
             ipAddr: this.config.gwip,
             ipPort: this.config.gwipport,
-            physAddr: this.config.eibadr,
+            physAddr: "0.0.0",
             interface: this.translateInterface(this.config.localInterface),
             minimumDelay: this.config.minimumDelay,
             //https://github.com/Supergiovane/node-red-contrib-knx-ultimate/issues/78, some receivers cannot handle a ack request, spec makes no difference
@@ -407,7 +420,6 @@ class openknx extends utils.Adapter {
             //debug:
             handlers: {
                 connected: () => {
-                    this.disconnectConfirmed = false;
                     //create new knx datapoint and bind to connection
                     //in order to have autoread work
                     let cnt_withDPT = 0;
@@ -416,11 +428,11 @@ class openknx extends utils.Adapter {
                         for (const key of this.gaList) {
                             try {
                                 const datapoint = new this.knx.Datapoint({
-                                    ga: this.gaList.getDataById(key).native.address,
-                                    dpt: this.gaList.getDataById(key).native.dpt,
-                                    autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
-                                },
-                                this.knxConnection
+                                        ga: this.gaList.getDataById(key).native.address,
+                                        dpt: this.gaList.getDataById(key).native.dpt,
+                                        autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
+                                    },
+                                    this.knxConnection
                                 );
                                 datapoint.on("error", (ga, dptid) => {
                                     this.log.warn("Received data length for GA " + ga + " does not match configured " + dptid);
@@ -428,7 +440,7 @@ class openknx extends utils.Adapter {
                                 this.gaList.setDpById(key, datapoint);
                                 cnt_withDPT++;
                                 this.log.debug(
-                                    `Datapoint ${this.gaList.getDataById(key).native.autoread ? "autoread" : ""} created and GroupValueWrite sent: ${
+                                    `Datapoint ${this.gaList.getDataById(key).native.autoread ? "autoread " : ""}created and GroupValueWrite sent: ${
                                         this.gaList.getDataById(key).native.address
                                     } ${key}`
                                 );
@@ -445,13 +457,28 @@ class openknx extends utils.Adapter {
 
                 disconnected: () => {
                     this.setState("info.connection", false, true);
-                    if (this.disconnectConfirmed) {
+                    if (this.startup != true) {
+                        //do not warn on initial startup or shutdown
                         this.log.warn("Connection lost");
                     }
-                    this.disconnectConfirmed = true;
+                    this.startup = false;
                 },
                 error: (connstatus) => {
                     this.log.warn(connstatus);
+                },
+
+                //l_data.con, confirmation set bei receiver with set ga s flag
+                confirmed: (dest, confirmed) => {
+                    for (const id of this.gaList.getIdsByGa(dest)) {
+                        if (confirmed) //if unconfirmed keep ack at false
+                            this.setState(id, {
+                                ack: true,
+                            });
+                        if (confirmed)
+                            this.log.debug(`confirmation true received for ${dest}`);
+                        else
+                            this.log.info(`confirmation false received for ${dest}`);
+                    }
                 },
 
                 //KNX Bus event received
@@ -461,17 +488,19 @@ class openknx extends utils.Adapter {
                     let convertedVal = [];
                     let ret = "unknown";
 
+                    /*
                     if (src == this.config.eibadr) {
-                        //called by self, avoid loop
+                        //L_data.ind of own L_data.req
                         return "receive self ga";
-                    }
+                    }*/
+
                     /* some checks */
                     if (dest == "0/0/0" || tools.isDeviceAddress(dest)) {
                         //seems that knx lib does not guarantee dest group adresses
                         return "bad address";
                     }
                     if (!this.gaList.getIdsByGa(dest)) {
-                        this.log.warn("Ignoring " + evt + " received unknown GA: " + dest);
+                        this.log.warn(`Ignoring ${evt} received unknown GA: ${dest}`);
                         return "unknown GA";
                     }
 
@@ -491,7 +520,7 @@ class openknx extends utils.Adapter {
                                 this.getState(id, (err, state) => {
                                     let ret;
                                     if (state) {
-                                        this.log.debug("Inbound GroupValue_Read from " + src + " GA " + dest + " to " + id);
+                                        this.log.debug(`Inbound GroupValue_Read from ${src} GA ${dest} to ${id}`);
                                         ret = "GroupValue_Read";
                                         if (this.gaList.getDataById(id).native.answer_groupValueResponse) {
                                             let stateval = state.val;
@@ -500,7 +529,7 @@ class openknx extends utils.Adapter {
                                                 stateval = JSON.parse(state.val);
                                             } catch (e) {}
                                             this.knxConnection.respond(dest, stateval, this.gaList.getDataById(id).native.dpt);
-                                            this.log.error("responding with value " + state.val);
+                                            this.log.debug("responding with value " + state.val);
                                             ret = "GroupValue_Read Respond";
                                         }
                                         return ret;

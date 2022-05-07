@@ -78,7 +78,6 @@
             if (settings.gwip === undefined) settings.gwip = "127.0.0.1";
             if (settings.gwipport === undefined) settings.gwipport = 3671;
             if (settings.minimumDelay === undefined) settings.minimumDelay = 50;
-            if (settings.eibadr === undefined) settings.eibadr = "1.1.1";
             if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
             if (settings.localInterface === undefined) settings.localInterface = "";
             if (settings.setAckOnWrite === undefined) settings.setAckOnWrite = false;
@@ -133,16 +132,6 @@
                         } else {
                             alert("invalid port number");
                             $("#gwipport").val(settings.gwipport).change();
-                        }
-                    }
-
-                    if (id === "eibadr") {
-                        var eibadr1 = $("#eibadr").val();
-                        if (isKnxAddressValid(eibadr1)) {
-                            $("#eibadr").val(eibadr1);
-                        } else {
-                            alert("physical KNX address in format a/b/c not valid");
-                            $("#eibadr").val(settings.eibadr).change();
                         }
                     }
 
@@ -280,7 +269,6 @@
                     } else {
                         $("#deviceName")[0].innerHTML = result.deviceName;
                         $("#gwip").val(result.ip).change();
-                        $("#eibadr").val(result.knxAdr).change();
                         $("#gwipport").val(result.port).change();
                         if (result.devicesFound > 1) showMessage(_("more than one KNX gateway found"));
                     }
@@ -357,11 +345,6 @@
                             <input type="text" class="value" id="gwipport" />
                             <label for="gwipport" class="translate">Port</label>
                         </div>
-
-                        <div class="col s6 l3 input-field">
-                            <input class="value" id="eibadr" type="text" />
-                            <label for="eibadr" class="translate">Physical KNX address</label>
-                        </div>
                         <div class="col s6 l2">
                             <a id="detectInterface" class="waves-effect waves-light btn"><i
                                     class="material-icons right">live help</i><span class="translate">detect
@@ -381,13 +364,6 @@
                             <input id="minimumDelay" class="value" type="text" />
                             <label for="minimumDelay" class="translate">Frames delay [ms]</label>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12 input-field">
-                            <input class="value" id="setAckOnWrite" type="checkbox" />
-                            <label class="translate" for="setAckOnWrite">set acknowledgement flag when application writes to object</label>
-                        </div>
-                        
                     </div>
                 </div>
             </div>
