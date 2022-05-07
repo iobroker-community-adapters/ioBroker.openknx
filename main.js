@@ -121,7 +121,6 @@ class openknx extends utils.Adapter {
             // clearTimeout(timeout2);
             // ...
             // clearInterval(interval1);
-
             this.startup = true;
             if (this.knxConnection) {
                 this.knxConnection.Disconnect();
