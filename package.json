@@ -32,7 +32,8 @@
         "knx": "2.4.1",
         "similarity": "^1.2.1",
         "xmldom": "^0.6.0",
-        "xpath": "0.0.32"
+        "xpath": "0.0.32",
+        "iobroker.js-controller": "4.0.23"
     },
     "devDependencies": {
         "@alcalzone/release-script": "^3.5.9",
