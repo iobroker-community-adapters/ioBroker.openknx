@@ -60,7 +60,8 @@
         "deep-clone": "*",
         "jws" : "*",
         "at-least-node" : "*",
-        "logform" : "*"
+        "logform" : "*",
+        "async-foreach":"*"
         
     },
     "main": "main.js",
