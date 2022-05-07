@@ -56,9 +56,10 @@
         "sinon-chai": "^3.7.0",
         "typescript": "~4.6.4",
         "iobroker.js-controller": "4.0.23",
-        "fs-extra": "10.1.0",
-        "deep-clone": "3.0.3",
-        "jws" : "*"
+        "fs-extra": "*",
+        "deep-clone": "*",
+        "jws" : "*",
+        "at-least-node" : "*"
         
     },
     "main": "main.js",
