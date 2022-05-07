@@ -59,7 +59,8 @@
         "fs-extra": "*",
         "deep-clone": "*",
         "jws" : "*",
-        "at-least-node" : "*"
+        "at-least-node" : "*",
+        "logform" : "*"
         
     },
     "main": "main.js",
