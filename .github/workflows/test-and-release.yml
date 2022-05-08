@@ -20,23 +20,13 @@ jobs:
 
         runs-on: ubuntu-latest
 
-<<<<<<< HEAD
     steps:
       - uses: ioBroker/testing-action-check@v1
           with:
               node-version: '14.x'
-	      # Uncomment the following line if your adapter cannot be installed using 'npm ci'
+              # Uncomment the following line if your adapter cannot be installed using 'npm ci'
               # install-command: 'npm install'
               lint: true
-=======
-        steps:
-            - uses: ioBroker/testing-action-check@v1
-                with:
-                    node-version: '14.x'
-                    # Uncomment the following line if your adapter cannot be installed using 'npm ci'
-                    # install-command: 'npm install'
-                    lint: true
->>>>>>> 456a3bc41036d1010587dded117b47f90d4d6666
 
 
     # Runs adapter tests on all supported node versions and OSes
