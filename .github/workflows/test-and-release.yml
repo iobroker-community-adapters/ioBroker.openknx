@@ -8,51 +8,31 @@ on:
             - "*"
         tags:
             # normal versions
-            - "v?[0-9]+.[0-9]+.[0-9]+"
-            # pre-releases
-            - "v?[0-9]+.[0-9]+.[0-9]+-**"
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      # pre-releases
+      - "v[0-9]+.[0-9]+.[0-9]+-**"
     pull_request: {}
 
 jobs:
-    # Performs quick checks before the expensive test runs
-    check-and-lint:
-        if: contains(github.event.head_commit.message, '[skip ci]') == false
+  # Performs quick checks before the expensive test runs
+  check-and-lint:
+    if: contains(github.event.head_commit.message, '[skip ci]') == false
 
-        runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                node-version: [14.x]
-
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
-
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v3.1.1
-              with:
-                  node-version: ${{ matrix.node-version }}
-
-            - name: Install Dependencies
-              run: npm install
-
-            - name: Lint source code
-              run: npm run lint
-
-            - name: Test package files
-              run: npm run test:package
-
-
-            #unit tests independent of environment
-            - name: Run unit tests
-              run: npm run test
+    steps:
+      - uses: ioBroker/testing-action-check@v1
+        with:
+          node-version: '14.x'
+          # Uncomment the following line if your adapter cannot be installed using 'npm ci'
+          # install-command: 'npm install'
+          lint: true
 
 
     # Runs adapter tests on all supported node versions and OSes
     adapter-tests:
         if: contains(github.event.head_commit.message, '[skip ci]') == false
 
-        needs: [check-and-lint]
 
         runs-on: ${{ matrix.os }}
         strategy:
