@@ -14,13 +14,8 @@ on:
   pull_request: {}
 
 jobs:
-<<<<<<< HEAD
   # Performs quick checks before the expensive test runs
   check-and-lint:
-=======
-    # Performs quick checks before the expensive test runs
-    check-and-lint:
->>>>>>> 0f1a819 (new scripts)
     if: contains(github.event.head_commit.message, '[skip ci]') == false
 
     runs-on: ubuntu-latest
@@ -28,17 +23,10 @@ jobs:
     steps:
       - uses: ioBroker/testing-action-check@v1
         with:
-<<<<<<< HEAD
           node-version: "14.x"
           # Uncomment the following line if your adapter cannot be installed using 'npm ci'
           install-command: 'npm install'
           lint: true
-=======
-            node-version: '14.x'
-            # Uncomment the following line if your adapter cannot be installed using 'npm ci'
-            # install-command: 'npm install'
-            lint: true
->>>>>>> 0f1a819 (new scripts)
 
   # Runs adapter tests on all supported node versions and OSes
   adapter-tests:
