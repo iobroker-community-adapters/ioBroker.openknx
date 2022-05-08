@@ -3,23 +3,24 @@ name: Test and Release
 # Run this job on all pushes and pull requests
 # as well as tags with a semantic version
 on:
-  push:
-    branches:
-      - "main"
-    tags:
-      # normal versions
-      - "v[0-9]+.[0-9]+.[0-9]+"
-      # pre-releases
-      - "v[0-9]+.[0-9]+.[0-9]+-**"
-  pull_request: {}
+    push:
+      branches:
+          - "main"
+      tags:
+          # normal versions
+          - "v[0-9]+.[0-9]+.[0-9]+"
+          # pre-releases
+          - "v[0-9]+.[0-9]+.[0-9]+-**"
+    pull_request: {}
 
 jobs:
-  # Performs quick checks before the expensive test runs
-  check-and-lint:
-    if: contains(github.event.head_commit.message, '[skip ci]') == false
+    # Performs quick checks before the expensive test runs
+        check-and-lint:
+        if: contains(github.event.head_commit.message, '[skip ci]') == false
 
-    runs-on: ubuntu-latest
+        runs-on: ubuntu-latest
 
+<<<<<<< HEAD
     steps:
       - uses: ioBroker/testing-action-check@v1
           with:
@@ -27,6 +28,15 @@ jobs:
 	      # Uncomment the following line if your adapter cannot be installed using 'npm ci'
               # install-command: 'npm install'
               lint: true
+=======
+        steps:
+            - uses: ioBroker/testing-action-check@v1
+                with:
+                    node-version: '14.x'
+                    # Uncomment the following line if your adapter cannot be installed using 'npm ci'
+                    # install-command: 'npm install'
+                    lint: true
+>>>>>>> 456a3bc41036d1010587dded117b47f90d4d6666
 
 
     # Runs adapter tests on all supported node versions and OSes
