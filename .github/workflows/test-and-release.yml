@@ -16,17 +16,17 @@ on:
 jobs:
   # Performs quick checks before the expensive test runs
   check-and-lint:
-  if: contains(github.event.head_commit.message, '[skip ci]') == false
+    if: contains(github.event.head_commit.message, '[skip ci]') == false
 
-  runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-  steps:
-    - uses: ioBroker/testing-action-check@v1
-      with:
-        node-version: "14.x"
-        # Uncomment the following line if your adapter cannot be installed using 'npm ci'
-        # install-command: 'npm install'
-        lint: true
+    steps:
+      - uses: ioBroker/testing-action-check@v1
+        with:
+          node-version: "14.x"
+          # Uncomment the following line if your adapter cannot be installed using 'npm ci'
+          # install-command: 'npm install'
+          lint: true
 
   # Runs adapter tests on all supported node versions and OSes
   adapter-tests:
