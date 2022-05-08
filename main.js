@@ -374,6 +374,7 @@ class openknx extends utils.Adapter {
             }
         }
 
+        // @ts-ignore
         if (state.c == "GroupValue_Read" || state.q == 0x10) {
             //interface to trigger GrouValue_Read is this comment or null
             this.log.debug("Outbound GroupValue_Read to " + ga);
