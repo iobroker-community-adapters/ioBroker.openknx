@@ -59,7 +59,7 @@
         "react": "^17.0.2",
         "sinon": "^14.0.0",
         "sinon-chai": "^3.7.0",
-        "typescript": "~4.6.4",
+        "typescript": "~4.7.2",
         "iobroker.js-controller": "4.0.23"
     },
     "main": "main.js",
