@@ -487,10 +487,9 @@ class openknx extends utils.Adapter {
                     let convertedVal = [];
                     let ret = "unknown";
 
-                    this.log.silly(`event  ${evt} src: ${src} dst: ${dest}`);
-
                     if (src == this.config.eibadr) {
                         //L_data.ind of own L_data.req
+                        this.log.info(`receive self ga: ${src}`);//rem
                         return "receive self ga";
                     }
 
