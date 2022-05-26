@@ -306,7 +306,7 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 - only IPv4 supported
 
 ## Changelog
-### 0.2.0 (2022-05-26)
+### 0.2.2 (2022-05-26)
 * feature: writing to bus l_data.con creates a ack on the iobroker object if successful (the knx conf flag unset)
 * bugfix: remove manual Physical KNX address dialog, use 0.0.0 instead
 * bugfix: remove error log when answering to GroupValueRead: #183
