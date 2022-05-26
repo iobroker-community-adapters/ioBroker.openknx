@@ -295,7 +295,7 @@ class openknx extends utils.Adapter {
 
     /**
      * Is called if a subscribed state changes
-     * state.ack is coming in false if set by user (nodered, script...), here we set it.
+     * state.ack is received with value false if set by user (nodered, script...), here we set it.
      * https://github.com/ioBroker/ioBroker.docs/blob/master/docs/en/dev/adapterdev.md
      * @param {string} id
      * @param {ioBroker.State | null | undefined} state
@@ -318,7 +318,6 @@ class openknx extends utils.Adapter {
 
             //enable this for system testing
             //this.interfaceTest(id, state);
-
             return "ack is set";
         }
         if (!(await this.getStateAsync("info.connection"))) {
@@ -477,7 +476,7 @@ class openknx extends utils.Adapter {
                         if (confirmed)
                             this.log.debug(`confirmation true received for ${dest}`);
                         else
-                            this.log.info(`confirmation false received for ${dest}`);
+                            this.log.info(`confirmation false received for ${dest} ${id}`);
                     }
                 },
 
@@ -488,11 +487,12 @@ class openknx extends utils.Adapter {
                     let convertedVal = [];
                     let ret = "unknown";
 
-                    /*
+                    this.log.silly(`event  ${evt} src: ${src} dst: ${dest}`);
+
                     if (src == this.config.eibadr) {
                         //L_data.ind of own L_data.req
                         return "receive self ga";
-                    }*/
+                    }
 
                     /* some checks */
                     if (dest == "0/0/0" || tools.isDeviceAddress(dest)) {
