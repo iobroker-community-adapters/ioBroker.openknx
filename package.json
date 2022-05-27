@@ -1,6 +1,6 @@
 {
     "name": "iobroker.openknx",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "description": "ioBroker knx Adapter",
     "author": "boellner",
     "homepage": "https://github.com/iobroker-community-adapters/ioBroker.openknx.git",
@@ -18,7 +18,7 @@
         "ets6",
         "bus",
         "communication",
-        "kommunikation",
+        "Kommunikation",
         "Smart Home",
         "home automation",
         "Heimautomatisierung"
@@ -29,7 +29,8 @@
     },
     "dependencies": {
         "@iobroker/adapter-core": "^2.6.0",
-        "knx": "2.4.1",
+        "knx": "2.5.2",
+        "async-exit-hook": "^2.0.1",
         "similarity": "^1.2.1",
         "xmldom": "^0.6.0",
         "xpath": "0.0.32"

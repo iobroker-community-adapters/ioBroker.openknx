@@ -31,10 +31,6 @@ IP of your KNX IP gateway.
 ### Port
 this is normally port 3671 of the KNX IP gateway.
 
-### phys. KNX Adress
-Fill in physical address of the KNX IP gateway in the format 1/1/1.
-Two level group addresses can be transformed manually if needed.
-
 ### Local IPv4 network interface
 The interface that is connected to the KNX IP gateway.
 
@@ -42,7 +38,9 @@ The interface that is connected to the KNX IP gateway.
 Searches via a standardized protocol all available KNX IP Gateways on the given network interface.
 
 ### Frames delay [ms]
-This settings protects the KNX bus from data flooding by limiting data frames to a certain rate. Not sent frames are put into a fifo buffer. If you experience disconnects from your KNX IP Gateway  in the log then increase this number.
+This settings protects the KNX bus from data flooding by limiting data frames to a certain rate.
+Not sent frames are delay until the delay time since last send on bus is elapsed. If more send requests are waiting, send order is random.
+If you experience disconnects from your KNX IP Gateway  in the log then increase this number.
 
 ### Add only new Objects
 If checked, the import will skip overwriting existing communication objects.
@@ -306,8 +304,11 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 - only IPv4 supported
 
 ## Changelog
-### 0.2.3 (2022-05-26)
-* feature: writing to bus l_data.con creates a ack on the iobroker object if successful (the knx conf flag unset)
+## 0.2.4 (2022-05-27)
+* feature: cleanly disconnect on shutdown, upgrade to knx lib 2.5.2
+
+### 0.2.2 (2022-05-26)
+* feature: writing to bus l_data.con creates a ack on the iobroker object if successful (the knx conf flag unset) #133
 * bugfix: remove manual Physical KNX address dialog, use 0.0.0 instead
 * bugfix: remove error log when answering to GroupValueRead: #183
 * bugfix: improve warning logs on intended and unintended disconnects

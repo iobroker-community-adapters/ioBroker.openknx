@@ -136,3 +136,21 @@ connection.writeRaw('1/0/0', Buffer.from('01', 'hex'), 1)
 // Write raw buffer to a groupaddress with dpt 9 (e.g temperature 18.4 °C = Buffer<0730>) without bitlength
 connection.writeRaw('1/0/0', Buffer.from('0730', 'hex'))
 ```
+
+### Disconnect
+
+In order to cleanly disconnect, you must send the Disconnect-Request and give the KNX-IP-Stack enough time to receive the Disconnect-Response back from the IP Gateway. Most IP-Gateways will have a timeout and clean stale connection up, even if you do not disconect cleanly, but depending on the limits on the number of parallel active connections, this will limit your ability to re-connect until the timeout has passed.
+
+For NodeJS cleaning up when the script exits, this requires something like [async-exit-hook](https://www.npmjs.com/package/async-exit-hook):
+
+```js
+const exitHook = require('async-exit-hook');
+
+exitHook(cb => {
+  console.log('Disconnecting from KNX…');
+  connection.Disconnect(() => {
+    console.log('Disconnected from KNX');
+    cb();
+  });
+});
+```

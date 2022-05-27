@@ -17,7 +17,7 @@ type ConnectionSpec = {
     debug?: boolean,
     manualConnect?: true,
     minimumDelay?: number,
-    handlers: HandlersSpec,
+    handlers?: HandlersSpec,
 }
 
 type KnxDeviceAddress = string
@@ -42,17 +42,39 @@ interface DatapointEvent {
 }
 
 declare module 'knx' {
-    export interface IConnection extends events.EventEmitter {
+    type MachinaEventsCallback = (...args: any[]) => void
+
+    interface MachinaEventsReturn {
+        eventName: string
+        callback: MachinaEventsCallback
+        off: () => void
+    }
+
+    class MachinaEvents {
+        emit(eventName: string): void
+        on(eventName: string, callback: MachinaEventsCallback): MachinaEventsReturn
+        off(eventName?: string, callback?: MachinaEventsCallback): void
+    }
+
+    interface MachinaEventsReturn {
+        eventName: string
+        callback: MachinaEventsCallback
+        off: () => void
+    }
+
+    export interface IConnection extends MachinaEvents {
         debug: boolean
-        Disconnect(): void
+        Connect(): void
+        Disconnect(cb?: Function): void
         read( ga: KnxGroupAddress, cb?: (value: Buffer) => void ): void
         write( ga: KnxGroupAddress, value: Buffer, dpt: DPT, cb?: () => void): void
     }
 
-    export class Connection extends events.EventEmitter implements IConnection {
+    export class Connection extends MachinaEvents implements IConnection {
         public debug: boolean
         constructor( conf: ConnectionSpec )
-        Disconnect(): void
+        Connect(): void
+        Disconnect(cb?: Function): void
         read( ga: KnxGroupAddress, cb?: (value: Buffer) => void ): void
         write( ga: KnxGroupAddress, value: Buffer, dpt: DPT, cb?: () => void): void
         writeRaw( ga: KnxGroupAddress, value: Buffer, bitlength?: number, cb?: () => void): void

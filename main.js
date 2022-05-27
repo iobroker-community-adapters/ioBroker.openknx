@@ -13,11 +13,12 @@
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
 const projectImport = require(__dirname + "/lib/projectImport");
-const knx = require(__dirname + "/lib/knx"); //todo copy for the moment
+const knx = require(__dirname + "/lib/knx");
 const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 const detect = require("./lib/openknx.js");
 const os = require("os");
+const exitHook = require("async-exit-hook");
 
 class openknx extends utils.Adapter {
     /**
@@ -123,7 +124,12 @@ class openknx extends utils.Adapter {
             // clearInterval(interval1);
             this.startup = true;
             if (this.knxConnection) {
-                this.knxConnection.Disconnect();
+                exitHook(cb => {
+                    this.knxConnection.Disconnect(() => {
+                        cb();
+                    });
+                });
+
             }
 
             callback();
@@ -389,12 +395,10 @@ class openknx extends utils.Adapter {
         } else if (this.gaList.getDataById(id).common.write) {
             this.log.debug("Outbound GroupValue_Write to " + ga + " val: " + (isRaw ? rawVal : JSON.stringify(knxVal)) + " from " + id);
             if (isRaw) {
-                this.knxConnection.writeRaw(ga, rawVal, () => {
-                });
+                this.knxConnection.writeRaw(ga, rawVal, () => {});
                 return "write raw";
             } else {
-                this.knxConnection.write(ga, knxVal, dpt, () => {
-                });
+                this.knxConnection.write(ga, knxVal, dpt, () => {});
                 return "write";
             }
         } else {
@@ -489,7 +493,7 @@ class openknx extends utils.Adapter {
 
                     if (src == this.config.eibadr) {
                         //L_data.ind of own L_data.req
-                        this.log.info(`receive self ga: ${src}`);//rem
+                        this.log.debug(`receive self ga: ${src}`);
                         return "receive self ga";
                     }
 
