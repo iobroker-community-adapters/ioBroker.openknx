@@ -310,6 +310,9 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 - only IPv4 supported
 
 ## Changelog
+## 0.2.5 (2022-06-22)
+* feature: option remove existing KNX objects that are not in import file
+
 ## 0.2.4 (2022-05-27)
 * feature: cleanly disconnect on shutdown, upgrade to knx lib 2.5.2
 

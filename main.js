@@ -147,13 +147,17 @@ class openknx extends utils.Adapter {
                     this.log.info("Project import...");
                     projectImport.parseInput(this, obj.message.xml, (parseError, res) => {
                         this.updateObjects(res, 0, obj.message.onlyAddNewObjects, (updateError, length) => {
-                            res = {
+                            let msg = {
                                 error: (parseError && parseError.length == 0) ? updateError : (parseError ? parseError : "") + "<br/>" + updateError,
                                 count: length,
                             };
+
+                            if (obj.message.removeUnusedObjects)
+                                this.removeUnusedObjects(res);
+
                             this.log.info("Project import finished of " + length + " GAs");
                             if (obj.callback) {
-                                this.sendTo(obj.from, obj.command, res, obj.callback);
+                                this.sendTo(obj.from, obj.command, msg, obj.callback);
                             }
                         });
                     });
@@ -199,9 +203,36 @@ class openknx extends utils.Adapter {
         return true;
     }
 
+    /* 
+     * remove knx elements that are not found in the current import file
+     */
+    async removeUnusedObjects(importObjects) {
+        let objects = await this.getAdapterObjectsAsync();
+
+        Object.entries(objects).map(object => {
+            console.log(object)
+
+            if (object[1].native && Object.keys(object[1].native).length === 0 && Object.getPrototypeOf(object[1].native) === Object.prototype) {
+                //object is no knx element, skip
+            }
+            else {
+                let found = importObjects.find(element => this.mynamespace + '.' + element._id === object[0]);
+                if (!found) {
+                    //knx element in object tree not found in importer file
+                    this.delObject(object[0], (err) => {
+                        //this.log.info("delete object from tree not found in import " + object[0]);
+                        if (err) {
+                            this.log.warn("could not delete object " + object[0]);
+                        }
+                    });
+                }
+            }
+        })
+    }
+
     //write found communication objects to adapter object tree
-    updateObjects(objects, index, onlyAddNewObjects, callback) {
-        if (index >= objects.length) {
+    updateObjects(objects, i, onlyAddNewObjects, callback) {
+        if (i >= objects.length) {
             //end of recursion reached
             let err = this.warnDuplicates(objects);
 
@@ -237,19 +268,19 @@ class openknx extends utils.Adapter {
         if (onlyAddNewObjects) {
             //if user setting Add only new Objects write only new objects
             //extend object would overwrite user made element changes if known in the import, not intended
-            this.setObjectNotExists(this.mynamespace + "." + objects[index]._id, objects[index], (err, obj) => {
+            this.setObjectNotExists(this.mynamespace + "." + objects[i]._id, objects[i], (err, obj) => {
                 if (err) {
-                    this.log.warn("error store Object " + objects[index]._id + " " + (err ? " " + err : ""));
+                    this.log.warn("error store Object " + objects[i]._id + " " + (err ? " " + err : ""));
                 }
-                setTimeout(this.updateObjects.bind(this), 0, objects, index + 1, onlyAddNewObjects, callback);
+                setTimeout(this.updateObjects.bind(this), 0, objects, i + 1, onlyAddNewObjects, callback);
             });
         } else {
             //setObjet to overwrite all existing settings, default
-            this.setObject(this.mynamespace + "." + objects[index]._id, objects[index], (err, obj) => {
+            this.setObject(this.mynamespace + "." + objects[i]._id, objects[i], (err, obj) => {
                 if (err) {
-                    this.log.warn("error store Object " + objects[index]._id + (err ? " " + err : ""));
+                    this.log.warn("error store Object " + objects[i]._id + (err ? " " + err : ""));
                 }
-                setTimeout(this.updateObjects.bind(this), 0, objects, index + 1, onlyAddNewObjects, callback);
+                setTimeout(this.updateObjects.bind(this), 0, objects, i + 1, onlyAddNewObjects, callback);
             });
         }
     }
@@ -395,10 +426,10 @@ class openknx extends utils.Adapter {
         } else if (this.gaList.getDataById(id).common.write) {
             this.log.debug("Outbound GroupValue_Write to " + ga + " val: " + (isRaw ? rawVal : JSON.stringify(knxVal)) + " from " + id);
             if (isRaw) {
-                this.knxConnection.writeRaw(ga, rawVal, () => {});
+                this.knxConnection.writeRaw(ga, rawVal, () => { });
                 return "write raw";
             } else {
-                this.knxConnection.write(ga, knxVal, dpt, () => {});
+                this.knxConnection.write(ga, knxVal, dpt, () => { });
                 return "write";
             }
         } else {
@@ -431,10 +462,10 @@ class openknx extends utils.Adapter {
                         for (const key of this.gaList) {
                             try {
                                 const datapoint = new this.knx.Datapoint({
-                                        ga: this.gaList.getDataById(key).native.address,
-                                        dpt: this.gaList.getDataById(key).native.dpt,
-                                        autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
-                                    },
+                                    ga: this.gaList.getDataById(key).native.address,
+                                    dpt: this.gaList.getDataById(key).native.dpt,
+                                    autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
+                                },
                                     this.knxConnection
                                 );
                                 datapoint.on("error", (ga, dptid) => {
@@ -443,8 +474,7 @@ class openknx extends utils.Adapter {
                                 this.gaList.setDpById(key, datapoint);
                                 cnt_withDPT++;
                                 this.log.debug(
-                                    `Datapoint ${this.gaList.getDataById(key).native.autoread ? "autoread " : ""}created and GroupValueWrite sent: ${
-                                        this.gaList.getDataById(key).native.address
+                                    `Datapoint ${this.gaList.getDataById(key).native.autoread ? "autoread " : ""}created and GroupValueWrite sent: ${this.gaList.getDataById(key).native.address
                                     } ${key}`
                                 );
                             } catch (e) {
@@ -530,7 +560,7 @@ class openknx extends utils.Adapter {
                                             try {
                                                 // @ts-ignore
                                                 stateval = JSON.parse(state.val);
-                                            } catch (e) {}
+                                            } catch (e) { }
                                             this.knxConnection.respond(dest, stateval, this.gaList.getDataById(id).native.dpt);
                                             this.log.debug("responding with value " + state.val);
                                             ret = "GroupValue_Read Respond";
@@ -620,10 +650,10 @@ class openknx extends utils.Adapter {
         this.getObjectView(
             "system",
             "state", {
-                startkey: this.mynamespace + ".",
-                endkey: this.mynamespace + ".\u9999",
-                include_docs: true,
-            },
+            startkey: this.mynamespace + ".",
+            endkey: this.mynamespace + ".\u9999",
+            include_docs: true,
+        },
             (err, res) => {
                 if (err) {
                     this.log.error("Cannot get objects: " + err);

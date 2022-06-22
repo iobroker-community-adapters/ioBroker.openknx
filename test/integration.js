@@ -20,7 +20,8 @@ const settings = {
         "minimumDelay": 40,
         "bind": "127.0.0.1",
         "eibadr": "1.1.1",
-        "onlyAddNewObjects": true
+        "onlyAddNewObjects": true,
+        "removeUnusedObjects": false,
     }
 
 };

@@ -64,6 +64,7 @@
                 this.getIsAdapterAlive(function (isAlive) {
                     if (isAlive && !window.isProcessingRequest) {
                         $("#onlyAddNewObjects").removeClass("disabled");
+                        $("#removeUnusedObjects").removeClass("disabled");
                         $("#setAckOnWrite").removeClass("disabled");
                         $(".file-field .btn").removeClass("disabled");
                         $(".file-field .file-path").prop("disabled", false);
@@ -79,6 +80,7 @@
             if (settings.gwipport === undefined) settings.gwipport = 3671;
             if (settings.minimumDelay === undefined) settings.minimumDelay = 50;
             if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
+            if (settings.removeUnusedObjects === undefined) settings.removeUnusedObjects = false;
             if (settings.localInterface === undefined) settings.localInterface = "";
             if (settings.setAckOnWrite === undefined) settings.setAckOnWrite = false;
 
@@ -218,7 +220,7 @@
                     $("#etsFile").change(processXmlFile);
                     showToast(null, _("Import started..."), null, 3000);
                     $("#progress").show();
-                    sendTo(null, "import", { xml: event.target.result, onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked") }, function (result) {
+                    sendTo(null, "import", { xml: event.target.result, onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked"), removeUnusedObjects: $("#removeUnusedObjects").prop("checked") }, function (result) {
                         $("#progress").hide();
                         if (!result || result.error) {
                             let message = "Unknown error"
@@ -372,7 +374,11 @@
                     <div class="row">
                         <div class="col s12 input-field">
                             <input class="value" id="onlyAddNewObjects" type="checkbox" />
-                            <label class="translate" for="onlyAddNewObjects">add only new Objects</label>
+                            <label class="translate" for="onlyAddNewObjects">store only additionally found GAs</label>
+                        </div>
+                        <div class="col s12 input-field">
+                            <input class="value" id="removeUnusedObjects" type="checkbox" />
+                            <label class="translate" for="removeUnusedObjects">remove existing KNX objects that are not in import file</label>
                         </div>
 
                         <div class="col s12 m12 l6 file-field input-field">
