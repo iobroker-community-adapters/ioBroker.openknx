@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "openknx",
-        "version": "0.2.5",
+        "version": "0.2.6",
         "news": {
-            "0.2.5": {
+            "0.2.6": {
                 "en": "see https://www.npmjs.com/package/iobroker.openknx",
                 "de": "https://www.npmjs.com/package/iobroker.openknx"
             }
@@ -73,7 +73,6 @@
     "native": {
         "gwip": "",
         "gwipport": "3671",
-        "eibadr": "1.1.1",
         "localInterface": "",
         "minimumDelay": 50,
         "aliassRegexp": "[Ss]tat(e|us)(\\.|$)|[Rr]m(\\.|$)|[Rr]ückmeldung(\\.|$)|\\s[Vv]alue(\\.|$)",

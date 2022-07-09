@@ -521,12 +521,6 @@ class openknx extends utils.Adapter {
                     let convertedVal = [];
                     let ret = "unknown";
 
-                    if (src == this.config.eibadr) {
-                        //L_data.ind of own L_data.req
-                        this.log.debug(`receive self ga: ${src}`);
-                        return "receive self ga";
-                    }
-
                     /* some checks */
                     if (dest == "0/0/0" || tools.isDeviceAddress(dest)) {
                         //seems that knx lib does not guarantee dest group adresses
@@ -642,7 +636,7 @@ class openknx extends utils.Adapter {
     }
 
     main(startKnxConnection) {
-        this.log.info("Connecting to knx gateway:  " + this.config.gwip + ":" + this.config.gwipport + "   with phy. Adr: " + this.config.eibadr + " minimum send delay: " + this.config.minimumDelay + " ms debug level: " + this.log.level);
+        this.log.info("Connecting to knx gateway:  " + this.config.gwip + ":" + this.config.gwipport + " minimum send delay: " + this.config.minimumDelay + "ms debug level: " + this.log.level);
         this.log.info(utils.controllerDir);
         this.setState("info.connection", false, true);
 
