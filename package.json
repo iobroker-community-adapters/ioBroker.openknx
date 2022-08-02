@@ -52,7 +52,7 @@
         "@types/sinon-chai": "^3.2.8",
         "chai": "^4.3.6",
         "chai-as-promised": "^7.1.1",
-        "eslint": "^8.20.0",
+        "eslint": "^8.21.0",
         "eslint-plugin-react": "^7.30.1",
         "mocha": "^10.0.0",
         "proxyquire": "^2.1.3",
