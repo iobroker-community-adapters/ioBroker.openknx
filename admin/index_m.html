@@ -225,11 +225,11 @@
                         if (!result || result.error) {
                             let message = "Unknown error"
                             if (result && result.error) {
-                                message = `Extracted ${result.count} states successfully<br/><br/>\n${result.error}`
+                                message = `Imported ${result.count} states successfully<br/><br/>\n${result.error}`
                             }
                             showMessage(_(message));
                         } else {
-                            showMessage(_("Extracted %s states successfully", result.count));
+                            showMessage(_("Imported %s states successfully", result.count));
                         }
                         sendTo(null, "restart", null);
                         showToast(null, _("Restarting adapter"), null, 10000);

@@ -245,7 +245,7 @@ class openknx extends utils.Adapter {
                 if (result)
                     result.rows.forEach(element => {
                         if (element.value.hasOwnProperty("native") && element.value.native.hasOwnProperty("address"))
-                            gas.push(element.value.native.address);
+                            gas.push(element.value.native.address + " " + element.value.common.name); //todo test
                     });
                 const tempArray = [...gas].sort();
                 for (let i = 0; i < tempArray.length; i++) {
@@ -253,7 +253,7 @@ class openknx extends utils.Adapter {
                         duplicates.push(tempArray[i]);
                     }
                 }
-                const message = "Objects were added where objects exist that have same KNX group address: " + duplicates;
+                const message = "Objects imported where objects exist that have same KNX group address: " + duplicates;
                 if (duplicates.length) {
                     this.log.warn(message);
                     err ? err = err + "<br/>" + message : err = message;
