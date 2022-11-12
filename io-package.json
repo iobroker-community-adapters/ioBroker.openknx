@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "openknx",
-        "version": "0.2.7",
+        "version": "0.2.8",
         "news": {
-            "0.2.7": {
+            "0.2.8": {
                 "en": "see https://www.npmjs.com/package/iobroker.openknx",
                 "de": "https://www.npmjs.com/package/iobroker.openknx"
             }
@@ -71,6 +71,7 @@
         "installedFrom": "iobroker.openknx"
     },
     "native": {
+        "autoreadEnabled": true,
         "gwip": "",
         "gwipport": "3671",
         "localInterface": "",

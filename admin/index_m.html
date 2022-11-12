@@ -64,6 +64,7 @@
                 this.getIsAdapterAlive(function (isAlive) {
                     if (isAlive && !window.isProcessingRequest) {
                         $("#onlyAddNewObjects").removeClass("disabled");
+                        $("#autoreadEnabled").removeClass("disabled");
                         $("#removeUnusedObjects").removeClass("disabled");
                         $("#setAckOnWrite").removeClass("disabled");
                         $(".file-field .btn").removeClass("disabled");
@@ -80,6 +81,7 @@
             if (settings.gwipport === undefined) settings.gwipport = 3671;
             if (settings.minimumDelay === undefined) settings.minimumDelay = 50;
             if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
+            if (settings.autoreadEnabled === undefined) settings.autoreadEnabled = false;
             if (settings.removeUnusedObjects === undefined) settings.removeUnusedObjects = false;
             if (settings.localInterface === undefined) settings.localInterface = "";
             if (settings.setAckOnWrite === undefined) settings.setAckOnWrite = false;
@@ -364,7 +366,12 @@
                         </div>
                         <div class="col s6 l2 input-field">
                             <input id="minimumDelay" class="value" type="text" />
-                            <label for="minimumDelay" class="translate">Frames delay [ms]</label>
+                            <label for="minimumDelay" class="translate">Frame delay [ms]</label>
+                        </div>
+                        <!-- materialize grid small 12 of 12 columns https://materializecss.com/grid.html -->
+                        <div class="col s12 input-field">
+                            <input class="value" id="autoreadEnabled" type="checkbox" />
+                            <label class="translate" for="autoreadEnabled">read in values on start of all autoread iob objects</label>
                         </div>
                     </div>
                 </div>

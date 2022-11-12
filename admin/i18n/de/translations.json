@@ -8,7 +8,7 @@
     "Import XML from ETS": "Import XML aus ETS",
     "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export": "KNXproj werden nicht unterstützt, bitte öffnen Sie in der ETS die Gruppenadressen und klicken Sie mit der rechten Maustaste auf Gruppenadressen und dann Gruppenadressen-Export",
     "Minimum Similarity 0-1": "Mindest Ähnlichkeit 0-1",
-    "Port": "Hafen",
+    "Port": "Port",
     "Regex to identify Status GAs (ending with status, rm, rückmeldung..).": "Regex zum Erkennen von Status-GAs (Endung mit status, rm, rückmeldung..)",
     "Restarting adapter": "Adapter neu starten...",
     "To merge Action and Status GA in one ioBroker Object you can let the Adapter generate": "Um Aktor und Zustand GA in einem ioBroker-Objekt zusammenzuführen, können Sie den Adapter Aliase generieren lassen.",

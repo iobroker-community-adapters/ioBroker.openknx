@@ -445,7 +445,7 @@ class openknx extends utils.Adapter {
             ipPort: this.config.gwipport,
             physAddr: "0.0.0",
             interface: this.translateInterface(this.config.localInterface),
-            minimumDelay: this.config.minimumDelay,
+            minimumDelay: 2000, //test xxx this.config.minimumDelay,
             //https://github.com/Supergiovane/node-red-contrib-knx-ultimate/issues/78, some receivers cannot handle a ack request, spec makes no difference
             suppress_ack_ldatareq: true,
             //map set the log level for messsages printed on the console. This can be 'error', 'warn', 'info' (default), 'debug', or 'trace'.
@@ -464,7 +464,8 @@ class openknx extends utils.Adapter {
                                 const datapoint = new this.knx.Datapoint({
                                     ga: this.gaList.getDataById(key).native.address,
                                     dpt: this.gaList.getDataById(key).native.dpt,
-                                    autoread: this.gaList.getDataById(key).native.autoread, // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
+                                    // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
+                                    autoread: this.gaList.getDataById(key).native.autoread && this.config.autoreadEnabled
                                 },
                                     this.knxConnection
                                 );
