@@ -311,7 +311,7 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 ## Changelog
 
-### 0.2.8 (2022-11-13)
+### 0.2.9 (2022-11-13)
 * feature: setting autoreadEnabled autoread
 * bugfix: keep correct order of send datagrams in case of burst write
 

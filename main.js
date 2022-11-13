@@ -445,7 +445,7 @@ class openknx extends utils.Adapter {
             ipPort: this.config.gwipport,
             physAddr: "0.0.0",
             interface: this.translateInterface(this.config.localInterface),
-            minimumDelay: 2000, //test xxx this.config.minimumDelay,
+            minimumDelay: this.config.minimumDelay,
             //https://github.com/Supergiovane/node-red-contrib-knx-ultimate/issues/78, some receivers cannot handle a ack request, spec makes no difference
             suppress_ack_ldatareq: true,
             //map set the log level for messsages printed on the console. This can be 'error', 'warn', 'info' (default), 'debug', or 'trace'.
