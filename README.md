@@ -42,6 +42,9 @@ This settings protects the KNX bus from data flooding by limiting data frames to
 Not sent frames are delay until the delay time since last send on bus is elapsed. If more send requests are waiting, send order is random.
 If you experience disconnects from your KNX IP Gateway  in the log then increase this number.
 
+### readout values of autoread iob objects on startup
+All IOB objects that are configured with the autoread flag are requested on the bus to be synchronized with IOB.
+
 ### Add only new Objects
 If checked, the import will skip overwriting existing communication objects.
 
