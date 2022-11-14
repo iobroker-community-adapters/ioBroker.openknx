@@ -536,6 +536,11 @@ class openknx extends utils.Adapter {
                         const data = this.gaList.getDataById(id);
                         const dp = this.gaList.getDpById(id);
 
+                        if (id == undefined || data == undefined || dp == undefined) {
+                            //debug trap, should not be reached
+                            throw new Error(`Invalid data for GA ${dest}`);
+                        }
+
                         if (tools.isStringDPT(data.native.dpt)) {
                             convertedVal = dp.current_value;
                         } else {
