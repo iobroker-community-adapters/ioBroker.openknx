@@ -311,9 +311,12 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 ## Changelog
 
+### 0.3.0 (2022-11-xx)
+* feature: sync knx library
+
 ### 0.2.9 (2022-11-13)
 * feature: setting autoreadEnabled autoread
-* bugfix: keep correct order of send datagrams in case of burst write
+* bugfix knx lib: keep correct order of send datagrams in case of burst write
 
 ### 0.2.7 (2022-08-26)
 * bugfix: fix issue with writing to dpt 19 object

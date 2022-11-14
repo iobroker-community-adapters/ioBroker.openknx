@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "openknx",
-        "version": "0.2.9",
+        "version": "0.3.0",
         "news": {
-            "0.2.9": {
+            "0.3.0": {
                 "en": "see https://www.npmjs.com/package/iobroker.openknx",
                 "de": "https://www.npmjs.com/package/iobroker.openknx"
             }
