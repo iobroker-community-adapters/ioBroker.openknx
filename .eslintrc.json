@@ -5,13 +5,8 @@
         "node": true,
         "mocha": true
     },
-    "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended"
-    ],
-    "plugins": [
-        "react"
-    ],
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
+    "plugins": ["react"],
     "settings": {
         "react": {
             "version": "detect"
@@ -26,6 +21,13 @@
             }
         ],
         "no-console": "off",
+        "no-unused-vars": [
+            "error",
+            {
+                "ignoreRestSiblings": true,
+                "argsIgnorePattern": "^_"
+            }
+        ],
         "no-var": "error",
         "no-trailing-spaces": "error",
         "prefer-const": "error",
@@ -37,13 +39,10 @@
                 "allowTemplateLiterals": true
             }
         ],
-        "semi": [
-            "error",
-            "always"
-        ]
+        "semi": ["error", "always"]
     },
     "parserOptions": {
-        "ecmaVersion": 2018,
+        "ecmaVersion": 2020,
         "ecmaFeatures": {
             "jsx": true
         }

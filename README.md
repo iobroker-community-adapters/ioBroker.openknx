@@ -1,7 +1,7 @@
 ![Logo](admin/openknx.png)
 # ioBroker.openknx
 
-[![NPM version](http://img.shields.io/npm/v/iobroker.openknx.svg)](https://www.npmjs.com/package/iobroker.openknx)
+[![NPM version](https://img.shields.io/npm/v/iobroker.openknx.svg)](https://www.npmjs.com/package/iobroker.openknx)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.openknx.svg)](https://www.npmjs.com/package/iobroker.openknx)
 ![Number of Installations](https://iobroker.live/badges/openknx-installed.svg)
 ![Current version in stable repository](https://iobroker.live/badges/openknx-stable.svg)
