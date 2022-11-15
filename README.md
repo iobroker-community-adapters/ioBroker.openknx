@@ -316,6 +316,8 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 ### 0.3.0 (2022-11-xx)
 * feature: sync knx library
+* feature: sync with create adapter 0.2.3
+* feature: update to newer versions of lots of dependant packages
 
 ### 0.2.9 (2022-11-13)
 * feature: setting autoreadEnabled autoread
