@@ -1,5 +1,5 @@
 /*global systemDictionary:true */
-'use strict';
+"use strict";
 
 systemDictionary = {
     "Alias path": {                                  "en": "Alias path",                                      "de": "Alias-Pfad",                                      "ru": "Путь псевдонима",                                 "pt": "Caminho de alias",                                "nl": "Aliaspad",                                        "fr": "Chemin d'alias",                                  "it": "Alias percorso",                                  "es": "Ruta de alias",                                   "pl": "Ścieżka aliasu",                                  "zh-cn": "别名路径"},
