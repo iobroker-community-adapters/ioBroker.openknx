@@ -2,9 +2,7 @@
 .*/
 !.vscode/
 !.github/
-
-Gruntfile.js
-tasks
+!.devcontainer/
 
 *.code-workspace
 node_modules
@@ -21,9 +19,6 @@ Thumbs.db
 admin/i18n/flat.txt
 admin/i18n/*/flat.txt
 
-.idea
-.git
 todo.txt
-.vscode
 iob_npm.done
 .DS_Store

@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "openknx",
-        "version": "0.2.9",
+        "version": "0.3.0",
         "news": {
-            "0.2.9": {
+            "0.3.0": {
                 "en": "see https://www.npmjs.com/package/iobroker.openknx",
                 "de": "https://www.npmjs.com/package/iobroker.openknx"
             }
@@ -56,7 +56,29 @@
         "compact": true,
         "connectionType": "local",
         "dataSource": "push",
-        "materialize": true,
+        "adminUI": {
+            "config": "materialize",
+            "tab": "materialize"
+        },
+        "adminTab": {
+            "singleton": true,
+            "name": {
+                "en": "testtitle",
+                "de": "testtitle",
+                "ru": "testtitle",
+                "pt": "testtitle",
+                "nl": "testtitle",
+                "fr": "testtitle",
+                "it": "testtitle",
+                "es": "testtitle",
+                "pl": "testtitle",
+                "zh-cn": "testtitle"
+            },
+            "link": "",
+            "fa-icon": "info"
+        },
+        "eraseOnUpload": true,
+
         "plugins": {
             "sentry": {
                 "dsn": "https://f87a314b36ef451aa291655ae13e2831@sentry.iobroker.net/165"
@@ -64,11 +86,15 @@
         },
         "dependencies": [
             {
-                "js-controller": ">=3.0.0"
+                "js-controller": ">=3.3.22"
             }
         ],
-        "tier": 2,
-        "installedFrom": "iobroker.openknx"
+	        "globalDependencies": [
+            {
+                "admin": ">=5.0.0"
+            }
+        ],
+        "tier": 2
     },
     "native": {
         "autoreadEnabled": true,
