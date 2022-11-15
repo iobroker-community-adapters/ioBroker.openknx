@@ -5,13 +5,8 @@
         "node": true,
         "mocha": true
     },
-    "extends": ["eslint:recommended", "plugin:react/recommended"],
-    "plugins": ["react"],
-    "settings": {
-        "react": {
-            "version": "detect"
-        }
-    },
+    "extends": ["eslint:recommended"],
+    "plugins": [],
     "rules": {
         "indent": [
             "error",
@@ -42,9 +37,6 @@
         "semi": ["error", "always"]
     },
     "parserOptions": {
-        "ecmaVersion": 2020,
-        "ecmaFeatures": {
-            "jsx": true
-        }
+        "ecmaVersion": 2020
     }
 }

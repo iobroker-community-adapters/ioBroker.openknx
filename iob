@@ -1,2 +1,0 @@
-#!/usr/bin/env node
-require('/opt/iobroker/node_modules/iobroker.openknx/node_modules/iobroker.js-controller/lib/setup').execute();
