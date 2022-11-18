@@ -147,7 +147,7 @@ class openknx extends utils.Adapter {
                     this.log.info("Project import...");
                     projectImport.parseInput(this, obj.message.xml, (parseError, res) => {
                         this.updateObjects(res, 0, obj.message.onlyAddNewObjects, (updateError, length) => {
-                            let msg = {
+                            const msg = {
                                 error:
                                     parseError && parseError.length == 0
                                         ? updateError
@@ -222,7 +222,7 @@ class openknx extends utils.Adapter {
      * remove knx elements that are not found in the current import file
      */
     async removeUnusedObjects(importObjects) {
-        let objects = await this.getAdapterObjectsAsync();
+        const objects = await this.getAdapterObjectsAsync();
 
         Object.entries(objects).map((object) => {
             console.log(object);
@@ -234,7 +234,7 @@ class openknx extends utils.Adapter {
             ) {
                 //object is no knx element, skip
             } else {
-                let found = importObjects.find((element) => this.mynamespace + "." + element._id === object[0]);
+                const found = importObjects.find((element) => this.mynamespace + "." + element._id === object[0]);
                 if (!found) {
                     //knx element in object tree not found in importer file
                     this.delObject(object[0], (err) => {
@@ -265,10 +265,10 @@ class openknx extends utils.Adapter {
                     if (result)
                         result.rows.forEach((element) => {
                             if (
-                                element.value.hasOwnProperty("native") &&
-                                element.value.native.hasOwnProperty("address")
+                                Object.prototype.hasOwnProperty.call(element.value, "native") &&
+                                Object.prototype.hasOwnProperty.call(element.value, "address")
                             )
-                                gas.push(element.value.native.address + " " + element.value.common.name); //todo test
+                                gas.push(element.value.native.address + " " + element.value.common.name);
                         });
                     const tempArray = [...gas].sort();
                     for (let i = 0; i < tempArray.length; i++) {
