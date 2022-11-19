@@ -79,7 +79,7 @@ class openknx extends utils.Adapter {
     }
 
     /**
-     * Is called when databasesf are connected and adapter received configuration.
+     * Is called when databases are connected and adapter received configuration.
      */
     async onReady() {
         // adapter initialization
@@ -102,10 +102,6 @@ class openknx extends utils.Adapter {
             return;
         }
 
-        if (!this.config.gwip) {
-            this.log.warn("Gateway IP is missing please enter Gateway IP in the instance settings.");
-            return;
-        }
         // In order to get state updates, you need to subscribe to them.
         this.subscribeStates("*");
 
@@ -711,15 +707,20 @@ class openknx extends utils.Adapter {
     }
 
     main(startKnxConnection) {
-        this.log.info(
-            "Connecting to knx gateway:  " +
-                this.config.gwip +
-                ":" +
-                this.config.gwipport +
-                " minimum send delay: " +
-                this.config.minimumDelay +
-                "ms debug level: " +
-                this.log.level,
+        
+        if (!this.config.gwip) {
+            this.log.warn("Gateway IP is missing please enter Gateway IP in the instance settings.");
+            startKnxConnection = false;
+        } else
+            this.log.info(
+                "Connecting to knx gateway:  " +
+                    this.config.gwip +
+                    ":" +
+                    this.config.gwipport +
+                    " minimum send delay: " +
+                    this.config.minimumDelay +
+                    "ms debug level: " +
+                    this.log.level,
         );
         this.log.info(utils.controllerDir);
         this.setState("info.connection", false, true);
