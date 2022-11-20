@@ -361,8 +361,7 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
   * .... -> this is used by script to generate a new entry
   * npm run release major/minor/patch major.minor.patch
 -->
-
-### **WORK IN PROGRESS**
+### 0.3.1 (2022-11-20)
 
 - feature: sync knx library
 - feature: sync with create adapter 0.2.3
