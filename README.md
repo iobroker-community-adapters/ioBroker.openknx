@@ -314,6 +314,11 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 ## Changelog
 
+<!--
+  Placeholder for the next version (at the beginning of the line):
+  ### **WORK IN PROGRESS**
+-->
+
 ### 0.3.0 (2022-11-19)
 * feature: sync knx library
 * feature: sync with create adapter 0.2.3
