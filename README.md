@@ -358,17 +358,18 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 <!--
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
-  * .... -> this is used by script to generate a new entry
+  * .... -> this is used by script to generate a new entry, copy after a new release
   * npm run release major/minor/patch major.minor.patch
 -->
-### 0.3.1 (2022-11-20)
+
+### **WORK IN PROGRESS**
 
 - feature: sync knx library
 - feature: sync with create adapter 0.2.3
 - feature: update to newer versions of dependant packages
 - feature: setting autoreadEnabled autoread
 - bugfix: allow alias generation with missing gateway configuration
-- bugfix knx lib: keep correct order of send datagrams in case of burst write
+- bugfix in knx lib: keep correct order of send datagrams in case of burst write
 
 ### 0.2.7 (2022-08-26)
 
