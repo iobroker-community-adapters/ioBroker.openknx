@@ -89,7 +89,7 @@
     "check": "tsc --noEmit -p tsconfig.check.json",
     "lint": "eslint .",
     "translate": "translate-adapter",
-        "release": "release-script"
+    "release": "release-script"
     },
     "bugs": {
         "url": "https://github.com/iobroker-community-adapters/ioBroker.openknx/issues"
