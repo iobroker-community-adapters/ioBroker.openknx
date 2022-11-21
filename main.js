@@ -541,7 +541,7 @@ class openknx extends utils.Adapter {
                     this.log.warn(connstatus);
                 },
 
-                //l_data.con, confirmation set bei receiver with set ga s flag
+                //l_data.con, confirmation set receiver with set ga s flag
                 confirmed: (dest, confirmed) => {
                     for (const id of this.gaList.getIdsByGa(dest)) {
                         if (confirmed)
@@ -549,7 +549,7 @@ class openknx extends utils.Adapter {
                             this.setState(id, {
                                 ack: true,
                             });
-                        if (confirmed) this.log.debug(`confirmation true received for ${dest}`);
+                        if (confirmed) this.log.debug(`confirmation true received for ${dest} ${id}`);
                         else this.log.info(`confirmation false received for ${dest} ${id}`);
                     }
                 },

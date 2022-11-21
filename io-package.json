@@ -1,158 +1,137 @@
 {
-  "common": {
-    "name": "openknx",
-    "version": "0.3.2",
-    "news": {
-      "0.3.2": {
-        "en": "feature: sync knx library\nfeature: sync with create adapter 0.2.3\nfeature: update to newer versions of dependant packages\nfeature: setting autoreadEnabled autoread\nbugfix: allow alias generation with missing gateway configuration\nbugfix in knx lib: keep correct order of send datagrams in case of burst write",
-        "de": "feature: sync knx bibliothek\nfeature: sync mit adapter erstellen 0.2.3\nfeature: update auf neuere versionen von abhängigen paketen\nfunktion: autoread einstellen Autoread aktivieren\nbugfix: alias-generation mit fehlender gateway-konfiguration erlauben\nbugfix in knx lib: korrekte reihenfolge des sendens von datengrammen bei burst-schreiben",
-        "ru": "функция: синхронизация knx библиотека\nособенность: синхронизация с созданием адаптера 0.2.3\nфункция: обновление до новых версий зависящих пакетов\nфункция: настройка autoread Включенный автопрочитан\nbugfix: позвольте псевдониму генерации с недостающей конфигурацией шлюза\nbugfix в knx lib: держите правильный порядок отправки данных в случае захоронения напишите",
-        "pt": "característica: biblioteca de sincronização knx\ncaracterística: sincronização com criar adaptador 0.2.3\nrecurso: atualização para versões mais recentes de pacotes dependentes\ncaracterística: definição de autoread Autoread habilitado\nbugfix: permitir a geração de alias com configuração de gateway ausente\nbugfix em knx lib: manter a ordem correta de enviar datagramas em caso de explosão escrever",
-        "nl": "vertaling:\nvertaling:\nvertaling:\nvertaling: Geautoread\nvertaling:\nbewaar de juiste volgorde van het versturen van gegevens in geval van ontploffing",
-        "fr": "fonction: bibliothèque sync knx\nfonction: synchronisation avec adaptateur de création 0.2.3\nfonction: mise à jour de nouvelles versions de paquets dépendants\nfonction: réglage automatique Autoread activé\nbugfix: permettre la génération d'alias avec la configuration de passerelle manquante\nbugfix in knx lib: garder l'ordre correct d'envoyer des datagrammes en cas d'éclatement écrire",
-        "it": "caratteristica: sync knx library\nfunzione: sincronizzare con creare adattatore 0.2.3\nfunzione: aggiornamento alle versioni più recenti dei pacchetti dipendenti\ncaratteristica: impostazione autoread Abilitato autoread\nbugfix: consentire la generazione di alias con la configurazione di gateway mancante\nbugfix in knx lib: mantenere l'ordine corretto di inviare i datagrams in caso di esplosione di scrittura",
-        "es": "función: biblioteca de knx de sincronización\nfunción: sincronización con el adaptador 0,2.3\nfunción: actualización a nuevas versiones de paquetes dependientes\nfunción: ajuste automático Autoread habilitado\nbugfix: permitir la generación de alias con configuración de entrada perdida\nbugfix en knx lib: mantener el orden correcto de enviar datagramas en caso de explosión escribir",
-        "pl": "funkcja: sync knx library\nfunkcja: synchronizacja z tworzeniem adaptatora 0.2.3\ndostępne są nowe wersje pakietów zależnych\nustawa Autoready\ntrąbka: pozwalać aliasowi pokolenie z brakami konfiguracji bramy\nuszkodzenia w knx lib: zachować poprawny porządek wysyłania danych w przypadku rozbłysku",
-        "uk": "русскийукраїнськабеларускаяoʻzbek tilienglish\nфункція: синхронізація з створення адаптера 0.2.3\nфункція: оновлення до нових версій пакетів залежностей\nфункція: налаштування автопродавця Увімкнути автоматичний\nвиправлення помилок: генерація псевдонімів з відсутністю конфігурації шлюзу\nвиправлення помилок в knx lib: зберегти правильний порядок відправки графіків у разі лопу писати",
-        "zh-cn": "特色:复合克日图书馆\n特征:与创造适应力的结合\n特点:更新依赖一揽子计划的新版本\n特征:建立汽车 便携式汽车\nb ugfix:允许产生离散的门户组合\nb knx lib的ugfix:在开火时保持正确的发送数据图。"
-      },
-      "0.3.1": {
-        "en": "feature: sync knx library\nfeature: sync with create adapter 0.2.3\nfeature: update to newer versions of dependant packages\nfeature: setting autoreadEnabled autoread\nbugfix: allow alias generation with missing gateway configuration\nbugfix knx lib: keep correct order of send datagrams in case of burst write",
-        "de": "feature: sync knx bibliothek\nfeature: sync mit adapter erstellen 0.2.3\nfeature: update auf neuere versionen von abhängigen paketen\nfunktion: autoread einstellen Autoread aktivieren\nbugfix: alias-generation mit fehlender gateway-konfiguration erlauben\nbugfix knx lib: halten sie korrekte reihenfolge des sendens von datengrammen bei burst-schreiben",
-        "ru": "функция: синхронизация knx библиотека\nособенность: синхронизация с созданием адаптера 0.2.3\nфункция: обновление до новых версий зависящих пакетов\nфункция: настройка autoread Включенный автопрочитан\nbugfix: позвольте псевдониму генерации с недостающей конфигурацией шлюза\nbugfix knx lib: держите правильный порядок отправки данных в случае захоронения напишите",
-        "pt": "característica: biblioteca de sincronização knx\ncaracterística: sincronização com criar adaptador 0.2.3\nrecurso: atualização para versões mais recentes de pacotes dependentes\ncaracterística: definição de autoread Autoread habilitado\nbugfix: permitir a geração de alias com configuração de gateway ausente\nbugfix knx lib: manter a ordem correta de enviar datagramas em caso de explosão escrever",
-        "nl": "vertaling:\nvertaling:\nvertaling:\nvertaling: Geautoread\nvertaling:\nbewaar de juiste volgorde van het sturen van gegevens in geval van ontploffing",
-        "fr": "fonction: bibliothèque sync knx\nfonction: synchronisation avec adaptateur de création 0.2.3\nfonction: mise à jour de nouvelles versions de paquets dépendants\nfonction: réglage automatique Autoread activé\nbugfix: permettre la génération d'alias avec la configuration de passerelle manquante\nbugfix knx lib: garder l'ordre correct d'envoyer des datagrammes en cas d'éclatement écrire",
-        "it": "caratteristica: sync knx library\nfunzione: sincronizzare con creare adattatore 0.2.3\nfunzione: aggiornamento alle versioni più recenti dei pacchetti dipendenti\ncaratteristica: impostazione autoread Abilitato autoread\nbugfix: consentire la generazione di alias con la configurazione di gateway mancante\nbugfix knx lib: mantenere l'ordine corretto di inviare i datagrams in caso di esplosione di scrittura",
-        "es": "función: biblioteca de knx de sincronización\nfunción: sincronización con el adaptador 0,2.3\nfunción: actualización a nuevas versiones de paquetes dependientes\nfunción: ajuste automático Autoread habilitado\nbugfix: permitir la generación de alias con configuración de entrada perdida\nbugfix knx lib: mantener el orden correcto de enviar datagramas en caso de explosión escribir",
-        "pl": "funkcja: sync knx library\nfunkcja: synchronizacja z tworzeniem adaptatora 0.2.3\ndostępne są nowe wersje pakietów zależnych\nustawa Autoready\ntrąbka: pozwalać aliasowi pokolenie z brakami konfiguracji bramy\nbutfix knx lib: zachowuje poprawny porządek wysyłania danych w przypadku rozbłysku",
-        "uk": "русскийукраїнськабеларускаяoʻzbek tilienglish\nфункція: синхронізація з створення адаптера 0.2.3\nфункція: оновлення до нових версій пакетів залежностей\nфункція: налаштування автопродавця Увімкнути автоматичний\nвиправлення помилок: генерація псевдонімів з відсутністю конфігурації шлюзу\nвиправлення knx lib: зберегти правильний порядок надсилання міток у разі лопу писати",
-        "zh-cn": "特色:复合克日图书馆\n特征:与创造适应力的结合\n特点:更新依赖一揽子计划的新版本\n特征:建立汽车 便携式汽车\nb ugfix:允许产生离散的门户组合\nb ugfix knx lib:在开火时保持正确的发送数据图。"
-      },
-      "0.3.0": {
-        "en": "see https://www.npmjs.com/package/iobroker.openknx",
-        "de": "https://www.npmjs.com/package/iobroker.openknx"
-      }
+    "common": {
+        "name": "openknx",
+        "version": "0.3.2",
+        "news": {
+            "0.3.2": {
+                "en": "feature: sync knx library\nfeature: sync with create adapter 0.2.3\nfeature: update to newer versions of dependant packages\nfeature: setting autoreadEnabled autoread\nbugfix: allow alias generation with missing gateway configuration\nbugfix in knx lib: keep correct order of send datagrams in case of burst write",
+                "de": "feature: sync knx bibliothek\nfeature: sync mit adapter erstellen 0.2.3\nfeature: update auf neuere versionen von abhängigen paketen\nfunktion: autoread einstellen Autoread aktivieren\nbugfix: alias-generation mit fehlender gateway-konfiguration erlauben\nbugfix in knx lib: korrekte reihenfolge des sendens von datengrammen bei burst-schreiben",
+                "ru": "функция: синхронизация knx библиотека\nособенность: синхронизация с созданием адаптера 0.2.3\nфункция: обновление до новых версий зависящих пакетов\nфункция: настройка autoread Включенный автопрочитан\nbugfix: позвольте псевдониму генерации с недостающей конфигурацией шлюза\nbugfix в knx lib: держите правильный порядок отправки данных в случае захоронения напишите",
+                "pt": "característica: biblioteca de sincronização knx\ncaracterística: sincronização com criar adaptador 0.2.3\nrecurso: atualização para versões mais recentes de pacotes dependentes\ncaracterística: definição de autoread Autoread habilitado\nbugfix: permitir a geração de alias com configuração de gateway ausente\nbugfix em knx lib: manter a ordem correta de enviar datagramas em caso de explosão escrever",
+                "nl": "vertaling:\nvertaling:\nvertaling:\nvertaling: Geautoread\nvertaling:\nbewaar de juiste volgorde van het versturen van gegevens in geval van ontploffing",
+                "fr": "fonction: bibliothèque sync knx\nfonction: synchronisation avec adaptateur de création 0.2.3\nfonction: mise à jour de nouvelles versions de paquets dépendants\nfonction: réglage automatique Autoread activé\nbugfix: permettre la génération d'alias avec la configuration de passerelle manquante\nbugfix in knx lib: garder l'ordre correct d'envoyer des datagrammes en cas d'éclatement écrire",
+                "it": "caratteristica: sync knx library\nfunzione: sincronizzare con creare adattatore 0.2.3\nfunzione: aggiornamento alle versioni più recenti dei pacchetti dipendenti\ncaratteristica: impostazione autoread Abilitato autoread\nbugfix: consentire la generazione di alias con la configurazione di gateway mancante\nbugfix in knx lib: mantenere l'ordine corretto di inviare i datagrams in caso di esplosione di scrittura",
+                "es": "función: biblioteca de knx de sincronización\nfunción: sincronización con el adaptador 0,2.3\nfunción: actualización a nuevas versiones de paquetes dependientes\nfunción: ajuste automático Autoread habilitado\nbugfix: permitir la generación de alias con configuración de entrada perdida\nbugfix en knx lib: mantener el orden correcto de enviar datagramas en caso de explosión escribir",
+                "pl": "funkcja: sync knx library\nfunkcja: synchronizacja z tworzeniem adaptatora 0.2.3\ndostępne są nowe wersje pakietów zależnych\nustawa Autoready\ntrąbka: pozwalać aliasowi pokolenie z brakami konfiguracji bramy\nuszkodzenia w knx lib: zachować poprawny porządek wysyłania danych w przypadku rozbłysku",
+                "uk": "русскийукраїнськабеларускаяoʻzbek tilienglish\nфункція: синхронізація з створення адаптера 0.2.3\nфункція: оновлення до нових версій пакетів залежностей\nфункція: налаштування автопродавця Увімкнути автоматичний\nвиправлення помилок: генерація псевдонімів з відсутністю конфігурації шлюзу\nвиправлення помилок в knx lib: зберегти правильний порядок відправки графіків у разі лопу писати",
+                "zh-cn": "特色:复合克日图书馆\n特征:与创造适应力的结合\n特点:更新依赖一揽子计划的新版本\n特征:建立汽车 便携式汽车\nb ugfix:允许产生离散的门户组合\nb knx lib的ugfix:在开火时保持正确的发送数据图。"
+            }
+        },
+        "title": "Open KNX",
+        "titleLang": {
+            "en": "Open KNX",
+            "de": "Open KNX",
+            "ru": "Open KNX",
+            "pt": "Open KNX",
+            "nl": "Open KNX",
+            "fr": "Open KNX",
+            "it": "Open KNX",
+            "es": "Open KNX",
+            "pl": "Open KNX",
+            "zh-cn": "Open KNX"
+        },
+        "desc": {
+            "en": "full featured open-source adapter for KNX",
+            "de": "Kostenloser Open-Source-Adapter, der die KNX Kommunikation über ein IP Gateway ermöglicht.",
+            "ru": "новый бесплатный open-source-адаптер для KNX",
+            "pt": "novo adaptador de código aberto gratuito para KNX",
+            "nl": "nieuwe gratis open-source-adapter voor KNX",
+            "fr": "nouvel adaptateur open-source gratuit pour KNX",
+            "it": "nuovo adattatore open source gratuito per KNX",
+            "es": "nuevo adaptador de código abierto gratuito para KNX",
+            "pl": "nowy darmowy adapter open-source dla KNX",
+            "zh-cn": "用于 KNX 的新免费开源适配器"
+        },
+        "authors": ["Boellner <boellnerboellner@gmail.com>"],
+        "contributors": [],
+        "keywords": ["knx free open source eib"],
+        "license": "GPL-3.0-only",
+        "platform": "Javascript/Node.js",
+        "main": "main.js",
+        "icon": "openknx.png",
+        "enabled": true,
+        "messagebox": true,
+        "subscribe": "messagebox",
+        "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.openknx/master/admin/openknx.png",
+        "readme": "https://github.com/iobroker-community-adapters/ioBroker.openknx/blob/master/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "iot-systems",
+        "compact": true,
+        "connectionType": "local",
+        "dataSource": "push",
+        "adminUI": {
+            "config": "materialize",
+            "tab": "materialize"
+        },
+        "adminTab": {
+            "singleton": true,
+            "name": {
+                "en": "testtitle",
+                "de": "testtitle",
+                "ru": "testtitle",
+                "pt": "testtitle",
+                "nl": "testtitle",
+                "fr": "testtitle",
+                "it": "testtitle",
+                "es": "testtitle",
+                "pl": "testtitle",
+                "zh-cn": "testtitle"
+            },
+            "link": "",
+            "fa-icon": "info"
+        },
+        "eraseOnUpload": true,
+        "plugins": {
+            "sentry": {
+                "dsn": "https://f87a314b36ef451aa291655ae13e2831@sentry.iobroker.net/165"
+            }
+        },
+        "dependencies": [
+            {
+                "js-controller": ">=3.3.22"
+            }
+        ],
+        "globalDependencies": [
+            {
+                "admin": ">=5.0.0"
+            }
+        ],
+        "tier": 2
     },
-    "title": "Open KNX",
-    "titleLang": {
-      "en": "Open KNX",
-      "de": "Open KNX",
-      "ru": "Open KNX",
-      "pt": "Open KNX",
-      "nl": "Open KNX",
-      "fr": "Open KNX",
-      "it": "Open KNX",
-      "es": "Open KNX",
-      "pl": "Open KNX",
-      "zh-cn": "Open KNX"
+    "native": {
+        "autoreadEnabled": true,
+        "gwip": "",
+        "gwipport": "3671",
+        "localInterface": "",
+        "minimumDelay": 50,
+        "aliassRegexp": "[Ss]tat(e|us)(\\.|$)|[Rr]m(\\.|$)|[Rr]ückmeldung(\\.|$)|\\s[Vv]alue(\\.|$)",
+        "aliasSimilarity": 0.9,
+        "aliasPath": "alias.0",
+        "aliasRange": false
     },
-    "desc": {
-      "en": "full featured open-source adapter for KNX",
-      "de": "Kostenloser Open-Source-Adapter, der die KNX Kommunikation über ein IP Gateway ermöglicht.",
-      "ru": "новый бесплатный open-source-адаптер для KNX",
-      "pt": "novo adaptador de código aberto gratuito para KNX",
-      "nl": "nieuwe gratis open-source-adapter voor KNX",
-      "fr": "nouvel adaptateur open-source gratuit pour KNX",
-      "it": "nuovo adattatore open source gratuito per KNX",
-      "es": "nuevo adaptador de código abierto gratuito para KNX",
-      "pl": "nowy darmowy adapter open-source dla KNX",
-      "zh-cn": "用于 KNX 的新免费开源适配器"
-    },
-    "authors": [
-      "Boellner <boellnerboellner@gmail.com>"
-    ],
-    "contributors": [],
-    "keywords": [
-      "knx free open source eib"
-    ],
-    "license": "GPL-3.0-only",
-    "platform": "Javascript/Node.js",
-    "main": "main.js",
-    "icon": "openknx.png",
-    "enabled": true,
-    "messagebox": true,
-    "subscribe": "messagebox",
-    "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.openknx/master/admin/openknx.png",
-    "readme": "https://github.com/iobroker-community-adapters/ioBroker.openknx/blob/master/README.md",
-    "loglevel": "info",
-    "mode": "daemon",
-    "type": "iot-systems",
-    "compact": true,
-    "connectionType": "local",
-    "dataSource": "push",
-    "adminUI": {
-      "config": "materialize",
-      "tab": "materialize"
-    },
-    "adminTab": {
-      "singleton": true,
-      "name": {
-        "en": "testtitle",
-        "de": "testtitle",
-        "ru": "testtitle",
-        "pt": "testtitle",
-        "nl": "testtitle",
-        "fr": "testtitle",
-        "it": "testtitle",
-        "es": "testtitle",
-        "pl": "testtitle",
-        "zh-cn": "testtitle"
-      },
-      "link": "",
-      "fa-icon": "info"
-    },
-    "eraseOnUpload": true,
-    "plugins": {
-      "sentry": {
-        "dsn": "https://f87a314b36ef451aa291655ae13e2831@sentry.iobroker.net/165"
-      }
-    },
-    "dependencies": [
-      {
-        "js-controller": ">=3.3.22"
-      }
-    ],
-    "globalDependencies": [
-      {
-        "admin": ">=5.0.0"
-      }
-    ],
-    "tier": 2
-  },
-  "native": {
-    "autoreadEnabled": true,
-    "gwip": "",
-    "gwipport": "3671",
-    "localInterface": "",
-    "minimumDelay": 50,
-    "aliassRegexp": "[Ss]tat(e|us)(\\.|$)|[Rr]m(\\.|$)|[Rr]ückmeldung(\\.|$)|\\s[Vv]alue(\\.|$)",
-    "aliasSimilarity": 0.9,
-    "aliasPath": "alias.0",
-    "aliasRange": false
-  },
-  "objects": [],
-  "instanceObjects": [
-    {
-      "_id": "info",
-      "type": "channel",
-      "common": {
-        "name": "Information"
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.connection",
-      "type": "state",
-      "common": {
-        "role": "indicator.connected",
-        "name": "KNX Gateway connected",
-        "type": "boolean",
-        "read": true,
-        "write": false,
-        "def": false
-      },
-      "native": {}
-    }
-  ]
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "KNX Gateway connected",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        }
+    ]
 }
