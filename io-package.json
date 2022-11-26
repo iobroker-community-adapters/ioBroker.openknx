@@ -64,23 +64,6 @@
             "config": "materialize",
             "tab": "materialize"
         },
-        "adminTab": {
-            "singleton": true,
-            "name": {
-                "en": "testtitle",
-                "de": "testtitle",
-                "ru": "testtitle",
-                "pt": "testtitle",
-                "nl": "testtitle",
-                "fr": "testtitle",
-                "it": "testtitle",
-                "es": "testtitle",
-                "pl": "testtitle",
-                "zh-cn": "testtitle"
-            },
-            "link": "",
-            "fa-icon": "info"
-        },
         "eraseOnUpload": true,
         "plugins": {
             "sentry": {

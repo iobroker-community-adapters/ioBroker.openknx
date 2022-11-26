@@ -100,51 +100,51 @@ The whole name including path is used to check for similarity.
 
 ## migrate Node Red
 
-- in right side menu, select Export
-- select All Flows, Download
-- in text editor replace knx.0. with openknx.0.
-- right side menu, select import
-- select changed file
-- in the dialog select Flows (Subflows, Configuration-Nodes only if they are affected) -> new tabs get added
-- delete old flows manually
+-   in right side menu, select Export
+-   select All Flows, Download
+-   in text editor replace knx.0. with openknx.0.
+-   right side menu, select import
+-   select changed file
+-   in the dialog select Flows (Subflows, Configuration-Nodes only if they are affected) -> new tabs get added
+-   delete old flows manually
 
 ## migrate VIS
 
-- Open Vis Editor
-- Setup -> Projekt-Export/import -> Exportieren normal
-- Open Zip File and vis-views.json in an editor
-- Search Replace knx.0. with openknx.0.
-- Compress vis-views.json and vis-user.css in a zip file
-- Setup -> Projekt-Export/import -> Import
-- Move zip file in Drop Area
-- Projektname = main
-- Import project
+-   Open Vis Editor
+-   Setup -> Projekt-Export/import -> Exportieren normal
+-   Open Zip File and vis-views.json in an editor
+-   Search Replace knx.0. with openknx.0.
+-   Compress vis-views.json and vis-user.css in a zip file
+-   Setup -> Projekt-Export/import -> Import
+-   Move zip file in Drop Area
+-   Projektname = main
+-   Import project
 
 ## migrate Scripts
 
-- Open Scripts
-- 3 dots -> Export all scripts
-- Open Zip File and open the folder in a editor
-- Search Replace knx.0 with openknx.0
-- compress all changed files in a zip file
-- 3 dots ->Import scripts
-- Move zip file in Drop Area
+-   Open Scripts
+-   3 dots -> Export all scripts
+-   Open Zip File and open the folder in a editor
+-   Search Replace knx.0 with openknx.0
+-   compress all changed files in a zip file
+-   3 dots ->Import scripts
+-   Move zip file in Drop Area
 
 ## migrate Grafana
 
-- go through all dashboards and select share - export - save to file
-- in text editor replace knx.0. with openknx.0.
-- To import a dashboard click the + icon in the side menu, and then click Import.
-- From here you can upload a dashboard JSON file
-- select Import (Overwrite)
+-   go through all dashboards and select share - export - save to file
+-   in text editor replace knx.0. with openknx.0.
+-   To import a dashboard click the + icon in the side menu, and then click Import.
+-   From here you can upload a dashboard JSON file
+-   select Import (Overwrite)
 
 ## migrate Influx
 
-- login to your IOBroker server with command influx
-- use iobroker (or your specific database listed via command show databases)
-- list entries with: show measurements
-- copy tables with command: select \* into "entry_new" from "entry_old";
-- set influx enabled for new object entry_new
+-   login to your IOBroker server with command influx
+-   use iobroker (or your specific database listed via command show databases)
+-   list entries with: show measurements
+-   copy tables with command: select \* into "entry_new" from "entry_old";
+-   set influx enabled for new object entry_new
 
 # howto use the adapter & basic concept
 
@@ -177,37 +177,37 @@ Autoread is set to false where it is clear from the DPT that this is a trigger s
 
 ```json
 {
-  "_id": "path.and.name.to.object", // derieved from the KNX structure
-  "type": "state",
-  "common": {
-    // values here can be interpreted by iobroker
-    "desc": "Basetype: 1-bit value, Subtype: switch", // informative, from dpt
-    "name": "Aussen Melder Licht schalten", // informative description from ets export
-    "read": true, // default set, if false incoming bus values are not updating the object
-    "role": "state", // default state, derieved from DPT
-    "type": "boolean", // boolean, number, string, object, derieved from dpt
-    "unit": "", // derived from dpt
-    "write": true // default true, if set change on object is triggering knx write, succ. write sets then ack flag to true
-  },
-  "native": {
-    // values here can be interpreted by openknx adapter
-    "address": "0/1/2", // knx group address
-    "answer_groupValueResponse": false, // default false, if set to true adapter responds with value on GroupValue_Read
-    "autoread": true, // default true for non trigger signals , adapter sends a GroupValue_read on start to sync its states
-    "bitlength": 1, // size ob knx data, derived from dpt
-    "dpt": "DPT1.001", // DPT
-    "encoding": {
-      // informative
-      "0": "Off",
-      "1": "On"
+    "_id": "path.and.name.to.object", // derieved from the KNX structure
+    "type": "state",
+    "common": {
+        // values here can be interpreted by iobroker
+        "desc": "Basetype: 1-bit value, Subtype: switch", // informative, from dpt
+        "name": "Aussen Melder Licht schalten", // informative description from ets export
+        "read": true, // default set, if false incoming bus values are not updating the object
+        "role": "state", // default state, derieved from DPT
+        "type": "boolean", // boolean, number, string, object, derieved from dpt
+        "unit": "", // derived from dpt
+        "write": true // default true, if set change on object is triggering knx write, succ. write sets then ack flag to true
     },
-    "force_encoding": "", // informative
-    "signedness": "", // informative
-    "valuetype": "basic" // composite means set via a specific javascript object
-  },
-  "from": "system.adapter.openknx.0",
-  "user": "system.user.admin",
-  "ts": 1638913951639
+    "native": {
+        // values here can be interpreted by openknx adapter
+        "address": "0/1/2", // knx group address
+        "answer_groupValueResponse": false, // default false, if set to true adapter responds with value on GroupValue_Read
+        "autoread": true, // default true for non trigger signals , adapter sends a GroupValue_read on start to sync its states
+        "bitlength": 1, // size ob knx data, derived from dpt
+        "dpt": "DPT1.001", // DPT
+        "encoding": {
+            // informative
+            "0": "Off",
+            "1": "On"
+        },
+        "force_encoding": "", // informative
+        "signedness": "", // informative
+        "valuetype": "basic" // composite means set via a specific javascript object
+    },
+    "from": "system.adapter.openknx.0",
+    "user": "system.user.admin",
+    "ts": 1638913951639
 }
 ```
 
@@ -334,24 +334,24 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 # Features
 
-- stable and reliable knx stack
-- Automatic encoding/deconding of KNX datagrams for most importants DPTs, raw read and write for other DPTs
-- support of KNX group value read and group value write and group value response
-- free open source
-- no dependencies to cloud services, runs without internet access
-- Autoread on start
-- fast import of group addresses in XML format
-- create joint alias objects that react on status inputs
+-   stable and reliable knx stack
+-   Automatic encoding/deconding of KNX datagrams for most importants DPTs, raw read and write for other DPTs
+-   support of KNX group value read and group value write and group value response
+-   free open source
+-   no dependencies to cloud services, runs without internet access
+-   Autoread on start
+-   fast import of group addresses in XML format
+-   create joint alias objects that react on status inputs
 
 # Known Problems
 
-- none
+-   none
 
 # Limitations
 
-- ETS 4 export file format is not supported
-- KNX secure is not supported
-- only IPv4 supported
+-   ETS 4 export file format is not supported
+-   KNX secure is not supported
+-   only IPv4 supported
 
 ## Changelog
 
@@ -364,198 +364,200 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 ### **WORK IN PROGRESS**
 
+-   cleanup, remve admin tab
+
 ### 0.3.2 (2022-11-20)
 
-- feature: sync knx library
-- feature: sync with create adapter 0.2.3
-- feature: update to newer versions of dependant packages
-- feature: setting autoreadEnabled autoread
-- bugfix: allow alias generation with missing gateway configuration
-- bugfix in knx lib: keep correct order of send datagrams in case of burst write
+-   feature: sync knx library
+-   feature: sync with create adapter 0.2.3
+-   feature: update to newer versions of dependant packages
+-   feature: setting autoreadEnabled autoread
+-   bugfix: allow alias generation with missing gateway configuration
+-   bugfix in knx lib: keep correct order of send datagrams in case of burst write
 
 ### 0.2.7 (2022-08-26)
 
-- bugfix: fix issue with writing to dpt 19 object
+-   bugfix: fix issue with writing to dpt 19 object
 
 ### 0.2.6 (2022-07-09)
 
-- bugfix: fix filtering of addresses 1.1.1
+-   bugfix: fix filtering of addresses 1.1.1
 
 ### 0.2.5 (2022-06-22)
 
-- feature: option remove existing KNX objects that are not in import file
+-   feature: option remove existing KNX objects that are not in import file
 
 ### 0.2.4 (2022-05-27)
 
-- feature: cleanly disconnect on shutdown, upgrade to knx lib 2.5.2
+-   feature: cleanly disconnect on shutdown, upgrade to knx lib 2.5.2
 
 ### 0.2.2 (2022-05-26)
 
-- feature: writing to bus l_data.con creates a ack on the iobroker object if successful (the knx conf flag unset) #133
-- bugfix: remove manual Physical KNX address dialog, use 0.0.0 instead
-- bugfix: remove error log when answering to GroupValueRead: #183
-- bugfix: improve warning logs on intended and unintended disconnects
+-   feature: writing to bus l_data.con creates a ack on the iobroker object if successful (the knx conf flag unset) #133
+-   bugfix: remove manual Physical KNX address dialog, use 0.0.0 instead
+-   bugfix: remove error log when answering to GroupValueRead: #183
+-   bugfix: improve warning logs on intended and unintended disconnects
 
 ### 0.1.25 (2022-04-18)
 
-- feature: datatype check for raw value
-- feature: check if knx is connected before usage
-- bugfix: if update ack after write, use correct timestamp and set adapter as user
-- bugfix: remove enless loop if event received before initialisation
+-   feature: datatype check for raw value
+-   feature: check if knx is connected before usage
+-   bugfix: if update ack after write, use correct timestamp and set adapter as user
+-   bugfix: remove enless loop if event received before initialisation
 
 ### 0.1.24 (2022-03-31)
 
-- feature: support for latin1 charset in dpt16
+-   feature: support for latin1 charset in dpt16
 
 ### 0.1.23 (2022-03-19)
 
-- feature: change default regexp for alias
-- feature: new option to set ack flag when application writes to object
-- feature: supportes knx device scan in iobroker.discovery 2.8.0
-- bugfix: min max common object values only for number
+-   feature: change default regexp for alias
+-   feature: new option to set ack flag when application writes to object
+-   feature: supportes knx device scan in iobroker.discovery 2.8.0
+-   bugfix: min max common object values only for number
 
 ### 0.1.22 (2022-02-26)
 
-- bufix: repair reception error
+-   bufix: repair reception error
 
 ### 0.1.21 (2022-02-25)
 
-- feature: dont sent ack request in ldata.ind, this is disturbing clients if not filtered out by gateway
-- bugfix: reinit if event received before connection established to avoid deadlock
-- dependency:adapter core must be 2.6.0 or higher
+-   feature: dont sent ack request in ldata.ind, this is disturbing clients if not filtered out by gateway
+-   bugfix: reinit if event received before connection established to avoid deadlock
+-   dependency:adapter core must be 2.6.0 or higher
 
 ### 0.1.20 (2022-02-19)
 
-- feature: add more dpts
-- bugfix: corrected some min max values
-- bugfix: some unhandeled dpts could not be received
-- bugfix: fix import
-- bugfix: min max values
+-   feature: add more dpts
+-   bugfix: corrected some min max values
+-   bugfix: some unhandeled dpts could not be received
+-   bugfix: fix import
+-   bugfix: min max values
 
 ### 0.1.19 (2022-02-11)
 
-- feature: allow usage of same KNX GAs in multiple objects
-- bugfix: less warnings in alias generation
-- bugfix: adapter reset after project import
+-   feature: allow usage of same KNX GAs in multiple objects
+-   bugfix: less warnings in alias generation
+-   bugfix: adapter reset after project import
 
 ### 0.1.18 (2022-01-30)
 
-- bugfix: issue #61 Alias dialog not working 1st time
+-   bugfix: issue #61 Alias dialog not working 1st time
 
 ### 0.1.17 (2022-01-29)
 
-- feature: more information in alias import dialog
-- feature: warning on startup if ga are inconsistent
-- fix: corrected object count statistics on startup
+-   feature: more information in alias import dialog
+-   feature: warning on startup if ga are inconsistent
+-   fix: corrected object count statistics on startup
 
 ### 0.1.16 (2022-01-27)
 
-- feature: add back sentry
-- fix: stability alias generation
-- fix: better input settings plausibilization in admin
-- fix: reset after settings change was broken, dont reset for alias change
+-   feature: add back sentry
+-   fix: stability alias generation
+-   fix: better input settings plausibilization in admin
+-   fix: reset after settings change was broken, dont reset for alias change
 
 ### 0.1.15 (2022-01-23)
 
-- feature: more sanity checks for gui
-- feature: issue #84, add openknx to discovery adapter
-- feature: issue #82, warnings on import of duplicate ga addresses, also check iob object for duplicates
-- fix: issue #87, added q interface to trigger GroupValue_Read, comments are overwritten in javascript adapter
-- fix: remove currently unused reference to sentry
+-   feature: more sanity checks for gui
+-   feature: issue #84, add openknx to discovery adapter
+-   feature: issue #82, warnings on import of duplicate ga addresses, also check iob object for duplicates
+-   fix: issue #87, added q interface to trigger GroupValue_Read, comments are overwritten in javascript adapter
+-   fix: remove currently unused reference to sentry
 
 ### 0.1.14 (2022-01-08)
 
-- feature: autodetect the KNX IP interface parameters
-- feature: create warning if DPT of alias pair does not match
-- feature: create warning in log in case of possible data loss if gateway disconnects
-- feature: better gui for import status, newline per warning, count number of succeeding ga's
-- fix: local ip interface in admin was not taken
-- fix: default regexp for status ga's corrected to match common nomenclature
+-   feature: autodetect the KNX IP interface parameters
+-   feature: create warning if DPT of alias pair does not match
+-   feature: create warning in log in case of possible data loss if gateway disconnects
+-   feature: better gui for import status, newline per warning, count number of succeeding ga's
+-   fix: local ip interface in admin was not taken
+-   fix: default regexp for status ga's corrected to match common nomenclature
 
 ### 0.1.13 (2021-12-30)
 
-- bugfix: state.value of of type object must be serialized
-- bugfix: alias algorithm error handling, takover more info to alias
+-   bugfix: state.value of of type object must be serialized
+-   bugfix: alias algorithm error handling, takover more info to alias
 
 ### 0.1.12 (2021-12-30)
 
-- feature: improve alias status search algorithm, add units
-- feature: notify user after import if no dpt subtype is set
-- fix: library did not allow to write possible 0 values to certain dpts
-- fix: admin dialog ui fixes, better presentation of some warnings
+-   feature: improve alias status search algorithm, add units
+-   feature: notify user after import if no dpt subtype is set
+-   fix: library did not allow to write possible 0 values to certain dpts
+-   fix: admin dialog ui fixes, better presentation of some warnings
 
 ### 0.1.11 (2021-12-28)
 
-- feature: remove more scene DPTs from default autoread
-- feature: sends GroupValue_Response on GroupValue_Read if configured
-- feature: admin dialog with option to generate aliases (beta)
-- feature: admin dialog reactivates after adapter reset
-- feature: add support for DPT 7.600
-- feature: show logs of knx library
-- fix: filter out logs with device address bus interactions
-- fix: filter ga names that are forbidden in IOB
-- fix: reply with GroupValue_Response on request, not with GroupValue_Write
-- fix: remove more scene dpts from autoread
+-   feature: remove more scene DPTs from default autoread
+-   feature: sends GroupValue_Response on GroupValue_Read if configured
+-   feature: admin dialog with option to generate aliases (beta)
+-   feature: admin dialog reactivates after adapter reset
+-   feature: add support for DPT 7.600
+-   feature: show logs of knx library
+-   fix: filter out logs with device address bus interactions
+-   fix: filter ga names that are forbidden in IOB
+-   fix: reply with GroupValue_Response on request, not with GroupValue_Write
+-   fix: remove more scene dpts from autoread
 
 ### 0.1.10 (2021-12-24)
 
-- fix: interface to write objects corrected
+-   fix: interface to write objects corrected
 
 ### 0.1.9 (2021-12-22)
 
-- fix: algorith to generate the iob objects improved
-- fix: min max removed for boolean
-- fix: ackqnowledgement handling
-- removed feature: override path of knx objects
-- feature: new logo
+-   fix: algorith to generate the iob objects improved
+-   fix: min max removed for boolean
+-   fix: ackqnowledgement handling
+-   removed feature: override path of knx objects
+-   feature: new logo
 
 ### 0.1.8
 
-- (tombox) feature: changed ui and many fixes
-- (boellner) feature: skip wrong initial disconnect warning
-- (boellner) feature: add translation
-- (boellner) doc: github ci pipleline, testing
+-   (tombox) feature: changed ui and many fixes
+-   (boellner) feature: skip wrong initial disconnect warning
+-   (boellner) feature: add translation
+-   (boellner) doc: github ci pipleline, testing
 
 ### 0.1.6
 
-- (boellner) fix: missing dependencies
+-   (boellner) fix: missing dependencies
 
 ### 0.1.5
 
-- (boellner) feature: corrected adapter status info.connection (green, yellow, red indicator)
-- (boellner) fix: remove default fallback ip settings from stack to get error message on missing configuration
-- (boellner) fix: autoread
-- (boellner) fix: finding non knx objects int tree leading to problems on startup
+-   (boellner) feature: corrected adapter status info.connection (green, yellow, red indicator)
+-   (boellner) fix: remove default fallback ip settings from stack to get error message on missing configuration
+-   (boellner) fix: autoread
+-   (boellner) fix: finding non knx objects int tree leading to problems on startup
 
 ### 0.1.3
 
-- (boellner) feature: state roles now set to best match for some elements, default is state
-- (boellner) feature: exclude scene dtc (trigger) from autoread
-- (boellner) doc: corrected warwings reported by https://adapter-check.iobroker.in/
-- (boellner) fix: improve ui of admin dialog
-- (boellner) fix: project import, now continue to write iob objects in case of incorrect input file
+-   (boellner) feature: state roles now set to best match for some elements, default is state
+-   (boellner) feature: exclude scene dtc (trigger) from autoread
+-   (boellner) doc: corrected warwings reported by https://adapter-check.iobroker.in/
+-   (boellner) fix: improve ui of admin dialog
+-   (boellner) fix: project import, now continue to write iob objects in case of incorrect input file
 
 ### 0.1.2
 
-- (boellner) doc: initial test release
+-   (boellner) doc: initial test release
 
 ### 0.0.19
 
-- (boellner) feature: display warning on ga import file errors
+-   (boellner) feature: display warning on ga import file errors
 
 ### 0.0.17
 
-- (boellner) feature: raw value handling, can now write and receive ga of unsupported dpt
-- (boellner) bugfix: setting onlyAddNewObjects fixed
-- (boellner) feature: adapter restart after import
+-   (boellner) feature: raw value handling, can now write and receive ga of unsupported dpt
+-   (boellner) bugfix: setting onlyAddNewObjects fixed
+-   (boellner) feature: adapter restart after import
 
 ### 0.0.14
 
-- (boellner) feature: import ga xml
+-   (boellner) feature: import ga xml
 
 ### initial version
 
-- initial version from https://www.npmjs.com/package/iobroker.knx/v/0.8.3
+-   initial version from https://www.npmjs.com/package/iobroker.knx/v/0.8.3
 
 ## License
 
