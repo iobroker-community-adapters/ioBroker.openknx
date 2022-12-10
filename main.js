@@ -37,8 +37,6 @@ class openknx extends utils.Adapter {
         this.on("unload", this.onUnload.bind(this));
 
         this.mynamespace = this.namespace;
-        this.sentryInstance = null;
-        this.Sentry = null;
         this.knxConnection;
         this.knx = knx;
 
@@ -49,10 +47,10 @@ class openknx extends utils.Adapter {
                 if (args.indexOf("deferring outbound_TUNNELING_REQUEST") !== -1) {
                     return;
                 } else if (args.indexOf("empty internal fsm queue due to inbound_DISCONNECT_REQUEST") !== -1) {
-                    //this.log.warn("possible data loss due to gateway reset, consider increasing frame delay");
+                    //this.log.warn("possible data loss due to gateway reset, consider increasing minimum send delay between two frames");
                 }
 
-                if (args.indexOf("[debug]") !== -1) {
+                if (args.indexOf("[debug]") !== -1 || args.indexOf("[trace]") !== -1) {
                     this.log.silly(args);
                 } else if (args.indexOf("[info]") !== -1) {
                     this.log.info(args);
@@ -60,16 +58,13 @@ class openknx extends utils.Adapter {
                     this.log.warn(args);
                 } else if (args.indexOf("[error]") !== -1) {
                     this.log.error(args);
-                    if (this.sentryInstance) {
-                        this.Sentry &&
-                            this.Sentry.withScope((scope) => {
-                                scope.setLevel("error");
-                                scope.setExtra("error message", args);
-                                this.Sentry.captureMessage("knx library error event", "error");
-                            });
+                    if (this.getSentry()) {
+                        this.getSentry().withScope((scope) => {
+                            scope.setLevel("error");
+                            scope.setExtra("error message", args);
+                            this.getSentry().captureMessage("knx library error event", "error");
+                        });
                     }
-                } else if (args.indexOf("[trace]") !== -1) {
-                    this.log.silly(args);
                 } else {
                     //dont forward all other internal console.logs
                     //this.log.info(args);
@@ -83,18 +78,11 @@ class openknx extends utils.Adapter {
      */
     async onReady() {
         // adapter initialization
-        if (this.supportsFeature && this.supportsFeature("PLUGINS")) {
-            const sentryInstance = this.getPluginInstance("sentry");
-            if (sentryInstance) {
-                const Sentry = sentryInstance.getSentryObject();
-                if (Sentry) {
-                    Sentry.init({
-                        //environment: "development", //"production"
-                        environment: "production",
-                    });
-                }
-            }
-        }
+
+        this.getSentry()?.Sentry.init({
+            //"development" or "production"
+            //environment: "production",
+        });
 
         //after installation
         if (tools.isEmptyObject(this.config)) {
@@ -430,8 +418,8 @@ class openknx extends utils.Adapter {
         } else {
             const error = "trap - missing logic for undhandeled dpt: " + dpt;
             console.warn(error);
-            if (this.sentryInstance) {
-                this.sentryInstance.getSentryObject().captureException(error);
+            if (this.getSentry()) {
+                this.getSentry().captureException(error);
             }
         }
 
@@ -440,14 +428,6 @@ class openknx extends utils.Adapter {
             //interface to trigger GrouValue_Read is this comment or null
             this.log.debug("Outbound GroupValue_Read to " + ga);
             this.knxConnection.read(ga);
-            if (this.sentryInstance) {
-                this.Sentry &&
-                    this.Sentry.withScope((scope) => {
-                        scope.setLevel("info");
-                        scope.setExtra("GroupValue_Read", state.c + " " + state.q);
-                        this.Sentry.captureMessage("GroupValue_Read", "info");
-                    });
-            }
             return "read";
         } else if (this.gaList.getDataById(id).common.write) {
             this.log.debug(
@@ -604,7 +584,9 @@ class openknx extends utils.Adapter {
                                             try {
                                                 // @ts-ignore
                                                 stateval = JSON.parse(state.val);
-                                            } catch (e) {}
+                                            } catch (e) {
+                                                /* empty */
+                                            }
                                             this.knxConnection.respond(
                                                 dest,
                                                 stateval,
@@ -707,7 +689,6 @@ class openknx extends utils.Adapter {
     }
 
     main(startKnxConnection) {
-        
         if (!this.config.gwip) {
             this.log.warn("Gateway IP is missing please enter Gateway IP in the instance settings.");
             startKnxConnection = false;
@@ -721,7 +702,7 @@ class openknx extends utils.Adapter {
                     this.config.minimumDelay +
                     "ms debug level: " +
                     this.log.level,
-        );
+            );
         this.log.info(utils.controllerDir);
         this.setState("info.connection", false, true);
 
@@ -769,6 +750,15 @@ class openknx extends utils.Adapter {
                 }
             },
         );
+    }
+
+    getSentry() {
+        if (this.supportsFeature && this.supportsFeature("PLUGINS")) {
+            const sentryInstance = this.getPluginInstance("sentry");
+            if (sentryInstance) {
+                return sentryInstance.getSentryObject();
+            }
+        }
     }
 }
 

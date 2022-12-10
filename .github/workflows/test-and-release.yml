@@ -94,3 +94,5 @@ jobs:
                   sentry-version-prefix: "iobroker.openknx"
                   # If your sentry project is linked to a GitHub repository, you can enable the following option
                   sentry-github-integration: true
+
+                  environment: production
