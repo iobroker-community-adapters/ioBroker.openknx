@@ -44,7 +44,7 @@ The interface that is connected to the KNX IP gateway.
 
 Searches via a standardized protocol all available KNX IP Gateways on the given network interface.
 
-### Frame delay [ms]
+### Minimum send delay between two frames [ms]
 
 This settings protects the KNX bus from data flooding by limiting data frames to a certain rate.
 Not sent frames are delay until the delay time since last send on bus is elapsed. If more send requests are waiting, send order is random.
@@ -74,6 +74,17 @@ Hint on ETS configuration:
 If you have different DPT Subtypes for the GA and in the communication objets that use this GA, then the ETS seems to use the DPT Type with the lowest number.
 In this case manually ensure that all elements are using the same desired datatype.  
 A GA without DPT basetype cannot be imported with this adapter. ETS4 projects must be converted into ETS5 or later and the DPT must be set to the GA.
+
+### Group Address Style
+The style only defines the appearance of the Group Address in the ETS user interface. The following styles are available:
+
+	Presentation Style	Name	                Example	
+1	3-Level	            Main/Middle/Subgroup    1/3/5
+2	2-Level	            Main Group/Subgroup     1/25
+3	Free-Level	        Subgroup                300
+
+The adapter supports all 3 style configurations in the project import xml file. For storing in the IOB object, the format is always converted into the 3-level form.
+Please note that the combined ga and group name must be unique for the IOB object tree. Having for example an ETS configuration with two middle groups of the same name will result in a joint hierarchy element and having two identically named gas in there will result into an error.
 
 ### Alias
 
@@ -342,6 +353,7 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 -   Autoread on start
 -   fast import of group addresses in XML format
 -   create joint alias objects that react on status inputs
+-   supports project of all possible group address styles
 
 # Known Problems
 
@@ -364,7 +376,14 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 ### **WORK IN PROGRESS**
 
--   cleanup, remve admin tab
+-   feature: support for Free and Two Level Group Address Style in addition to the existing Three Level support #320
+-   feature: map knx datapoint type enconding to object common.states #313
+-   debug message send queue size
+-
+-   cleanup, remve admin tab -todo test
+    -sentry logs testen
+    -test:integration wieder in betrieb
+-
 
 ### 0.3.2 (2022-11-20)
 
