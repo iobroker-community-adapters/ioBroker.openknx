@@ -76,12 +76,14 @@ In this case manually ensure that all elements are using the same desired dataty
 A GA without DPT basetype cannot be imported with this adapter. ETS4 projects must be converted into ETS5 or later and the DPT must be set to the GA.
 
 ### Group Address Style
+
 The style only defines the appearance of the Group Address in the ETS user interface. The following styles are available:
 
-	Presentation Style	Name	                Example	
-1	3-Level	            Main/Middle/Subgroup    1/3/5
-2	2-Level	            Main Group/Subgroup     1/25
-3	Free-Level	        Subgroup                300
+    Presentation Style	Name	                Example
+
+1 3-Level Main/Middle/Subgroup 1/3/5
+2 2-Level Main Group/Subgroup 1/25
+3 Free-Level Subgroup 300
 
 The adapter supports all 3 style configurations in the project import xml file. For storing in the IOB object, the format is always converted into the 3-level form.
 Please note that the combined ga and group name must be unique for the IOB object tree. Having for example an ETS configuration with two middle groups of the same name will result in a joint hierarchy element and having two identically named gas in there will result into an error.
@@ -378,12 +380,7 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 -   feature: support for Free and Two Level Group Address Style in addition to the existing Three Level support #320
 -   feature: map knx datapoint type enconding to object common.states #313
--   debug message send queue size
--
--   cleanup, remve admin tab -todo test
-    -sentry logs testen
-    -test:integration wieder in betrieb
--
+-   debug message for send queue size
 
 ### 0.3.2 (2022-11-20)
 
