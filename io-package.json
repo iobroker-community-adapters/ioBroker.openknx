@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "news": {
+      "0.4.1": {
+        "en": "bugfix: fix statup issue\nfeature: add support for more datatypes",
+        "de": "bugfix: statup problem beheben\nfeature: unterstützung für weitere datentypen hinzufügen",
+        "ru": "bugfix: исправить проблему статупа\nфункция: добавить поддержку для больше типов данных",
+        "pt": "bugfix: corrigir problema legal\nrecurso: adicionar suporte para mais tipos de dados",
+        "nl": "vertaling:\nvertaling:",
+        "fr": "bugfix: fix statup issue\nfonction: ajouter le support pour plus de types de données",
+        "it": "bugfix: risolvere problema di statup\nfunzione: aggiungere supporto per più tipi di dati",
+        "es": "bugfix: solucionar el problema de statup\nfunción: añadir soporte para más tipos de datos",
+        "pl": "trąbka\nfunkcja: dodanie wsparcia dla większej liczby typów danych",
+        "uk": "виправлення помилок\nфункція: додавати підтримку більше типів даних",
+        "zh-cn": "bugfix:固定统计问题\n特点:增加对更多的数据类型的支持"
+      },
       "0.4.0": {
         "en": "feature: support for Free and Two Level Group Address Style in addition to the existing Three Level support #320\nfeature: map knx datapoint type enconding to object common.states #313\ndebug message for send queue size",
         "de": "feature: Unterstützung für Free und Two Level Group Address Style zusätzlich zur vorhandenen Three Level Unterstützung #320\nmerkmal: map knx datapoint type enconding to object common. staaten #313\ndebug-nachricht zum senden von warteschlangengröße",
