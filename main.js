@@ -79,7 +79,7 @@ class openknx extends utils.Adapter {
     async onReady() {
         // adapter initialization
 
-        this.getSentry()?.Sentry.init({
+        this.getSentry()?.Sentry?.init({
             //"development" or "production"
             //environment: "production",
         });
