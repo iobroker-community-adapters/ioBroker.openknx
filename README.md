@@ -377,6 +377,8 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
   * npm run release major/minor/patch major.minor.patch
 -->
 
+### **WORK IN PROGRESS**
+
 -   bugfix: fix statup issue
 -   feature: add support for more datatypes
 
