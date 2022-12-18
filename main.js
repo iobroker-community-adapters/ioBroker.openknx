@@ -383,14 +383,15 @@ class openknx extends utils.Adapter {
         //plausibilize against configured datatype
         if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type == "boolean") {
             knxVal = knxVal ? true : false;
-        } else if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type == "number") {
+        } else if (
+            this.gaList?.getDataById(id)?.common?.type == "number" ||
+            this.gaList?.getDataById(id)?.common?.type == "enum"
+        ) {
             if (isNaN(Number(knxVal))) {
                 this.log.warn("Value " + knxVal + " for " + id + " is not a number");
             }
             // else take plain value
-        }
-        //convert val into object for certain dpts
-        else if (tools.isDateDPT(dpt)) {
+        } else if (tools.isDateDPT(dpt)) {
             //before composite check, date is possibly composite
             knxVal = new Date(knxVal);
         } else if (this.gaList.getDataById(id).native.valuetype == "composite") {

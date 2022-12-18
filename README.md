@@ -376,6 +376,11 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
   * .... -> this is used by script to generate a new entry, copy after a new release
   * npm run release major/minor/patch major.minor.patch
 -->
+
+### **WORK IN PROGRESS**
+
+-   bugfix: swap value for dpt 1 for enums
+
 ### 0.4.1 (2022-12-17)
 
 -   bugfix: fix statup issue
