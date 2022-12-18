@@ -377,7 +377,8 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
   * .... -> this is used by script to generate a new entry, copy after a new release
   * npm run release major/minor/patch major.minor.patch
 -->
-### 0.4.3 (2022-12-18)
+
+### **WORK IN PROGRESS**
 
 -   bugfix in knx lib: make dpt2 not an enum datatype
 
