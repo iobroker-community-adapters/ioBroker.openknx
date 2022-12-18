@@ -131,7 +131,7 @@
     "gwipport": "3671",
     "localInterface": "",
     "minimumDelay": 50,
-    "aliassRegexp": "[Ss]tat(e|us)(\\.|$)|[Rr]m(\\.|$)|[Rr]ückmeldung(\\.|$)|\\s[Vv]alue(\\.|$)",
+    "aliassRegexp": "stat(e|us)(\\.|$)|rm(\\.|$)|r(ü|ue)ckmeldung(\\.|$)|\\svalue(\\.|$)",
     "aliasSimilarity": 0.9,
     "aliasPath": "alias.0",
     "aliasRange": false

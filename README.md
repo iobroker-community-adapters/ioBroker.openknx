@@ -271,6 +271,7 @@ GroupValue_Read comment does not work for javascript adapter. Use qualityAsNumbe
 | DPT-2     | object                 | {"priority":1 bit,"data":1 bit}                                                                      | -                                         |                                                       |
 | DPT-3     | object                 | {"decr_incr":1 bit,"data":2 bit}                                                                     | -                                         |                                                       |
 | DPT-18    | object                 | {"save_recall":0,"scenenumber":0}                                                                    | -                                         | Datapoint Type DPT_SceneControl removed from autoread |
+|           |                        |                                                                                                      |                                           | save_recall: 0 = recall scene, 1 = save scene         |
 | DPT-21    | object                 | {"outofservice":0,"fault":0,"overridden":0,"inalarm":0,"alarmunack":0}                               | -                                         |                                                       |
 | DPT-232   | object                 | {red:0..255, green:0.255, blue:0.255}                                                                | -                                         |                                                       |
 | DPT-237   | object                 | {"address":0,"addresstype":0,"readresponse":0,"lampfailure":0,"ballastfailure":0,"convertorerror":0} | -                                         |                                                       |
@@ -376,6 +377,11 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
   * .... -> this is used by script to generate a new entry, copy after a new release
   * npm run release major/minor/patch major.minor.patch
 -->
+
+### **WORK IN PROGRESS**
+
+-   bugfix in knx lib: make dpt2 not an enum datatype
+
 ### 0.4.2 (2022-12-18)
 
 -   bugfix: swap value for dpt 1 for enums
