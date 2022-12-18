@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "news": {
+      "0.4.2": {
+        "en": "bugfix: swap value for dpt 1 for enums",
+        "de": "bugfix: swap-wert für dpt 1 für enums",
+        "ru": "bugfix: swap значение для dpt 1 для enums",
+        "pt": "bugfix: valor de swap para dpt 1 para enums",
+        "nl": "verwisselingswaarde voor dup 1",
+        "fr": "bugfix: valeur de swap pour dpt 1 pour enums",
+        "it": "bugfix: valore swap per dpt 1 per enums",
+        "es": "bugfix: cambio de valor para dpt 1 para enums",
+        "pl": "trąbka: zmienna dla dpt 1 dla enum",
+        "uk": "виправлення помилок: значення swap для dpt 1 для enums",
+        "zh-cn": "b ugfix:配量1"
+      },
       "0.4.1": {
         "en": "bugfix: fix statup issue\nfeature: add support for more datatypes",
         "de": "bugfix: statup problem beheben\nfeature: unterstützung für weitere datentypen hinzufügen",
