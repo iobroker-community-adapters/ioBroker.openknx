@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.4.4",
+    "version": "0.4.5",
     "news": {
+      "0.4.5": {
+        "en": "bugfix in knx lib: make dpt2 not an enum datatype",
+        "de": "bugfix in knx lib: dpt2 nicht enum datatype",
+        "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
+        "pt": "bugfix em knx lib: fazer dpt2 não um tipo de dados enum",
+        "nl": "maak dpt2 geen enum datat",
+        "fr": "bugfix in knx lib: make dpt2 not an enum datatype",
+        "it": "bugfix in knx lib: make dpt2 not an enum datatype",
+        "es": "bugfix en knx lib: make dpt2 not an enum datatype",
+        "pl": "uszkodzenia w knx lib: czynić dpt2 nie enum datatype",
+        "uk": "виправлення помилок в knx lib: зробити dpt2 нетипові дані",
+        "zh-cn": "b knx lib的ugfix:d2不含一种全局数据。"
+      },
       "0.4.4": {
         "en": "bugfix in knx lib: make dpt2 not an enum datatype",
         "de": "bugfix in knx lib: dpt2 nicht enum datatype",
