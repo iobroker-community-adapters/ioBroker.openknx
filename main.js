@@ -19,6 +19,7 @@ const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 const detect = require("./lib/openknx.js");
 const os = require("os");
 const exitHook = require("async-exit-hook");
+const { dpt1_control_ga } = require("./lib/knx/test/wiredtests/wiredtest-options.js");
 
 class openknx extends utils.Adapter {
     /**
@@ -336,6 +337,7 @@ class openknx extends utils.Adapter {
             //keep string, boolean and number
             ret = val;
         }
+
         return ret;
     }
 
@@ -560,6 +562,9 @@ class openknx extends utils.Adapter {
                     for (const id of this.gaList.getIdsByGa(dest)) {
                         const data = this.gaList.getDataById(id);
                         const dp = this.gaList.getDpById(id);
+                        const states = Object.freeze(data?.common?.states);
+
+                        let settinghandleasenum = true;
 
                         if (id == undefined || data == undefined || dp == undefined) {
                             //debug trap, should not be reached
@@ -568,6 +573,9 @@ class openknx extends utils.Adapter {
 
                         if (tools.isStringDPT(data.native.dpt)) {
                             convertedVal = dp.current_value;
+                        } else if (states != "undefined" && tools.isBitDPT(data.native.dpt) && settinghandleasenum) {
+                            //if (setting handle b1 dpt1 as enum otherwise as bool) {
+                            convertedVal = +dp.current_value;
                         } else {
                             convertedVal = this.convertType(dp.current_value);
                         }

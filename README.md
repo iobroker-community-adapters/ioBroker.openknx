@@ -211,7 +211,7 @@ Autoread is set to false where it is clear from the DPT that this is a trigger s
         "bitlength": 1, // size ob knx data, derived from dpt
         "dpt": "DPT1.001", // DPT
         "encoding": {
-            // informative
+            // values of the interface if it is an enum DPT type
             "0": "Off",
             "1": "On"
         },
@@ -267,7 +267,7 @@ GroupValue_Read comment does not work for javascript adapter. Use qualityAsNumbe
 
 | KNX DPT   | javascript datatype    | special values                                                                                       | value range                               | remark                                                |
 | --------- | ---------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------- | ----------------------------------------------------- |
-| DPT-1     | boolean                |                                                                                                      | false, true                               |                                                       |
+| DPT-1     | number enum            |                                                                                                      | false, true                               |                                                       |
 | DPT-2     | object                 | {"priority":1 bit,"data":1 bit}                                                                      | -                                         |                                                       |
 | DPT-3     | object                 | {"decr_incr":1 bit,"data":2 bit}                                                                     | -                                         |                                                       |
 | DPT-18    | object                 | {"save_recall":0,"scenenumber":0}                                                                    | -                                         | Datapoint Type DPT_SceneControl removed from autoread |
@@ -377,7 +377,8 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
   * .... -> this is used by script to generate a new entry, copy after a new release
   * npm run release major/minor/patch major.minor.patch
 -->
-### 0.4.4 (2022-12-18)
+
+### **WORK IN PROGRESS**
 
 -   bugfix in knx lib: make dpt2 not an enum datatype
 
