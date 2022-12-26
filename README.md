@@ -50,13 +50,21 @@ This settings protects the KNX bus from data flooding by limiting data frames to
 Not sent frames are delay until the delay time since last send on bus is elapsed. If more send requests are waiting, send order is random.
 If you experience disconnects from your KNX IP Gateway in the log then increase this number.
 
+### use common.type boolean for 1 bit enum instead of number
+
+Use in IOB Object common.type boolean for 1 bit enum instead of number.
+
 ### readout values of autoread iob objects on startup
 
 All IOB objects that are configured with the autoread flag are requested on the bus to be synchronized with IOB.
 
-### Add only new Objects
+### import only GAs that do not exist in IOB objects
 
 If checked, the import will skip overwriting existing communication objects.
+
+### remove existing IOB objects thtat are not in import file
+
+To clean up object tree
 
 ### Import XML from ETS
 
@@ -377,6 +385,12 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
   * .... -> this is used by script to generate a new entry, copy after a new release
   * npm run release major/minor/patch major.minor.patch
 -->
+
+### **WORK IN PROGRESS**
+
+-   feature: use common.type boolean for 1 bit enum instead of number
+    import enum with one bit as common.type mixed and not strict as number
+
 ### 0.4.5 (2022-12-19)
 
 -   bugfix in knx lib: make dpt2 not an enum datatype

@@ -1,202 +1,199 @@
 {
-  "common": {
-    "name": "openknx",
-    "version": "0.4.5",
-    "news": {
-      "0.4.5": {
-        "en": "bugfix in knx lib: make dpt2 not an enum datatype",
-        "de": "bugfix in knx lib: dpt2 nicht enum datatype",
-        "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
-        "pt": "bugfix em knx lib: fazer dpt2 não um tipo de dados enum",
-        "nl": "maak dpt2 geen enum datat",
-        "fr": "bugfix in knx lib: make dpt2 not an enum datatype",
-        "it": "bugfix in knx lib: make dpt2 not an enum datatype",
-        "es": "bugfix en knx lib: make dpt2 not an enum datatype",
-        "pl": "uszkodzenia w knx lib: czynić dpt2 nie enum datatype",
-        "uk": "виправлення помилок в knx lib: зробити dpt2 нетипові дані",
-        "zh-cn": "b knx lib的ugfix:d2不含一种全局数据。"
-      },
-      "0.4.4": {
-        "en": "bugfix in knx lib: make dpt2 not an enum datatype",
-        "de": "bugfix in knx lib: dpt2 nicht enum datatype",
-        "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
-        "pt": "bugfix em knx lib: fazer dpt2 não um tipo de dados enum",
-        "nl": "maak dpt2 geen enum datat",
-        "fr": "bugfix in knx lib: make dpt2 not an enum datatype",
-        "it": "bugfix in knx lib: make dpt2 not an enum datatype",
-        "es": "bugfix en knx lib: make dpt2 not an enum datatype",
-        "pl": "uszkodzenia w knx lib: czynić dpt2 nie enum datatype",
-        "uk": "виправлення помилок в knx lib: зробити dpt2 нетипові дані",
-        "zh-cn": "b knx lib的ugfix:d2不含一种全局数据。"
-      },
-      "0.4.3": {
-        "en": "bugfix in knx lib: make dpt2 not an enum datatype",
-        "de": "bugfix in knx lib: dpt2 nicht enum datatype",
-        "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
-        "pt": "bugfix em knx lib: fazer dpt2 não um tipo de dados enum",
-        "nl": "maak dpt2 geen enum datat",
-        "fr": "bugfix in knx lib: make dpt2 not an enum datatype",
-        "it": "bugfix in knx lib: make dpt2 not an enum datatype",
-        "es": "bugfix en knx lib: make dpt2 not an enum datatype",
-        "pl": "uszkodzenia w knx lib: czynić dpt2 nie enum datatype",
-        "uk": "виправлення помилок в knx lib: зробити dpt2 нетипові дані",
-        "zh-cn": "b knx lib的ugfix:d2不含一种全局数据。"
-      },
-      "0.4.2": {
-        "en": "bugfix: swap value for dpt 1 for enums",
-        "de": "bugfix: swap-wert für dpt 1 für enums",
-        "ru": "bugfix: swap значение для dpt 1 для enums",
-        "pt": "bugfix: valor de swap para dpt 1 para enums",
-        "nl": "verwisselingswaarde voor dup 1",
-        "fr": "bugfix: valeur de swap pour dpt 1 pour enums",
-        "it": "bugfix: valore swap per dpt 1 per enums",
-        "es": "bugfix: cambio de valor para dpt 1 para enums",
-        "pl": "trąbka: zmienna dla dpt 1 dla enum",
-        "uk": "виправлення помилок: значення swap для dpt 1 для enums",
-        "zh-cn": "b ugfix:配量1"
-      },
-      "0.4.1": {
-        "en": "bugfix: fix statup issue\nfeature: add support for more datatypes",
-        "de": "bugfix: statup problem beheben\nfeature: unterstützung für weitere datentypen hinzufügen",
-        "ru": "bugfix: исправить проблему статупа\nфункция: добавить поддержку для больше типов данных",
-        "pt": "bugfix: corrigir problema legal\nrecurso: adicionar suporte para mais tipos de dados",
-        "nl": "vertaling:\nvertaling:",
-        "fr": "bugfix: fix statup issue\nfonction: ajouter le support pour plus de types de données",
-        "it": "bugfix: risolvere problema di statup\nfunzione: aggiungere supporto per più tipi di dati",
-        "es": "bugfix: solucionar el problema de statup\nfunción: añadir soporte para más tipos de datos",
-        "pl": "trąbka\nfunkcja: dodanie wsparcia dla większej liczby typów danych",
-        "uk": "виправлення помилок\nфункція: додавати підтримку більше типів даних",
-        "zh-cn": "bugfix:固定统计问题\n特点:增加对更多的数据类型的支持"
-      },
-      "0.4.0": {
-        "en": "feature: support for Free and Two Level Group Address Style in addition to the existing Three Level support #320\nfeature: map knx datapoint type enconding to object common.states #313\ndebug message for send queue size",
-        "de": "feature: Unterstützung für Free und Two Level Group Address Style zusätzlich zur vorhandenen Three Level Unterstützung #320\nmerkmal: map knx datapoint type enconding to object common. staaten #313\ndebug-nachricht zum senden von warteschlangengröße",
-        "ru": "функция: поддержка Free и Two Level Group Address Style в дополнение к существующей трехуровневой поддержке #320\nособенность: карта knx типа дата-точка, прилагая к объекту общий. штаты #313\ndebug сообщение для отправки размера очереди",
-        "pt": "característica: suporte para o estilo de endereço de grupo livre e de dois níveis, além do suporte de três níveis existente #320\ncaracterística: mapa knx datapoint tipo conding para objeto comum. estados #313\nmensagem de depuração para enviar tamanho de fila",
-        "nl": "quality over Quantity (QoQ) Releases Vertaling:\nplaats: kaartknx datapoint type dat zich voordoet aan objecten. #313\ndebug-bericht voor het verzenden van de grootte",
-        "fr": "fonction: support pour Free and Two Level Group Adresse Style en plus du support de trois niveaux existant #320\nfonction: map knx datapoint type enconding to object common. états no 313\nmessage debug pour envoyer la taille de la queue",
-        "it": "caratteristica: il supporto per Free e Two Level Group Address Style oltre al supporto di tre livelli esistente #320\nfunzione: mappa knx tipo datapoint che incorpora a oggetti comuni. stati #313\ndebug messaggio per inviare la dimensione della coda",
-        "es": "función: soporte para el estilo libre y de dos niveles de dirección del grupo, además del soporte existente de tres niveles #320\ncaracterística: mapa knx datapoint tipo enconding para objeto común. estados #313\nmensaje de depuración para enviar tamaño de cola",
-        "pl": "wygląd: wspieranie Free and Two Level Group Address Style, oprócz istniejącego Trzech poziomów, 320\ncechą charakterystyczną mapy knx jest konsekracja obiektu wspólnego. #313\ndebug message",
-        "uk": "функція: підтримка безкоштовного та дворівневого групового стилю, крім існуючої трирівневої підтримки #320\nфункція: кодування типу кнкс для об'єкта спільного. стани #313\ndebug повідомлення для відправки розміру черги",
-        "zh-cn": "特点:除了现有三级支助第320号行动之外,支持自由和二级组处理Style。\n特征:图千x数据点类型与目标一致。 第313号声明\nd. 发出呼吁规模的信息"
-      },
-      "0.3.2": {
-        "en": "feature: sync knx library\nfeature: sync with create adapter 0.2.3\nfeature: update to newer versions of dependant packages\nfeature: setting autoreadEnabled autoread\nbugfix: allow alias generation with missing gateway configuration\nbugfix in knx lib: keep correct order of send datagrams in case of burst write",
-        "de": "feature: sync knx bibliothek\nfeature: sync mit adapter erstellen 0.2.3\nfeature: update auf neuere versionen von abhängigen paketen\nfunktion: autoread einstellen Autoread aktivieren\nbugfix: alias-generation mit fehlender gateway-konfiguration erlauben\nbugfix in knx lib: korrekte reihenfolge des sendens von datengrammen bei burst-schreiben",
-        "ru": "функция: синхронизация knx библиотека\nособенность: синхронизация с созданием адаптера 0.2.3\nфункция: обновление до новых версий зависящих пакетов\nфункция: настройка autoread Включенный автопрочитан\nbugfix: позвольте псевдониму генерации с недостающей конфигурацией шлюза\nbugfix в knx lib: держите правильный порядок отправки данных в случае захоронения напишите",
-        "pt": "característica: biblioteca de sincronização knx\ncaracterística: sincronização com criar adaptador 0.2.3\nrecurso: atualização para versões mais recentes de pacotes dependentes\ncaracterística: definição de autoread Autoread habilitado\nbugfix: permitir a geração de alias com configuração de gateway ausente\nbugfix em knx lib: manter a ordem correta de enviar datagramas em caso de explosão escrever",
-        "nl": "vertaling:\nvertaling:\nvertaling:\nvertaling: Geautoread\nvertaling:\nbewaar de juiste volgorde van het versturen van gegevens in geval van ontploffing",
-        "fr": "fonction: bibliothèque sync knx\nfonction: synchronisation avec adaptateur de création 0.2.3\nfonction: mise à jour de nouvelles versions de paquets dépendants\nfonction: réglage automatique Autoread activé\nbugfix: permettre la génération d'alias avec la configuration de passerelle manquante\nbugfix in knx lib: garder l'ordre correct d'envoyer des datagrammes en cas d'éclatement écrire",
-        "it": "caratteristica: sync knx library\nfunzione: sincronizzare con creare adattatore 0.2.3\nfunzione: aggiornamento alle versioni più recenti dei pacchetti dipendenti\ncaratteristica: impostazione autoread Abilitato autoread\nbugfix: consentire la generazione di alias con la configurazione di gateway mancante\nbugfix in knx lib: mantenere l'ordine corretto di inviare i datagrams in caso di esplosione di scrittura",
-        "es": "función: biblioteca de knx de sincronización\nfunción: sincronización con el adaptador 0,2.3\nfunción: actualización a nuevas versiones de paquetes dependientes\nfunción: ajuste automático Autoread habilitado\nbugfix: permitir la generación de alias con configuración de entrada perdida\nbugfix en knx lib: mantener el orden correcto de enviar datagramas en caso de explosión escribir",
-        "pl": "funkcja: sync knx library\nfunkcja: synchronizacja z tworzeniem adaptatora 0.2.3\ndostępne są nowe wersje pakietów zależnych\nustawa Autoready\ntrąbka: pozwalać aliasowi pokolenie z brakami konfiguracji bramy\nuszkodzenia w knx lib: zachować poprawny porządek wysyłania danych w przypadku rozbłysku",
-        "uk": "русскийукраїнськабеларускаяoʻzbek tilienglish\nфункція: синхронізація з створення адаптера 0.2.3\nфункція: оновлення до нових версій пакетів залежностей\nфункція: налаштування автопродавця Увімкнути автоматичний\nвиправлення помилок: генерація псевдонімів з відсутністю конфігурації шлюзу\nвиправлення помилок в knx lib: зберегти правильний порядок відправки графіків у разі лопу писати",
-        "zh-cn": "特色:复合克日图书馆\n特征:与创造适应力的结合\n特点:更新依赖一揽子计划的新版本\n特征:建立汽车 便携式汽车\nb ugfix:允许产生离散的门户组合\nb knx lib的ugfix:在开火时保持正确的发送数据图。"
-      }
+    "common": {
+        "name": "openknx",
+        "version": "0.4.5",
+        "news": {
+            "0.4.5": {
+                "en": "bugfix in knx lib: make dpt2 not an enum datatype",
+                "de": "bugfix in knx lib: dpt2 nicht enum datatype",
+                "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
+                "pt": "bugfix em knx lib: fazer dpt2 não um tipo de dados enum",
+                "nl": "maak dpt2 geen enum datat",
+                "fr": "bugfix in knx lib: make dpt2 not an enum datatype",
+                "it": "bugfix in knx lib: make dpt2 not an enum datatype",
+                "es": "bugfix en knx lib: make dpt2 not an enum datatype",
+                "pl": "uszkodzenia w knx lib: czynić dpt2 nie enum datatype",
+                "uk": "виправлення помилок в knx lib: зробити dpt2 нетипові дані",
+                "zh-cn": "b knx lib的ugfix:d2不含一种全局数据。"
+            },
+            "0.4.4": {
+                "en": "bugfix in knx lib: make dpt2 not an enum datatype",
+                "de": "bugfix in knx lib: dpt2 nicht enum datatype",
+                "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
+                "pt": "bugfix em knx lib: fazer dpt2 não um tipo de dados enum",
+                "nl": "maak dpt2 geen enum datat",
+                "fr": "bugfix in knx lib: make dpt2 not an enum datatype",
+                "it": "bugfix in knx lib: make dpt2 not an enum datatype",
+                "es": "bugfix en knx lib: make dpt2 not an enum datatype",
+                "pl": "uszkodzenia w knx lib: czynić dpt2 nie enum datatype",
+                "uk": "виправлення помилок в knx lib: зробити dpt2 нетипові дані",
+                "zh-cn": "b knx lib的ugfix:d2不含一种全局数据。"
+            },
+            "0.4.3": {
+                "en": "bugfix in knx lib: make dpt2 not an enum datatype",
+                "de": "bugfix in knx lib: dpt2 nicht enum datatype",
+                "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
+                "pt": "bugfix em knx lib: fazer dpt2 não um tipo de dados enum",
+                "nl": "maak dpt2 geen enum datat",
+                "fr": "bugfix in knx lib: make dpt2 not an enum datatype",
+                "it": "bugfix in knx lib: make dpt2 not an enum datatype",
+                "es": "bugfix en knx lib: make dpt2 not an enum datatype",
+                "pl": "uszkodzenia w knx lib: czynić dpt2 nie enum datatype",
+                "uk": "виправлення помилок в knx lib: зробити dpt2 нетипові дані",
+                "zh-cn": "b knx lib的ugfix:d2不含一种全局数据。"
+            },
+            "0.4.2": {
+                "en": "bugfix: swap value for dpt 1 for enums",
+                "de": "bugfix: swap-wert für dpt 1 für enums",
+                "ru": "bugfix: swap значение для dpt 1 для enums",
+                "pt": "bugfix: valor de swap para dpt 1 para enums",
+                "nl": "verwisselingswaarde voor dup 1",
+                "fr": "bugfix: valeur de swap pour dpt 1 pour enums",
+                "it": "bugfix: valore swap per dpt 1 per enums",
+                "es": "bugfix: cambio de valor para dpt 1 para enums",
+                "pl": "trąbka: zmienna dla dpt 1 dla enum",
+                "uk": "виправлення помилок: значення swap для dpt 1 для enums",
+                "zh-cn": "b ugfix:配量1"
+            },
+            "0.4.1": {
+                "en": "bugfix: fix statup issue\nfeature: add support for more datatypes",
+                "de": "bugfix: statup problem beheben\nfeature: unterstützung für weitere datentypen hinzufügen",
+                "ru": "bugfix: исправить проблему статупа\nфункция: добавить поддержку для больше типов данных",
+                "pt": "bugfix: corrigir problema legal\nrecurso: adicionar suporte para mais tipos de dados",
+                "nl": "vertaling:\nvertaling:",
+                "fr": "bugfix: fix statup issue\nfonction: ajouter le support pour plus de types de données",
+                "it": "bugfix: risolvere problema di statup\nfunzione: aggiungere supporto per più tipi di dati",
+                "es": "bugfix: solucionar el problema de statup\nfunción: añadir soporte para más tipos de datos",
+                "pl": "trąbka\nfunkcja: dodanie wsparcia dla większej liczby typów danych",
+                "uk": "виправлення помилок\nфункція: додавати підтримку більше типів даних",
+                "zh-cn": "bugfix:固定统计问题\n特点:增加对更多的数据类型的支持"
+            },
+            "0.4.0": {
+                "en": "feature: support for Free and Two Level Group Address Style in addition to the existing Three Level support #320\nfeature: map knx datapoint type enconding to object common.states #313\ndebug message for send queue size",
+                "de": "feature: Unterstützung für Free und Two Level Group Address Style zusätzlich zur vorhandenen Three Level Unterstützung #320\nmerkmal: map knx datapoint type enconding to object common. staaten #313\ndebug-nachricht zum senden von warteschlangengröße",
+                "ru": "функция: поддержка Free и Two Level Group Address Style в дополнение к существующей трехуровневой поддержке #320\nособенность: карта knx типа дата-точка, прилагая к объекту общий. штаты #313\ndebug сообщение для отправки размера очереди",
+                "pt": "característica: suporte para o estilo de endereço de grupo livre e de dois níveis, além do suporte de três níveis existente #320\ncaracterística: mapa knx datapoint tipo conding para objeto comum. estados #313\nmensagem de depuração para enviar tamanho de fila",
+                "nl": "quality over Quantity (QoQ) Releases Vertaling:\nplaats: kaartknx datapoint type dat zich voordoet aan objecten. #313\ndebug-bericht voor het verzenden van de grootte",
+                "fr": "fonction: support pour Free and Two Level Group Adresse Style en plus du support de trois niveaux existant #320\nfonction: map knx datapoint type enconding to object common. états no 313\nmessage debug pour envoyer la taille de la queue",
+                "it": "caratteristica: il supporto per Free e Two Level Group Address Style oltre al supporto di tre livelli esistente #320\nfunzione: mappa knx tipo datapoint che incorpora a oggetti comuni. stati #313\ndebug messaggio per inviare la dimensione della coda",
+                "es": "función: soporte para el estilo libre y de dos niveles de dirección del grupo, además del soporte existente de tres niveles #320\ncaracterística: mapa knx datapoint tipo enconding para objeto común. estados #313\nmensaje de depuración para enviar tamaño de cola",
+                "pl": "wygląd: wspieranie Free and Two Level Group Address Style, oprócz istniejącego Trzech poziomów, 320\ncechą charakterystyczną mapy knx jest konsekracja obiektu wspólnego. #313\ndebug message",
+                "uk": "функція: підтримка безкоштовного та дворівневого групового стилю, крім існуючої трирівневої підтримки #320\nфункція: кодування типу кнкс для об'єкта спільного. стани #313\ndebug повідомлення для відправки розміру черги",
+                "zh-cn": "特点:除了现有三级支助第320号行动之外,支持自由和二级组处理Style。\n特征:图千x数据点类型与目标一致。 第313号声明\nd. 发出呼吁规模的信息"
+            },
+            "0.3.2": {
+                "en": "feature: sync knx library\nfeature: sync with create adapter 0.2.3\nfeature: update to newer versions of dependant packages\nfeature: setting autoreadEnabled autoread\nbugfix: allow alias generation with missing gateway configuration\nbugfix in knx lib: keep correct order of send datagrams in case of burst write",
+                "de": "feature: sync knx bibliothek\nfeature: sync mit adapter erstellen 0.2.3\nfeature: update auf neuere versionen von abhängigen paketen\nfunktion: autoread einstellen Autoread aktivieren\nbugfix: alias-generation mit fehlender gateway-konfiguration erlauben\nbugfix in knx lib: korrekte reihenfolge des sendens von datengrammen bei burst-schreiben",
+                "ru": "функция: синхронизация knx библиотека\nособенность: синхронизация с созданием адаптера 0.2.3\nфункция: обновление до новых версий зависящих пакетов\nфункция: настройка autoread Включенный автопрочитан\nbugfix: позвольте псевдониму генерации с недостающей конфигурацией шлюза\nbugfix в knx lib: держите правильный порядок отправки данных в случае захоронения напишите",
+                "pt": "característica: biblioteca de sincronização knx\ncaracterística: sincronização com criar adaptador 0.2.3\nrecurso: atualização para versões mais recentes de pacotes dependentes\ncaracterística: definição de autoread Autoread habilitado\nbugfix: permitir a geração de alias com configuração de gateway ausente\nbugfix em knx lib: manter a ordem correta de enviar datagramas em caso de explosão escrever",
+                "nl": "vertaling:\nvertaling:\nvertaling:\nvertaling: Geautoread\nvertaling:\nbewaar de juiste volgorde van het versturen van gegevens in geval van ontploffing",
+                "fr": "fonction: bibliothèque sync knx\nfonction: synchronisation avec adaptateur de création 0.2.3\nfonction: mise à jour de nouvelles versions de paquets dépendants\nfonction: réglage automatique Autoread activé\nbugfix: permettre la génération d'alias avec la configuration de passerelle manquante\nbugfix in knx lib: garder l'ordre correct d'envoyer des datagrammes en cas d'éclatement écrire",
+                "it": "caratteristica: sync knx library\nfunzione: sincronizzare con creare adattatore 0.2.3\nfunzione: aggiornamento alle versioni più recenti dei pacchetti dipendenti\ncaratteristica: impostazione autoread Abilitato autoread\nbugfix: consentire la generazione di alias con la configurazione di gateway mancante\nbugfix in knx lib: mantenere l'ordine corretto di inviare i datagrams in caso di esplosione di scrittura",
+                "es": "función: biblioteca de knx de sincronización\nfunción: sincronización con el adaptador 0,2.3\nfunción: actualización a nuevas versiones de paquetes dependientes\nfunción: ajuste automático Autoread habilitado\nbugfix: permitir la generación de alias con configuración de entrada perdida\nbugfix en knx lib: mantener el orden correcto de enviar datagramas en caso de explosión escribir",
+                "pl": "funkcja: sync knx library\nfunkcja: synchronizacja z tworzeniem adaptatora 0.2.3\ndostępne są nowe wersje pakietów zależnych\nustawa Autoready\ntrąbka: pozwalać aliasowi pokolenie z brakami konfiguracji bramy\nuszkodzenia w knx lib: zachować poprawny porządek wysyłania danych w przypadku rozbłysku",
+                "uk": "русскийукраїнськабеларускаяoʻzbek tilienglish\nфункція: синхронізація з створення адаптера 0.2.3\nфункція: оновлення до нових версій пакетів залежностей\nфункція: налаштування автопродавця Увімкнути автоматичний\nвиправлення помилок: генерація псевдонімів з відсутністю конфігурації шлюзу\nвиправлення помилок в knx lib: зберегти правильний порядок відправки графіків у разі лопу писати",
+                "zh-cn": "特色:复合克日图书馆\n特征:与创造适应力的结合\n特点:更新依赖一揽子计划的新版本\n特征:建立汽车 便携式汽车\nb ugfix:允许产生离散的门户组合\nb knx lib的ugfix:在开火时保持正确的发送数据图。"
+            }
+        },
+        "title": "Open KNX",
+        "titleLang": {
+            "en": "Open KNX",
+            "de": "Open KNX",
+            "ru": "Open KNX",
+            "pt": "Open KNX",
+            "nl": "Open KNX",
+            "fr": "Open KNX",
+            "it": "Open KNX",
+            "es": "Open KNX",
+            "pl": "Open KNX",
+            "zh-cn": "Open KNX"
+        },
+        "desc": {
+            "en": "full featured open-source adapter for KNX",
+            "de": "Kostenloser Open-Source-Adapter, der die KNX Kommunikation über ein IP Gateway ermöglicht.",
+            "ru": "новый бесплатный open-source-адаптер для KNX",
+            "pt": "novo adaptador de código aberto gratuito para KNX",
+            "nl": "nieuwe gratis open-source-adapter voor KNX",
+            "fr": "nouvel adaptateur open-source gratuit pour KNX",
+            "it": "nuovo adattatore open source gratuito per KNX",
+            "es": "nuevo adaptador de código abierto gratuito para KNX",
+            "pl": "nowy darmowy adapter open-source dla KNX",
+            "zh-cn": "用于 KNX 的新免费开源适配器"
+        },
+        "authors": ["Boellner <boellnerboellner@gmail.com>"],
+        "contributors": [],
+        "keywords": ["knx free open source eib"],
+        "license": "GPL-3.0-only",
+        "platform": "Javascript/Node.js",
+        "main": "main.js",
+        "icon": "openknx.png",
+        "enabled": true,
+        "messagebox": true,
+        "subscribe": "messagebox",
+        "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.openknx/master/admin/openknx.png",
+        "readme": "https://github.com/iobroker-community-adapters/ioBroker.openknx/blob/master/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "iot-systems",
+        "compact": true,
+        "connectionType": "local",
+        "dataSource": "push",
+        "adminUI": {
+            "config": "materialize",
+            "tab": "materialize"
+        },
+        "eraseOnUpload": true,
+        "plugins": {
+            "sentry": {
+                "dsn": "https://f87a314b36ef451aa291655ae13e2831@sentry.iobroker.net/165"
+            }
+        },
+        "dependencies": [
+            {
+                "js-controller": ">=3.3.22"
+            }
+        ],
+        "globalDependencies": [
+            {
+                "admin": ">=5.0.0"
+            }
+        ],
+        "tier": 2
     },
-    "title": "Open KNX",
-    "titleLang": {
-      "en": "Open KNX",
-      "de": "Open KNX",
-      "ru": "Open KNX",
-      "pt": "Open KNX",
-      "nl": "Open KNX",
-      "fr": "Open KNX",
-      "it": "Open KNX",
-      "es": "Open KNX",
-      "pl": "Open KNX",
-      "zh-cn": "Open KNX"
+    "native": {
+        "autoreadEnabled": true,
+        "useBoolean": true,
+        "gwip": "",
+        "gwipport": "3671",
+        "localInterface": "",
+        "minimumDelay": 50,
+        "aliassRegexp": "stat(e|us)(\\.|$)|rm(\\.|$)|r(ü|ue)ckmeldung(\\.|$)",
+        "aliasSimilarity": 0.9,
+        "aliasPath": "alias.0",
+        "aliasRange": false
     },
-    "desc": {
-      "en": "full featured open-source adapter for KNX",
-      "de": "Kostenloser Open-Source-Adapter, der die KNX Kommunikation über ein IP Gateway ermöglicht.",
-      "ru": "новый бесплатный open-source-адаптер для KNX",
-      "pt": "novo adaptador de código aberto gratuito para KNX",
-      "nl": "nieuwe gratis open-source-adapter voor KNX",
-      "fr": "nouvel adaptateur open-source gratuit pour KNX",
-      "it": "nuovo adattatore open source gratuito per KNX",
-      "es": "nuevo adaptador de código abierto gratuito para KNX",
-      "pl": "nowy darmowy adapter open-source dla KNX",
-      "zh-cn": "用于 KNX 的新免费开源适配器"
-    },
-    "authors": [
-      "Boellner <boellnerboellner@gmail.com>"
-    ],
-    "contributors": [],
-    "keywords": [
-      "knx free open source eib"
-    ],
-    "license": "GPL-3.0-only",
-    "platform": "Javascript/Node.js",
-    "main": "main.js",
-    "icon": "openknx.png",
-    "enabled": true,
-    "messagebox": true,
-    "subscribe": "messagebox",
-    "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.openknx/master/admin/openknx.png",
-    "readme": "https://github.com/iobroker-community-adapters/ioBroker.openknx/blob/master/README.md",
-    "loglevel": "info",
-    "mode": "daemon",
-    "type": "iot-systems",
-    "compact": true,
-    "connectionType": "local",
-    "dataSource": "push",
-    "adminUI": {
-      "config": "materialize",
-      "tab": "materialize"
-    },
-    "eraseOnUpload": true,
-    "plugins": {
-      "sentry": {
-        "dsn": "https://f87a314b36ef451aa291655ae13e2831@sentry.iobroker.net/165"
-      }
-    },
-    "dependencies": [
-      {
-        "js-controller": ">=3.3.22"
-      }
-    ],
-    "globalDependencies": [
-      {
-        "admin": ">=5.0.0"
-      }
-    ],
-    "tier": 2
-  },
-  "native": {
-    "autoreadEnabled": true,
-    "gwip": "",
-    "gwipport": "3671",
-    "localInterface": "",
-    "minimumDelay": 50,
-    "aliassRegexp": "stat(e|us)(\\.|$)|rm(\\.|$)|r(ü|ue)ckmeldung(\\.|$)|\\svalue(\\.|$)",
-    "aliasSimilarity": 0.9,
-    "aliasPath": "alias.0",
-    "aliasRange": false
-  },
-  "objects": [],
-  "instanceObjects": [
-    {
-      "_id": "info",
-      "type": "channel",
-      "common": {
-        "name": "Information"
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.connection",
-      "type": "state",
-      "common": {
-        "role": "indicator.connected",
-        "name": "KNX Gateway connected",
-        "type": "boolean",
-        "read": true,
-        "write": false,
-        "def": false
-      },
-      "native": {}
-    }
-  ]
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "KNX Gateway connected",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        }
+    ]
 }
