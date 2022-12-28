@@ -367,15 +367,18 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 -   create joint alias objects that react on status inputs
 -   supports project of all possible group address styles
 
-# Known Problems
-
--   none
 
 # Limitations
 
 -   ETS 4 export file format is not supported
 -   KNX secure is not supported
 -   only IPv4 supported
+
+# FAQ
+
+- Autoread trigger actors on the bus to react
+Check in ETS if group objects of certain devices that are connected to the suspicious GA have the R/L flag configured. This should not be the case if te device is a consumer of the signal. If the signal has an event character, a groupValueRead would trigger that event. Change configuration in ETS or disable autoread for this object.
+
 
 ## Changelog
 

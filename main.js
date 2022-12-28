@@ -428,7 +428,7 @@ class openknx extends utils.Adapter {
 
         // @ts-ignore
         if (state.c == "GroupValue_Read" || state.q == 0x10) {
-            //interface to trigger GrouValue_Read is this comment or null
+            //interface to trigger GrouValue_Read is this object comment or q 16
             this.log.debug("Outbound GroupValue_Read to " + ga);
             this.knxConnection.read(ga);
             return "read";
@@ -495,11 +495,11 @@ class openknx extends utils.Adapter {
                                 this.gaList.setDpById(key, datapoint);
                                 cnt_withDPT++;
                                 this.log.debug(
-                                    `Datapoint ${
-                                        this.gaList.getDataById(key).native.autoread ? "autoread " : ""
-                                    }created and GroupValueWrite sent: ${
-                                        this.gaList.getDataById(key).native.address
-                                    } ${key}`,
+                                    `Datapoint  ${
+                                        this.gaList.getDataById(key).native.autoread
+                                            ? "autoread created and GroupValueRead sent"
+                                            : "created"
+                                    } ${this.gaList.getDataById(key).native.address} ${key}`,
                                 );
                             } catch (e) {
                                 this.log.error("could not create KNX Datapoint for " + key + " with error: " + e);
@@ -524,21 +524,25 @@ class openknx extends utils.Adapter {
                     this.log.warn(connstatus);
                 },
 
-                //l_data.con, confirmation set receiver with set ga s flag
+                //l_data.con, confirmation set by a receiver which has the sending flag
                 confirmed: (dest, confirmed) => {
                     for (const id of this.gaList.getIdsByGa(dest)) {
-                        if (confirmed)
-                            //if unconfirmed keep ack at false
+                        if (confirmed) {
+                            //set iob ack when value sent successful on the bus
                             this.setState(id, {
                                 ack: true,
                             });
-                        if (confirmed) this.log.debug(`confirmation true received for ${dest} ${id}`);
-                        else this.log.info(`confirmation false received for ${dest} ${id}`);
+                            this.log.debug(`confirmation true received for ${dest} ${id}`);
+                        } else {
+                            //otherwise keep unset
+                            this.log.info(`confirmation false received for ${dest} ${id}`);
+                        }
                     }
                 },
 
                 //KNX Bus event received
-                //src: KnxDeviceAddress, dest: KnxGroupAddress, val: raw value not used, using dp interface instead
+                //src: KnxDeviceAddress, dest: KnxGroupAddress,
+                //val: raw value not used, using dp interface instead
                 // @ts-ignore
                 event: (
                     /** @type {string} */ evt,
@@ -626,17 +630,7 @@ class openknx extends utils.Adapter {
                                 break;
 
                             default:
-                                this.log.debug(
-                                    "received unhandeled event " +
-                                        " " +
-                                        evt +
-                                        " " +
-                                        src +
-                                        " " +
-                                        dest +
-                                        " " +
-                                        convertedVal,
-                                );
+                                this.log.debug(`received unhandeled event " ${evt} ${src} ${dest} ${convertedVal}`);
                                 ret = "unhandeled";
                         }
                     }
