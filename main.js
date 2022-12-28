@@ -428,9 +428,11 @@ class openknx extends utils.Adapter {
 
         // @ts-ignore
         if (state.c == "GroupValue_Read" || state.q == 0x10) {
-            //interface to trigger GrouValue_Read is this object comment or q 16
+            //interface to trigger GrouValue_Read is this object comment or StateQuality 16
             this.log.debug("Outbound GroupValue_Read to " + ga);
-            this.knxConnection.read(ga);
+            this.knxConnection.read(ga, (src, responsevalue) => {
+                this.log.debug("KNX response from " + src + ": " + responsevalue);
+            });
             return "read";
         } else if (this.gaList.getDataById(id).common.write) {
             this.log.debug(
@@ -442,10 +444,28 @@ class openknx extends utils.Adapter {
                     id,
             );
             if (isRaw) {
-                this.knxConnection.writeRaw(ga, rawVal, () => {});
+                this.knxConnection.writeRaw(ga, rawVal, (grpaddr, confirmed) => {
+                    //l_data.con confirmation set by any receiver connected to the ga
+                    if (confirmed) {
+                        //set iob ack when value sent successful on the bus otherwise keep unset
+                        this.setState(id, {
+                            ack: true,
+                        });
+                        this.log.debug(`confirmation ${confirmed} received for ${grpaddr} ${id}`);
+                    } else this.log.debug(`negative or no confirmation confirmation received for ${grpaddr} ${id}`);
+                });
                 return "write raw";
             } else {
-                this.knxConnection.write(ga, knxVal, dpt, () => {});
+                this.knxConnection.write(ga, knxVal, dpt, (grpaddr, confirmed) => {
+                    //l_data.con confirmation set by any receiver connected to the ga
+                    if (confirmed) {
+                        //set iob ack when value sent successful on the bus otherwise keep unset
+                        this.setState(id, {
+                            ack: true,
+                        });
+                        this.log.debug(`confirmation ${confirmed} received for ${grpaddr} ${id}`);
+                    } else this.log.debug(`negative or no confirmation confirmation received for ${grpaddr} ${id}`);
+                });
                 return "write";
             }
         } else {
@@ -522,22 +542,6 @@ class openknx extends utils.Adapter {
                 },
                 error: (connstatus) => {
                     this.log.warn(connstatus);
-                },
-
-                //l_data.con, confirmation set by a receiver which has the sending flag
-                confirmed: (dest, confirmed) => {
-                    for (const id of this.gaList.getIdsByGa(dest)) {
-                        if (confirmed) {
-                            //set iob ack when value sent successful on the bus
-                            this.setState(id, {
-                                ack: true,
-                            });
-                            this.log.debug(`confirmation true received for ${dest} ${id}`);
-                        } else {
-                            //otherwise keep unset
-                            this.log.info(`confirmation false received for ${dest} ${id}`);
-                        }
-                    }
                 },
 
                 //KNX Bus event received

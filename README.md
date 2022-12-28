@@ -393,6 +393,7 @@ Check in ETS if group objects of certain devices that are connected to the suspi
 
 -   feature: use common.type boolean for 1 bit enum instead of number
     import enum with one bit as common.type mixed and not strict as number
+-   feature: process incoming l_data.con only for self sent datagrams
 
 ### 0.4.5 (2022-12-19)
 
