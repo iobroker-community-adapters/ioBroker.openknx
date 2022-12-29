@@ -446,11 +446,8 @@ class openknx extends utils.Adapter {
                         this.setState(id, {
                             ack: true,
                         });
-                        this.log.debug(`confirmation ${confirmed} received for GroupValue_Write to ${grpaddr} ${id}`);
-                    } else
-                        this.log.info(
-                            `negative or no confirmation confirmation received for GroupValue_Write to ${grpaddr} ${id}`,
-                        );
+                        this.log.debug(`GroupValue_Write confirmation ${confirmed} received for ${grpaddr} ${id}`);
+                    } else this.log.info(`GroupValue_Write confirmation ${confirmed} received for ${grpaddr} ${id}`);
                 });
                 return "write raw";
             } else {
@@ -461,11 +458,8 @@ class openknx extends utils.Adapter {
                         this.setState(id, {
                             ack: true,
                         });
-                        this.log.debug(`confirmation ${confirmed} received for GroupValue_Write to ${grpaddr} ${id}`);
-                    } else
-                        this.log.info(
-                            `negative or no confirmation confirmation received for GroupValue_Write to ${grpaddr} ${id}`,
-                        );
+                        this.log.debug(`GroupValue_Write confirmation ${confirmed} received for ${grpaddr} ${id}`);
+                    } else this.log.info(`GroupValue_Write confirmation ${confirmed} received for ${grpaddr} ${id}`);
                 });
                 return "write";
             }
@@ -543,6 +537,18 @@ class openknx extends utils.Adapter {
                 },
                 error: (connstatus) => {
                     this.log.warn(connstatus);
+                },
+
+                //l_data.con, confirmation set by a receiver which has the sending flag
+                confirmed: (dest, confirmed) => {
+                    for (const id of this.gaList.getIdsByGa(dest)) {
+                        if (confirmed) {
+                            this.log.debug(`confirmation true received for ${dest} ${id}`);
+                        } else {
+                            //otherwise keep unset
+                            this.log.info(`confirmation false received for ${dest} ${id}`);
+                        }
+                    }
                 },
 
                 //KNX Bus event received
