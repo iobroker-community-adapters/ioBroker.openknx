@@ -429,19 +429,14 @@ class openknx extends utils.Adapter {
         // @ts-ignore
         if (state.c == "GroupValue_Read" || state.q == 0x10) {
             //interface to trigger GrouValue_Read is this object comment or StateQuality 16
-            this.log.debug("Outbound GroupValue_Read to " + ga);
-            this.knxConnection.read(ga, (src, responsevalue) => {
-                this.log.debug("KNX response from " + src + ": " + responsevalue);
+            this.log.debug("Outbound GroupValue_Read to GA " + ga);
+            this.knxConnection.read(ga, () => {
+                //ack is generated with GroupValue_Response
             });
             return "read";
         } else if (this.gaList.getDataById(id).common.write) {
             this.log.debug(
-                "Outbound GroupValue_Write to " +
-                    ga +
-                    " val: " +
-                    (isRaw ? rawVal : JSON.stringify(knxVal)) +
-                    " from " +
-                    id,
+                `Outbound GroupValue_Write to " ${ga} val: ${isRaw ? rawVal : JSON.stringify(knxVal)} from ${id}`,
             );
             if (isRaw) {
                 this.knxConnection.writeRaw(ga, rawVal, (grpaddr, confirmed) => {
@@ -451,8 +446,11 @@ class openknx extends utils.Adapter {
                         this.setState(id, {
                             ack: true,
                         });
-                        this.log.debug(`confirmation ${confirmed} received for ${grpaddr} ${id}`);
-                    } else this.log.debug(`negative or no confirmation confirmation received for ${grpaddr} ${id}`);
+                        this.log.debug(`confirmation ${confirmed} received for GroupValue_Write to ${grpaddr} ${id}`);
+                    } else
+                        this.log.info(
+                            `negative or no confirmation confirmation received for GroupValue_Write to ${grpaddr} ${id}`,
+                        );
                 });
                 return "write raw";
             } else {
@@ -463,8 +461,11 @@ class openknx extends utils.Adapter {
                         this.setState(id, {
                             ack: true,
                         });
-                        this.log.debug(`confirmation ${confirmed} received for ${grpaddr} ${id}`);
-                    } else this.log.debug(`negative or no confirmation confirmation received for ${grpaddr} ${id}`);
+                        this.log.debug(`confirmation ${confirmed} received for GroupValue_Write to ${grpaddr} ${id}`);
+                    } else
+                        this.log.info(
+                            `negative or no confirmation confirmation received for GroupValue_Write to ${grpaddr} ${id}`,
+                        );
                 });
                 return "write";
             }

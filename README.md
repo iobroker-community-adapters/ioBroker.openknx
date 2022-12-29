@@ -170,12 +170,14 @@ The whole name including path is used to check for similarity.
 
 # howto use the adapter & basic concept
 
-### ACK flags
+### ACK flags with tunneling connections
 
-Applications shall never set ack flags, application is notified from this adapter by the ack flag if data is updated.
+Applications shall not set the ack flag, application is notified from this adapter by the ack flag if data is updated.
 KNX Stack sets the ack flag of the corresponding IoBroker object on receiption of a group address if another knx host writes to the bus.
-Sent frames on KNX triggered by application writing to a object does not result into an immediate acknowledgement message to that object.
-If the write is coming from this adapter, the the ack flag is generated on postivive confirmance in tunneling mode.
+
+|GA is | connected to device with a R flag | connected to devices with no R flag | unconnected
+|Application issues GroupValue_Write | ack | ack | no ack
+|Application issues GroupValue_Read | ack | no ack | no ack
 
 ### Node Red complex datatype example
 
@@ -367,7 +369,6 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 -   create joint alias objects that react on status inputs
 -   supports project of all possible group address styles
 
-
 # Limitations
 
 -   ETS 4 export file format is not supported
@@ -376,9 +377,8 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 # FAQ
 
-- Autoread trigger actors on the bus to react
-Check in ETS if group objects of certain devices that are connected to the suspicious GA have the R/L flag configured. This should not be the case if te device is a consumer of the signal. If the signal has an event character, a groupValueRead would trigger that event. Change configuration in ETS or disable autoread for this object.
-
+-   Autoread trigger actors on the bus to react
+    Check in ETS if group objects of certain devices that are connected to the suspicious GA have the R/L flag configured. This should not be the case if te device is a consumer of the signal. If the signal has an event character, a groupValueRead would trigger that event. Change configuration in ETS or disable autoread for this object.
 
 ## Changelog
 
@@ -393,7 +393,7 @@ Check in ETS if group objects of certain devices that are connected to the suspi
 
 -   feature: use common.type boolean for 1 bit enum instead of number
     import enum with one bit as common.type mixed and not strict as number
--   feature: process incoming l_data.con only for self sent datagrams
+-   handling of iob ack improved for tunneling connections, see description
 
 ### 0.4.5 (2022-12-19)
 
