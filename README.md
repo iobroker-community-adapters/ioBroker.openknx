@@ -614,7 +614,7 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 ## License
 
-Copyright 2022 contributors to the ioBroker.openknx project
+Copyright 2023 contributors to the ioBroker.openknx project
 
     				GNU GENERAL PUBLIC LICENSE
 
