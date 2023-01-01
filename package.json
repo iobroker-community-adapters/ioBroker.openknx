@@ -33,7 +33,6 @@
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.7",
     "async-exit-hook": "^2.0.1",
-    "knx": "2.5.2",
     "similarity": "^1.2.1",
     "xmldom": "^0.6.0",
     "xpath": "0.0.32"

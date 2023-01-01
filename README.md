@@ -175,9 +175,10 @@ The whole name including path is used to check for similarity.
 Applications shall not set the ack flag, application is notified from this adapter by the ack flag if data is updated.
 KNX Stack sets the ack flag of the corresponding IoBroker object on receiption of a group address if another knx host writes to the bus.
 
-|GA is | connected to device with a R flag | connected to devices with no R flag | unconnected
-|Application issues GroupValue_Write | ack | ack | no ack
-|Application issues GroupValue_Read | ack | no ack | no ack
+| GA is                               | connected to device with a R flag | connected to devices with no R flag | unconnected |
+| ----------------------------------- | --------------------------------- | ----------------------------------- | ----------- |
+| Application issues GroupValue_Write | ack                               | ack                                 | no ack      |
+| Application issues GroupValue_Read  | ack                               | no ack                              | no ack      |
 
 ### Node Red complex datatype example
 
@@ -388,6 +389,11 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
   * .... -> this is used by script to generate a new entry, copy after a new release
   * npm run release major/minor/patch major.minor.patch
 -->
+
+### **WORK IN PROGRESS**
+
+-bugfix: correct falsly generated "confirmation false received" notifications on high sending load
+
 ### 0.5.0 (2022-12-30)
 
 -   feature: use common.type boolean for 1 bit enum instead of number
