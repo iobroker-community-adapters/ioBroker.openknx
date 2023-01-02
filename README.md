@@ -389,7 +389,8 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
   * .... -> this is used by script to generate a new entry, copy after a new release
   * npm run release major/minor/patch major.minor.patch
 -->
-### 0.5.1 (2023-01-01)
+
+### **WORK IN PROGRESS**
 
 -bugfix: correct falsly generated "confirmation false received" notifications on high sending load
 
