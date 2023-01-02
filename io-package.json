@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "news": {
+      "0.5.2": {
+        "en": "bugfix: correct falsly generated \"confirmation false received\" notifications on high sending load",
+        "de": "bugfix: korrekte falsch generierte \"bestätigung falsch empfangen\" benachrichtigungen auf hoher sendelast",
+        "ru": "bugfix: правильный фальсифицированный \"подтверждение false получил\" уведомления о высокой отправке нагрузки",
+        "pt": "bugfix: corrigir erroneamente gerado \"confirmação falsa recebida\" notificações em alta carga de envio",
+        "nl": "vertaling:",
+        "fr": "bugfix: correcte falsly générée \"confirmation fausse reçue\" notifications sur la charge d'envoi élevée",
+        "it": "bugfix: corretto falsly generato \"conferma false ricevute\" notifiche su alto carico di invio",
+        "es": "bugfix: correcta falsamente generada \"confirmación falsa recibida\" notificaciones en alta carga de envío",
+        "pl": "bugfix: correct falsly generuje fałszywe dane na wysokim wysyłaniu obciążenia",
+        "uk": "виправлення помилок: виправлено помилково створене \"підтвердження помилкового отримання\" повідомлення про високий вантажний вантаж",
+        "zh-cn": "bugfix:正确无误地产生关于高发货的“确认错误”通知"
+      },
       "0.5.1": {
         "en": "bugfix: correct falsly generated \"confirmation false received\" notifications on high sending load",
         "de": "bugfix: korrekte falsch generierte \"bestätigung falsch empfangen\" benachrichtigungen auf hoher sendelast",
@@ -80,19 +93,6 @@
         "pl": "trąbka: zmienna dla dpt 1 dla enum",
         "uk": "виправлення помилок: значення swap для dpt 1 для enums",
         "zh-cn": "b ugfix:配量1"
-      },
-      "0.4.1": {
-        "en": "bugfix: fix statup issue\nfeature: add support for more datatypes",
-        "de": "bugfix: statup problem beheben\nfeature: unterstützung für weitere datentypen hinzufügen",
-        "ru": "bugfix: исправить проблему статупа\nфункция: добавить поддержку для больше типов данных",
-        "pt": "bugfix: corrigir problema legal\nrecurso: adicionar suporte para mais tipos de dados",
-        "nl": "vertaling:\nvertaling:",
-        "fr": "bugfix: fix statup issue\nfonction: ajouter le support pour plus de types de données",
-        "it": "bugfix: risolvere problema di statup\nfunzione: aggiungere supporto per più tipi di dati",
-        "es": "bugfix: solucionar el problema de statup\nfunción: añadir soporte para más tipos de datos",
-        "pl": "trąbka\nfunkcja: dodanie wsparcia dla większej liczby typów danych",
-        "uk": "виправлення помилок\nфункція: додавати підтримку більше типів даних",
-        "zh-cn": "bugfix:固定统计问题\n特点:增加对更多的数据类型的支持"
       }
     },
     "title": "Open KNX",
