@@ -19,7 +19,6 @@ const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 const detect = require("./lib/openknx.js");
 const os = require("os");
 const exitHook = require("async-exit-hook");
-const { dpt1_control_ga } = require("./lib/knx/test/wiredtests/wiredtest-options.js");
 
 class openknx extends utils.Adapter {
     /**
