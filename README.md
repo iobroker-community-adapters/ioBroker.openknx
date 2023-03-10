@@ -15,7 +15,7 @@ This adapter serves as communication interface between Iobroker and your KNX IP 
 The adapter allows to generate the iobroker communication objects automatically by importing an ETS group address xml export.  
 All generated communication objects are initially configured readable and writeable, values are fetched from the knx bus on adapter restart.
 
-##If you like it, please consider a donation:
+## If you like it, please consider a donation:
 https://www.paypal.com/donate/?hosted_button_id=Z8UFC8QEC4ARW
 
 # Installation
