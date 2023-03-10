@@ -76,9 +76,9 @@ systemDictionary = {
         pl: "Jak wyeksportować GA XML z ETS:",
         "zh-cn": "如何从 ETS 导出 GA XML：",
     },
-    "Import XML from ETS": {
-        en: "Import XML from ETS",
-        de: "Import XML aus ETS",
+    "import ETS xml and save": {
+        en: "import ETS xml and save ",
+        de: "Import ETS XML und speichern",
         ru: "Экспорт GA XML из ETS",
         pt: "Exportação GA XML de ETS",
         nl: "GA XML-export vanuit ETS",

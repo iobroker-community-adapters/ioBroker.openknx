@@ -594,7 +594,7 @@ class openknx extends utils.Adapter {
                                 this.getState(id, (err, state) => {
                                     let ret;
                                     if (state) {
-                                        this.log.debug(`Inbound GroupValue_Read from ${src} GA ${dest} to ${id}`);
+                                        this.log.debug(`Inbound GroupValue_Read indication from ${src} GA ${dest} to ${id}`);
                                         ret = "GroupValue_Read";
                                         if (this.gaList.getDataById(id).native.answer_groupValueResponse) {
                                             let stateval = state.val;
@@ -623,7 +623,7 @@ class openknx extends utils.Adapter {
                                     ack: true,
                                 });
                                 this.log.debug(
-                                    `Inbound GroupValue_Response from ${src} GA ${dest} to Object: ${id} val: ${convertedVal} dpt: ${data.native.dpt}`,
+                                    `Inbound GroupValue_Response indication from ${src} GA ${dest} to Object: ${id} val: ${convertedVal} dpt: ${data.native.dpt}`,
                                 );
                                 ret = "GroupValue_Response";
                                 break;
@@ -634,7 +634,7 @@ class openknx extends utils.Adapter {
                                     ack: true,
                                 });
                                 this.log.debug(
-                                    `Inbound GroupValue_Write from ${src} GA ${dest} to Object: ${id} val: ${convertedVal} dpt: ${data.native.dpt}`,
+                                    `Inbound GroupValue_Write indication from ${src} GA ${dest} to Object: ${id} val: ${convertedVal} dpt: ${data.native.dpt}`,
                                 );
                                 ret = "GroupValue_Write";
                                 break;

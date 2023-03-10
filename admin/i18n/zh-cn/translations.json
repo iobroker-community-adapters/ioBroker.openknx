@@ -5,7 +5,7 @@
     "Frames per second": "每秒帧数",
     "Gateway IP": "网关IP",
     "How to export GA XML from ETS:": "如何从 ETS 导出 GA XML：",
-    "Import XML from ETS": "从 ETS 导出 GA XML",
+    "import ETS xml and save": "从 ETS 导出 GA XML",
     "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export": "不支持KNXproj，请在ETS中打开群组地址，右键点击群组地址，然后群组地址导出",
     "Minimum Similarity 0-1": "最小相似度 0-1",
     "Port": "港口",

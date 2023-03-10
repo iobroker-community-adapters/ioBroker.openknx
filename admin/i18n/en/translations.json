@@ -5,7 +5,7 @@
     "Frames per second": "Frames per second",
     "Gateway IP": "Gateway IP",
     "How to export GA XML from ETS:": "How to export GA XML from ETS:",
-    "Import XML from ETS": "Import XML from ETS",
+    "import ETS xml and save": "import ETS xml and save",
     "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export": "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export",
     "Minimum Similarity 0-1": "Minimum Similarity 0-1",
     "Port": "Port",
@@ -25,5 +25,4 @@
     "set acknowledgement flag when application writes to object": "set acknowledgement flag when application writes to object",
     "this is not a number": "this is not a number",
     "set acknowledgement flag when application writes to object": "set acknowledgement flag when application writes to object"
-    
 }

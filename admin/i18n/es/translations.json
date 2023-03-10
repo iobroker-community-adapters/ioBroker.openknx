@@ -5,7 +5,7 @@
     "Frames per second": "Cuadros por segundo",
     "Gateway IP": "IP de acceso",
     "How to export GA XML from ETS:": "Cómo exportar GA XML desde ETS:",
-    "Import XML from ETS": "Exportación GA XML desde ETS",
+    "import ETS xml and save": "Exportación GA XML desde ETS",
     "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export": "KNXproj no es compatible, abra en ETS las direcciones del grupo y haga clic con el botón derecho en las direcciones del grupo y luego exportar la dirección del grupo.",
     "Minimum Similarity 0-1": "Similitud mínima 0-1",
     "Port": "Puerto",
