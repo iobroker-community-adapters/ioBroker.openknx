@@ -1,11 +1,9 @@
 {
     "Alias path": "Alias path",
-    "Click here for a manual to migrate from knx.0 to openknx.0": "Click here for a manual to migrate from knx.0 to openknx.0",
     "Extracted %s states": "Extracted %s states",
     "Frames per second": "Frames per second",
     "Gateway IP": "Gateway IP",
     "How to export GA XML from ETS:": "How to export GA XML from ETS:",
-    "import ETS xml and save": "import ETS xml and save",
     "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export": "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export",
     "Minimum Similarity 0-1": "Minimum Similarity 0-1",
     "Port": "Port",
@@ -15,14 +13,14 @@
     "Unsupported file format": "Unsupported file format",
     "add only new Objects": "Add only new Objects",
     "generate aliases": "generate aliases",
+    "import ETS xml and save": "import ETS xml and save ",
     "invalid IP address": "invalid IP address",
     "invalid port number": "invalid port number",
     "local network interface": "local network interface",
     "min 1": "minimum is 1",
-    "override object path": "",
+    "override object path": "override object path",
     "physical KNX address": "physical KNX address",
     "physical KNX address in format a/b/c not valid": "physical KNX address in format a/b/c not valid",
     "set acknowledgement flag when application writes to object": "set acknowledgement flag when application writes to object",
-    "this is not a number": "this is not a number",
-    "set acknowledgement flag when application writes to object": "set acknowledgement flag when application writes to object"
+    "this is not a number": "this is not a number"
 }

@@ -4,7 +4,7 @@
 
     <!-- Load ioBroker scripts and styles-->
     <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
-    <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css" />
 
     <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css" />
 
@@ -15,9 +15,8 @@
     <script type="text/javascript" src="../../lib/js/materialize.js"></script>
     <script type="text/javascript" src="../../js/adapter-settings.js"></script>
 
-    <!-- Load our own files -->
-    <link rel="stylesheet" type="text/css" href="style.css" />
-    <script type="text/javascript" src="words.js"></script>
+        <!-- Load our own files -->
+        <script type="text/javascript" src="words.js"></script>
 
     <style>
         #progress {
@@ -101,9 +100,8 @@
             //triggerst getIPs
             fillSelectIPs("#adapterAddress", settings.adapterAddress, false, true);
 
-            showConfigDialog();
-            $("#progress").hide();
-            $("#progress2").hide();
+                $("#progress").hide();
+                $("#progress2").hide();
 
             $(".value").each(function () {
                 var $key = $(this);
@@ -176,13 +174,13 @@
                 }
             });
 
-            $('#createAlias').on('click', function () {
-                processAlias();
-            });
+                $("#createAlias").on("click", function () {
+                    processAlias();
+                });
 
-            $('#detectInterface').on('click', function () {
-                processDetectInterface();
-            });
+                $("#detectInterface").on("click", function () {
+                    processDetectInterface();
+                });
 
             //start with no changed settings, disable save button
             onChange(false);
@@ -293,54 +291,31 @@
             return !!inputText.match(format);
         }
 
-        function isKnxAddressValid(inputText) {
-            var format = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-            return !!inputText.match(format);
-        }
-
-        function disableAllDialogs() {
-            $(".c-tab").removeClass("tab-active");
-            var x = document.getElementsByClassName("dialog");
-            for (var cnt = 0; cnt < x.length; cnt++) {
-                x[cnt].style.display = "none";
+            function isKnxAddressValid(inputText) {
+                var format =
+                    /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+                return !!inputText.match(format);
             }
-        }
-
-        function showConfigDialog() {
-            disableAllDialogs();
-            $(".dialog-config").addClass("tab-active");
-            var x = document.getElementById("configDialog");
-            x.style.display = "block";
-        }
-
-        function showExtendedDialog() {
-            disableAllDialogs();
-            $('.dialog-extended').addClass('tab-active');
-            var x = document.getElementById("extendedDialog");
-            x.style.display = "block";
-        }
-    </script>
-</head>
+        </script>
+    </head>
 
 <body>
     <!-- you have to put your config page in a div with id adapter-container -->
     <div class="m adapter-container">
         <nav>
             <div class="row">
-                <div class="col s2">
-                    <img src="openknx.png" class="logo">
+                    <div class="col s2">
+                        <img src="openknx.png" class="logo" />
+                    </div>
                 </div>
+            </nav>
+            <div class="row">
+                <ul class="tabs">
+                    <li class="tab col s3 c-tab translate"><a href="#configDialog">Settings and Import</a></li>
+                    <li class="tab col s3 c-tab translate"><a href="#extendedDialog">Alias Generation</a></li>
+                </ul>
             </div>
-        </nav>
-        <div class="row">
-            <ul class="tabs">
-                <li class="tab col s3 dialog-config c-tab translate"><a onclick="showConfigDialog()">Settings and
-                        Import</a></li>
-                <li class="tab col s3 dialog-extended c-tab translate"><a onclick="showExtendedDialog()">Alias
-                        Generation</a></li>
-            </ul>
-        </div>
-        <div id="configDialog" class="dialog">
+            <div id="configDialog" class="row">
             <div class="card">
                 <div class="card-content">
                     <div class="row">
@@ -411,7 +386,7 @@
                 </div>
             </div>
         </div>
-        <div id="extendedDialog" class="dialog">
+        <div id="extendedDialog" class="row">
             <div class="card">
                 <div class="card-content">
                     <div class="row">
