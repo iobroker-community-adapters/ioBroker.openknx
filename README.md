@@ -394,6 +394,9 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
   * .... -> this is used by script to generate a new entry, copy after a new release
   * npm run release major/minor/patch major.minor.patch
 -->
+
+### **WORK IN PROGRESS**
+
 ### 0.5.3 (2023-03-17)
 
 -   savek-cc bugfix: Fix handling of addinfo_length - used to crash if addinfo was actually supplied #338
