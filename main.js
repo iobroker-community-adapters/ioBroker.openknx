@@ -714,7 +714,7 @@ class openknx extends utils.Adapter {
                     "ms debug level: " +
                     this.log.level,
             );
-        this.log.info(utils.controllerDir);
+
         this.setState("info.connection", false, true);
 
         //fill gaList from iobroker objects
