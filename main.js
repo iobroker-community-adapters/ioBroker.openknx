@@ -277,7 +277,7 @@ class openknx extends utils.Adapter {
         if (onlyAddNewObjects) {
             //if user setting Add only new Objects write only new objects
             //extend object would overwrite user made element changes if known in the import, not intended
-            this.setObjectNotExists(this.mynamespace + "." + objects[i]._id, objects[i], (err, obj) => {
+            this.setObjectNotExists(this.mynamespace + "." + objects[i]._id, objects[i], (err) => {
                 if (err) {
                     this.log.warn("error store Object " + objects[i]._id + " " + (err ? " " + err : ""));
                 }
@@ -285,7 +285,7 @@ class openknx extends utils.Adapter {
             });
         } else {
             //setObjet to overwrite all existing settings, default
-            this.setObject(this.mynamespace + "." + objects[i]._id, objects[i], (err, obj) => {
+            this.setObject(this.mynamespace + "." + objects[i]._id, objects[i], (err) => {
                 if (err) {
                     this.log.warn("error store Object " + objects[i]._id + (err ? " " + err : ""));
                 }
@@ -558,7 +558,7 @@ class openknx extends utils.Adapter {
                     /** @type {string} */ evt,
                     /** @type {string} */ src,
                     /** @type {string} */ dest,
-                    /** @type {string} */ val,
+                    /** @type {string} val ,*/
                 ) => {
                     let convertedVal = [];
                     let ret = "unknown";
@@ -594,7 +594,9 @@ class openknx extends utils.Adapter {
                                 this.getState(id, (err, state) => {
                                     let ret;
                                     if (state) {
-                                        this.log.debug(`Inbound GroupValue_Read indication from ${src} GA ${dest} to ${id}`);
+                                        this.log.debug(
+                                            `Inbound GroupValue_Read indication from ${src} GA ${dest} to ${id}`,
+                                        );
                                         ret = "GroupValue_Read";
                                         if (this.gaList.getDataById(id).native.answer_groupValueResponse) {
                                             let stateval = state.val;
@@ -701,10 +703,12 @@ class openknx extends utils.Adapter {
             startKnxConnection = false;
         } else
             this.log.info(
-                "Connecting to knx gateway:  " +
+                "Connecting to knx gateway: " +
                     this.config.gwip +
                     ":" +
                     this.config.gwipport +
+                    " with phy. Adr: " +
+                    this.config.eibadr +
                     " minimum send delay: " +
                     this.config.minimumDelay +
                     "ms debug level: " +

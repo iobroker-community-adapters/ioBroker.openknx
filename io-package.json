@@ -170,6 +170,7 @@
         "useBoolean": true,
         "gwip": "",
         "gwipport": "3671",
+        "eibadr": "0.0.0",
         "localInterface": "",
         "minimumDelay": 50,
         "aliassRegexp": "stat(e|us)(\\.|$)|rm(\\.|$)|r(ü|ue)ckmeldung(\\.|$)",

@@ -1,178 +1,192 @@
 <html>
+    <head>
+        <!-- Load ioBroker scripts and styles-->
+        <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
+        <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css" />
 
-<head>
+        <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css" />
 
-    <!-- Load ioBroker scripts and styles-->
-    <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
-    <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css" />
+        <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css" />
-
-    <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-
-    <script type="text/javascript" src="../../js/translate.js"></script>
-    <script type="text/javascript" src="../../lib/js/materialize.js"></script>
-    <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+        <script type="text/javascript" src="../../js/translate.js"></script>
+        <script type="text/javascript" src="../../lib/js/materialize.js"></script>
+        <script type="text/javascript" src="../../js/adapter-settings.js"></script>
 
         <!-- Load our own files -->
         <script type="text/javascript" src="words.js"></script>
 
-    <style>
-        #progress {
-            display: none;
-        }
+        <style>
+            #progress {
+                display: none;
+            }
 
-        .dialog {
-            width: 100%;
-            height: 80%;
-            overflow: hidden;
-        }
+            .dialog {
+                width: 100%;
+                height: 80%;
+                overflow: hidden;
+            }
 
-        .tab-active {
-            background-color: white !important;
-            color: #39a1f4 !important;
-        }
+            .tab-active {
+                background-color: white !important;
+                color: #39a1f4 !important;
+            }
 
-        .m.react-dark .tabs .tab a.active,
-        .m.react-dark .tabs .tab a:hover {
-            background-color: #000;
-        }
-    </style>
+            .m.react-dark .tabs .tab a.active,
+            .m.react-dark .tabs .tab a:hover {
+                background-color: #000;
+            }
+        </style>
 
-    <script type="text/javascript">
-        //ref https://github.com/ioBroker/ioBroker.docs/blob/master/docs/en/dev/adapterdev.md#adminhtml -->
-        var etsFile = '<input type="file" id="etsFile" style="display: inline-block"/>';
+        <script type="text/javascript">
+            //ref https://github.com/ioBroker/ioBroker.docs/blob/master/docs/en/dev/adapterdev.md#adminhtml -->
+            var etsFile = '<input type="file" id="etsFile" style="display: inline-block"/>';
 
-        function disableAllButtons() {
-            $("#etsFile").prop("disabled", true);
-            $(".file-field .file-path").prop("disabled", true);
-            $("#createAlias").addClass("disabled");
-            $("#detectInterface").addClass("disabled");
-            $(".file-field .btn").addClass("disabled");
-        }
+            function disableAllButtons() {
+                $("#etsFile").prop("disabled", true);
+                $(".file-field .file-path").prop("disabled", true);
+                $("#createAlias").addClass("disabled");
+                $("#detectInterface").addClass("disabled");
+                $(".file-field .btn").addClass("disabled");
+            }
 
-        // This will be called by the admin adapter when the settings page loads
-        function load(settings, onChange) {
-            if (!settings) return;
+            // This will be called by the admin adapter when the settings page loads
+            function load(settings, onChange) {
+                if (!settings) return;
 
-            //if processing a background request, disable user interaction
-            window.isProcessingRequest = false;
+                //if processing a background request, disable user interaction
+                window.isProcessingRequest = false;
 
-            this.checkInterval = setInterval(() => {
+                this.checkInterval = setInterval(() => {
+                    this.getIsAdapterAlive(function (isAlive) {
+                        if (isAlive && !window.isProcessingRequest) {
+                            $("#onlyAddNewObjects").removeClass("disabled");
+                            $("#autoreadEnabled").removeClass("disabled");
+                            $("#useBoolean").removeClass("disabled");
+                            $("#removeUnusedObjects").removeClass("disabled");
+                            $("#setAckOnWrite").removeClass("disabled");
+                            $(".file-field .btn").removeClass("disabled");
+                            $(".file-field .file-path").prop("disabled", false);
+                            $("#etsFile").prop("disabled", false);
+                            $("#createAlias").removeClass("disabled");
+                            $("#detectInterface").removeClass("disabled");
+                        } else {
+                            disableAllButtons();
+                        }
+                    });
+                }, 1000);
+                if (settings.gwip === undefined) settings.gwip = "127.0.0.1";
+                if (settings.gwipport === undefined) settings.gwipport = 3671;
+                if (settings.minimumDelay === undefined) settings.minimumDelay = 50;
+                if (settings.eibadr === undefined) settings.eibadr = "0.0.0";
+                if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
+                if (settings.autoreadEnabled === undefined) settings.autoreadEnabled = false;
+                if (settings.useBoolean === undefined) settings.useBoolean = false;
+                if (settings.removeUnusedObjects === undefined) settings.removeUnusedObjects = false;
+                if (settings.localInterface === undefined) settings.localInterface = "";
+                if (settings.setAckOnWrite === undefined) settings.setAckOnWrite = false;
 
-                this.getIsAdapterAlive(function (isAlive) {
-                    if (isAlive && !window.isProcessingRequest) {
-                        $("#onlyAddNewObjects").removeClass("disabled");
-                        $("#autoreadEnabled").removeClass("disabled");
-                        $("#useBoolean").removeClass("disabled");
-                        $("#removeUnusedObjects").removeClass("disabled");
-                        $("#setAckOnWrite").removeClass("disabled");
-                        $(".file-field .btn").removeClass("disabled");
-                        $(".file-field .file-path").prop("disabled", false);
-                        $("#etsFile").prop("disabled", false);
-                        $("#createAlias").removeClass("disabled");
-                        $("#detectInterface").removeClass("disabled");
-                    } else {
-                        disableAllButtons();
+                //fill dropdown list from adapter-settings.js
+                getIPs(function (ips) {
+                    for (var i = 0; i < ips.length; i++) {
+                        if (
+                            ips[i].family.indexOf("ipv4") > -1 &&
+                            ips[i].address !== "0.0.0.0" &&
+                            ips[i].address !== "127.0.0.1"
+                        ) {
+                            $("#localInterface").append(
+                                '<option value="' + ips[i].address + '">' + ips[i].name + "</option>",
+                            );
+                        }
                     }
+                    $("#localInterface.value").val(settings.localInterface).select();
                 });
-            }, 1000);
-            if (settings.gwip === undefined) settings.gwip = "127.0.0.1";
-            if (settings.gwipport === undefined) settings.gwipport = 3671;
-            if (settings.minimumDelay === undefined) settings.minimumDelay = 50;
-            if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
-            if (settings.autoreadEnabled === undefined) settings.autoreadEnabled = false;
-            if (settings.useBoolean === undefined) settings.useBoolean = false;
-            if (settings.removeUnusedObjects === undefined) settings.removeUnusedObjects = false;
-            if (settings.localInterface === undefined) settings.localInterface = "";
-            if (settings.setAckOnWrite === undefined) settings.setAckOnWrite = false;
-
-            //fill dropdown list from adapter-settings.js
-            getIPs(function (ips) {
-                for (var i = 0; i < ips.length; i++) {
-                    if (ips[i].family.indexOf("ipv4") > -1 && ips[i].address !== "0.0.0.0" && ips[i].address !== "127.0.0.1") {
-                        $("#localInterface").append('<option value="' + ips[i].address + '">' + ips[i].name + "</option>");
-                    }
-                }
-                $("#localInterface.value").val(settings.localInterface).select();
-            });
-            //triggerst getIPs
-            fillSelectIPs("#adapterAddress", settings.adapterAddress, false, true);
+                //triggerst getIPs
+                fillSelectIPs("#adapterAddress", settings.adapterAddress, false, true);
 
                 $("#progress").hide();
                 $("#progress2").hide();
 
-            $(".value").each(function () {
-                var $key = $(this);
-                var id = $key.attr("id");
-                if ($key.attr("type") === "checkbox") {
-                    // do not call onChange direct, because onChange could expect some arguments
-                    $key.prop("checked", settings[id]).on("change", () => onChange());
-                } else {
-                    // do not call onChange direct, because onChange could expect some arguments
-                    $key.val(settings[id])
-                        .on("change", () => onChange())
-                        .on("keyup", () => onChange());
-                }
-
-                //add sanity checks
-                $key.val(settings[id]).focusout("change", function () {
-                    if (id === "gwip") {
-                        var ip1 = $("#gwip").val();
-                        if (isIpValid(ip1)) {
-                            $("#gwip").val(ip1);
-                        } else {
-                            alert("invalid IP address");
-                            //restore
-                            $("#gwip").val(settings.gwip).change();
-                        }
+                $(".value").each(function () {
+                    var $key = $(this);
+                    var id = $key.attr("id");
+                    if ($key.attr("type") === "checkbox") {
+                        // do not call onChange direct, because onChange could expect some arguments
+                        $key.prop("checked", settings[id]).on("change", () => onChange());
+                    } else {
+                        // do not call onChange direct, because onChange could expect some arguments
+                        $key.val(settings[id])
+                            .on("change", () => onChange())
+                            .on("keyup", () => onChange());
                     }
 
-                    if (id === "gwipport") {
-                        var gwipport1 = $("#gwipport").val();
-                        number = Number(gwipport1);
-                        if (isNumber(gwipport1) && number >= 0 && number <= 65535) {
-                            $("#gwipport").val(number);
-                        } else {
-                            alert("invalid port number");
-                            $("#gwipport").val(settings.gwipport).change();
+                    //add sanity checks
+                    $key.val(settings[id]).focusout("change", function () {
+                        if (id === "gwip") {
+                            var ip1 = $("#gwip").val();
+                            if (isIpValid(ip1)) {
+                                $("#gwip").val(ip1);
+                            } else {
+                                alert("invalid IP address");
+                                //restore
+                                $("#gwip").val(settings.gwip).change();
+                            }
                         }
-                    }
 
-                    if (id === "minimumDelay") {
-                        var intervall = $("#minimumDelay").val();
-                        number = Number(intervall);
-                        if (isNumber(intervall) && number >= 0 && number <= 1000) {
-                            $("#minimumDelay").val(number);
-                        } else {
-                            alert("please provide a valid minimum send delay value between 0 and 1000 [ms]");
-                            $("#minimumDelay").val(settings.minimumDelay).change();
+                        if (id === "gwipport") {
+                            var gwipport1 = $("#gwipport").val();
+                            number = Number(gwipport1);
+                            if (isNumber(gwipport1) && number >= 0 && number <= 65535) {
+                                $("#gwipport").val(number);
+                            } else {
+                                alert("invalid port number");
+                                $("#gwipport").val(settings.gwipport).change();
+                            }
                         }
-                    }
 
-                    if (id === "aliasSimilarity") {
-                        var aliasSimilarity = $("#aliasSimilarity").val();
-                        number = Number(aliasSimilarity);
-                        if (isNumber(aliasSimilarity) && number >= 0 && number <= 1) {
-                            $("#aliasSimilarity").val(number);
-                        } else {
-                            alert("please provide a value between 0 and 1");
-                            $("#aliasSimilarity").val(settings.aliasSimilarity).change();
+                        if (id === "eibadr") {
+                            var eibadr1 = $("#eibadr").val();
+                            if (isKnxAddressValid(eibadr1)) {
+                                $("#eibadr").val(eibadr1);
+                            } else {
+                                alert("physical KNX address in format a/b/c not valid");
+                                $("#eibadr").val(settings.eibadr).change();
+                            }
                         }
+
+                        if (id === "minimumDelay") {
+                            var intervall = $("#minimumDelay").val();
+                            number = Number(intervall);
+                            if (isNumber(intervall) && number >= 0 && number <= 1000) {
+                                $("#minimumDelay").val(number);
+                            } else {
+                                alert("please provide a valid minimum send delay value between 0 and 1000 [ms]");
+                                $("#minimumDelay").val(settings.minimumDelay).change();
+                            }
+                        }
+
+                        if (id === "aliasSimilarity") {
+                            var aliasSimilarity = $("#aliasSimilarity").val();
+                            number = Number(aliasSimilarity);
+                            if (isNumber(aliasSimilarity) && number >= 0 && number <= 1) {
+                                $("#aliasSimilarity").val(number);
+                            } else {
+                                alert("please provide a value between 0 and 1");
+                                $("#aliasSimilarity").val(settings.aliasSimilarity).change();
+                            }
+                        }
+                    });
+                });
+
+                $("#etsFile").change(processXmlFile);
+                $("#createAlias").change(processAlias);
+                $("#detectInterface").change(processDetectInterface);
+                //if not alive disable buttons
+                getIsAdapterAlive(function (isAlive) {
+                    if (!isAlive) {
+                        disableAllButtons();
                     }
                 });
-            });
-
-            $("#etsFile").change(processXmlFile);
-            $("#createAlias").change(processAlias);
-            $("#detectInterface").change(processDetectInterface);
-            //if not alive disable buttons
-            getIsAdapterAlive(function (isAlive) {
-                if (!isAlive) {
-                    disableAllButtons();
-                }
-            });
 
                 $("#createAlias").on("click", function () {
                     processAlias();
@@ -182,114 +196,138 @@
                     processDetectInterface();
                 });
 
-            //start with no changed settings, disable save button
-            onChange(false);
-            // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
-            if (M) M.updateTextFields();
-        }
-
-        // This will be called by the admin adapter when the user presses the save button
-        function save(callback) {
-            // example: select elements with class=value and build settings object
-            var obj = {};
-            $(".value").each(function () {
-                var $this = $(this);
-                if ($this.attr("type") === "checkbox") {
-                    obj[$this.attr("id")] = $this.prop("checked");
-                } else if ($this.attr("type") === "number") {
-                    obj[$this.attr("id")] = parseFloat($this.val());
-                } else {
-                    obj[$this.attr("id")] = $this.val();
-                }
-            });
-            sendTo(null, "restart", null);
-            callback(obj);
-        }
-
-        function processXmlFile(event) {
-            event.preventDefault();
-            var file = event.dataTransfer ? event.dataTransfer.files[0] : event.target.files[0];
-            if (!file) {
-                console.warn("invalid file object");
-                return false;
+                //start with no changed settings, disable save button
+                onChange(false);
+                // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
+                if (M) M.updateTextFields();
             }
 
-            if (file.name.split(".").pop() == "xml") {
+            // This will be called by the admin adapter when the user presses the save button
+            function save(callback) {
+                // example: select elements with class=value and build settings object
+                var obj = {};
+                $(".value").each(function () {
+                    var $this = $(this);
+                    if ($this.attr("type") === "checkbox") {
+                        obj[$this.attr("id")] = $this.prop("checked");
+                    } else if ($this.attr("type") === "number") {
+                        obj[$this.attr("id")] = parseFloat($this.val());
+                    } else {
+                        obj[$this.attr("id")] = $this.val();
+                    }
+                });
+                sendTo(null, "restart", null);
+                callback(obj);
+            }
+
+            function processXmlFile(event) {
+                event.preventDefault();
+                var file = event.dataTransfer ? event.dataTransfer.files[0] : event.target.files[0];
+                if (!file) {
+                    console.warn("invalid file object");
+                    return false;
+                }
+
+                if (file.name.split(".").pop() == "xml") {
+                    disableAllButtons();
+                    window.isProcessingRequest = true;
+                    var reader = new FileReader();
+                    reader.addEventListener("load", function readFile(event) {
+                        $("#etsFile").replaceWith($(etsFile));
+                        $("#etsFile").change(processXmlFile);
+                        showToast(null, _("Import started" + " ..."), null, 3000);
+                        $("#progress").show();
+                        sendTo(
+                            null,
+                            "import",
+                            {
+                                xml: event.target.result,
+                                onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked"),
+                                removeUnusedObjects: $("#removeUnusedObjects").prop("checked"),
+                            },
+                            function (result) {
+                                $("#progress").hide();
+                                if (!result || result.error) {
+                                    let message = "Unknown error";
+                                    if (result && result.error) {
+                                        message = `Imported ${result.count} states successfully<br/><br/>\n${result.error}`;
+                                    }
+                                    showMessage(_(message));
+                                } else {
+                                    showMessage(_("Imported %s states successfully", result.count));
+                                }
+                                sendTo(null, "restart", null);
+                                showToast(null, _("Restarting adapter" + "..."), null, 10000);
+                                window.isProcessingRequest = false;
+                            },
+                        );
+                    });
+                    reader.readAsText(file);
+                } else if (file.name.split(".").pop() == "knxproj") {
+                    showMessage(
+                        _(
+                            "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export",
+                        ),
+                    );
+                } else {
+                    showMessage(_("Unsupported file format"));
+                }
+            }
+
+            function processAlias() {
                 disableAllButtons();
+                $("#progress2").show();
                 window.isProcessingRequest = true;
-                var reader = new FileReader();
-                reader.addEventListener("load", function readFile(event) {
-                    $("#etsFile").replaceWith($(etsFile));
-                    $("#etsFile").change(processXmlFile);
-                    showToast(null, _("Import started..."), null, 3000);
-                    $("#progress").show();
-                    sendTo(null, "import", { xml: event.target.result, onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked"), removeUnusedObjects: $("#removeUnusedObjects").prop("checked") }, function (result) {
-                        $("#progress").hide();
-                        if (!result || result.error) {
-                            let message = "Unknown error"
-                            if (result && result.error) {
-                                message = `Imported ${result.count} states successfully<br/><br/>\n${result.error}`
-                            }
-                            showMessage(_(message));
+                sendTo(
+                    null,
+                    "createAlias",
+                    {
+                        aliassRegexp: $("#aliassRegexp")[0].value,
+                        aliasSimilarity: $("#aliasSimilarity")[0].value,
+                        aliasPath: $("#aliasPath")[0].value,
+                        aliasRange: $("#aliasRange")[0].value,
+                    },
+                    function (result) {
+                        if (!result /*|| result.error*/) {
+                            showMessage(_("Error"));
                         } else {
-                            showMessage(_("Imported %s states successfully", result.count));
+                            showMessage(_("Generated %s aliases." + "<br/>" + result.error, result.count));
                         }
-                        sendTo(null, "restart", null);
-                        showToast(null, _("Restarting adapter"), null, 10000);
+                        window.isProcessingRequest = false;
+                        $("#progress2").hide();
+                    },
+                );
+            }
+
+            function processDetectInterface() {
+                if ($("#localInterface")[0].value == "") {
+                    showMessage(_("Please select your local interface first."));
+                } else {
+                    disableAllButtons();
+                    window.isProcessingRequest = true;
+                    sendTo(null, "detectInterface", { ip: $("#localInterface")[0].value }, function (result) {
+                        if (!result || result.error || result.devicesFound == 0) {
+                            showMessage(_("no KNX gateway found"));
+                        } else {
+                            $("#deviceName")[0].innerHTML = result.deviceName;
+                            $("#gwip").val(result.ip).change();
+                            $("#eibadr").val(result.knxAdr).change();
+                            $("#gwipport").val(result.port).change();
+                            if (result.devicesFound > 1) showMessage(_("more than one KNX gateway found"));
+                        }
                         window.isProcessingRequest = false;
                     });
-                });
-                reader.readAsText(file);
-            } else if (file.name.split(".").pop() == "knxproj") {
-                showMessage(_("KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export"));
-            } else {
-                showMessage(_("Unsupported file format"));
-            }
-        }
-
-        function processAlias() {
-            disableAllButtons();
-            $("#progress2").show();
-            window.isProcessingRequest = true;
-            sendTo(null, "createAlias", { aliassRegexp: $("#aliassRegexp")[0].value, aliasSimilarity: $("#aliasSimilarity")[0].value, aliasPath: $("#aliasPath")[0].value, aliasRange: $("#aliasRange")[0].value }, function (result) {
-                if (!result /*|| result.error*/) {
-                    showMessage(_("Error"));
-                } else {
-                    showMessage(_("Generated %s aliases.<br/>" + result.error, result.count));
                 }
-                window.isProcessingRequest = false;
-                $("#progress2").hide();
-            });
-        }
-
-        function processDetectInterface() {
-            if ($("#localInterface")[0].value == "") {
-                showMessage(_("Please select your local interface first."));
-            } else {
-                disableAllButtons();
-                window.isProcessingRequest = true;
-                sendTo(null, "detectInterface", { ip: $("#localInterface")[0].value }, function (result) {
-                    if (!result || result.error || result.devicesFound == 0) {
-                        showMessage(_("no KNX gateway found"));
-                    } else {
-                        $("#deviceName")[0].innerHTML = result.deviceName;
-                        $("#gwip").val(result.ip).change();
-                        $("#gwipport").val(result.port).change();
-                        if (result.devicesFound > 1) showMessage(_("more than one KNX gateway found"));
-                    }
-                    window.isProcessingRequest = false;
-                });
             }
-        }
 
-        function isNumber(number) {
-            return number !== "" && !isNaN(number) && Number.isFinite(Number(number))
-        }
+            function isNumber(number) {
+                return number !== "" && !isNaN(number) && Number.isFinite(Number(number));
+            }
 
-        function isIpValid(inputText) {
-            var format = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$/;
-            return !!inputText.match(format);
-        }
+            function isIpValid(inputText) {
+                var format = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$/;
+                return !!inputText.match(format);
+            }
 
             function isKnxAddressValid(inputText) {
                 var format =
@@ -299,11 +337,11 @@
         </script>
     </head>
 
-<body>
-    <!-- you have to put your config page in a div with id adapter-container -->
-    <div class="m adapter-container">
-        <nav>
-            <div class="row">
+    <body>
+        <!-- you have to put your config page in a div with id adapter-container -->
+        <div class="m adapter-container">
+            <nav>
+                <div class="row">
                     <div class="col s2">
                         <img src="openknx.png" class="logo" />
                     </div>
@@ -316,116 +354,137 @@
                 </ul>
             </div>
             <div id="configDialog" class="row">
-            <div class="card">
-                <div class="card-content">
-                    <div class="row">
-                        <div class="col s6 l2 input-field">
-                            <input class="value" id="gwip" type="text" />
-                            <label for="gwip" class="translate">Gateway IP</label>
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="col s6 l2 input-field">
+                                <input class="value" id="gwip" type="text" />
+                                <label for="gwip" class="translate">Gateway IP</label>
+                            </div>
+                            <div class="col s3 l1 input-field">
+                                <input type="text" class="value" id="gwipport" />
+                                <label for="gwipport" class="translate">Port</label>
+                            </div>
+                            <div class="col s6 l3 input-field">
+                                <input class="value" id="eibadr" type="text" />
+                                <label for="eibadr" class="translate">Physical KNX address</label>
+                            </div>
+                            <div class="col s6 l2">
+                                <a id="detectInterface" class="waves-effect waves-light btn"
+                                    ><i class="material-icons right">live help</i
+                                    ><span class="translate">detect interface</span></a
+                                >
+                            </div>
+                            <div class="col s12 l3">
+                                <h7 id="deviceName"> </h7>
+                            </div>
                         </div>
-                        <div class="col s3 l1 input-field">
-                            <input type="text" class="value" id="gwipport" />
-                            <label for="gwipport" class="translate">Port</label>
-                        </div>
-                        <div class="col s6 l2">
-                            <a id="detectInterface" class="waves-effect waves-light btn"><i
-                                    class="material-icons right">live help</i><span class="translate">detect
-                                    interface</span></a>
-                        </div>
-                        <div class="col s12 l3">
-                            <h7 id="deviceName">
-                            </h7>
+                        <div class="row">
+                            <div class="col s12 l3 input-field">
+                                <select class="value" id="localInterface"></select>
+                                <label class="translate" for="localInterface">Local IPv4 network interface</label>
+                            </div>
+                            <div class="col s6 l2 input-field">
+                                <input id="minimumDelay" class="value" type="text" />
+                                <label for="minimumDelay" class="translate"
+                                    >Minimum send delay between two frames [ms]</label
+                                >
+                            </div>
+                            <!-- materialize grid small 12 of 12 columns https://materializecss.com/grid.html -->
+                            <div class="col s12 input-field">
+                                <input class="value" id="autoreadEnabled" type="checkbox" />
+                                <label class="translate" for="autoreadEnabled"
+                                    >readout values of autoread iob objects on startup</label
+                                >
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col s12 l3 input-field">
-                            <select class="value" id="localInterface"></select>
-                            <label class="translate" for="localInterface">Local IPv4 network interface</label>
-                        </div>
-                        <div class="col s6 l2 input-field">
-                            <input id="minimumDelay" class="value" type="text" />
-                            <label for="minimumDelay" class="translate">Minimum send delay between two frames [ms]</label>
-                        </div>
-                        <!-- materialize grid small 12 of 12 columns https://materializecss.com/grid.html -->
-                        <div class="col s12 input-field">
-                            <input class="value" id="autoreadEnabled" type="checkbox" />
-                            <label class="translate" for="autoreadEnabled">readout values of autoread iob objects on startup</label>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="col s12 input-field">
+                                <input class="value" id="onlyAddNewObjects" type="checkbox" />
+                                <label class="translate" for="onlyAddNewObjects"
+                                    >import only GAs that do not exist in IOB objects</label
+                                >
+                            </div>
+                            <div class="col s12 input-field">
+                                <input class="value" id="removeUnusedObjects" type="checkbox" />
+                                <label class="translate" for="removeUnusedObjects"
+                                    >remove existing IOB objects that are not in import file</label
+                                >
+                            </div>
+                            <div class="col s12 input-field">
+                                <input class="value" id="useBoolean" type="checkbox" />
+                                <label class="translate" for="useBoolean"
+                                    >use common.type boolean for 1 bit enum instead of number</label
+                                >
+                            </div>
+
+                            <div class="col s12 m12 l6 file-field input-field">
+                                <div class="btn" id="fileUploadButton">
+                                    <i class="material-icons right">input</i>
+                                    <span class="translate">import ETS xml and save</span>
+                                    <input type="file" id="etsFile" />
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input class="file-path validate" type="text" />
+                                </div>
+                            </div>
+                            <div class="col s12 progress" id="progress">
+                                <div class="indeterminate" style="width: 70%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="card">
-                <div class="card-content">
-                    <div class="row">
-                        <div class="col s12 input-field">
-                            <input class="value" id="onlyAddNewObjects" type="checkbox" />
-                            <label class="translate" for="onlyAddNewObjects">import only GAs that do not exist in IOB objects</label>
-                        </div>
-                        <div class="col s12 input-field">
-                            <input class="value" id="removeUnusedObjects" type="checkbox" />
-                            <label class="translate" for="removeUnusedObjects">remove existing IOB objects that are not in import file</label>
-                        </div>
-                        <div class="col s12 input-field">
-                            <input class="value" id="useBoolean" type="checkbox" />
-                            <label class="translate" for="useBoolean">use common.type boolean for 1 bit enum instead of number</label>
-                        </div>
-
-                        <div class="col s12 m12 l6 file-field input-field">
-                            <div class="btn" id="fileUploadButton"><i class="material-icons right">input</i>
-                                <span class="translate">import ETS xml and save</span>
-                                <input type="file" id="etsFile" />
+            <div id="extendedDialog" class="row">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row">
+                            <div class="col s12">
+                                <h6>
+                                    <span class="translate"
+                                        >To merge action and status GA in one ioBroker object you can let the adapter
+                                        generate
+                                        <a
+                                            href="https://www.iobroker.net/#de/documentation/dev/aliases.md"
+                                            target="_blank"
+                                            >Aliases</a
+                                        ></span
+                                    >
+                                </h6>
                             </div>
-                            <div class="file-path-wrapper">
-                                <input class="file-path validate" type="text" />
+                            <div class="input-field col s12 l6">
+                                <input class="value" id="aliassRegexp" type="text" />
+                                <label class="translate" for="aliassRegexp">Regex to identify Status GAs</label>
                             </div>
-                        </div>
-                        <div class="col s12 progress" id="progress">
-                            <div class="indeterminate" style="width: 70%"></div>
+                            <div class="input-field col s6 l2">
+                                <input class="value" id="aliasSimilarity" type="text" />
+                                <label class="translate" for="aliasSimilarity">Minimum Similarity 0-1</label>
+                            </div>
+                            <div class="input-field col s6 l2">
+                                <input class="value" id="aliasPath" type="text" />
+                                <label class="translate" for="aliasPath">Alias path</label>
+                            </div>
+                            <div class="input-field col s12">
+                                <input class="value" id="aliasRange" type="checkbox" />
+                                <label class="translate" for="aliasRange">include group range in search</label>
+                            </div>
+                            <div class="col s12">
+                                <a id="createAlias" class="waves-effect waves-light btn"
+                                    ><i class="material-icons right">list</i
+                                    ><span class="translate">generate aliases</span></a
+                                >
+                            </div>
+                            <div class="col s12 progress" id="progress2">
+                                <div class="indeterminate" style="width: 70%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="extendedDialog" class="row">
-            <div class="card">
-                <div class="card-content">
-                    <div class="row">
-                        <div class="col s12">
-                            <h6><span class="translate">To merge action and status GA in one ioBroker object you can let
-                                    the adapter generate <a
-                                        href="https://www.iobroker.net/#de/documentation/dev/aliases.md"
-                                        target="_blank">Aliases</a></span></h6>
-                        </div>
-                        <div class="input-field col s12 l6">
-                            <input class="value" id="aliassRegexp" type="text" />
-                            <label class="translate" for="aliassRegexp">Regex to identify Status GAs</label>
-                        </div>
-                        <div class="input-field col s6 l2">
-                            <input class="value" id="aliasSimilarity" type="text" />
-                            <label class="translate" for="aliasSimilarity">Minimum Similarity 0-1</label>
-                        </div>
-                        <div class="input-field col s6 l2">
-                            <input class="value" id="aliasPath" type="text" />
-                            <label class="translate" for="aliasPath">Alias path</label>
-                        </div>
-                        <div class="input-field col s12">
-                            <input class="value" id="aliasRange" type="checkbox" />
-                            <label class="translate" for="aliasRange">include group range in search</label>
-                        </div>
-                        <div class="col s12">
-                            <a id="createAlias" class="waves-effect waves-light btn"><i
-                                    class="material-icons right">list</i><span class="translate">generate
-                                    aliases</span></a>
-                        </div>
-                        <div class="col s12 progress" id="progress2">
-                            <div class="indeterminate" style="width: 70%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</body>
-
+    </body>
 </html>
