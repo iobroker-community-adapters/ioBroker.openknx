@@ -6,7 +6,7 @@ updates:
       interval: monthly
       time: "04:00"
       timezone: Europe/Berlin
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 15
     assignees:
       - boellner
     versioning-strategy: increase
@@ -17,6 +17,6 @@ updates:
       interval: monthly
       time: "04:00"
       timezone: Europe/Berlin
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 15
     assignees:
       - boellner
