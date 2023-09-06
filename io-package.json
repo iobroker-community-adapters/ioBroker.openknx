@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "openknx",
-        "version": "0.5.3",
+        "version": "0.6.0",
         "news": {
             "0.5.3": {
                 "en": "savek-cc bugfix: Fix handling of addinfo_length - used to crash if addinfo was actually supplied #338\nbugfix: admin menu scroll small screen #339\nfeature: add dpt 9.009",
@@ -122,13 +122,9 @@
             "zh-cn": "用于 KNX 的新免费开源适配器",
             "uk": "повнофункціональний адаптер з відкритим кодом для KNX"
         },
-        "authors": [
-            "Boellner <boellnerboellner@gmail.com>"
-        ],
+        "authors": ["Boellner <boellnerboellner@gmail.com>"],
         "contributors": [],
-        "keywords": [
-            "knx free open source eib"
-        ],
+        "keywords": ["knx free open source eib"],
         "license": "GPL-3.0-only",
         "platform": "Javascript/Node.js",
         "main": "main.js",
@@ -198,6 +194,19 @@
                 "read": true,
                 "write": false,
                 "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.BusLoad",
+            "type": "state",
+            "common": {
+                "role": "info",
+                "name": "Busload in last 5s period",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "def": 0
             },
             "native": {}
         }

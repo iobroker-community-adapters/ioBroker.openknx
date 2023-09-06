@@ -12,8 +12,9 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
-const projectImport = require(__dirname + "/lib/projectImport");
 const knx = require(__dirname + "/lib/knx");
+const loadMeasurement = require("./lib/loadMeasurement");
+const projectImport = require("./lib/projectImport");
 const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 const detect = require("./lib/openknx.js");
@@ -128,7 +129,7 @@ class openknx extends utils.Adapter {
         if (typeof obj === "object") {
             switch (obj.command) {
                 case "import":
-                    this.log.info("Project import...");
+                    this.log.info("ETS project import...");
                     projectImport.parseInput(this, obj.message.xml, (parseError, res) => {
                         this.updateObjects(res, 0, obj.message.onlyAddNewObjects, (updateError, length) => {
                             const msg = {
@@ -430,6 +431,7 @@ class openknx extends utils.Adapter {
             //interface to trigger GrouValue_Read is this object comment or StateQuality 16
             this.log.debug("Outbound GroupValue_Read to GA " + ga);
             this.knxConnection.read(ga, () => {
+                loadMeasurement.logBusEvent();
                 //ack is generated with GroupValue_Response
             });
             return "read";
@@ -439,6 +441,7 @@ class openknx extends utils.Adapter {
             );
             if (isRaw) {
                 this.knxConnection.writeRaw(ga, rawVal, (grpaddr, confirmed) => {
+                    loadMeasurement.logBusEvent();
                     //l_data.con confirmation set by any receiver connected to the ga
                     if (confirmed) {
                         //set iob ack when value sent successful on the bus otherwise keep unset
@@ -451,6 +454,7 @@ class openknx extends utils.Adapter {
                 return "write raw";
             } else {
                 this.knxConnection.write(ga, knxVal, dpt, (grpaddr, confirmed) => {
+                    loadMeasurement.logBusEvent();
                     //l_data.con confirmation set by any receiver connected to the ga
                     if (confirmed) {
                         //set iob ack when value sent successful on the bus otherwise keep unset
@@ -509,7 +513,7 @@ class openknx extends utils.Adapter {
                                 this.gaList.setDpById(key, datapoint);
                                 cnt_withDPT++;
                                 this.log.debug(
-                                    `Datapoint  ${
+                                    `Datapoint ${
                                         this.gaList.getDataById(key).native.autoread
                                             ? "autoread created and GroupValueRead sent"
                                             : "created"
@@ -523,11 +527,13 @@ class openknx extends utils.Adapter {
                         this.countObjectsNotification(cnt_withDPT);
                     }
                     this.setState("info.connection", true, true);
+                    this.setState("info.Busload", 0);
                     this.log.info("Connected!");
                 },
 
                 disconnected: () => {
                     this.setState("info.connection", false, true);
+                    this.setState("info.Busload", 0);
                     if (this.startup != true) {
                         //do not warn on initial startup or shutdown
                         this.log.warn("Connection lost");
@@ -562,6 +568,8 @@ class openknx extends utils.Adapter {
                 ) => {
                     let convertedVal = [];
                     let ret = "unknown";
+
+                    loadMeasurement.logBusEvent();
 
                     /* some checks */
                     if (dest == "0/0/0" || tools.isDeviceAddress(dest)) {
@@ -715,7 +723,12 @@ class openknx extends utils.Adapter {
                     this.log.level,
             );
 
+        const self = this;
         this.setState("info.connection", false, true);
+        setInterval(function () {
+            const busload = loadMeasurement.cyclic();
+            self.setState("info.Busload", busload);
+        }, loadMeasurement.intervalTime);
 
         //fill gaList from iobroker objects
         this.getObjectView(

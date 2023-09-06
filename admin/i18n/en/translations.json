@@ -7,7 +7,7 @@
     "Minimum send delay between two frames [ms]": "Minimum send delay between two frames [ms]",
     "readout values of autoread iob objects on startup": "readout values of autoread iob objects on startup",
     "import only GAs tht do not exist in IOB objects": "import only GAs tht do not exist in IOB objects",
-    "remove existing IOB objects that are not in import file": "remove existing IOB objects that are not in import file",
+    "remove existing IOB objects that are not in ETS import file": "remove existing IOB objects that are not in ETS import file",
     "use common.type boolean for 1 bit enum instead of number": "use common.type boolean for 1 bit enum instead of number",
     "import ETS xml and save": "import ETS xml and save",
     "alias generation": "alias generation",

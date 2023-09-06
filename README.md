@@ -62,11 +62,11 @@ Use in IOB Object common.type boolean for 1 bit enum instead of number.
 
 All IOB objects that are configured with the autoread flag are requested on the bus to be synchronized with IOB.
 
-### import only GAs that do not exist in IOB objects
+### import only GAs that do not exist already as IOB objects
 
 If checked, the import will skip overwriting existing communication objects.
 
-### remove existing IOB objects thtat are not in import file
+### remove existing IOB objects thtat are not in ETS import file
 
 To clean up object tree
 
@@ -103,12 +103,12 @@ Please note that the combined ga and group name must be unique for the IOB objec
 
 ### Alias
 
-KNX devices can have ga's for state feedback that belong to a commanding ga. Some applications like certain VIS widgets expect a combined status and actuation object. You can combine these states into one alias by using a separate alias id to write to and another to read from. The menu helps to create a matching pair according to the naming convention with the given filtering rule.
+KNX devices can have ga's for state feedback that belong to a commanding ga. Some applications like certain VIS widgets expect a combined status and actuation object. You can combine these seperate objects into one so called alias. The menu helps to create matching pairs according to the naming convention with the given filtering rule.
 Find more information here https://www.iobroker.net/#en/documentation/dev/aliases.md
 
 ### Regex
 
-Filtering rule.
+Filtering rule for the status object. Used to find matching write and read ga pairs.
 
 ### Minimum similarity
 
@@ -258,9 +258,9 @@ setState(
 	val:    value,
 	ack:    true|false,                         // optional, should be false by convention
 	ts:     timestampMS,                        // optional, default - now
-	q:      qualityAsNumber,                    // optional, set it to value 0x10 to trigger a bus read to this object, given StateValue is ignored
+	q:      qualityAsNumber,                    // optional, set it to value 0x10 to trigger a bus group value read to this object, given StateValue is ignored
 	from:   origin,                             // optional, default - this adapter
-	c:      comment,                            // optional, set it to value GroupValue_Read to trigger a bus read to this object, given StateValue is ignored
+	c:      comment,                            // optional, set it to value GroupValue_Read to trigger a bus group value read to this object, given StateValue is ignored
 	expire: expireInSeconds                     // optional, default - 0
 	lc:     timestampMS                         // optional, default - calculated value
     },
@@ -330,18 +330,18 @@ DPT11 is date (dd/mm/yyyy): the same applies for DPT11, you'll need to ignore th
 
 ### group value write
 
-Sending is triggered by writing a communication object.
+Sending group value write message is triggered by writing a communication object.
 Communication object is triggered when a write frame is received on the bus.
 
 ### group value read
 
-Sending can be triggered by writing a communicaton object with comment.
-Receiving, if configured will trigger a group value response (limitation: group value write at the moment) of the actual c.o. value, see below.
+Sending a group value read can be triggered by writing a communicaton object with comment. Please see API call section for details.
+Receiving, if configured, will trigger a group value response (limitation: group value write at the moment) of the actual communication object value, see below.
 
 ### group value response
 
 If answer_groupValueResponse is set to true, then the adapter will reply with a GroupValue_Response to a previously received GroupValue_Read request.
-This is the KNX Read flag. Only one KO on the bus or the IOBroker Object should have this flag set, ideally the one that knows the state best.
+This is the KNX Read flag. Only one communication object on the bus or the IOBroker object should have this flag set, ideally the one that knows the state best.
 
 ### mapping to KNX Flags
 
@@ -399,6 +399,7 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 ### **WORK IN PROGRESS**
 
+-   feature: KNX bus load measurement
 -   bugfix: translation
 
 ### 0.5.3 (2023-03-17)
@@ -409,7 +410,7 @@ Data is sent to Iobroker Sentry server hosted in Germany. If you have allowed io
 
 ### 0.5.2 (2023-01-02)
 
--bugfix: correct falsly generated "confirmation false received" notifications on high sending load
+-   bugfix: correct falsly generated "confirmation false received" notifications on high sending load
 
 ### 0.5.0 (2022-12-30)
 
