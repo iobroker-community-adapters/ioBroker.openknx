@@ -198,7 +198,7 @@
             "native": {}
         },
         {
-            "_id": "info.BusLoad",
+            "_id": "info.busload",
             "type": "state",
             "common": {
                 "role": "info",
