@@ -527,13 +527,13 @@ class openknx extends utils.Adapter {
                         this.countObjectsNotification(cnt_withDPT);
                     }
                     this.setState("info.connection", true, true);
-                    this.setState("info.busload", 0);
+                    this.setState("info.busload", 0, true);
                     this.log.info("Connected!");
                 },
 
                 disconnected: () => {
                     this.setState("info.connection", false, true);
-                    this.setState("info.busload", 0);
+                    this.setState("info.busload", 0, true);
                     if (this.startup != true) {
                         //do not warn on initial startup or shutdown
                         this.log.warn("Connection lost");
@@ -727,7 +727,7 @@ class openknx extends utils.Adapter {
         this.setState("info.connection", false, true);
         setInterval(function () {
             const busload = loadMeasurement.cyclic();
-            self.setState("info.busload", busload);
+            self.setState("info.busload", busload, true);
         }, loadMeasurement.intervalTime);
 
         //fill gaList from iobroker objects
