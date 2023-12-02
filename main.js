@@ -419,11 +419,18 @@ class openknx extends utils.Adapter {
             isRaw = true;
             this.log.info("Unhandeled DPT " + dpt + ", assuming raw value");
         } else {
-            const error = "trap - missing logic for undhandeled dpt: " + dpt;
-            console.warn(error);
-            if (this.getSentry()) {
-                this.getSentry().captureException(error);
+            let error;
+            if (!this.gaList.getDataById(id).common || !this.gaList.getDataById(id).common.type)
+                // configuration that is checked before does not exist, unplausible
+                error = "bad configuration for owject with id: " + id;
+            else {
+                error = "trap - missing implementation logic for undhandeled dpt: " + dpt
+                    + " type: " + this.gaList?.getDataById(id)?.common?.type;
+                if (this.getSentry())
+                    this.getSentry().captureException(error);
             }
+            console.warn(error);
+            this.log.warn(error);
         }
 
         // @ts-ignore
