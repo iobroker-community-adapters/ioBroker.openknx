@@ -1,215 +1,219 @@
 {
-    "common": {
-        "name": "openknx",
-        "version": "0.6.0",
-        "news": {
-            "0.5.3": {
-                "en": "savek-cc bugfix: Fix handling of addinfo_length - used to crash if addinfo was actually supplied #338\nbugfix: admin menu scroll small screen #339\nfeature: add dpt 9.009",
-                "de": "speicher-cc Bugfix: Fix Handling von addinfo_length - verwendet, um abzustürzen, wenn addinfo tatsächlich geliefert wurde #338\nbugfix: admin-menü scroll kleinen bildschirm #339\nfunktion: dpt 9.009 hinzufügen",
-                "ru": "savek-cc багфикс: Исправление обработки addinfo_length - используется для сбоя, если addinfo был фактически поставлен #338\nbugfix: admin меню прокрутите небольшой экран #339\nфункция: добавить dpt 9.009",
-                "pt": "savek-cc bugfix: Fix manuseio de addinfo_length - usado para travar se addinfo foi realmente fornecido #338\nbugfix: menu admin scroll pequena tela #339\ncaracterística: adicionar dpt 9.009",
-                "nl": "redk-cc bugfix: Vertaling:\nquality over quantity (qoq) releases vertaling:\nvertaling:",
-                "fr": "savek-cc bugfix: Correction de la manipulation de addinfo_length - utilisé pour planter si addinfo a été effectivement fourni #338\nbugfix: menu administrateur défilement petit écran #339\nfonction: ajouter dpt 9.009",
-                "it": "savek-cc bugfix: Fissare la gestione di addinfo_length - usato per crash se addinfo è stato effettivamente fornito #338\nbugfix: admin menu scroll piccolo schermo #339\ncaratteristica: aggiungere dpt 9.009",
-                "es": "savek-cc bugfix: Manejo fijo de addinfo_length - utilizado para chocar si addinfo fue realmente suministrado #338\nbugfix: menú de administración desplazar pequeña pantalla #339\nfunción: añadir dpt 9.009",
-                "pl": "bujny Fix obsługa dodatków - używana do rozbicia, jeżeli dodanie info było w rzeczywistości zaopatrzone na #338\ntrąbka: admin menu zwój mały ekran #339\nprzykład: dpt 9.009",
-                "uk": "removek-cc - відео @ Виправлена обробка довжини addinfo_width - використовується для аварійної ситуації, якщо addinfo було фактично передано #338\nвиправлено помилку: меню адміністратора прокручувати невеликий екран #339\nмфо 322669",
-                "zh-cn": "拯救kccbugfix: 第338号增援物品实际供应时,用于坠落的包装。\nb ugfix:memin menuroll小型屏幕\n特点:增加9.009"
-            },
-            "0.5.2": {
-                "en": "bugfix: correct falsly generated \"confirmation false received\" notifications on high sending load",
-                "de": "bugfix: korrekte falsch generierte \"bestätigung falsch empfangen\" benachrichtigungen auf hoher sendelast",
-                "ru": "bugfix: правильный фальсифицированный \"подтверждение false получил\" уведомления о высокой отправке нагрузки",
-                "pt": "bugfix: corrigir erroneamente gerado \"confirmação falsa recebida\" notificações em alta carga de envio",
-                "nl": "vertaling:",
-                "fr": "bugfix: correcte falsly générée \"confirmation fausse reçue\" notifications sur la charge d'envoi élevée",
-                "it": "bugfix: corretto falsly generato \"conferma false ricevute\" notifiche su alto carico di invio",
-                "es": "bugfix: correcta falsamente generada \"confirmación falsa recibida\" notificaciones en alta carga de envío",
-                "pl": "bugfix: correct falsly generuje fałszywe dane na wysokim wysyłaniu obciążenia",
-                "uk": "виправлення помилок: виправлено помилково створене \"підтвердження помилкового отримання\" повідомлення про високий вантажний вантаж",
-                "zh-cn": "bugfix:正确无误地产生关于高发货的“确认错误”通知"
-            },
-            "0.5.1": {
-                "en": "bugfix: correct falsly generated \"confirmation false received\" notifications on high sending load",
-                "de": "bugfix: korrekte falsch generierte \"bestätigung falsch empfangen\" benachrichtigungen auf hoher sendelast",
-                "ru": "bugfix: правильный фальсифицированный \"подтверждение false получил\" уведомления о высокой отправке нагрузки",
-                "pt": "bugfix: corrigir erroneamente gerado \"confirmação falsa recebida\" notificações em alta carga de envio",
-                "nl": "vertaling:",
-                "fr": "bugfix: correcte falsly générée \"confirmation fausse reçue\" notifications sur la charge d'envoi élevée",
-                "it": "bugfix: corretto falsly generato \"conferma false ricevute\" notifiche su alto carico di invio",
-                "es": "bugfix: correcta falsamente generada \"confirmación falsa recibida\" notificaciones en alta carga de envío",
-                "pl": "bugfix: correct falsly generuje fałszywe dane na wysokim wysyłaniu obciążenia",
-                "uk": "виправлення помилок: виправлено помилково створене \"підтвердження помилкового отримання\" повідомлення про високий вантажний вантаж",
-                "zh-cn": "bugfix:正确无误地产生关于高发货的“确认错误”通知"
-            },
-            "0.5.0": {
-                "en": "-   feature: use common.type boolean for 1 bit enum instead of number\n    import enum with one bit as common.type mixed and not strict as number\n-   handling of iob ack improved for tunneling connections, see description",
-                "de": "- feature: verwenden sie gemeinsam. typ boolean für 1 bit enum statt anzahl\nimport enum mit ein bisschen wie üblich. typ gemischt und nicht streng als zahl\n- handhabung von iob ack verbessert für tunnelverbindungen, siehe beschreibung",
-                "ru": "- функция: использовать общий. тип boolean для 1 бит enum вместо номера\nимпорт enum с одним битом как общий. тип смешанный и не строгий как номер\n- обработка iob ack улучшена для туннелирования соединения, см. описание",
-                "pt": "- recurso: use comum. tipo booleano para 1 bit enum em vez de número\nimportação enum com um pouco como comum. tipo misturado e não estrito como número\n- manipulação de iob ack melhorado para conexões de túnel, ver descrição",
-                "nl": "gebruik gewoon. typ boolean voor 1 cent in plaats van nummer\nimporteer met een beetje zoals gewoonlijk. gemengd en niet strikt als nummer\n- behandelen met iob ack verbeterd voor tunnelverbindingen",
-                "fr": "- caractéristique: utilisation commune. type booléen pour 1 bit enum au lieu du nombre\nimporter enum avec un peu comme commun. type mélangé et non strict\n- le traitement de l'iob ack amélioré pour les connexions de tunnel, voir la description",
-                "it": "- caratteristica: utilizzare comune. tipo boolean per 1 bit enum invece del numero\nimportare enum con un bit come comune. tipo misto e non rigoroso come numero\n- la gestione dell'attacco iob migliorata per i collegamenti di tunneling, vedi descrizione",
-                "es": "- función: usar común. tipo booleano por 1 bit enum en lugar de número\nimporta enum con un poco como común. tipo mixto y no estricto como número\n- manejo de iob ack mejorado para conexiones de túnel, ver descripción",
-                "pl": "wykorzystywanie: wspólne. bulean na 1 bit enum zamiast numeru\nzawartość z jednym bitem jako powszechna. mieszany i nie ścisły\n- obsługa iob udoskonalona dla połączeń tunelowych, zobacz opis iob",
-                "uk": "- функція: використання загального. тип булеан для 1 біт енму замість кількості\nімпортувати енму з одним бітом, як поширений. тип змішаних і не строгий як номер\n- обробка iob ack поліпшена для зв'язків з тунелями, див. опис",
-                "zh-cn": "- 特征:共同使用。 第1条的诱惑而不是数量\n进口有一处是普通的。 类型混杂不清\n- 对隧道的处理改良了碘包,见说明"
-            },
-            "0.4.5": {
-                "en": "bugfix in knx lib: make dpt2 not an enum datatype",
-                "de": "bugfix in knx lib: dpt2 nicht enum datatype",
-                "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
-                "pt": "bugfix em knx lib: fazer dpt2 não um tipo de dados enum",
-                "nl": "maak dpt2 geen enum datat",
-                "fr": "bugfix in knx lib: make dpt2 not an enum datatype",
-                "it": "bugfix in knx lib: make dpt2 not an enum datatype",
-                "es": "bugfix en knx lib: make dpt2 not an enum datatype",
-                "pl": "uszkodzenia w knx lib: czynić dpt2 nie enum datatype",
-                "uk": "виправлення помилок в knx lib: зробити dpt2 нетипові дані",
-                "zh-cn": "b knx lib的ugfix:d2不含一种全局数据。"
-            },
-            "0.4.4": {
-                "en": "bugfix in knx lib: make dpt2 not an enum datatype",
-                "de": "bugfix in knx lib: dpt2 nicht enum datatype",
-                "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
-                "pt": "bugfix em knx lib: fazer dpt2 não um tipo de dados enum",
-                "nl": "maak dpt2 geen enum datat",
-                "fr": "bugfix in knx lib: make dpt2 not an enum datatype",
-                "it": "bugfix in knx lib: make dpt2 not an enum datatype",
-                "es": "bugfix en knx lib: make dpt2 not an enum datatype",
-                "pl": "uszkodzenia w knx lib: czynić dpt2 nie enum datatype",
-                "uk": "виправлення помилок в knx lib: зробити dpt2 нетипові дані",
-                "zh-cn": "b knx lib的ugfix:d2不含一种全局数据。"
-            },
-            "0.4.3": {
-                "en": "bugfix in knx lib: make dpt2 not an enum datatype",
-                "de": "bugfix in knx lib: dpt2 nicht enum datatype",
-                "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
-                "pt": "bugfix em knx lib: fazer dpt2 não um tipo de dados enum",
-                "nl": "maak dpt2 geen enum datat",
-                "fr": "bugfix in knx lib: make dpt2 not an enum datatype",
-                "it": "bugfix in knx lib: make dpt2 not an enum datatype",
-                "es": "bugfix en knx lib: make dpt2 not an enum datatype",
-                "pl": "uszkodzenia w knx lib: czynić dpt2 nie enum datatype",
-                "uk": "виправлення помилок в knx lib: зробити dpt2 нетипові дані",
-                "zh-cn": "b knx lib的ugfix:d2不含一种全局数据。"
-            }
-        },
-        "title": "Open KNX",
-        "titleLang": {
-            "en": "Open KNX",
-            "de": "Open KNX",
-            "ru": "Open KNX",
-            "pt": "Open KNX",
-            "nl": "Open KNX",
-            "fr": "Open KNX",
-            "it": "Open KNX",
-            "es": "Open KNX",
-            "pl": "Open KNX",
-            "zh-cn": "Open KNX",
-            "uk": "Відкрийте KNX"
-        },
-        "desc": {
-            "en": "full featured open-source adapter for KNX",
-            "de": "Kostenloser Open-Source-Adapter, der die KNX Kommunikation über ein IP Gateway ermöglicht.",
-            "ru": "новый бесплатный open-source-адаптер для KNX",
-            "pt": "novo adaptador de código aberto gratuito para KNX",
-            "nl": "nieuwe gratis open-source-adapter voor KNX",
-            "fr": "nouvel adaptateur open-source gratuit pour KNX",
-            "it": "nuovo adattatore open source gratuito per KNX",
-            "es": "nuevo adaptador de código abierto gratuito para KNX",
-            "pl": "nowy darmowy adapter open-source dla KNX",
-            "zh-cn": "用于 KNX 的新免费开源适配器",
-            "uk": "повнофункціональний адаптер з відкритим кодом для KNX"
-        },
-        "authors": ["Boellner <boellnerboellner@gmail.com>"],
-        "contributors": [],
-        "keywords": ["knx free open source eib"],
-        "license": "GPL-3.0-only",
-        "platform": "Javascript/Node.js",
-        "main": "main.js",
-        "icon": "openknx.png",
-        "enabled": true,
-        "messagebox": true,
-        "subscribe": "messagebox",
-        "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.openknx/master/admin/openknx.png",
-        "readme": "https://github.com/iobroker-community-adapters/ioBroker.openknx/blob/master/README.md",
-        "loglevel": "info",
-        "mode": "daemon",
-        "type": "iot-systems",
-        "compact": true,
-        "connectionType": "local",
-        "dataSource": "push",
-        "adminUI": {
-            "config": "materialize"
-        },
-        "eraseOnUpload": true,
-        "plugins": {
-            "sentry": {
-                "dsn": "https://f87a314b36ef451aa291655ae13e2831@sentry.iobroker.net/165"
-            }
-        },
-        "dependencies": [
-            {
-                "js-controller": ">=3.3.22"
-            }
-        ],
-        "globalDependencies": [
-            {
-                "admin": ">=5.0.0"
-            }
-        ],
-        "tier": 2
+  "common": {
+    "name": "openknx",
+    "version": "0.6.1",
+    "news": {
+      "0.6.1": {
+        "en": "feature: add KNX bus load measurement\nfeature: remove standard autoread enable for some DPT1 datatypes which are triggers\nbugfix: in error logging",
+        "de": "feature: KNX Buslastmessung hinzufügen\nfeature: Entfernen Sie die Standard-Autoread-Fähigkeit für einige DPT1-Datentypen, die Trigger sind\nbugfix: im fehlerprotokoll",
+        "ru": "функция: добавьте измерение нагрузки на автобус KNX\nфункция: удалить стандартный авточитал позволяет для некоторых типов данных DPT1, которые являются триггерами\nbugfix: в ошибках входа",
+        "pt": "característica: adicionar medição de carga de ônibus KNX\nrecurso: remova a ativação padrão do autoread para alguns tipos de dados DPT1 que são gatilhos\nbugfix: no registro de erro",
+        "nl": "vertaling:\nverwijder de standaard autoread in staat voor wat DPT1 datatypes die triggers zijn\nin de fout",
+        "fr": "fonction: ajouter la mesure de la charge de bus KNX\nfonction: supprimer l'autoread standard pour certains types de données DPT1 qui sont des déclencheurs\nbugfix: dans l'enregistrement d'erreurs",
+        "it": "caratteristica: aggiungere la misurazione del carico bus KNX\ncaratteristica: rimuovi l'autoread standard abilita per alcuni datitipi DPT1 che sono trigger\nbugfix: nella registrazione degli errori",
+        "es": "característica: añadir KNX bus medición de la carga\nfunción: eliminar la opción estándar de lectura automática para algunos tipos de datos DPT1 que son disparadores\nbugfix: en el registro de errores",
+        "pl": "wykorzystywanie: KNX\nwykorzystywać standardowe autoready umożliwiające niektóre typy danych DPT1, które są uruchamiane\ntrąbka: w błędzie logowania",
+        "uk": "функція: додати вимірювання навантаження на автобус KNX\nфункція: видалення стандартних автопрочитаних пристроїв для деяких типів даних DPT1, які є тригерами\nвиправлення помилок",
+        "zh-cn": "特征:增加KNX汽车载荷测量\n特点:取消标准汽车,使一些DPT1数据型能够触发。\nbugfix:错误伐木"
+      },
+      "0.5.3": {
+        "en": "savek-cc bugfix: Fix handling of addinfo_length - used to crash if addinfo was actually supplied #338\nbugfix: admin menu scroll small screen #339\nfeature: add dpt 9.009",
+        "de": "speicher-cc Bugfix: Fix Handling von addinfo_length - verwendet, um abzustürzen, wenn addinfo tatsächlich geliefert wurde #338\nbugfix: admin-menü scroll kleinen bildschirm #339\nfunktion: dpt 9.009 hinzufügen",
+        "ru": "savek-cc багфикс: Исправление обработки addinfo_length - используется для сбоя, если addinfo был фактически поставлен #338\nbugfix: admin меню прокрутите небольшой экран #339\nфункция: добавить dpt 9.009",
+        "pt": "savek-cc bugfix: Fix manuseio de addinfo_length - usado para travar se addinfo foi realmente fornecido #338\nbugfix: menu admin scroll pequena tela #339\ncaracterística: adicionar dpt 9.009",
+        "nl": "redk-cc bugfix: Vertaling:\nquality over quantity (qoq) releases vertaling:\nvertaling:",
+        "fr": "savek-cc bugfix: Correction de la manipulation de addinfo_length - utilisé pour planter si addinfo a été effectivement fourni #338\nbugfix: menu administrateur défilement petit écran #339\nfonction: ajouter dpt 9.009",
+        "it": "savek-cc bugfix: Fissare la gestione di addinfo_length - usato per crash se addinfo è stato effettivamente fornito #338\nbugfix: admin menu scroll piccolo schermo #339\ncaratteristica: aggiungere dpt 9.009",
+        "es": "savek-cc bugfix: Manejo fijo de addinfo_length - utilizado para chocar si addinfo fue realmente suministrado #338\nbugfix: menú de administración desplazar pequeña pantalla #339\nfunción: añadir dpt 9.009",
+        "pl": "bujny Fix obsługa dodatków - używana do rozbicia, jeżeli dodanie info było w rzeczywistości zaopatrzone na #338\ntrąbka: admin menu zwój mały ekran #339\nprzykład: dpt 9.009",
+        "uk": "removek-cc - відео @ Виправлена обробка довжини addinfo_width - використовується для аварійної ситуації, якщо addinfo було фактично передано #338\nвиправлено помилку: меню адміністратора прокручувати невеликий екран #339\nмфо 322669",
+        "zh-cn": "拯救kccbugfix: 第338号增援物品实际供应时,用于坠落的包装。\nb ugfix:memin menuroll小型屏幕\n特点:增加9.009"
+      },
+      "0.5.2": {
+        "en": "bugfix: correct falsly generated \"confirmation false received\" notifications on high sending load",
+        "de": "bugfix: korrekte falsch generierte \"bestätigung falsch empfangen\" benachrichtigungen auf hoher sendelast",
+        "ru": "bugfix: правильный фальсифицированный \"подтверждение false получил\" уведомления о высокой отправке нагрузки",
+        "pt": "bugfix: corrigir erroneamente gerado \"confirmação falsa recebida\" notificações em alta carga de envio",
+        "nl": "vertaling:",
+        "fr": "bugfix: correcte falsly générée \"confirmation fausse reçue\" notifications sur la charge d'envoi élevée",
+        "it": "bugfix: corretto falsly generato \"conferma false ricevute\" notifiche su alto carico di invio",
+        "es": "bugfix: correcta falsamente generada \"confirmación falsa recibida\" notificaciones en alta carga de envío",
+        "pl": "bugfix: correct falsly generuje fałszywe dane na wysokim wysyłaniu obciążenia",
+        "uk": "виправлення помилок: виправлено помилково створене \"підтвердження помилкового отримання\" повідомлення про високий вантажний вантаж",
+        "zh-cn": "bugfix:正确无误地产生关于高发货的“确认错误”通知"
+      },
+      "0.5.1": {
+        "en": "bugfix: correct falsly generated \"confirmation false received\" notifications on high sending load",
+        "de": "bugfix: korrekte falsch generierte \"bestätigung falsch empfangen\" benachrichtigungen auf hoher sendelast",
+        "ru": "bugfix: правильный фальсифицированный \"подтверждение false получил\" уведомления о высокой отправке нагрузки",
+        "pt": "bugfix: corrigir erroneamente gerado \"confirmação falsa recebida\" notificações em alta carga de envio",
+        "nl": "vertaling:",
+        "fr": "bugfix: correcte falsly générée \"confirmation fausse reçue\" notifications sur la charge d'envoi élevée",
+        "it": "bugfix: corretto falsly generato \"conferma false ricevute\" notifiche su alto carico di invio",
+        "es": "bugfix: correcta falsamente generada \"confirmación falsa recibida\" notificaciones en alta carga de envío",
+        "pl": "bugfix: correct falsly generuje fałszywe dane na wysokim wysyłaniu obciążenia",
+        "uk": "виправлення помилок: виправлено помилково створене \"підтвердження помилкового отримання\" повідомлення про високий вантажний вантаж",
+        "zh-cn": "bugfix:正确无误地产生关于高发货的“确认错误”通知"
+      },
+      "0.5.0": {
+        "en": "-   feature: use common.type boolean for 1 bit enum instead of number\n    import enum with one bit as common.type mixed and not strict as number\n-   handling of iob ack improved for tunneling connections, see description",
+        "de": "- feature: verwenden sie gemeinsam. typ boolean für 1 bit enum statt anzahl\nimport enum mit ein bisschen wie üblich. typ gemischt und nicht streng als zahl\n- handhabung von iob ack verbessert für tunnelverbindungen, siehe beschreibung",
+        "ru": "- функция: использовать общий. тип boolean для 1 бит enum вместо номера\nимпорт enum с одним битом как общий. тип смешанный и не строгий как номер\n- обработка iob ack улучшена для туннелирования соединения, см. описание",
+        "pt": "- recurso: use comum. tipo booleano para 1 bit enum em vez de número\nimportação enum com um pouco como comum. tipo misturado e não estrito como número\n- manipulação de iob ack melhorado para conexões de túnel, ver descrição",
+        "nl": "gebruik gewoon. typ boolean voor 1 cent in plaats van nummer\nimporteer met een beetje zoals gewoonlijk. gemengd en niet strikt als nummer\n- behandelen met iob ack verbeterd voor tunnelverbindingen",
+        "fr": "- caractéristique: utilisation commune. type booléen pour 1 bit enum au lieu du nombre\nimporter enum avec un peu comme commun. type mélangé et non strict\n- le traitement de l'iob ack amélioré pour les connexions de tunnel, voir la description",
+        "it": "- caratteristica: utilizzare comune. tipo boolean per 1 bit enum invece del numero\nimportare enum con un bit come comune. tipo misto e non rigoroso come numero\n- la gestione dell'attacco iob migliorata per i collegamenti di tunneling, vedi descrizione",
+        "es": "- función: usar común. tipo booleano por 1 bit enum en lugar de número\nimporta enum con un poco como común. tipo mixto y no estricto como número\n- manejo de iob ack mejorado para conexiones de túnel, ver descripción",
+        "pl": "wykorzystywanie: wspólne. bulean na 1 bit enum zamiast numeru\nzawartość z jednym bitem jako powszechna. mieszany i nie ścisły\n- obsługa iob udoskonalona dla połączeń tunelowych, zobacz opis iob",
+        "uk": "- функція: використання загального. тип булеан для 1 біт енму замість кількості\nімпортувати енму з одним бітом, як поширений. тип змішаних і не строгий як номер\n- обробка iob ack поліпшена для зв'язків з тунелями, див. опис",
+        "zh-cn": "- 特征:共同使用。 第1条的诱惑而不是数量\n进口有一处是普通的。 类型混杂不清\n- 对隧道的处理改良了碘包,见说明"
+      },
+      "0.4.5": {
+        "en": "bugfix in knx lib: make dpt2 not an enum datatype",
+        "de": "bugfix in knx lib: dpt2 nicht enum datatype",
+        "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
+        "pt": "bugfix em knx lib: fazer dpt2 não um tipo de dados enum",
+        "nl": "maak dpt2 geen enum datat",
+        "fr": "bugfix in knx lib: make dpt2 not an enum datatype",
+        "it": "bugfix in knx lib: make dpt2 not an enum datatype",
+        "es": "bugfix en knx lib: make dpt2 not an enum datatype",
+        "pl": "uszkodzenia w knx lib: czynić dpt2 nie enum datatype",
+        "uk": "виправлення помилок в knx lib: зробити dpt2 нетипові дані",
+        "zh-cn": "b knx lib的ugfix:d2不含一种全局数据。"
+      },
+      "0.4.4": {
+        "en": "bugfix in knx lib: make dpt2 not an enum datatype",
+        "de": "bugfix in knx lib: dpt2 nicht enum datatype",
+        "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
+        "pt": "bugfix em knx lib: fazer dpt2 não um tipo de dados enum",
+        "nl": "maak dpt2 geen enum datat",
+        "fr": "bugfix in knx lib: make dpt2 not an enum datatype",
+        "it": "bugfix in knx lib: make dpt2 not an enum datatype",
+        "es": "bugfix en knx lib: make dpt2 not an enum datatype",
+        "pl": "uszkodzenia w knx lib: czynić dpt2 nie enum datatype",
+        "uk": "виправлення помилок в knx lib: зробити dpt2 нетипові дані",
+        "zh-cn": "b knx lib的ugfix:d2不含一种全局数据。"
+      }
     },
-    "native": {
-        "autoreadEnabled": true,
-        "useBoolean": true,
-        "gwip": "",
-        "gwipport": "3671",
-        "eibadr": "0.0.0",
-        "localInterface": "",
-        "minimumDelay": 50,
-        "aliassRegexp": "stat(e|us)(\\.|$)|rm(\\.|$)|r(ü|ue)ckmeldung(\\.|$)",
-        "aliasSimilarity": 0.9,
-        "aliasPath": "alias.0",
-        "aliasRange": false
+    "title": "Open KNX",
+    "titleLang": {
+      "en": "Open KNX",
+      "de": "Open KNX",
+      "ru": "Open KNX",
+      "pt": "Open KNX",
+      "nl": "Open KNX",
+      "fr": "Open KNX",
+      "it": "Open KNX",
+      "es": "Open KNX",
+      "pl": "Open KNX",
+      "zh-cn": "Open KNX",
+      "uk": "Відкрийте KNX"
     },
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "KNX Gateway connected",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.busload",
-            "type": "state",
-            "common": {
-                "role": "info",
-                "name": "Busload in last 5s period",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "def": 0,
-                "unit": "%"
-            },
-            "native": {}
-        }
-    ]
+    "desc": {
+      "en": "full featured open-source adapter for KNX",
+      "de": "Kostenloser Open-Source-Adapter, der die KNX Kommunikation über ein IP Gateway ermöglicht.",
+      "ru": "новый бесплатный open-source-адаптер для KNX",
+      "pt": "novo adaptador de código aberto gratuito para KNX",
+      "nl": "nieuwe gratis open-source-adapter voor KNX",
+      "fr": "nouvel adaptateur open-source gratuit pour KNX",
+      "it": "nuovo adattatore open source gratuito per KNX",
+      "es": "nuevo adaptador de código abierto gratuito para KNX",
+      "pl": "nowy darmowy adapter open-source dla KNX",
+      "zh-cn": "用于 KNX 的新免费开源适配器",
+      "uk": "повнофункціональний адаптер з відкритим кодом для KNX"
+    },
+    "authors": [
+      "Boellner <boellnerboellner@gmail.com>"
+    ],
+    "contributors": [],
+    "keywords": [
+      "knx free open source eib"
+    ],
+    "license": "GPL-3.0-only",
+    "platform": "Javascript/Node.js",
+    "main": "main.js",
+    "icon": "openknx.png",
+    "enabled": true,
+    "messagebox": true,
+    "subscribe": "messagebox",
+    "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.openknx/master/admin/openknx.png",
+    "readme": "https://github.com/iobroker-community-adapters/ioBroker.openknx/blob/master/README.md",
+    "loglevel": "info",
+    "mode": "daemon",
+    "type": "iot-systems",
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "adminUI": {
+      "config": "materialize"
+    },
+    "eraseOnUpload": true,
+    "plugins": {
+      "sentry": {
+        "dsn": "https://f87a314b36ef451aa291655ae13e2831@sentry.iobroker.net/165"
+      }
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=3.3.22"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=5.0.0"
+      }
+    ],
+    "tier": 2
+  },
+  "native": {
+    "autoreadEnabled": true,
+    "useBoolean": true,
+    "gwip": "",
+    "gwipport": "3671",
+    "eibadr": "0.0.0",
+    "localInterface": "",
+    "minimumDelay": 50,
+    "aliassRegexp": "stat(e|us)(\\.|$)|rm(\\.|$)|r(ü|ue)ckmeldung(\\.|$)",
+    "aliasSimilarity": 0.9,
+    "aliasPath": "alias.0",
+    "aliasRange": false
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "KNX Gateway connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.busload",
+      "type": "state",
+      "common": {
+        "role": "info",
+        "name": "Busload in last 5s period",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "def": 0,
+        "unit": "%"
+      },
+      "native": {}
+    }
+  ]
 }
