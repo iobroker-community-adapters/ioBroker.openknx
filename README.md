@@ -401,6 +401,8 @@ Openknx estimates the current bus load of the KNX line it is connected to in obj
 
 ### 0.6.2 (2023-12-09)
 
+### **WORK IN PROGRESS**
+
 -   stable release
 
 ### 0.6.1 (2023-12-02)
