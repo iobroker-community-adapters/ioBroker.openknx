@@ -398,6 +398,11 @@ Openknx estimates the current bus load of the KNX line it is connected to in obj
   * .... -> this is used by script to generate a new entry, copy after a new release
   * npm run release major/minor/patch major.minor.patch
 -->
+
+### 0.6.2 (2023-12-09)
+
+-   stable release
+
 ### 0.6.1 (2023-12-02)
 
 -   feature: add KNX bus load measurement
