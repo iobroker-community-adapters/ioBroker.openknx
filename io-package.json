@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.6.1",
+    "version": "0.6.2",
     "news": {
+      "0.6.2": {
+        "en": "stable release",
+        "de": "stabiler release",
+        "ru": "стабильный релиз",
+        "pt": "liberação estável",
+        "nl": "stabiele vrijlating",
+        "fr": "libération stable",
+        "it": "rilascio stabile",
+        "es": "liberación estable",
+        "pl": "stabilizacja",
+        "uk": "стабільний реліз",
+        "zh-cn": "稳定释放"
+      },
       "0.6.1": {
         "en": "feature: add KNX bus load measurement\nfeature: remove standard autoread enable for some DPT1 datatypes which are triggers\nbugfix: in error logging",
         "de": "feature: KNX Buslastmessung hinzufügen\nfeature: Entfernen Sie die Standard-Autoread-Fähigkeit für einige DPT1-Datentypen, die Trigger sind\nbugfix: im fehlerprotokoll",
@@ -69,19 +82,6 @@
         "zh-cn": "- 特征:共同使用。 第1条的诱惑而不是数量\n进口有一处是普通的。 类型混杂不清\n- 对隧道的处理改良了碘包,见说明"
       },
       "0.4.5": {
-        "en": "bugfix in knx lib: make dpt2 not an enum datatype",
-        "de": "bugfix in knx lib: dpt2 nicht enum datatype",
-        "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
-        "pt": "bugfix em knx lib: fazer dpt2 não um tipo de dados enum",
-        "nl": "maak dpt2 geen enum datat",
-        "fr": "bugfix in knx lib: make dpt2 not an enum datatype",
-        "it": "bugfix in knx lib: make dpt2 not an enum datatype",
-        "es": "bugfix en knx lib: make dpt2 not an enum datatype",
-        "pl": "uszkodzenia w knx lib: czynić dpt2 nie enum datatype",
-        "uk": "виправлення помилок в knx lib: зробити dpt2 нетипові дані",
-        "zh-cn": "b knx lib的ugfix:d2不含一种全局数据。"
-      },
-      "0.4.4": {
         "en": "bugfix in knx lib: make dpt2 not an enum datatype",
         "de": "bugfix in knx lib: dpt2 nicht enum datatype",
         "ru": "bugfix в knx lib: сделать dpt2 не enum datatype",
