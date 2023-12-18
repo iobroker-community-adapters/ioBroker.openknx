@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.6.3",
+    "version": "0.7.0",
     "news": {
+      "0.7.0": {
+        "en": "feature: adding support for DPT-28 and DPT-29\nfor gas appearing in multiple objects severity lifted to warning\nfeature: some more verbose failure outputs\nbugfix: do not report errors resulting from bad bus data to sentry #433\nbugfix: do not forward invalid bus data to iob object tree\ncleanup of DTP library",
+        "de": "feature: Unterstützung für DPT-28 und DPT-29 hinzufügen\nfür gas in mehreren objekten schwere angehoben, um warnung\nfeature: einige mehr verbose ausfall ausgänge\nbugfix: melden sie keine fehler, die von schlechten busdaten zu senden #433\nbugfix: nicht ungültige busdaten an iob object tree weiterleiten\nreinigung der DTP-Bibliothek",
+        "ru": "функция: добавление поддержки для DPT-28 и DPT-29\nдля газа, появляющегося в нескольких объектах тяжести, поднятых для предупреждения\nособенность: некоторые более глагол выходы сбоя\nbugfix: не сообщайте об ошибках, вытекающих из плохих данных автобуса к отправке #433\nbugfix: не передайте недействительные данные о автобусе в дерево объекта iob\nочистка библиотеки DTP",
+        "pt": "recurso: adicionando suporte para DPT-28 e DPT-29\npara o gás que aparece em múltiplos objetos gravidade levantada para aviso\ncaracterística: algumas saídas de falha mais verbais\nbugfix: não reporte erros resultantes de dados de mau ônibus para sentinela #433\nbugfix: não encaminhar dados de ônibus inválidos para iob árvore de objeto\nlimpeza da biblioteca DTP",
+        "nl": "vertaling:\nvoor gas verschijnen in meerdere objecten, verheven om te waarschuwen\ner zijn nog meer werkwoorden\nmeld geen fouten die resulteren van slechte busgegevens naar sentiment\nstuur geen invalide busgegevens naar iob object boom\nopruimen van de DTP bibliotheek",
+        "fr": "fonction: ajouter du support pour DPT-28 et DPT-29\npour le gaz apparaissant dans plusieurs objets sévérités levés pour avertir\nfonction: quelques sorties d'échec plus verbeux\nbugfix: ne signalez pas les erreurs résultant de mauvaises données de bus à la sentinelle #433\nbugfix: ne pas envoyer de données de bus invalides à iob objet arbre\nnettoyage de la bibliothèque DTP",
+        "it": "funzione: aggiunta di supporto per DPT-28 e DPT-29\nper il gas che appare in più oggetti la gravità sollevata a avvertimento\ncaratteristica: alcune uscite di guasto più verbose\nbugfix: non segnalare errori derivanti dai dati relativi al bus difettoso alla miseria #433\nbugfix: non inoltrare i dati dell'autobus non validi all'albero dell'oggetto iob\npulizia della libreria DTP",
+        "es": "característica: añadir soporte para DPT-28 y DPT-29\npara el gas que aparece en múltiples objetos severidad levantada a advertencia\ncaracterística: algunos más salidas de falla verbosa\nbugfix: no reporte errores resultantes de los malos datos del bus al centinela #433\nbugfix: no reenvíe los datos de bus inválidos a iob objeto árbol\nlimpieza de la biblioteca DTP",
+        "pl": "wykorzystywanie: DPT-28 i DPT-29\nzałóżmy, że gaz pojawia się w wielu obiektach ciężko podnosi się ostrzeżenie\ncechą charakterystyczną jest częściej czasoprzestrzeni\nobserwacje: nie podają błędów wynikających z złych danych autobusowych\ntrąbka: nie przejmuje danych z nieprawidłowego autobusu\nczystość biblioteki DTP",
+        "uk": "функція: додавання підтримки DPT-28 та DPT-29\nдля виявлення газу в декількох об'єктах, що піднімаються на попередження\nфункція: деякі більш дієслова недостатність виходів\nвиправлення помилок, що виникають внаслідок поганих даних автобусів, які надсилаються #433\nвиправлення помилок: не пересилати недійсні дані автобусів на iob\nочищення бібліотеки DTP",
+        "zh-cn": "特色:增加对预防母婴传播和预防疾病29的支持\n多种物品中出现的气体受到警告\n特点:一些更坏的产出\nb ugfix:没有报告因繁忙的汽车数据而造成的错误。\nb ugfix:没有将无效的汽车数据转给目标树\nd. 清洁采购方案图书馆"
+      },
       "0.6.3": {
         "en": "stable release",
         "de": "stabiler release",
@@ -80,19 +93,6 @@
         "pl": "bugfix: correct falsly generuje fałszywe dane na wysokim wysyłaniu obciążenia",
         "uk": "виправлення помилок: виправлено помилково створене \"підтвердження помилкового отримання\" повідомлення про високий вантажний вантаж",
         "zh-cn": "bugfix:正确无误地产生关于高发货的“确认错误”通知"
-      },
-      "0.5.0": {
-        "en": "-   feature: use common.type boolean for 1 bit enum instead of number\n    import enum with one bit as common.type mixed and not strict as number\n-   handling of iob ack improved for tunneling connections, see description",
-        "de": "- feature: verwenden sie gemeinsam. typ boolean für 1 bit enum statt anzahl\nimport enum mit ein bisschen wie üblich. typ gemischt und nicht streng als zahl\n- handhabung von iob ack verbessert für tunnelverbindungen, siehe beschreibung",
-        "ru": "- функция: использовать общий. тип boolean для 1 бит enum вместо номера\nимпорт enum с одним битом как общий. тип смешанный и не строгий как номер\n- обработка iob ack улучшена для туннелирования соединения, см. описание",
-        "pt": "- recurso: use comum. tipo booleano para 1 bit enum em vez de número\nimportação enum com um pouco como comum. tipo misturado e não estrito como número\n- manipulação de iob ack melhorado para conexões de túnel, ver descrição",
-        "nl": "gebruik gewoon. typ boolean voor 1 cent in plaats van nummer\nimporteer met een beetje zoals gewoonlijk. gemengd en niet strikt als nummer\n- behandelen met iob ack verbeterd voor tunnelverbindingen",
-        "fr": "- caractéristique: utilisation commune. type booléen pour 1 bit enum au lieu du nombre\nimporter enum avec un peu comme commun. type mélangé et non strict\n- le traitement de l'iob ack amélioré pour les connexions de tunnel, voir la description",
-        "it": "- caratteristica: utilizzare comune. tipo boolean per 1 bit enum invece del numero\nimportare enum con un bit come comune. tipo misto e non rigoroso come numero\n- la gestione dell'attacco iob migliorata per i collegamenti di tunneling, vedi descrizione",
-        "es": "- función: usar común. tipo booleano por 1 bit enum en lugar de número\nimporta enum con un poco como común. tipo mixto y no estricto como número\n- manejo de iob ack mejorado para conexiones de túnel, ver descripción",
-        "pl": "wykorzystywanie: wspólne. bulean na 1 bit enum zamiast numeru\nzawartość z jednym bitem jako powszechna. mieszany i nie ścisły\n- obsługa iob udoskonalona dla połączeń tunelowych, zobacz opis iob",
-        "uk": "- функція: використання загального. тип булеан для 1 біт енму замість кількості\nімпортувати енму з одним бітом, як поширений. тип змішаних і не строгий як номер\n- обробка iob ack поліпшена для зв'язків з тунелями, див. опис",
-        "zh-cn": "- 特征:共同使用。 第1条的诱惑而不是数量\n进口有一处是普通的。 类型混杂不清\n- 对隧道的处理改良了碘包,见说明"
       }
     },
     "title": "Open KNX",

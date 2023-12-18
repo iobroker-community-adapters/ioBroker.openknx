@@ -402,8 +402,7 @@ Openknx estimates the current bus load of the KNX line it is connected to in obj
   * npm run release
   * npm run release major/minor/patch major.minor.patch
 -->
-
-### **WORK IN PROGRESS**
+### 0.7.0 (2023-12-18)
 
 -   feature: adding support for DPT-28 and DPT-29
 -   for gas appearing in multiple objects severity lifted to warning
