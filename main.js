@@ -41,7 +41,7 @@ class openknx extends utils.Adapter {
         this.knxConnection;
         this.knx = knx;
 
-        //redirect log from knx.js to adapter log
+        //redirect log from knx.js that contain [..] to adapter log
         console.log = (args) => {
             if (args && typeof args === "string") {
                 //handling special messages of the KNX lib
@@ -59,12 +59,15 @@ class openknx extends utils.Adapter {
                     this.log.warn(args);
                 } else if (args.indexOf("[error]") !== -1) {
                     this.log.error(args);
-                    if (this.getSentry()) {
-                        this.getSentry().withScope((scope) => {
-                            scope.setLevel("error");
-                            scope.setExtra("error message", args);
-                            this.getSentry().captureMessage("knx library error event", "error");
-                        });
+                    if (args.indexOf("Conversion error DPT") == -1) {
+                        //do not report errors from bad bus data
+                        if (this.getSentry()) {
+                            this.getSentry().withScope((scope) => {
+                                scope.setLevel("error");
+                                scope.setExtra("error message", args);
+                                this.getSentry().captureMessage("knx library error event", "error");
+                            });
+                        }
                     }
                 } else {
                     //dont forward all other internal console.logs
@@ -424,10 +427,12 @@ class openknx extends utils.Adapter {
                 // configuration that is checked before does not exist, unplausible
                 error = "bad configuration for owject with id: " + id;
             else {
-                error = "trap - missing implementation logic for undhandeled dpt: " + dpt
-                    + " type: " + this.gaList?.getDataById(id)?.common?.type;
-                if (this.getSentry())
-                    this.getSentry().captureException(error);
+                error =
+                    "trap - missing implementation logic for undhandeled DPT: " +
+                    dpt +
+                    " type: " +
+                    this.gaList?.getDataById(id)?.common?.type;
+                if (this.getSentry()) this.getSentry().captureException(error);
             }
             console.warn(error);
             this.log.warn(error);
@@ -558,7 +563,9 @@ class openknx extends utils.Adapter {
                             this.log.debug(`confirmation true received for ${dest} ${id}`);
                         } else {
                             //otherwise keep unset
-                            this.log.info(`confirmation false received for ${dest} ${id}`);
+                            this.log.info(
+                                `confirmation false received for ${dest} ${id}. A revceiver is possibly missing in ETS configuration.`,
+                            );
                         }
                     }
                 },
@@ -594,7 +601,7 @@ class openknx extends utils.Adapter {
 
                         if (id == undefined || data == undefined || dp == undefined) {
                             //debug trap, should not be reached
-                            throw new Error(`Invalid data for GA ${dest}`);
+                            throw new Error(`Invalid data for GA ${dest} id ${id} data ${data} dp ${dp}`);
                         }
 
                         if (tools.isStringDPT(data.native.dpt)) {
@@ -763,10 +770,14 @@ class openknx extends utils.Adapter {
                             //add only elements from tree that are knx objects, identified by a group adress
                             this.gaList.set(id, value.native.address, res.rows[i].value);
                             if (this.gaList.getIdsByGa(value.native.address).length > 1)
-                                this.log.info(
-                                    id + " has assigned a non exclusive group address: " + value.native.address,
+                                this.log.warn(
+                                    id +
+                                        " has assigned a non exclusive group address: " +
+                                        value.native.address +
+                                        ". Consider to delete duplicated entries.",
                                 );
-                        }
+                        } else if (!id.startsWith(this.mynamespace + ".info."))
+                            this.log.warn(`Incomplete configuration in iob object ${id}`);
                     }
                     if (startKnxConnection)
                         try {

@@ -6,7 +6,7 @@
     "Local IPv4 network interface": "Lokale IPv4-Netzwerkschnittstelle",
     "Minimum send delay between two frames [ms]": "Minimale Sendeverzögerung zwischen zwei Frames [ms]",
     "readout values of autoread iob objects on startup": "Auslesewerte von automatisch gelesenen iob-Objekten beim Start",
-    "import only GAs tht do not exist in IOB objects": "Importieren Sie nur GAs, die nicht in IOB-Objekten vorhanden sind",
+    "do not overwrite existing IOB objects": "Importieren Sie nur GAs, die nicht in IOB-Objekten vorhanden sind",
     "remove existing IOB objects that are not in ETS import file": "Entfernen Sie vorhandene IOB-Objekte, die nicht in der ETS Importdatei enthalten sind",
     "use common.type boolean for 1 bit enum instead of number": "Verwenden Sie common.type boolean für 1-Bit-Enum anstelle von Zahl",
     "import ETS xml and save": "ETS xml importieren und speichern",
