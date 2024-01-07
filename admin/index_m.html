@@ -77,7 +77,7 @@
                 }, 1000);
                 if (settings.gwip === undefined) settings.gwip = "127.0.0.1";
                 if (settings.gwipport === undefined) settings.gwipport = 3671;
-                if (settings.minimumDelay === undefined) settings.minimumDelay = 50;
+                if (settings.minimumDelay === undefined) settings.minimumDelay = 80;
                 if (settings.eibadr === undefined) settings.eibadr = "0.0.0";
                 if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
                 if (settings.autoreadEnabled === undefined) settings.autoreadEnabled = false;
@@ -250,7 +250,7 @@
                                 if (!result || result.error) {
                                     let message = "Unknown error";
                                     if (result && result.error) {
-                                        message = `Imported ${result.count} states successfully<br/><br/>\n${result.error}`;
+                                        message = `Imported ${result.count} states successfully<p>${result.error}</p><p>See log for more information</p>`;
                                     }
                                     showMessage(_(message));
                                 } else {

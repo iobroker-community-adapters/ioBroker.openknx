@@ -41,6 +41,10 @@ class openknx extends utils.Adapter {
         this.knxConnection;
         this.knx = knx;
 
+        this.timeout1;
+        this.timeout2;
+        this.interval1;
+
         //redirect log from knx.js that contain [..] to adapter log
         console.log = (args) => {
             if (args && typeof args === "string") {
@@ -51,7 +55,7 @@ class openknx extends utils.Adapter {
                     //this.log.warn("possible data loss due to gateway reset, consider increasing minimum send delay between two frames");
                 }
 
-                if (args.indexOf("[debug]") !== -1 || args.indexOf("[trace]") !== -1) {
+                if (args.indexOf("[trace]") !== -1 || args.indexOf("[debug]") !== -1) {
                     this.log.silly(args);
                 } else if (args.indexOf("[info]") !== -1) {
                     this.log.info(args);
@@ -96,6 +100,7 @@ class openknx extends utils.Adapter {
 
         // In order to get state updates, you need to subscribe to them.
         this.subscribeStates("*");
+        this.setState("info.busload", 0, true);
 
         this.main(true);
     }
@@ -107,20 +112,18 @@ class openknx extends utils.Adapter {
     onUnload(callback) {
         try {
             // Here you must clear all timeouts or intervals that may still be active
-            // clearTimeout(timeout1);
-            // clearTimeout(timeout2);
-            // ...
-            // clearInterval(interval1);
+            clearTimeout(this.timeout1);
+            clearTimeout(this.timeout2);
+            clearInterval(this.interval1);
+
             this.startup = true;
             if (this.knxConnection) {
                 exitHook((cb) => {
                     this.knxConnection.Disconnect(() => {
-                        cb();
+                        callback();
                     });
                 });
-            }
-
-            callback();
+            } else callback();
         } catch (e) {
             callback();
         }
@@ -143,9 +146,9 @@ class openknx extends utils.Adapter {
                                 count: length,
                             };
 
-                            if (obj.message.removeUnusedObjects) this.removeUnusedObjects(res);
+                            this.removeUnusedObjects(res, obj.message.removeUnusedObjects);
 
-                            this.log.info("Project import finished of " + length + " GAs");
+                            this.log.info("Project import finished with " + length + " GAs");
                             if (obj.callback) {
                                 this.sendTo(obj.from, obj.command, msg, obj.callback);
                             }
@@ -209,7 +212,7 @@ class openknx extends utils.Adapter {
     /*
      * remove knx elements that are not found in the current import file
      */
-    async removeUnusedObjects(importObjects) {
+    async removeUnusedObjects(importObjects, removeUnusedObjects) {
         const objects = await this.getAdapterObjectsAsync();
 
         Object.entries(objects).map((object) => {
@@ -224,13 +227,18 @@ class openknx extends utils.Adapter {
             } else {
                 const found = importObjects.find((element) => this.mynamespace + "." + element._id === object[0]);
                 if (!found) {
-                    //knx element in object tree not found in importer file
-                    this.delObject(object[0], (err) => {
-                        //this.log.info("delete object from tree not found in import " + object[0]);
-                        if (err) {
-                            this.log.warn("could not delete object " + object[0]);
-                        }
-                    });
+                    //knx element in object tree not found in import file
+                    this.log.info(
+                        `${removeUnusedObjects ? "deleting" : ""} 
+                         existing element in object tree not found in import file: ${object[0]}`,
+                    );
+                    if (removeUnusedObjects) {
+                        this.delObject(object[0], (err) => {
+                            if (err) {
+                                this.log.warn("could not delete object " + object[0]);
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -285,7 +293,14 @@ class openknx extends utils.Adapter {
                 if (err) {
                     this.log.warn("error store Object " + objects[i]._id + " " + (err ? " " + err : ""));
                 }
-                setTimeout(this.updateObjects.bind(this), 0, objects, i + 1, onlyAddNewObjects, callback);
+                this.timeout1 = setTimeout(
+                    this.updateObjects.bind(this),
+                    0,
+                    objects,
+                    i + 1,
+                    onlyAddNewObjects,
+                    callback,
+                );
             });
         } else {
             //setObjet to overwrite all existing settings, default
@@ -293,7 +308,14 @@ class openknx extends utils.Adapter {
                 if (err) {
                     this.log.warn("error store Object " + objects[i]._id + (err ? " " + err : ""));
                 }
-                setTimeout(this.updateObjects.bind(this), 0, objects, i + 1, onlyAddNewObjects, callback);
+                this.timeout2 = setTimeout(
+                    this.updateObjects.bind(this),
+                    0,
+                    objects,
+                    i + 1,
+                    onlyAddNewObjects,
+                    callback,
+                );
             });
         }
     }
@@ -425,12 +447,12 @@ class openknx extends utils.Adapter {
             let error;
             if (!this.gaList.getDataById(id).common || !this.gaList.getDataById(id).common.type)
                 // configuration that is checked before does not exist, unplausible
-                error = "bad configuration for owject with id: " + id;
+                error = "bad or missing configuration for object with id: " + id;
             else {
                 error =
-                    "trap - missing implementation logic for undhandeled DPT: " +
+                    "cannot interprete data, please check your configuration." +
                     dpt +
-                    " type: " +
+                    " unplausible type: " +
                     this.gaList?.getDataById(id)?.common?.type;
                 if (this.getSentry()) this.getSentry().captureException(error);
             }
@@ -443,38 +465,31 @@ class openknx extends utils.Adapter {
             //interface to trigger GrouValue_Read is this object comment or StateQuality 16
             this.log.debug("Outbound GroupValue_Read to GA " + ga);
             this.knxConnection.read(ga, () => {
-                loadMeasurement.logBusEvent();
                 //ack is generated with GroupValue_Response
             });
             return "read";
         } else if (this.gaList.getDataById(id).common.write) {
             this.log.debug(
-                `Outbound GroupValue_Write to " ${ga} val: ${isRaw ? rawVal : JSON.stringify(knxVal)} from ${id}`,
+                `Outbound GroupValue_Write to " ${ga} value: ${isRaw ? rawVal : JSON.stringify(knxVal)} from ${id}`,
             );
             if (isRaw) {
-                this.knxConnection.writeRaw(ga, rawVal, (grpaddr, confirmed) => {
-                    loadMeasurement.logBusEvent();
+                this.knxConnection.writeRaw(ga, rawVal, (grpaddr, confirmed, timeout) => {
                     //l_data.con confirmation set by any receiver connected to the ga
                     if (confirmed) {
-                        //set iob ack when value sent successful on the bus otherwise keep unset
-                        this.setState(id, {
-                            ack: true,
-                        });
-                        this.log.debug(`GroupValue_Write confirmation ${confirmed} received for ${grpaddr} ${id}`);
-                    } else this.log.info(`GroupValue_Write confirmation ${confirmed} received for ${grpaddr} ${id}`);
+                        //iob ack is set in event handler when value is sent successfully on the bus, otherwise keep unset
+                        this.log.debug(`GroupValue_Write confirmation true received for ${grpaddr} ${id}`);
+                    } else if (timeout) this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
+                    else this.log.info(`GroupValue_Write confirmation false received for ${grpaddr} ${id}`);
                 });
                 return "write raw";
             } else {
-                this.knxConnection.write(ga, knxVal, dpt, (grpaddr, confirmed) => {
-                    loadMeasurement.logBusEvent();
+                this.knxConnection.write(ga, knxVal, dpt, (grpaddr, confirmed, timeout) => {
                     //l_data.con confirmation set by any receiver connected to the ga
                     if (confirmed) {
-                        //set iob ack when value sent successful on the bus otherwise keep unset
-                        this.setState(id, {
-                            ack: true,
-                        });
-                        this.log.debug(`GroupValue_Write confirmation ${confirmed} received for ${grpaddr} ${id}`);
-                    } else this.log.info(`GroupValue_Write confirmation ${confirmed} received for ${grpaddr} ${id}`);
+                        //iob ack is set in event handler when value is sent successfully on the bus, otherwise keep unset
+                        this.log.info(`GroupValue_Write confirmation true received for ${grpaddr} ${id}`);//todo .debug
+                    } else if (timeout) this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
+                    else this.log.info(`GroupValue_Write confirmation false received for ${grpaddr} ${id}`);
                 });
                 return "write";
             }
@@ -500,6 +515,9 @@ class openknx extends utils.Adapter {
             //debug:
             handlers: {
                 connected: () => {
+                    this.log.info("Connected!");
+                    this.setState("info.messagecount", 0, true);
+
                     //create new knx datapoint and bind to connection
                     //in order to have autoread work
                     let cnt_withDPT = 0;
@@ -532,15 +550,13 @@ class openknx extends utils.Adapter {
                                     } ${this.gaList.getDataById(key).native.address} ${key}`,
                                 );
                             } catch (e) {
-                                this.log.error("could not create KNX Datapoint for " + key + " with error: " + e);
+                                this.log.error("Could not create KNX Datapoint for " + key + " with error: " + e);
                             }
                         }
                         this.autoreaddone = true;
                         this.countObjectsNotification(cnt_withDPT);
                     }
                     this.setState("info.connection", true, true);
-                    this.setState("info.busload", 0, true);
-                    this.log.info("Connected!");
                 },
 
                 disconnected: () => {
@@ -548,7 +564,7 @@ class openknx extends utils.Adapter {
                     this.setState("info.busload", 0, true);
                     if (this.startup != true) {
                         //do not warn on initial startup or shutdown
-                        this.log.warn("Connection lost");
+                        this.log.error("Connection lost");
                     }
                     this.startup = false;
                 },
@@ -560,11 +576,11 @@ class openknx extends utils.Adapter {
                 confirmed: (dest, confirmed) => {
                     for (const id of this.gaList.getIdsByGa(dest)) {
                         if (confirmed) {
-                            this.log.debug(`confirmation true received for ${dest} ${id}`);
+                            this.log.debug(`A receiver confirmed reception of our message for ${dest} ${id}`);
                         } else {
                             //otherwise keep unset
                             this.log.info(
-                                `confirmation false received for ${dest} ${id}. A revceiver is possibly missing in ETS configuration.`,
+                                `Got confirmation flag false for ${dest} ${id}. Possibly no receiver available or missing ETS receiver configuration.`,
                             );
                         }
                     }
@@ -584,14 +600,15 @@ class openknx extends utils.Adapter {
                     let ret = "unknown";
 
                     loadMeasurement.logBusEvent();
+                    this.setState("info.busload", 0, true);
 
                     /* some checks */
                     if (dest == "0/0/0" || tools.isDeviceAddress(dest)) {
                         //seems that knx lib does not guarantee dest group adresses
                         return "bad address";
                     }
-                    if (!this.gaList.getIdsByGa(dest)) {
-                        this.log.warn(`Ignoring ${evt} received unknown GA: ${dest}`);
+                    if (!this.gaList.getIdsByGa(dest).length) {
+                        this.log.warn(`Ignoring ${evt} of of unknown GA ${dest}`);
                         return "unknown GA";
                     }
 
@@ -647,7 +664,7 @@ class openknx extends utils.Adapter {
                                     ack: true,
                                 });
                                 this.log.debug(
-                                    `Inbound GroupValue_Response indication from ${src} GA ${dest} to Object: ${id} val: ${convertedVal} dpt: ${data.native.dpt}`,
+                                    `Inbound GroupValue_Response indication from ${src} GA ${dest} to Object ${id} value: ${convertedVal} dpt: ${data.native.dpt}`,
                                 );
                                 ret = "GroupValue_Response";
                                 break;
@@ -658,7 +675,7 @@ class openknx extends utils.Adapter {
                                     ack: true,
                                 });
                                 this.log.debug(
-                                    `Inbound GroupValue_Write indication from ${src} GA ${dest} to Object: ${id} val: ${convertedVal} dpt: ${data.native.dpt}`,
+                                    `Inbound GroupValue_Write indication from ${src} GA ${dest} to Object ${id} value: ${convertedVal} dpt: ${data.native.dpt}`,
                                 );
                                 ret = "GroupValue_Write";
                                 break;
@@ -713,7 +730,11 @@ class openknx extends utils.Adapter {
             (e, result) => {
                 if (result)
                     this.log.info(
-                        "Found " + cnt_withDPT + " valid KNX objects of " + result.rows.length + " objects in adapter.",
+                        "Found " +
+                            cnt_withDPT +
+                            " valid KNX objects of " +
+                            result.rows.length +
+                            " objects in this adapter.",
                     );
             },
         );
@@ -739,7 +760,7 @@ class openknx extends utils.Adapter {
 
         const self = this;
         this.setState("info.connection", false, true);
-        setInterval(function () {
+        this.interval1 = setInterval(function () {
             const busload = loadMeasurement.cyclic();
             self.setState("info.busload", busload, true);
         }, loadMeasurement.intervalTime);
@@ -774,7 +795,7 @@ class openknx extends utils.Adapter {
                                     id +
                                         " has assigned a non exclusive group address: " +
                                         value.native.address +
-                                        ". Consider to delete duplicated entries.",
+                                        ". Consider to delete duplicate entries.",
                                 );
                         } else if (!id.startsWith(this.mynamespace + ".info."))
                             this.log.warn(`Incomplete configuration in iob object ${id}`);

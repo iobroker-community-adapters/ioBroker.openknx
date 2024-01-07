@@ -172,7 +172,7 @@
     "gwipport": "3671",
     "eibadr": "0.0.0",
     "localInterface": "",
-    "minimumDelay": 50,
+    "minimumDelay": 80,
     "aliassRegexp": "stat(e|us)(\\.|$)|rm(\\.|$)|r(ü|ue)ckmeldung(\\.|$)",
     "aliasSimilarity": 0.9,
     "aliasPath": "alias.0",
@@ -212,6 +212,19 @@
         "write": false,
         "def": 0,
         "unit": "%"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.messagecount",
+      "type": "state",
+      "common": {
+        "role": "info",
+        "name": "Message count",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "def": 0
       },
       "native": {}
     }
