@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "news": {
+      "0.7.1": {
+        "en": "feature: when requesting fast message sendout create iob acks per bus message status, before it triggered all acks on first message send confirmance\nfeature: add message count object\nfeature: use common.desc from ets xml Description field and move datatype info to native\ncleanup: stop timers on shutdown\nbugfix: create a log entry on reception of unknown ga\nbugfix: do not count send as duplicate trigger in load measurement\nincrease default minimum send delay to 80ms",
+        "de": "feature: bei der anforderung von schnellnachrichten senden erstellen iob acks pro busnachrichtenstatus, bevor es alle acks auf erste nachricht senden bestätigung ausgelöst\nfunktion: nachrichtenzählobjekt hinzufügen\nfeature: verwenden Sie gemeinsam. desc from ets xml Beschreibung Feld und bewegen Sie Datentyp-Info zu nativen\naufräumen: stoppzeiter beim abschalten\nbugfix: erstellen sie einen log-eintrag an der rezeption unbekannter ga\nbugfix: nicht als duplikat-trigger in der load-messung senden\nverzugsverzögerung auf 80m erhöhen",
+        "ru": "функция: при запросе быстрого отправки сообщения создайте iob acks на статус сообщения в автобусе, прежде чем он запускает все носки в первом сообщении\nособенность: добавить объект\nособенность: использовать общее. Деск от ets xml Описание поле и переместить информацию типа данных на родной\nочистка: остановите таймеры\nbugfix: создать запись журнала на приеме неизвестной ga\nbugfix: не считать отправку в качестве дублирующего триггера при измерении нагрузки\nувеличение минимальной задержки отправки по умолчанию до 80 мс",
+        "pt": "recurso: ao solicitar mensagem rápida sendout criar acks iob por status de mensagem de ônibus, antes de desencadear todas as acks na primeira mensagem enviar confirmação\nrecurso: adicionar objeto de contagem de mensagens\nrecurso: use comum. desc de ets xml Descrição campo e mover informações do tipo de dados para nativo\nlimpeza: pára temporizadores no desligamento\nbugfix: criar uma entrada de log na recepção de desconhecido ga\nbugfix: não conte enviar como gatilho duplicado na medição de carga\naumento padrão mínimo enviar atraso para 80ms",
+        "nl": "functie: bij het aanvragen van snelle bericht sendout maak iob acks per bus bericht status, voordat het geactiveerd alle acks op eerste bericht bevestiging te sturen\nfeature: voeg bericht tellen object toe\nfunctie: gebruik gemeenschappelijk. desc van ets xml Beschrijving veld en verplaats datatype informatie naar native\nopruimen: stop timers bij afsluiten\nbugfix: maak een logboek bij ontvangst van onbekende ga\nbugfix: niet meetellen als dubbele trigger in belastingsmeting\nverhoog standaard minimale vertraging naar 80ms",
+        "fr": "fonctionnalité: lors de la demande d'envoi de message rapide créer iob aks par statut de message de bus, avant qu'il ait déclenché tous les acks sur le premier message envoyer confirmation\nfonctionnalité: ajouter un objet de compte de message\ncaractéristique: utiliser commun. desc de ets xml Description champ et déplacer datatype info vers native\nnettoyage: arrêt des minuteries à l'arrêt\nbugfix : créez une entrée de journal à la réception de ga inconnu\nbugfix : ne comptez pas l'envoi comme duplicata dans la mesure de la charge\naugmenter le délai d'envoi minimum par défaut à 80ms",
+        "it": "funzione: quando si richiede l'invio di messaggi rapidi creare iob acks per lo stato del messaggio dell'autobus, prima che abbia attivato tutte le zecche sul primo messaggio inviare conferma\nfunzione: aggiungere oggetto conteggio messaggi\ncaratteristica: usare comune. desc da ets xml Descrizione campo e spostare informazioni di tipo nativo\npulizia: tempori di arresto all'arresto\nbugfix: creare una voce di log sulla ricezione di ga sconosciuto\nbugfix: non contare inviare come trigger duplicato nella misurazione del carico\naumentare il ritardo minimo di invio predefinito a 80ms",
+        "es": "función: al solicitar el envío rápido de mensajes crear acks iob por estado de mensaje de autobús, antes de que desencadenar todos los acks en el primer mensaje enviar confirmación\ncaracterística: añadir mensaje contar objeto\nfunción: usar común. desc de ets xml Descripción campo y mover información tipo de datos a nativo\nlimpieza: parar los temporizadores en apagado\nbugfix: crear una entrada de registro en la recepción de ga desconocido\nbugfix: no cuente enviar como disparador duplicado en medición de carga\naumentar el mínimo predeterminado enviar retraso a 80ms",
+        "pl": "funkcja: przy żądaniu szybkiej wiadomości sendout tworzyć iob acks na autobus status wiadomości, zanim uruchomi wszystkie acks na pierwszej wiadomości wysłać potwierdzenie\nfunkcja: dodaj obiekt liczenia wiadomości\ncecha: używać często. desc z ets xml Opis pola i przenieść dane typu do rodzimej\nczyszczenie: czas zatrzymania przy wyłączaniu\nbugfix: utworzyć wpis logowania na recepcji nieznanego ga\nbugfix: nie licz wysyłania jako duplikat wyzwalacza w pomiarze obciążenia\nzwiększyć domyślne minimalne opóźnienie wysyłania do 80ms",
+        "uk": "функція: при запитуванні швидкого відправки повідомлень створюйте iob acks на статус повідомлення про автобус, перш ніж він запустив всі acks на першому повідомленні підтвердження\nфункція: додати об'єкт підрахунку повідомлень\nфункція: використовувати загальний. desc з ets xml Опис поля та переміщення інформації про тип даних для рідних\nприбиральниця: зупинити таймери на відключенні\nвиправлення помилок: створити запис журналу на прийом невідомого\nвиправлення помилок: не підрахуйте надсилання як дублікати вимірювання навантаження\nзбільшити мінімальну затримку за замовчуванням до 80ms",
+        "zh-cn": "特性 : 当请求快速消息发送时, 每个总线消息状态都会创建 iob ocks , 在它触发第一个消息发送确认上的所有 ocks 之前\n特性: 添加信件计数对象\n特性: 常用。 desc from ets xml 描述字段,并将数据类型信息移动到本地\n清理:关闭时停止计时器\nbugfix: 在接收未知的 ga 时创建日志条目\n错误修正 : 在负载测量中不将发送算作重复触发\n将默认的最小延迟发送到 80ms"
+      },
       "0.7.0": {
         "en": "feature: adding support for DPT-28 and DPT-29\nfor gas appearing in multiple objects severity lifted to warning\nfeature: some more verbose failure outputs\nbugfix: do not report errors resulting from bad bus data to sentry #433\nbugfix: do not forward invalid bus data to iob object tree\ncleanup of DTP library",
         "de": "feature: Unterstützung für DPT-28 und DPT-29 hinzufügen\nfür gas in mehreren objekten schwere angehoben, um warnung\nfeature: einige mehr verbose ausfall ausgänge\nbugfix: melden sie keine fehler, die von schlechten busdaten zu senden #433\nbugfix: nicht ungültige busdaten an iob object tree weiterleiten\nreinigung der DTP-Bibliothek",
@@ -69,19 +82,6 @@
         "zh-cn": "拯救kccbugfix: 第338号增援物品实际供应时,用于坠落的包装。\nb ugfix:memin menuroll小型屏幕\n特点:增加9.009"
       },
       "0.5.2": {
-        "en": "bugfix: correct falsly generated \"confirmation false received\" notifications on high sending load",
-        "de": "bugfix: korrekte falsch generierte \"bestätigung falsch empfangen\" benachrichtigungen auf hoher sendelast",
-        "ru": "bugfix: правильный фальсифицированный \"подтверждение false получил\" уведомления о высокой отправке нагрузки",
-        "pt": "bugfix: corrigir erroneamente gerado \"confirmação falsa recebida\" notificações em alta carga de envio",
-        "nl": "vertaling:",
-        "fr": "bugfix: correcte falsly générée \"confirmation fausse reçue\" notifications sur la charge d'envoi élevée",
-        "it": "bugfix: corretto falsly generato \"conferma false ricevute\" notifiche su alto carico di invio",
-        "es": "bugfix: correcta falsamente generada \"confirmación falsa recibida\" notificaciones en alta carga de envío",
-        "pl": "bugfix: correct falsly generuje fałszywe dane na wysokim wysyłaniu obciążenia",
-        "uk": "виправлення помилок: виправлено помилково створене \"підтвердження помилкового отримання\" повідомлення про високий вантажний вантаж",
-        "zh-cn": "bugfix:正确无误地产生关于高发货的“确认错误”通知"
-      },
-      "0.5.1": {
         "en": "bugfix: correct falsly generated \"confirmation false received\" notifications on high sending load",
         "de": "bugfix: korrekte falsch generierte \"bestätigung falsch empfangen\" benachrichtigungen auf hoher sendelast",
         "ru": "bugfix: правильный фальсифицированный \"подтверждение false получил\" уведомления о высокой отправке нагрузки",

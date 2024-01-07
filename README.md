@@ -402,8 +402,7 @@ Openknx estimates the current bus load of the KNX line it is connected to in obj
   * npm run release
   * npm run release major/minor/patch major.minor.patch
 -->
-
-### **WORK IN PROGRESS**
+### 0.7.1 (2024-01-07)
 
 -   feature: when requesting fast message sendout create iob acks per bus message status, before it triggered all acks on first message send confirmance
 -   feature: add message count object
