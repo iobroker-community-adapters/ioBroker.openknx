@@ -477,9 +477,9 @@ class openknx extends utils.Adapter {
                     //l_data.con confirmation set by any receiver connected to the ga
                     if (confirmed) {
                         //iob ack is set in event handler when value is sent successfully on the bus, otherwise keep unset
-                        this.log.debug(`GroupValue_Write confirmation true received for ${grpaddr} ${id}`);
+                        this.log.debug(`Inbound GroupValue_Write confirmation true received for ${grpaddr} ${id}`);
                     } else if (timeout) this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
-                    else this.log.info(`GroupValue_Write confirmation false received for ${grpaddr} ${id}`);
+                    else this.log.info(`Inbound GroupValue_Write confirmation false received for ${grpaddr} ${id}`);
                 });
                 return "write raw";
             } else {
@@ -487,9 +487,9 @@ class openknx extends utils.Adapter {
                     //l_data.con confirmation set by any receiver connected to the ga
                     if (confirmed) {
                         //iob ack is set in event handler when value is sent successfully on the bus, otherwise keep unset
-                        this.log.info(`GroupValue_Write confirmation true received for ${grpaddr} ${id}`);//todo .debug
+                        this.log.debug(`Inbound GroupValue_Write confirmation true received for ${grpaddr} ${id}`);
                     } else if (timeout) this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
-                    else this.log.info(`GroupValue_Write confirmation false received for ${grpaddr} ${id}`);
+                    else this.log.info(`Inbound GroupValue_Write confirmation false received for ${grpaddr} ${id}`);
                 });
                 return "write";
             }
@@ -634,7 +634,7 @@ class openknx extends utils.Adapter {
                                     let ret;
                                     if (state) {
                                         this.log.debug(
-                                            `Inbound GroupValue_Read indication from ${src} GA ${dest} to ${id}`,
+                                            `Inbound GroupValue_Read from ${src} GA ${dest} to ${id}`,
                                         );
                                         ret = "GroupValue_Read";
                                         if (this.gaList.getDataById(id).native.answer_groupValueResponse) {
@@ -664,7 +664,7 @@ class openknx extends utils.Adapter {
                                     ack: true,
                                 });
                                 this.log.debug(
-                                    `Inbound GroupValue_Response indication from ${src} GA ${dest} to Object ${id} value: ${convertedVal} dpt: ${data.native.dpt}`,
+                                    `Inbound GroupValue_Response from ${src} GA ${dest} to Object ${id} value: ${convertedVal} dpt: ${data.native.dpt}`,
                                 );
                                 ret = "GroupValue_Response";
                                 break;
@@ -675,7 +675,7 @@ class openknx extends utils.Adapter {
                                     ack: true,
                                 });
                                 this.log.debug(
-                                    `Inbound GroupValue_Write indication from ${src} GA ${dest} to Object ${id} value: ${convertedVal} dpt: ${data.native.dpt}`,
+                                    `Inbound GroupValue_Write from ${src} GA ${dest} to Object ${id} value: ${convertedVal} dpt: ${data.native.dpt}`,
                                 );
                                 ret = "GroupValue_Write";
                                 break;
