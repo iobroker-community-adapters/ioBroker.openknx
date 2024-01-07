@@ -663,7 +663,7 @@ Openknx estimates the current bus load of the KNX line it is connected to in obj
 
 ## License
 
-Copyright 2023 contributors to the ioBroker.openknx project
+Copyright 2024 contributors to the ioBroker.openknx project
 
     				GNU GENERAL PUBLIC LICENSE
 
