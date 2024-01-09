@@ -404,12 +404,10 @@ Openknx estimates the current bus load of the KNX line it is connected to in obj
 -->
 
   ### **WORK IN PROGRESS**
-
-### **WORK IN PROGRESS**
+### 0.7.2 (2024-01-09)
 - feature: handle network connection instability issesues
 - feature: generate more log messages
 - bugfix: telegram count
-
 
 ### 0.7.1 (2024-01-07)
 

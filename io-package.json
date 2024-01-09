@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.7.1",
+    "version": "0.7.2",
     "news": {
+      "0.7.2": {
+        "en": "feature: handle network connection instability issesues\nfeature: generate more log messages\nbugfix: telegram count",
+        "de": "funktion: netzwerk-verbindung instabilität ist\nfeature: mehr log-nachrichten generieren\nbugfix: telegrammzählung",
+        "ru": "особенность: обрабатывать нестабильность сетевого подключения\nфункция: генерировать больше сообщений журнала\nbugfix: число телеграмм",
+        "pt": "característica: lidar com issesues de instabilidade de conexão de rede\nrecurso: gerar mais mensagens de log\nbugfix: contagem de telegramas",
+        "nl": "feature: handle netwerkverbinding instabiliteit issesues\nfunctie: meer logberichten genereren\nbugfix: aantal telegrammen",
+        "fr": "caractéristique: gérer l'instabilité de connexion réseau issesues\nfonctionnalité: générer plus de messages journal\nbugfix : nombre de télégrammes",
+        "it": "funzione: gestire connessioni di rete instabilità esue\nfunzione: generare più messaggi di log\nbugfix: conta telegram",
+        "es": "característica: manejar la inestabilidad de conexión de red issesues\nfunción: generar más mensajes de registro\nbugfix: cuenta de telegramas",
+        "pl": "cecha: uchwyt niestabilności połączeń sieciowych\nfunkcja: generować więcej wiadomości dziennika\nbugfix: liczba telegramów",
+        "uk": "особливість: нестійкість підключення ручок\nфункція: генерувати більше повідомлень журналу\nвиправлення помилок: кількість телеграм",
+        "zh-cn": "特性: 处理网络连接不稳定性\n特性: 生成更多日志消息\n错误修正: 电报计数"
+      },
       "0.7.1": {
         "en": "feature: when requesting fast message sendout create iob acks per bus message status, before it triggered all acks on first message send confirmance\nfeature: add message count object\nfeature: use common.desc from ets xml Description field and move datatype info to native\ncleanup: stop timers on shutdown\nbugfix: create a log entry on reception of unknown ga\nbugfix: do not count send as duplicate trigger in load measurement\nincrease default minimum send delay to 80ms",
         "de": "feature: bei der anforderung von schnellnachrichten senden erstellen iob acks pro busnachrichtenstatus, bevor es alle acks auf erste nachricht senden bestätigung ausgelöst\nfunktion: nachrichtenzählobjekt hinzufügen\nfeature: verwenden Sie gemeinsam. desc from ets xml Beschreibung Feld und bewegen Sie Datentyp-Info zu nativen\naufräumen: stoppzeiter beim abschalten\nbugfix: erstellen sie einen log-eintrag an der rezeption unbekannter ga\nbugfix: nicht als duplikat-trigger in der load-messung senden\nverzugsverzögerung auf 80m erhöhen",
@@ -80,19 +93,6 @@
         "pl": "bujny Fix obsługa dodatków - używana do rozbicia, jeżeli dodanie info było w rzeczywistości zaopatrzone na #338\ntrąbka: admin menu zwój mały ekran #339\nprzykład: dpt 9.009",
         "uk": "removek-cc - відео @ Виправлена обробка довжини addinfo_width - використовується для аварійної ситуації, якщо addinfo було фактично передано #338\nвиправлено помилку: меню адміністратора прокручувати невеликий екран #339\nмфо 322669",
         "zh-cn": "拯救kccbugfix: 第338号增援物品实际供应时,用于坠落的包装。\nb ugfix:memin menuroll小型屏幕\n特点:增加9.009"
-      },
-      "0.5.2": {
-        "en": "bugfix: correct falsly generated \"confirmation false received\" notifications on high sending load",
-        "de": "bugfix: korrekte falsch generierte \"bestätigung falsch empfangen\" benachrichtigungen auf hoher sendelast",
-        "ru": "bugfix: правильный фальсифицированный \"подтверждение false получил\" уведомления о высокой отправке нагрузки",
-        "pt": "bugfix: corrigir erroneamente gerado \"confirmação falsa recebida\" notificações em alta carga de envio",
-        "nl": "vertaling:",
-        "fr": "bugfix: correcte falsly générée \"confirmation fausse reçue\" notifications sur la charge d'envoi élevée",
-        "it": "bugfix: corretto falsly generato \"conferma false ricevute\" notifiche su alto carico di invio",
-        "es": "bugfix: correcta falsamente generada \"confirmación falsa recibida\" notificaciones en alta carga de envío",
-        "pl": "bugfix: correct falsly generuje fałszywe dane na wysokim wysyłaniu obciążenia",
-        "uk": "виправлення помилок: виправлено помилково створене \"підтвердження помилкового отримання\" повідомлення про високий вантажний вантаж",
-        "zh-cn": "bugfix:正确无误地产生关于高发货的“确认错误”通知"
       }
     },
     "title": "Open KNX",
