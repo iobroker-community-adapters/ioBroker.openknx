@@ -40,6 +40,7 @@ class openknx extends utils.Adapter {
         this.mynamespace = this.namespace;
         this.knxConnection;
         this.knx = knx;
+        this.connected = false;
 
         this.timeout1;
         this.timeout2;
@@ -55,13 +56,11 @@ class openknx extends utils.Adapter {
                     //this.log.warn("possible data loss due to gateway reset, consider increasing minimum send delay between two frames");
                 }
 
-                if (args.indexOf("[trace]") !== -1 || args.indexOf("[debug]") !== -1) {
-                    this.log.silly(args);
-                } else if (args.indexOf("[info]") !== -1) {
-                    this.log.info(args);
-                } else if (args.indexOf("[warn]") !== -1) {
-                    this.log.warn(args);
-                } else if (args.indexOf("[error]") !== -1) {
+                if (args.indexOf("[trace]") !== -1) this.log.silly(args);
+                else if (args.indexOf("[debug]") !== -1) this.log.debug(args);
+                else if (args.indexOf("[info]") !== -1) this.log.info(args);
+                else if (args.indexOf("[warn]") !== -1) this.log.warn(args);
+                else if (args.indexOf("[error]") !== -1) {
                     this.log.error(args);
                     if (args.indexOf("Conversion error DPT") == -1) {
                         //do not report errors from bad bus data
@@ -116,7 +115,7 @@ class openknx extends utils.Adapter {
             clearTimeout(this.timeout2);
             clearInterval(this.interval1);
 
-            this.startup = true;
+            this.connected = false;
             if (this.knxConnection) {
                 exitHook((cb) => {
                     this.knxConnection.Disconnect(() => {
@@ -397,7 +396,7 @@ class openknx extends utils.Adapter {
             //this.interfaceTest(id, state);
             return "ack is set";
         }
-        if (!(await this.getStateAsync("info.connection"))) {
+        if (!this.connected) {
             this.log.warn("onStateChange: not connected to KNX bus");
             return "not connected to KNX bus";
         }
@@ -500,7 +499,6 @@ class openknx extends utils.Adapter {
     }
 
     startKnxStack() {
-        this.startup = true;
         this.knxConnection = this.knx.Connection({
             ipAddr: this.config.gwip,
             ipPort: this.config.gwipport,
@@ -512,7 +510,6 @@ class openknx extends utils.Adapter {
             //map set the log level for messsages printed on the console. This can be 'error', 'warn', 'info' (default), 'debug', or 'trace'.
             //log is written to console, not in IoB log
             loglevel: this.log.level == "silly" ? "trace" : this.log.level,
-            //debug:
             handlers: {
                 connected: () => {
                     this.log.info("Connected!");
@@ -556,18 +553,17 @@ class openknx extends utils.Adapter {
                         this.autoreaddone = true;
                         this.countObjectsNotification(cnt_withDPT);
                     }
-                    this.setState("info.connection", true, true);
+                    this.connected = true;
+                    this.setState("info.connection", this.connected, true);
                 },
 
                 disconnected: () => {
-                    this.setState("info.connection", false, true);
+                    if (this.connected) this.log.error("Connection lost");
+                    this.connected = false;
+                    this.setState("info.connection", this.connected, true);
                     this.setState("info.busload", 0, true);
-                    if (this.startup != true) {
-                        //do not warn on initial startup or shutdown
-                        this.log.error("Connection lost");
-                    }
-                    this.startup = false;
                 },
+
                 error: (connstatus) => {
                     this.log.warn(connstatus);
                 },
@@ -600,7 +596,6 @@ class openknx extends utils.Adapter {
                     let ret = "unknown";
 
                     loadMeasurement.logBusEvent();
-                    this.setState("info.busload", 0, true);
 
                     /* some checks */
                     if (dest == "0/0/0" || tools.isDeviceAddress(dest)) {
@@ -633,9 +628,7 @@ class openknx extends utils.Adapter {
                                 this.getState(id, (err, state) => {
                                     let ret;
                                     if (state) {
-                                        this.log.debug(
-                                            `Inbound GroupValue_Read from ${src} GA ${dest} to ${id}`,
-                                        );
+                                        this.log.debug(`Inbound GroupValue_Read from ${src} GA ${dest} to ${id}`);
                                         ret = "GroupValue_Read";
                                         if (this.gaList.getDataById(id).native.answer_groupValueResponse) {
                                             let stateval = state.val;
@@ -759,10 +752,12 @@ class openknx extends utils.Adapter {
             );
 
         const self = this;
-        this.setState("info.connection", false, true);
+        this.connected = false;
+        this.setState("info.connection", this.connected, true);
         this.interval1 = setInterval(function () {
             const busload = loadMeasurement.cyclic();
             self.setState("info.busload", busload, true);
+            self.setState("info.messagecount", loadMeasurement.gettelegramCount(), true);
         }, loadMeasurement.intervalTime);
 
         //fill gaList from iobroker objects
