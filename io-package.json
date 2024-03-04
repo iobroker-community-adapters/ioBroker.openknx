@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.7.2",
+    "version": "0.7.3-alpha.0",
     "news": {
+      "0.7.3-alpha.0": {
+        "en": "feature: one of the warnings is configurable in the dialog",
+        "de": "feature: eine der warnungen ist im dialog konfigurierbar",
+        "ru": "функция: одно из предупреждений настраивается в диалоге",
+        "pt": "recurso: um dos avisos é configurável na caixa de diálogo",
+        "nl": "functie: een van de waarschuwingen is in het dialoogvenster instelbaar",
+        "fr": "fonctionnalité : un des avertissements est configurable dans la boîte de dialogue",
+        "it": "caratteristica: uno degli avvisi è configurabile nella finestra di dialogo",
+        "es": "función: una de las advertencias es configurable en el diálogo",
+        "pl": "funkcja: jeden z ostrzeżeń jest konfigurowalny w oknie dialogowym",
+        "uk": "функція: один з попереджень налаштований у діалоговому вікні",
+        "zh-cn": "特性: 在对话框中可配置警告之一"
+      },
       "0.7.2": {
         "en": "feature: handle network connection instability issesues\nfeature: generate more log messages\nbugfix: telegram count",
         "de": "funktion: netzwerk-verbindung instabilität ist\nfeature: mehr log-nachrichten generieren\nbugfix: telegrammzählung",
@@ -80,19 +93,6 @@
         "pl": "wykorzystywanie: KNX\nwykorzystywać standardowe autoready umożliwiające niektóre typy danych DPT1, które są uruchamiane\ntrąbka: w błędzie logowania",
         "uk": "функція: додати вимірювання навантаження на автобус KNX\nфункція: видалення стандартних автопрочитаних пристроїв для деяких типів даних DPT1, які є тригерами\nвиправлення помилок",
         "zh-cn": "特征:增加KNX汽车载荷测量\n特点:取消标准汽车,使一些DPT1数据型能够触发。\nbugfix:错误伐木"
-      },
-      "0.5.3": {
-        "en": "savek-cc bugfix: Fix handling of addinfo_length - used to crash if addinfo was actually supplied #338\nbugfix: admin menu scroll small screen #339\nfeature: add dpt 9.009",
-        "de": "speicher-cc Bugfix: Fix Handling von addinfo_length - verwendet, um abzustürzen, wenn addinfo tatsächlich geliefert wurde #338\nbugfix: admin-menü scroll kleinen bildschirm #339\nfunktion: dpt 9.009 hinzufügen",
-        "ru": "savek-cc багфикс: Исправление обработки addinfo_length - используется для сбоя, если addinfo был фактически поставлен #338\nbugfix: admin меню прокрутите небольшой экран #339\nфункция: добавить dpt 9.009",
-        "pt": "savek-cc bugfix: Fix manuseio de addinfo_length - usado para travar se addinfo foi realmente fornecido #338\nbugfix: menu admin scroll pequena tela #339\ncaracterística: adicionar dpt 9.009",
-        "nl": "redk-cc bugfix: Vertaling:\nquality over quantity (qoq) releases vertaling:\nvertaling:",
-        "fr": "savek-cc bugfix: Correction de la manipulation de addinfo_length - utilisé pour planter si addinfo a été effectivement fourni #338\nbugfix: menu administrateur défilement petit écran #339\nfonction: ajouter dpt 9.009",
-        "it": "savek-cc bugfix: Fissare la gestione di addinfo_length - usato per crash se addinfo è stato effettivamente fornito #338\nbugfix: admin menu scroll piccolo schermo #339\ncaratteristica: aggiungere dpt 9.009",
-        "es": "savek-cc bugfix: Manejo fijo de addinfo_length - utilizado para chocar si addinfo fue realmente suministrado #338\nbugfix: menú de administración desplazar pequeña pantalla #339\nfunción: añadir dpt 9.009",
-        "pl": "bujny Fix obsługa dodatków - używana do rozbicia, jeżeli dodanie info było w rzeczywistości zaopatrzone na #338\ntrąbka: admin menu zwój mały ekran #339\nprzykład: dpt 9.009",
-        "uk": "removek-cc - відео @ Виправлена обробка довжини addinfo_width - використовується для аварійної ситуації, якщо addinfo було фактично передано #338\nвиправлено помилку: меню адміністратора прокручувати невеликий екран #339\nмфо 322669",
-        "zh-cn": "拯救kccbugfix: 第338号增援物品实际供应时,用于坠落的包装。\nb ugfix:memin menuroll小型屏幕\n特点:增加9.009"
       }
     },
     "title": "Open KNX",
