@@ -301,7 +301,7 @@
 
             function processDetectInterface() {
                 if ($("#localInterface")[0].value == "") {
-                    showMessage(_("Please select your local interface first."));
+                    showMessage(_("Please select your local network interface first."));
                 } else {
                     disableAllButtons();
                     window.isProcessingRequest = true;
@@ -362,11 +362,8 @@
                                     Note: KNX secure is not supported, please do not activate secure comissioning in
                                     ETS.<br />
                                     If you like OpenKNX, please consider a donation:<br />
-                                    <a
-                                        href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Z8UFC8QEC4ARW&source=url"
-                                    >
-                                        <img src=https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif></a
-                                    >
+                                    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Z8UFC8QEC4ARW&source=url">
+                                        <img src=https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif></a>
                                 </span>
                             </div>
                         </div>
@@ -386,8 +383,7 @@
                             <div class="col s6 l2">
                                 <a id="detectInterface" class="waves-effect waves-light btn"
                                     ><i class="material-icons right">live help</i
-                                    ><span class="translate">detect interface</span></a
-                                >
+                                    ><span class="translate">detect interface</span></a>
                             </div>
                             <div class="col s12 l3">
                                 <h7 id="deviceName"> </h7>
@@ -401,15 +397,18 @@
                             <div class="col s6 l2 input-field">
                                 <input id="minimumDelay" class="value" type="text" />
                                 <label for="minimumDelay" class="translate">
-                                    Minimum send delay between two frames [ms]</label
-                                >
+                                    Minimum send delay between two frames [ms]</label>
                             </div>
                             <!-- materialize grid small 12 of 12 columns https://materializecss.com/grid.html -->
                             <div class="col s12 input-field">
                                 <input class="value" id="autoreadEnabled" type="checkbox" />
                                 <label class="translate" for="autoreadEnabled">
-                                    readout values of autoread iob objects on startup</label
-                                >
+                                    readout values of autoread iob objects on startup</label>
+                            <div class="col s12 input-field">
+                                <input class="value" id="noWarnUnknownGa" type="checkbox" />
+                                <label class="translate" for="onlyAddNewObjects"
+                                    >do not warn on unknown KNX group adresses</label>
+                                </div>  
                             </div>
                         </div>
                     </div>
@@ -422,18 +421,16 @@
                                 <label class="translate" for="onlyAddNewObjects"
                                     >do not overwrite existing IOB objects</label
                                 >
-                            </div>
+                            </div>                          
                             <div class="col s12 input-field">
                                 <input class="value" id="removeUnusedObjects" type="checkbox" />
                                 <label class="translate" for="removeUnusedObjects"
-                                    >remove existing IOB objects that are not in ETS import file</label
-                                >
+                                    >remove existing IOB objects that are not in ETS import file</label>
                             </div>
                             <div class="col s12 input-field">
                                 <input class="value" id="useBoolean" type="checkbox" />
                                 <label class="translate" for="useBoolean"
-                                    >use common.type boolean for 1 bit enum instead of number</label
-                                >
+                                    >use common.type boolean for 1 bit enum instead of number</label>
                             </div>
 
                             <div class="col s12 m12 l6 file-field input-field">

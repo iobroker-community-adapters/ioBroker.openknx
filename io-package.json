@@ -167,6 +167,7 @@
   },
   "native": {
     "autoreadEnabled": true,
+    "noWarnUnknownGa": false,
     "useBoolean": true,
     "gwip": "",
     "gwipport": "3671",
