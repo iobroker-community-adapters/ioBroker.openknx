@@ -407,7 +407,8 @@ Openknx estimates the current bus load of the KNX line it is connected to in obj
   * npm run release major/minor/patch major.minor.patch
   * update gui: iob upload openknx
 -->
-### 0.7.3-alpha.1 (2024-03-04)
+
+### **WORK IN PROGRESS**
 
 -   feature: one of the warnings is configurable in the dialog
 
