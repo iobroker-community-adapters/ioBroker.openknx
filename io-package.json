@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.7.3-alpha.1",
+    "version": "0.7.3",
     "news": {
+      "0.7.3": {
+        "en": "feature: one of the warnings is configurable in the dialog",
+        "de": "feature: eine der warnungen ist im dialog konfigurierbar",
+        "ru": "функция: одно из предупреждений настраивается в диалоге",
+        "pt": "recurso: um dos avisos é configurável na caixa de diálogo",
+        "nl": "functie: een van de waarschuwingen is in het dialoogvenster instelbaar",
+        "fr": "fonctionnalité : un des avertissements est configurable dans la boîte de dialogue",
+        "it": "caratteristica: uno degli avvisi è configurabile nella finestra di dialogo",
+        "es": "función: una de las advertencias es configurable en el diálogo",
+        "pl": "funkcja: jeden z ostrzeżeń jest konfigurowalny w oknie dialogowym",
+        "uk": "функція: один з попереджень налаштований у діалоговому вікні",
+        "zh-cn": "特性: 在对话框中可配置警告之一"
+      },
       "0.7.3-alpha.1": {
         "en": "feature: one of the warnings is configurable in the dialog",
         "de": "feature: eine der warnungen ist im dialog konfigurierbar",
@@ -69,19 +82,6 @@
         "zh-cn": "特色:增加对预防母婴传播和预防疾病29的支持\n多种物品中出现的气体受到警告\n特点:一些更坏的产出\nb ugfix:没有报告因繁忙的汽车数据而造成的错误。\nb ugfix:没有将无效的汽车数据转给目标树\nd. 清洁采购方案图书馆"
       },
       "0.6.3": {
-        "en": "stable release",
-        "de": "stabiler release",
-        "ru": "стабильный релиз",
-        "pt": "liberação estável",
-        "nl": "stabiele vrijlating",
-        "fr": "libération stable",
-        "it": "rilascio stabile",
-        "es": "liberación estable",
-        "pl": "stabilizacja",
-        "uk": "стабільний реліз",
-        "zh-cn": "稳定释放"
-      },
-      "0.6.2": {
         "en": "stable release",
         "de": "stabiler release",
         "ru": "стабильный релиз",
