@@ -96,11 +96,11 @@ A GA without DPT basetype cannot be imported with this adapter. ETS4 projects mu
 
 The style only defines the appearance of the Group Address in the ETS user interface. The following styles are available:
 
-    Presentation Style	Name	                Example
-
-1 3-Level Main/Middle/Subgroup 1/3/5
-2 2-Level Main Group/Subgroup 1/25
-3 Free-Level Subgroup 300
+|     | Presentation Style | Name                 | Example |
+| --- | ------------------ | -------------------- | ------- |
+| 1   | 3-Level            | Main/Middle/Subgroup | 1/3/5   |
+| 2   | 2-Level            | Main Group/Subgroup  | 1/25    |
+| 3   | Free-Level         | Subgroup             | 300     |
 
 The adapter supports all 3 style configurations in the project import xml file. For storing in the IOB object, the format is always converted into the 3-level form.
 Please note that the combined ga and group name must be unique for the IOB object tree. Having for example an ETS configuration with two middle groups of the same name will result in a joint hierarchy element and having two identically named gas in there will result into an error.
