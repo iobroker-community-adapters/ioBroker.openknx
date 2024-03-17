@@ -392,7 +392,7 @@ class openknx extends utils.Adapter {
         if (state.ack) {
             // only continue when application triggered a change without ack flag, filter out reception state changes
 
-            // enable this for system testing
+            // enable this for system testing:
             // this.interfaceTest(id, state);
             return "ack is set";
         }
@@ -474,21 +474,27 @@ class openknx extends utils.Adapter {
             if (isRaw) {
                 this.knxConnection.writeRaw(ga, rawVal, (grpaddr, confirmed, timeout) => {
                     // l_data.con confirmation set by any receiver connected to the ga
-                    if (confirmed) {
-                        // iob ack is set in event handler when value is sent successfully on the bus, otherwise keep unset
+                    if (confirmed)
                         this.log.debug(`Inbound GroupValue_Write confirmation true received for ${grpaddr} ${id}`);
-                    } else if (timeout) this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
+                    else if (timeout) this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
                     else this.log.info(`Inbound GroupValue_Write confirmation false received for ${grpaddr} ${id}`);
+                    //set iob ack when value was sent successful on the bus
+                    this.setState(id, {
+                        ack: confirmed,
+                    });
                 });
                 return "write raw";
             } else {
                 this.knxConnection.write(ga, knxVal, dpt, (grpaddr, confirmed, timeout) => {
                     // l_data.con confirmation set by any receiver connected to the ga
-                    if (confirmed) {
-                        // iob ack is set in event handler when value is sent successfully on the bus, otherwise keep unset
+                    if (confirmed)
                         this.log.debug(`Inbound GroupValue_Write confirmation true received for ${grpaddr} ${id}`);
-                    } else if (timeout) this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
+                    else if (timeout) this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
                     else this.log.info(`Inbound GroupValue_Write confirmation false received for ${grpaddr} ${id}`);
+                    //set iob ack when value was sent successful on the bus
+                    this.setState(id, {
+                        ack: confirmed,
+                    });
                 });
                 return "write";
             }
