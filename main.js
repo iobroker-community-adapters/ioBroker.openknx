@@ -449,7 +449,7 @@ class openknx extends utils.Adapter {
                 error = "bad or missing configuration for object with id: " + id;
             else {
                 error =
-                    "cannot interprete data, please check your configuration." +
+                    "cannot interprete data, please check your configuration. " +
                     dpt +
                     " unplausible type: " +
                     this.gaList?.getDataById(id)?.common?.type;
@@ -474,27 +474,27 @@ class openknx extends utils.Adapter {
             if (isRaw) {
                 this.knxConnection.writeRaw(ga, rawVal, (grpaddr, confirmed, timeout) => {
                     // l_data.con confirmation set by any receiver connected to the ga
-                    if (confirmed)
+                    if (confirmed) {
+                        //set iob ack when value was sent successful on the bus
                         this.log.debug(`Inbound GroupValue_Write confirmation true received for ${grpaddr} ${id}`);
-                    else if (timeout) this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
+                        this.setState(id, {
+                            ack: true,
+                        });
+                    } else if (timeout) this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
                     else this.log.info(`Inbound GroupValue_Write confirmation false received for ${grpaddr} ${id}`);
-                    //set iob ack when value was sent successful on the bus
-                    this.setState(id, {
-                        ack: confirmed,
-                    });
                 });
                 return "write raw";
             } else {
                 this.knxConnection.write(ga, knxVal, dpt, (grpaddr, confirmed, timeout) => {
                     // l_data.con confirmation set by any receiver connected to the ga
-                    if (confirmed)
+                    if (confirmed) {
+                        //set iob ack when value was sent successful on the bus
                         this.log.debug(`Inbound GroupValue_Write confirmation true received for ${grpaddr} ${id}`);
-                    else if (timeout) this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
+                        this.setState(id, {
+                            ack: true,
+                        });
+                    } else if (timeout) this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
                     else this.log.info(`Inbound GroupValue_Write confirmation false received for ${grpaddr} ${id}`);
-                    //set iob ack when value was sent successful on the bus
-                    this.setState(id, {
-                        ack: confirmed,
-                    });
                 });
                 return "write";
             }
@@ -600,6 +600,11 @@ class openknx extends utils.Adapter {
                 ) => {
                     let convertedVal = [];
                     let ret = "unknown";
+
+                    if(!this.autoreaddone) {
+                        // receiving data although connection process not completed, wait
+                        return "illegal state";
+                    }
 
                     loadMeasurement.logBusEvent();
 
@@ -749,11 +754,14 @@ class openknx extends utils.Adapter {
                     this.config.gwip +
                     ":" +
                     this.config.gwipport +
-                    " with phy. Adr: " +
+                    " device name:" +
+                    this.config.deviceName +
+                    " with physical adr: " +
                     this.config.eibadr +
                     " minimum send delay: " +
                     this.config.minimumDelay +
-                    "ms debug level: " +
+                    " ms" +
+                    " debug level: " +
                     this.log.level,
             );
 

@@ -410,6 +410,8 @@ Openknx estimates the current bus load of the KNX line it is connected to in obj
 
 ### **WORK IN PROGRESS**
 
+-   feature: put device name into log - todo test
+-   bugfix: #419 wait for connection complete before data processing in case of receiving data before
 -   bugfix: #457 Ack missing after changing IOB object value
 
 ### 0.7.3 (2024-03-05)

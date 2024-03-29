@@ -169,6 +169,7 @@
     "autoreadEnabled": true,
     "noWarnUnknownGa": false,
     "useBoolean": true,
+    "deviceName": "",
     "gwip": "",
     "gwipport": "3671",
     "eibadr": "0.0.0",
