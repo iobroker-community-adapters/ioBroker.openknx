@@ -75,17 +75,17 @@
                         }
                     });
                 }, 1000);
+                if (settings.autoreadEnabled === undefined) settings.autoreadEnabled = false;
+                if (settings.deviceName === undefined) settings.deviceName = "";
                 if (settings.eibadr === undefined) settings.eibadr = "0.0.0";
-                if (settings.minimumDelay === undefined) settings.minimumDelay = 80;
                 if (settings.gwip === undefined) settings.gwip = "127.0.0.1";
                 if (settings.gwipport === undefined) settings.gwipport = 3671;
+                if (settings.localInterface === undefined) settings.localInterface = "";
+                if (settings.minimumDelay === undefined) settings.minimumDelay = 80;
                 if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
-                if (settings.autoreadEnabled === undefined) settings.autoreadEnabled = false;
-                if (settings.useBoolean === undefined) settings.useBoolean = false;
                 if (settings.removeUnusedObjects === undefined) settings.removeUnusedObjects = false;
                 if (settings.setAckOnWrite === undefined) settings.setAckOnWrite = false;
-                if (settings.localInterface === undefined) settings.localInterface = "";
-                if (settings.deviceName === undefined) settings.deviceName = "";
+                if (settings.useBoolean === undefined) settings.useBoolean = false;
 
                 //fill dropdown list from adapter-settings.js
                 getIPs(function (ips) {
@@ -374,7 +374,7 @@
                                 <label for="gwip" class="translate">Gateway IP</label>
                             </div>
                             <div class="col s3 l1 input-field">
-                                <input type="text" class="value" id="gwipport" />
+                                <input class="value" id="gwipport" type="text" />
                                 <label for="gwipport" class="translate">Port</label>
                             </div>
                             <div class="col s6 l3 input-field">
@@ -387,7 +387,7 @@
                                     ><span class="translate">detect interface</span></a>
                             </div>
                             <div class="col s12 l3">
-                                <h7 id="deviceName"> </h7>
+                                <h7 class="value" id="deviceName"> </h7>
                             </div>
                         </div>
                         <div class="row">
@@ -396,7 +396,7 @@
                                 <label class="translate" for="localInterface">Local IPv4 network interface</label>
                             </div>
                             <div class="col s12 l3 input-field">
-                                <input id="minimumDelay" class="value" type="text" />
+                                <input class="value" id="minimumDelay" type="text" />
                                 <label for="minimumDelay" class="translate"
                                     >Minimum send delay between two frames [ms]</label>
                             </div>
