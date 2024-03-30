@@ -159,7 +159,7 @@ class openknx extends utils.Adapter {
                     projectImport.findStatusGAs(
                         this,
                         this.gaList,
-                        obj.message.aliassRegexp,
+                        obj.message.aliasRegexp,
                         obj.message.aliasSimilarity,
                         obj.message.aliasPath,
                         obj.message.aliasRange,
@@ -601,7 +601,7 @@ class openknx extends utils.Adapter {
                     let convertedVal = [];
                     let ret = "unknown";
 
-                    if(!this.autoreaddone) {
+                    if (!this.autoreaddone) {
                         this.log.info(`received data although connection process not completed - skiped`);
                         return "illegal state";
                     }
