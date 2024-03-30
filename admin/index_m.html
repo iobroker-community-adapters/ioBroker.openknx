@@ -75,16 +75,17 @@
                         }
                     });
                 }, 1000);
+                if (settings.eibadr === undefined) settings.eibadr = "0.0.0";
+                if (settings.minimumDelay === undefined) settings.minimumDelay = 80;
                 if (settings.gwip === undefined) settings.gwip = "127.0.0.1";
                 if (settings.gwipport === undefined) settings.gwipport = 3671;
-                if (settings.minimumDelay === undefined) settings.minimumDelay = 80;
-                if (settings.eibadr === undefined) settings.eibadr = "0.0.0";
                 if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
                 if (settings.autoreadEnabled === undefined) settings.autoreadEnabled = false;
                 if (settings.useBoolean === undefined) settings.useBoolean = false;
                 if (settings.removeUnusedObjects === undefined) settings.removeUnusedObjects = false;
-                if (settings.localInterface === undefined) settings.localInterface = "";
                 if (settings.setAckOnWrite === undefined) settings.setAckOnWrite = false;
+                if (settings.localInterface === undefined) settings.localInterface = "";
+                if (settings.deviceName === undefined) settings.deviceName = "";
 
                 //fill dropdown list from adapter-settings.js
                 getIPs(function (ips) {
@@ -282,7 +283,7 @@
                     null,
                     "createAlias",
                     {
-                        aliassRegexp: $("#aliassRegexp")[0].value,
+                        aliasRegexp: $("#aliasRegexp")[0].value,
                         aliasSimilarity: $("#aliasSimilarity")[0].value,
                         aliasPath: $("#aliasPath")[0].value,
                         aliasRange: $("#aliasRange")[0].value,
@@ -394,7 +395,7 @@
                                 <select class="value" id="localInterface"></select>
                                 <label class="translate" for="localInterface">Local IPv4 network interface</label>
                             </div>
-                            <div class="col s6 l2 input-field">
+                            <div class="col s12 l3 input-field">
                                 <input id="minimumDelay" class="value" type="text" />
                                 <label for="minimumDelay" class="translate"
                                     >Minimum send delay between two frames [ms]</label>
@@ -468,8 +469,8 @@
                                 </h6>
                             </div>
                             <div class="input-field col s12 l6">
-                                <input class="value" id="aliassRegexp" type="text" />
-                                <label class="translate" for="aliassRegexp">Regex to identify Status GAs</label>
+                                <input class="value" id="aliasRegexp" type="text" />
+                                <label class="translate" for="aliasRegexp">Regex to identify Status GAs</label>
                             </div>
                             <div class="input-field col s6 l2">
                                 <input class="value" id="aliasSimilarity" type="text" />
