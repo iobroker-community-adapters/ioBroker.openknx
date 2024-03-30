@@ -602,7 +602,7 @@ class openknx extends utils.Adapter {
                     let ret = "unknown";
 
                     if(!this.autoreaddone) {
-                        // receiving data although connection process not completed, wait
+                        this.log.info(`received data although connection process not completed - skiped`);
                         return "illegal state";
                     }
 
