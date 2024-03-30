@@ -410,8 +410,7 @@ Openknx estimates the current bus load of the KNX line it is connected to in obj
   * update gui: iob upload openknx
   * update stable: https://github.com/ioBroker/ioBroker.repositories#add-a-new-adapter-to-the-stable-repository
 -->
-
-### **WORK IN PROGRESS**
+### 0.8.0 (2024-03-30)
 
 -   feature: put KNX interface name into log
 -   bugfix: #419 wait for connection complete before data processing in case of receiving data before

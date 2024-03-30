@@ -1,230 +1,234 @@
 {
-    "common": {
-        "name": "openknx",
-        "version": "0.7.3",
-        "news": {
-            "0.7.3": {
-                "en": "feature: one of the warnings is configurable in the dialog",
-                "de": "feature: eine der warnungen ist im dialog konfigurierbar",
-                "ru": "функция: одно из предупреждений настраивается в диалоге",
-                "pt": "recurso: um dos avisos é configurável na caixa de diálogo",
-                "nl": "functie: een van de waarschuwingen is in het dialoogvenster instelbaar",
-                "fr": "fonctionnalité : un des avertissements est configurable dans la boîte de dialogue",
-                "it": "caratteristica: uno degli avvisi è configurabile nella finestra di dialogo",
-                "es": "función: una de las advertencias es configurable en el diálogo",
-                "pl": "funkcja: jeden z ostrzeżeń jest konfigurowalny w oknie dialogowym",
-                "uk": "функція: один з попереджень налаштований у діалоговому вікні",
-                "zh-cn": "特性: 在对话框中可配置警告之一"
-            },
-            "0.7.3-alpha.1": {
-                "en": "feature: one of the warnings is configurable in the dialog",
-                "de": "feature: eine der warnungen ist im dialog konfigurierbar",
-                "ru": "функция: одно из предупреждений настраивается в диалоге",
-                "pt": "recurso: um dos avisos é configurável na caixa de diálogo",
-                "nl": "functie: een van de waarschuwingen is in het dialoogvenster instelbaar",
-                "fr": "fonctionnalité : un des avertissements est configurable dans la boîte de dialogue",
-                "it": "caratteristica: uno degli avvisi è configurabile nella finestra di dialogo",
-                "es": "función: una de las advertencias es configurable en el diálogo",
-                "pl": "funkcja: jeden z ostrzeżeń jest konfigurowalny w oknie dialogowym",
-                "uk": "функція: один з попереджень налаштований у діалоговому вікні",
-                "zh-cn": "特性: 在对话框中可配置警告之一"
-            },
-            "0.7.3-alpha.0": {
-                "en": "feature: one of the warnings is configurable in the dialog",
-                "de": "feature: eine der warnungen ist im dialog konfigurierbar",
-                "ru": "функция: одно из предупреждений настраивается в диалоге",
-                "pt": "recurso: um dos avisos é configurável na caixa de diálogo",
-                "nl": "functie: een van de waarschuwingen is in het dialoogvenster instelbaar",
-                "fr": "fonctionnalité : un des avertissements est configurable dans la boîte de dialogue",
-                "it": "caratteristica: uno degli avvisi è configurabile nella finestra di dialogo",
-                "es": "función: una de las advertencias es configurable en el diálogo",
-                "pl": "funkcja: jeden z ostrzeżeń jest konfigurowalny w oknie dialogowym",
-                "uk": "функція: один з попереджень налаштований у діалоговому вікні",
-                "zh-cn": "特性: 在对话框中可配置警告之一"
-            },
-            "0.7.2": {
-                "en": "feature: handle network connection instability issesues\nfeature: generate more log messages\nbugfix: telegram count",
-                "de": "funktion: netzwerk-verbindung instabilität ist\nfeature: mehr log-nachrichten generieren\nbugfix: telegrammzählung",
-                "ru": "особенность: обрабатывать нестабильность сетевого подключения\nфункция: генерировать больше сообщений журнала\nbugfix: число телеграмм",
-                "pt": "característica: lidar com issesues de instabilidade de conexão de rede\nrecurso: gerar mais mensagens de log\nbugfix: contagem de telegramas",
-                "nl": "feature: handle netwerkverbinding instabiliteit issesues\nfunctie: meer logberichten genereren\nbugfix: aantal telegrammen",
-                "fr": "caractéristique: gérer l'instabilité de connexion réseau issesues\nfonctionnalité: générer plus de messages journal\nbugfix : nombre de télégrammes",
-                "it": "funzione: gestire connessioni di rete instabilità esue\nfunzione: generare più messaggi di log\nbugfix: conta telegram",
-                "es": "característica: manejar la inestabilidad de conexión de red issesues\nfunción: generar más mensajes de registro\nbugfix: cuenta de telegramas",
-                "pl": "cecha: uchwyt niestabilności połączeń sieciowych\nfunkcja: generować więcej wiadomości dziennika\nbugfix: liczba telegramów",
-                "uk": "особливість: нестійкість підключення ручок\nфункція: генерувати більше повідомлень журналу\nвиправлення помилок: кількість телеграм",
-                "zh-cn": "特性: 处理网络连接不稳定性\n特性: 生成更多日志消息\n错误修正: 电报计数"
-            },
-            "0.7.1": {
-                "en": "feature: when requesting fast message sendout create iob acks per bus message status, before it triggered all acks on first message send confirmance\nfeature: add message count object\nfeature: use common.desc from ets xml Description field and move datatype info to native\ncleanup: stop timers on shutdown\nbugfix: create a log entry on reception of unknown ga\nbugfix: do not count send as duplicate trigger in load measurement\nincrease default minimum send delay to 80ms",
-                "de": "feature: bei der anforderung von schnellnachrichten senden erstellen iob acks pro busnachrichtenstatus, bevor es alle acks auf erste nachricht senden bestätigung ausgelöst\nfunktion: nachrichtenzählobjekt hinzufügen\nfeature: verwenden Sie gemeinsam. desc from ets xml Beschreibung Feld und bewegen Sie Datentyp-Info zu nativen\naufräumen: stoppzeiter beim abschalten\nbugfix: erstellen sie einen log-eintrag an der rezeption unbekannter ga\nbugfix: nicht als duplikat-trigger in der load-messung senden\nverzugsverzögerung auf 80m erhöhen",
-                "ru": "функция: при запросе быстрого отправки сообщения создайте iob acks на статус сообщения в автобусе, прежде чем он запускает все носки в первом сообщении\nособенность: добавить объект\nособенность: использовать общее. Деск от ets xml Описание поле и переместить информацию типа данных на родной\nочистка: остановите таймеры\nbugfix: создать запись журнала на приеме неизвестной ga\nbugfix: не считать отправку в качестве дублирующего триггера при измерении нагрузки\nувеличение минимальной задержки отправки по умолчанию до 80 мс",
-                "pt": "recurso: ao solicitar mensagem rápida sendout criar acks iob por status de mensagem de ônibus, antes de desencadear todas as acks na primeira mensagem enviar confirmação\nrecurso: adicionar objeto de contagem de mensagens\nrecurso: use comum. desc de ets xml Descrição campo e mover informações do tipo de dados para nativo\nlimpeza: pára temporizadores no desligamento\nbugfix: criar uma entrada de log na recepção de desconhecido ga\nbugfix: não conte enviar como gatilho duplicado na medição de carga\naumento padrão mínimo enviar atraso para 80ms",
-                "nl": "functie: bij het aanvragen van snelle bericht sendout maak iob acks per bus bericht status, voordat het geactiveerd alle acks op eerste bericht bevestiging te sturen\nfeature: voeg bericht tellen object toe\nfunctie: gebruik gemeenschappelijk. desc van ets xml Beschrijving veld en verplaats datatype informatie naar native\nopruimen: stop timers bij afsluiten\nbugfix: maak een logboek bij ontvangst van onbekende ga\nbugfix: niet meetellen als dubbele trigger in belastingsmeting\nverhoog standaard minimale vertraging naar 80ms",
-                "fr": "fonctionnalité: lors de la demande d'envoi de message rapide créer iob aks par statut de message de bus, avant qu'il ait déclenché tous les acks sur le premier message envoyer confirmation\nfonctionnalité: ajouter un objet de compte de message\ncaractéristique: utiliser commun. desc de ets xml Description champ et déplacer datatype info vers native\nnettoyage: arrêt des minuteries à l'arrêt\nbugfix : créez une entrée de journal à la réception de ga inconnu\nbugfix : ne comptez pas l'envoi comme duplicata dans la mesure de la charge\naugmenter le délai d'envoi minimum par défaut à 80ms",
-                "it": "funzione: quando si richiede l'invio di messaggi rapidi creare iob acks per lo stato del messaggio dell'autobus, prima che abbia attivato tutte le zecche sul primo messaggio inviare conferma\nfunzione: aggiungere oggetto conteggio messaggi\ncaratteristica: usare comune. desc da ets xml Descrizione campo e spostare informazioni di tipo nativo\npulizia: tempori di arresto all'arresto\nbugfix: creare una voce di log sulla ricezione di ga sconosciuto\nbugfix: non contare inviare come trigger duplicato nella misurazione del carico\naumentare il ritardo minimo di invio predefinito a 80ms",
-                "es": "función: al solicitar el envío rápido de mensajes crear acks iob por estado de mensaje de autobús, antes de que desencadenar todos los acks en el primer mensaje enviar confirmación\ncaracterística: añadir mensaje contar objeto\nfunción: usar común. desc de ets xml Descripción campo y mover información tipo de datos a nativo\nlimpieza: parar los temporizadores en apagado\nbugfix: crear una entrada de registro en la recepción de ga desconocido\nbugfix: no cuente enviar como disparador duplicado en medición de carga\naumentar el mínimo predeterminado enviar retraso a 80ms",
-                "pl": "funkcja: przy żądaniu szybkiej wiadomości sendout tworzyć iob acks na autobus status wiadomości, zanim uruchomi wszystkie acks na pierwszej wiadomości wysłać potwierdzenie\nfunkcja: dodaj obiekt liczenia wiadomości\ncecha: używać często. desc z ets xml Opis pola i przenieść dane typu do rodzimej\nczyszczenie: czas zatrzymania przy wyłączaniu\nbugfix: utworzyć wpis logowania na recepcji nieznanego ga\nbugfix: nie licz wysyłania jako duplikat wyzwalacza w pomiarze obciążenia\nzwiększyć domyślne minimalne opóźnienie wysyłania do 80ms",
-                "uk": "функція: при запитуванні швидкого відправки повідомлень створюйте iob acks на статус повідомлення про автобус, перш ніж він запустив всі acks на першому повідомленні підтвердження\nфункція: додати об'єкт підрахунку повідомлень\nфункція: використовувати загальний. desc з ets xml Опис поля та переміщення інформації про тип даних для рідних\nприбиральниця: зупинити таймери на відключенні\nвиправлення помилок: створити запис журналу на прийом невідомого\nвиправлення помилок: не підрахуйте надсилання як дублікати вимірювання навантаження\nзбільшити мінімальну затримку за замовчуванням до 80ms",
-                "zh-cn": "特性 : 当请求快速消息发送时, 每个总线消息状态都会创建 iob ocks , 在它触发第一个消息发送确认上的所有 ocks 之前\n特性: 添加信件计数对象\n特性: 常用。 desc from ets xml 描述字段,并将数据类型信息移动到本地\n清理:关闭时停止计时器\nbugfix: 在接收未知的 ga 时创建日志条目\n错误修正 : 在负载测量中不将发送算作重复触发\n将默认的最小延迟发送到 80ms"
-            },
-            "0.7.0": {
-                "en": "feature: adding support for DPT-28 and DPT-29\nfor gas appearing in multiple objects severity lifted to warning\nfeature: some more verbose failure outputs\nbugfix: do not report errors resulting from bad bus data to sentry #433\nbugfix: do not forward invalid bus data to iob object tree\ncleanup of DTP library",
-                "de": "feature: Unterstützung für DPT-28 und DPT-29 hinzufügen\nfür gas in mehreren objekten schwere angehoben, um warnung\nfeature: einige mehr verbose ausfall ausgänge\nbugfix: melden sie keine fehler, die von schlechten busdaten zu senden #433\nbugfix: nicht ungültige busdaten an iob object tree weiterleiten\nreinigung der DTP-Bibliothek",
-                "ru": "функция: добавление поддержки для DPT-28 и DPT-29\nдля газа, появляющегося в нескольких объектах тяжести, поднятых для предупреждения\nособенность: некоторые более глагол выходы сбоя\nbugfix: не сообщайте об ошибках, вытекающих из плохих данных автобуса к отправке #433\nbugfix: не передайте недействительные данные о автобусе в дерево объекта iob\nочистка библиотеки DTP",
-                "pt": "recurso: adicionando suporte para DPT-28 e DPT-29\npara o gás que aparece em múltiplos objetos gravidade levantada para aviso\ncaracterística: algumas saídas de falha mais verbais\nbugfix: não reporte erros resultantes de dados de mau ônibus para sentinela #433\nbugfix: não encaminhar dados de ônibus inválidos para iob árvore de objeto\nlimpeza da biblioteca DTP",
-                "nl": "vertaling:\nvoor gas verschijnen in meerdere objecten, verheven om te waarschuwen\ner zijn nog meer werkwoorden\nmeld geen fouten die resulteren van slechte busgegevens naar sentiment\nstuur geen invalide busgegevens naar iob object boom\nopruimen van de DTP bibliotheek",
-                "fr": "fonction: ajouter du support pour DPT-28 et DPT-29\npour le gaz apparaissant dans plusieurs objets sévérités levés pour avertir\nfonction: quelques sorties d'échec plus verbeux\nbugfix: ne signalez pas les erreurs résultant de mauvaises données de bus à la sentinelle #433\nbugfix: ne pas envoyer de données de bus invalides à iob objet arbre\nnettoyage de la bibliothèque DTP",
-                "it": "funzione: aggiunta di supporto per DPT-28 e DPT-29\nper il gas che appare in più oggetti la gravità sollevata a avvertimento\ncaratteristica: alcune uscite di guasto più verbose\nbugfix: non segnalare errori derivanti dai dati relativi al bus difettoso alla miseria #433\nbugfix: non inoltrare i dati dell'autobus non validi all'albero dell'oggetto iob\npulizia della libreria DTP",
-                "es": "característica: añadir soporte para DPT-28 y DPT-29\npara el gas que aparece en múltiples objetos severidad levantada a advertencia\ncaracterística: algunos más salidas de falla verbosa\nbugfix: no reporte errores resultantes de los malos datos del bus al centinela #433\nbugfix: no reenvíe los datos de bus inválidos a iob objeto árbol\nlimpieza de la biblioteca DTP",
-                "pl": "wykorzystywanie: DPT-28 i DPT-29\nzałóżmy, że gaz pojawia się w wielu obiektach ciężko podnosi się ostrzeżenie\ncechą charakterystyczną jest częściej czasoprzestrzeni\nobserwacje: nie podają błędów wynikających z złych danych autobusowych\ntrąbka: nie przejmuje danych z nieprawidłowego autobusu\nczystość biblioteki DTP",
-                "uk": "функція: додавання підтримки DPT-28 та DPT-29\nдля виявлення газу в декількох об'єктах, що піднімаються на попередження\nфункція: деякі більш дієслова недостатність виходів\nвиправлення помилок, що виникають внаслідок поганих даних автобусів, які надсилаються #433\nвиправлення помилок: не пересилати недійсні дані автобусів на iob\nочищення бібліотеки DTP",
-                "zh-cn": "特色:增加对预防母婴传播和预防疾病29的支持\n多种物品中出现的气体受到警告\n特点:一些更坏的产出\nb ugfix:没有报告因繁忙的汽车数据而造成的错误。\nb ugfix:没有将无效的汽车数据转给目标树\nd. 清洁采购方案图书馆"
-            },
-            "0.6.3": {
-                "en": "stable release",
-                "de": "stabiler release",
-                "ru": "стабильный релиз",
-                "pt": "liberação estável",
-                "nl": "stabiele vrijlating",
-                "fr": "libération stable",
-                "it": "rilascio stabile",
-                "es": "liberación estable",
-                "pl": "stabilizacja",
-                "uk": "стабільний реліз",
-                "zh-cn": "稳定释放"
-            }
-        },
-        "title": "Open KNX",
-        "titleLang": {
-            "en": "Open KNX",
-            "de": "Open KNX",
-            "ru": "Open KNX",
-            "pt": "Open KNX",
-            "nl": "Open KNX",
-            "fr": "Open KNX",
-            "it": "Open KNX",
-            "es": "Open KNX",
-            "pl": "Open KNX",
-            "zh-cn": "Open KNX",
-            "uk": "Відкрийте KNX"
-        },
-        "desc": {
-            "en": "full featured open-source adapter for KNX",
-            "de": "Kostenloser Open-Source-Adapter, der die KNX Kommunikation über ein IP Gateway ermöglicht.",
-            "ru": "новый бесплатный open-source-адаптер для KNX",
-            "pt": "novo adaptador de código aberto gratuito para KNX",
-            "nl": "nieuwe gratis open-source-adapter voor KNX",
-            "fr": "nouvel adaptateur open-source gratuit pour KNX",
-            "it": "nuovo adattatore open source gratuito per KNX",
-            "es": "nuevo adaptador de código abierto gratuito para KNX",
-            "pl": "nowy darmowy adapter open-source dla KNX",
-            "zh-cn": "用于 KNX 的新免费开源适配器",
-            "uk": "повнофункціональний адаптер з відкритим кодом для KNX"
-        },
-        "authors": ["Boellner <boellnerboellner@gmail.com>"],
-        "contributors": [],
-        "keywords": ["knx free open source eib"],
-        "license": "GPL-3.0-only",
-        "platform": "Javascript/Node.js",
-        "main": "main.js",
-        "icon": "openknx.png",
-        "enabled": true,
-        "messagebox": true,
-        "subscribe": "messagebox",
-        "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.openknx/master/admin/openknx.png",
-        "readme": "https://github.com/iobroker-community-adapters/ioBroker.openknx/blob/master/README.md",
-        "loglevel": "info",
-        "mode": "daemon",
-        "type": "iot-systems",
-        "compact": true,
-        "connectionType": "local",
-        "dataSource": "push",
-        "adminUI": {
-            "config": "materialize"
-        },
-        "eraseOnUpload": true,
-        "plugins": {
-            "sentry": {
-                "dsn": "https://f87a314b36ef451aa291655ae13e2831@sentry.iobroker.net/165"
-            }
-        },
-        "dependencies": [
-            {
-                "js-controller": ">=3.3.22"
-            }
-        ],
-        "globalDependencies": [
-            {
-                "admin": ">=5.0.0"
-            }
-        ],
-        "tier": 2
+  "common": {
+    "name": "openknx",
+    "version": "0.8.0",
+    "news": {
+      "0.8.0": {
+        "en": "feature: put KNX interface name into log\nbugfix: #419 wait for connection complete before data processing in case of receiving data before\nbugfix: #457 Ack missing after changing IOB object value",
+        "de": "feature: KNX-Schnittstellenname in Log setzen\nbugfix: #419 warten auf die vollständige verbindung vor der datenverarbeitung im falle des empfangens von daten vor\nbugfix: #457 Ack fehlt nach Änderung des IOB-Objektwerts",
+        "ru": "функция: введите имя интерфейса KNX в журнал\nbugfix: #419 дождаться завершения соединения перед обработкой данных в случае получения данных\n#457 Не хватает после изменения значения объекта IOB",
+        "pt": "característica: colocar o nome da interface KNX no log\nbugfix: #419 esperar pela conexão completa antes do processamento de dados em caso de receber dados antes\nbugfix: #457 Falta após alterar o valor do objeto IOB",
+        "nl": "functie: zet KNX interfacenaam in log\nbugfix: #419 wacht op verbinding voltooid voordat gegevens worden verwerkt in geval van het ontvangen van gegevens voor\nbugfix: #457 Ack ontbreekt na het veranderen van IOB-objectwaarde",
+        "fr": "fonctionnalité: mettre le nom de l'interface KNX dans log\nbugfix: #419 attendre la connexion complète avant le traitement des données en cas de réception des données avant\nbugfix : #457 Ack manquant après modification de la valeur de l'objet IOB",
+        "it": "funzione: inserire il nome dell'interfaccia KNX nel log\nbugfix: #419 attendere la connessione completa prima dell'elaborazione dei dati in caso di ricezione dei dati prima\nbugfix: #457 Ack mancante dopo aver cambiato il valore dell'oggetto IOB",
+        "es": "función: poner el nombre de interfaz KNX en el registro\nbugfix: #419 esperar la conexión completa antes del procesamiento de datos en caso de recibir datos antes\nbugfix: #457 Falta después de cambiar el valor del objeto IOB",
+        "pl": "funkcja: umieścić nazwę interfejsu KNX w logu\nbugfix: # 419 czekać na połączenie zakończone przed przetwarzaniem danych w przypadku otrzymania danych przed\nbugfix: # 457 Brak Ack po zmianie wartości obiektu IOB",
+        "uk": "функція: покласти ім'я інтерфейсу KNX в журнал\nвиправлення помилок: #419 почекайте підключення до обробки даних у разі отримання даних до\nenglish, Українська, Français... Відсутня після зміни значення об'єкта IOB",
+        "zh-cn": "特性: 将 KNX 接口名称放入日志\nbugfix: # 419 在数据处理之前等待连接完成, 以防在接收数据之前\n错误修正 : # 457 更改 IOB 对象值后丢失"
+      },
+      "0.7.3": {
+        "en": "feature: one of the warnings is configurable in the dialog",
+        "de": "feature: eine der warnungen ist im dialog konfigurierbar",
+        "ru": "функция: одно из предупреждений настраивается в диалоге",
+        "pt": "recurso: um dos avisos é configurável na caixa de diálogo",
+        "nl": "functie: een van de waarschuwingen is in het dialoogvenster instelbaar",
+        "fr": "fonctionnalité : un des avertissements est configurable dans la boîte de dialogue",
+        "it": "caratteristica: uno degli avvisi è configurabile nella finestra di dialogo",
+        "es": "función: una de las advertencias es configurable en el diálogo",
+        "pl": "funkcja: jeden z ostrzeżeń jest konfigurowalny w oknie dialogowym",
+        "uk": "функція: один з попереджень налаштований у діалоговому вікні",
+        "zh-cn": "特性: 在对话框中可配置警告之一"
+      },
+      "0.7.3-alpha.1": {
+        "en": "feature: one of the warnings is configurable in the dialog",
+        "de": "feature: eine der warnungen ist im dialog konfigurierbar",
+        "ru": "функция: одно из предупреждений настраивается в диалоге",
+        "pt": "recurso: um dos avisos é configurável na caixa de diálogo",
+        "nl": "functie: een van de waarschuwingen is in het dialoogvenster instelbaar",
+        "fr": "fonctionnalité : un des avertissements est configurable dans la boîte de dialogue",
+        "it": "caratteristica: uno degli avvisi è configurabile nella finestra di dialogo",
+        "es": "función: una de las advertencias es configurable en el diálogo",
+        "pl": "funkcja: jeden z ostrzeżeń jest konfigurowalny w oknie dialogowym",
+        "uk": "функція: один з попереджень налаштований у діалоговому вікні",
+        "zh-cn": "特性: 在对话框中可配置警告之一"
+      },
+      "0.7.3-alpha.0": {
+        "en": "feature: one of the warnings is configurable in the dialog",
+        "de": "feature: eine der warnungen ist im dialog konfigurierbar",
+        "ru": "функция: одно из предупреждений настраивается в диалоге",
+        "pt": "recurso: um dos avisos é configurável na caixa de diálogo",
+        "nl": "functie: een van de waarschuwingen is in het dialoogvenster instelbaar",
+        "fr": "fonctionnalité : un des avertissements est configurable dans la boîte de dialogue",
+        "it": "caratteristica: uno degli avvisi è configurabile nella finestra di dialogo",
+        "es": "función: una de las advertencias es configurable en el diálogo",
+        "pl": "funkcja: jeden z ostrzeżeń jest konfigurowalny w oknie dialogowym",
+        "uk": "функція: один з попереджень налаштований у діалоговому вікні",
+        "zh-cn": "特性: 在对话框中可配置警告之一"
+      },
+      "0.7.2": {
+        "en": "feature: handle network connection instability issesues\nfeature: generate more log messages\nbugfix: telegram count",
+        "de": "funktion: netzwerk-verbindung instabilität ist\nfeature: mehr log-nachrichten generieren\nbugfix: telegrammzählung",
+        "ru": "особенность: обрабатывать нестабильность сетевого подключения\nфункция: генерировать больше сообщений журнала\nbugfix: число телеграмм",
+        "pt": "característica: lidar com issesues de instabilidade de conexão de rede\nrecurso: gerar mais mensagens de log\nbugfix: contagem de telegramas",
+        "nl": "feature: handle netwerkverbinding instabiliteit issesues\nfunctie: meer logberichten genereren\nbugfix: aantal telegrammen",
+        "fr": "caractéristique: gérer l'instabilité de connexion réseau issesues\nfonctionnalité: générer plus de messages journal\nbugfix : nombre de télégrammes",
+        "it": "funzione: gestire connessioni di rete instabilità esue\nfunzione: generare più messaggi di log\nbugfix: conta telegram",
+        "es": "característica: manejar la inestabilidad de conexión de red issesues\nfunción: generar más mensajes de registro\nbugfix: cuenta de telegramas",
+        "pl": "cecha: uchwyt niestabilności połączeń sieciowych\nfunkcja: generować więcej wiadomości dziennika\nbugfix: liczba telegramów",
+        "uk": "особливість: нестійкість підключення ручок\nфункція: генерувати більше повідомлень журналу\nвиправлення помилок: кількість телеграм",
+        "zh-cn": "特性: 处理网络连接不稳定性\n特性: 生成更多日志消息\n错误修正: 电报计数"
+      },
+      "0.7.1": {
+        "en": "feature: when requesting fast message sendout create iob acks per bus message status, before it triggered all acks on first message send confirmance\nfeature: add message count object\nfeature: use common.desc from ets xml Description field and move datatype info to native\ncleanup: stop timers on shutdown\nbugfix: create a log entry on reception of unknown ga\nbugfix: do not count send as duplicate trigger in load measurement\nincrease default minimum send delay to 80ms",
+        "de": "feature: bei der anforderung von schnellnachrichten senden erstellen iob acks pro busnachrichtenstatus, bevor es alle acks auf erste nachricht senden bestätigung ausgelöst\nfunktion: nachrichtenzählobjekt hinzufügen\nfeature: verwenden Sie gemeinsam. desc from ets xml Beschreibung Feld und bewegen Sie Datentyp-Info zu nativen\naufräumen: stoppzeiter beim abschalten\nbugfix: erstellen sie einen log-eintrag an der rezeption unbekannter ga\nbugfix: nicht als duplikat-trigger in der load-messung senden\nverzugsverzögerung auf 80m erhöhen",
+        "ru": "функция: при запросе быстрого отправки сообщения создайте iob acks на статус сообщения в автобусе, прежде чем он запускает все носки в первом сообщении\nособенность: добавить объект\nособенность: использовать общее. Деск от ets xml Описание поле и переместить информацию типа данных на родной\nочистка: остановите таймеры\nbugfix: создать запись журнала на приеме неизвестной ga\nbugfix: не считать отправку в качестве дублирующего триггера при измерении нагрузки\nувеличение минимальной задержки отправки по умолчанию до 80 мс",
+        "pt": "recurso: ao solicitar mensagem rápida sendout criar acks iob por status de mensagem de ônibus, antes de desencadear todas as acks na primeira mensagem enviar confirmação\nrecurso: adicionar objeto de contagem de mensagens\nrecurso: use comum. desc de ets xml Descrição campo e mover informações do tipo de dados para nativo\nlimpeza: pára temporizadores no desligamento\nbugfix: criar uma entrada de log na recepção de desconhecido ga\nbugfix: não conte enviar como gatilho duplicado na medição de carga\naumento padrão mínimo enviar atraso para 80ms",
+        "nl": "functie: bij het aanvragen van snelle bericht sendout maak iob acks per bus bericht status, voordat het geactiveerd alle acks op eerste bericht bevestiging te sturen\nfeature: voeg bericht tellen object toe\nfunctie: gebruik gemeenschappelijk. desc van ets xml Beschrijving veld en verplaats datatype informatie naar native\nopruimen: stop timers bij afsluiten\nbugfix: maak een logboek bij ontvangst van onbekende ga\nbugfix: niet meetellen als dubbele trigger in belastingsmeting\nverhoog standaard minimale vertraging naar 80ms",
+        "fr": "fonctionnalité: lors de la demande d'envoi de message rapide créer iob aks par statut de message de bus, avant qu'il ait déclenché tous les acks sur le premier message envoyer confirmation\nfonctionnalité: ajouter un objet de compte de message\ncaractéristique: utiliser commun. desc de ets xml Description champ et déplacer datatype info vers native\nnettoyage: arrêt des minuteries à l'arrêt\nbugfix : créez une entrée de journal à la réception de ga inconnu\nbugfix : ne comptez pas l'envoi comme duplicata dans la mesure de la charge\naugmenter le délai d'envoi minimum par défaut à 80ms",
+        "it": "funzione: quando si richiede l'invio di messaggi rapidi creare iob acks per lo stato del messaggio dell'autobus, prima che abbia attivato tutte le zecche sul primo messaggio inviare conferma\nfunzione: aggiungere oggetto conteggio messaggi\ncaratteristica: usare comune. desc da ets xml Descrizione campo e spostare informazioni di tipo nativo\npulizia: tempori di arresto all'arresto\nbugfix: creare una voce di log sulla ricezione di ga sconosciuto\nbugfix: non contare inviare come trigger duplicato nella misurazione del carico\naumentare il ritardo minimo di invio predefinito a 80ms",
+        "es": "función: al solicitar el envío rápido de mensajes crear acks iob por estado de mensaje de autobús, antes de que desencadenar todos los acks en el primer mensaje enviar confirmación\ncaracterística: añadir mensaje contar objeto\nfunción: usar común. desc de ets xml Descripción campo y mover información tipo de datos a nativo\nlimpieza: parar los temporizadores en apagado\nbugfix: crear una entrada de registro en la recepción de ga desconocido\nbugfix: no cuente enviar como disparador duplicado en medición de carga\naumentar el mínimo predeterminado enviar retraso a 80ms",
+        "pl": "funkcja: przy żądaniu szybkiej wiadomości sendout tworzyć iob acks na autobus status wiadomości, zanim uruchomi wszystkie acks na pierwszej wiadomości wysłać potwierdzenie\nfunkcja: dodaj obiekt liczenia wiadomości\ncecha: używać często. desc z ets xml Opis pola i przenieść dane typu do rodzimej\nczyszczenie: czas zatrzymania przy wyłączaniu\nbugfix: utworzyć wpis logowania na recepcji nieznanego ga\nbugfix: nie licz wysyłania jako duplikat wyzwalacza w pomiarze obciążenia\nzwiększyć domyślne minimalne opóźnienie wysyłania do 80ms",
+        "uk": "функція: при запитуванні швидкого відправки повідомлень створюйте iob acks на статус повідомлення про автобус, перш ніж він запустив всі acks на першому повідомленні підтвердження\nфункція: додати об'єкт підрахунку повідомлень\nфункція: використовувати загальний. desc з ets xml Опис поля та переміщення інформації про тип даних для рідних\nприбиральниця: зупинити таймери на відключенні\nвиправлення помилок: створити запис журналу на прийом невідомого\nвиправлення помилок: не підрахуйте надсилання як дублікати вимірювання навантаження\nзбільшити мінімальну затримку за замовчуванням до 80ms",
+        "zh-cn": "特性 : 当请求快速消息发送时, 每个总线消息状态都会创建 iob ocks , 在它触发第一个消息发送确认上的所有 ocks 之前\n特性: 添加信件计数对象\n特性: 常用。 desc from ets xml 描述字段,并将数据类型信息移动到本地\n清理:关闭时停止计时器\nbugfix: 在接收未知的 ga 时创建日志条目\n错误修正 : 在负载测量中不将发送算作重复触发\n将默认的最小延迟发送到 80ms"
+      },
+      "0.7.0": {
+        "en": "feature: adding support for DPT-28 and DPT-29\nfor gas appearing in multiple objects severity lifted to warning\nfeature: some more verbose failure outputs\nbugfix: do not report errors resulting from bad bus data to sentry #433\nbugfix: do not forward invalid bus data to iob object tree\ncleanup of DTP library",
+        "de": "feature: Unterstützung für DPT-28 und DPT-29 hinzufügen\nfür gas in mehreren objekten schwere angehoben, um warnung\nfeature: einige mehr verbose ausfall ausgänge\nbugfix: melden sie keine fehler, die von schlechten busdaten zu senden #433\nbugfix: nicht ungültige busdaten an iob object tree weiterleiten\nreinigung der DTP-Bibliothek",
+        "ru": "функция: добавление поддержки для DPT-28 и DPT-29\nдля газа, появляющегося в нескольких объектах тяжести, поднятых для предупреждения\nособенность: некоторые более глагол выходы сбоя\nbugfix: не сообщайте об ошибках, вытекающих из плохих данных автобуса к отправке #433\nbugfix: не передайте недействительные данные о автобусе в дерево объекта iob\nочистка библиотеки DTP",
+        "pt": "recurso: adicionando suporte para DPT-28 e DPT-29\npara o gás que aparece em múltiplos objetos gravidade levantada para aviso\ncaracterística: algumas saídas de falha mais verbais\nbugfix: não reporte erros resultantes de dados de mau ônibus para sentinela #433\nbugfix: não encaminhar dados de ônibus inválidos para iob árvore de objeto\nlimpeza da biblioteca DTP",
+        "nl": "vertaling:\nvoor gas verschijnen in meerdere objecten, verheven om te waarschuwen\ner zijn nog meer werkwoorden\nmeld geen fouten die resulteren van slechte busgegevens naar sentiment\nstuur geen invalide busgegevens naar iob object boom\nopruimen van de DTP bibliotheek",
+        "fr": "fonction: ajouter du support pour DPT-28 et DPT-29\npour le gaz apparaissant dans plusieurs objets sévérités levés pour avertir\nfonction: quelques sorties d'échec plus verbeux\nbugfix: ne signalez pas les erreurs résultant de mauvaises données de bus à la sentinelle #433\nbugfix: ne pas envoyer de données de bus invalides à iob objet arbre\nnettoyage de la bibliothèque DTP",
+        "it": "funzione: aggiunta di supporto per DPT-28 e DPT-29\nper il gas che appare in più oggetti la gravità sollevata a avvertimento\ncaratteristica: alcune uscite di guasto più verbose\nbugfix: non segnalare errori derivanti dai dati relativi al bus difettoso alla miseria #433\nbugfix: non inoltrare i dati dell'autobus non validi all'albero dell'oggetto iob\npulizia della libreria DTP",
+        "es": "característica: añadir soporte para DPT-28 y DPT-29\npara el gas que aparece en múltiples objetos severidad levantada a advertencia\ncaracterística: algunos más salidas de falla verbosa\nbugfix: no reporte errores resultantes de los malos datos del bus al centinela #433\nbugfix: no reenvíe los datos de bus inválidos a iob objeto árbol\nlimpieza de la biblioteca DTP",
+        "pl": "wykorzystywanie: DPT-28 i DPT-29\nzałóżmy, że gaz pojawia się w wielu obiektach ciężko podnosi się ostrzeżenie\ncechą charakterystyczną jest częściej czasoprzestrzeni\nobserwacje: nie podają błędów wynikających z złych danych autobusowych\ntrąbka: nie przejmuje danych z nieprawidłowego autobusu\nczystość biblioteki DTP",
+        "uk": "функція: додавання підтримки DPT-28 та DPT-29\nдля виявлення газу в декількох об'єктах, що піднімаються на попередження\nфункція: деякі більш дієслова недостатність виходів\nвиправлення помилок, що виникають внаслідок поганих даних автобусів, які надсилаються #433\nвиправлення помилок: не пересилати недійсні дані автобусів на iob\nочищення бібліотеки DTP",
+        "zh-cn": "特色:增加对预防母婴传播和预防疾病29的支持\n多种物品中出现的气体受到警告\n特点:一些更坏的产出\nb ugfix:没有报告因繁忙的汽车数据而造成的错误。\nb ugfix:没有将无效的汽车数据转给目标树\nd. 清洁采购方案图书馆"
+      }
     },
-    "native": {
-        "aliasPath": "alias.0",
-        "aliasRange": false,
-        "aliasRegexp": "stat(e|us)(\\.|$)|rm(\\.|$)|r(ü|ue)ckmeldung(\\.|$)",
-        "aliasSimilarity": 0.9,
-        "autoreadEnabled": true,
-        "deviceName": "",
-        "eibadr": "0.0.0",
-        "gwip": "",
-        "gwipport": "3671",
-        "localInterface": "",
-        "minimumDelay": 80,
-        "noWarnUnknownGa": false,
-        "useBoolean": true
+    "title": "Open KNX",
+    "titleLang": {
+      "en": "Open KNX",
+      "de": "Open KNX",
+      "ru": "Open KNX",
+      "pt": "Open KNX",
+      "nl": "Open KNX",
+      "fr": "Open KNX",
+      "it": "Open KNX",
+      "es": "Open KNX",
+      "pl": "Open KNX",
+      "zh-cn": "Open KNX",
+      "uk": "Відкрийте KNX"
     },
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "KNX Gateway connected",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.busload",
-            "type": "state",
-            "common": {
-                "role": "info",
-                "name": "Busload in last 5s period",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "def": 0,
-                "unit": "%"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.messagecount",
-            "type": "state",
-            "common": {
-                "role": "info",
-                "name": "Message count",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "def": 0
-            },
-            "native": {}
-        }
-    ]
+    "desc": {
+      "en": "full featured open-source adapter for KNX",
+      "de": "Kostenloser Open-Source-Adapter, der die KNX Kommunikation über ein IP Gateway ermöglicht.",
+      "ru": "новый бесплатный open-source-адаптер для KNX",
+      "pt": "novo adaptador de código aberto gratuito para KNX",
+      "nl": "nieuwe gratis open-source-adapter voor KNX",
+      "fr": "nouvel adaptateur open-source gratuit pour KNX",
+      "it": "nuovo adattatore open source gratuito per KNX",
+      "es": "nuevo adaptador de código abierto gratuito para KNX",
+      "pl": "nowy darmowy adapter open-source dla KNX",
+      "zh-cn": "用于 KNX 的新免费开源适配器",
+      "uk": "повнофункціональний адаптер з відкритим кодом для KNX"
+    },
+    "authors": [
+      "Boellner <boellnerboellner@gmail.com>"
+    ],
+    "contributors": [],
+    "keywords": [
+      "knx free open source eib"
+    ],
+    "license": "GPL-3.0-only",
+    "platform": "Javascript/Node.js",
+    "main": "main.js",
+    "icon": "openknx.png",
+    "enabled": true,
+    "messagebox": true,
+    "subscribe": "messagebox",
+    "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.openknx/master/admin/openknx.png",
+    "readme": "https://github.com/iobroker-community-adapters/ioBroker.openknx/blob/master/README.md",
+    "loglevel": "info",
+    "mode": "daemon",
+    "type": "iot-systems",
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "adminUI": {
+      "config": "materialize"
+    },
+    "eraseOnUpload": true,
+    "plugins": {
+      "sentry": {
+        "dsn": "https://f87a314b36ef451aa291655ae13e2831@sentry.iobroker.net/165"
+      }
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=3.3.22"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=5.0.0"
+      }
+    ],
+    "tier": 2
+  },
+  "native": {
+    "aliasPath": "alias.0",
+    "aliasRange": false,
+    "aliasRegexp": "stat(e|us)(\\.|$)|rm(\\.|$)|r(ü|ue)ckmeldung(\\.|$)",
+    "aliasSimilarity": 0.9,
+    "autoreadEnabled": true,
+    "deviceName": "",
+    "eibadr": "0.0.0",
+    "gwip": "",
+    "gwipport": "3671",
+    "localInterface": "",
+    "minimumDelay": 80,
+    "noWarnUnknownGa": false,
+    "useBoolean": true
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "KNX Gateway connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.busload",
+      "type": "state",
+      "common": {
+        "role": "info",
+        "name": "Busload in last 5s period",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "def": 0,
+        "unit": "%"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.messagecount",
+      "type": "state",
+      "common": {
+        "role": "info",
+        "name": "Message count",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    }
+  ]
 }
