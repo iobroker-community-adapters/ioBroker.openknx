@@ -754,7 +754,7 @@ class openknx extends utils.Adapter {
                     this.config.gwip +
                     ":" +
                     this.config.gwipport +
-                    " device name:" +
+                    " device name: " +
                     this.config.deviceName +
                     " with physical adr: " +
                     this.config.eibadr +

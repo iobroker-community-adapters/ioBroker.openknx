@@ -213,10 +213,13 @@
                         obj[$this.attr("id")] = $this.prop("checked");
                     } else if ($this.attr("type") === "number") {
                         obj[$this.attr("id")] = parseFloat($this.val());
-                    } else {
+                    } else if ($this.attr("id") == "deviceName" && $this[0].innerHTML.length != 0)
+                        obj["deviceName"] = $this[0].innerHTML;
+                    else {
                         obj[$this.attr("id")] = $this.val();
                     }
                 });
+
                 sendTo(null, "restart", null);
                 callback(obj);
             }
@@ -387,7 +390,7 @@
                                     ><span class="translate">detect interface</span></a>
                             </div>
                             <div class="col s12 l3">
-                                <h7 class="value" id="deviceName"> </h7>
+                                <h7 class="value" id="deviceName"></h7>
                             </div>
                         </div>
                         <div class="row">
