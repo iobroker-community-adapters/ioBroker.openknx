@@ -34,7 +34,7 @@
     "@iobroker/adapter-core": "^2.6.8",
     "async-exit-hook": "^2.0.1",
     "binary-parser": "^2.2.1",
-    "knx": "2.5.2",
+    "knx": "2.5.4",
     "similarity": "^1.2.1",
     "xmldom": "^0.6.0",
     "xpath": "0.0.34"
