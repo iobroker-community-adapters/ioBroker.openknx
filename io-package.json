@@ -95,7 +95,6 @@
         "zh-cn": "特色:增加对预防母婴传播和预防疾病29的支持\n多种物品中出现的气体受到警告\n特点:一些更坏的产出\nb ugfix:没有报告因繁忙的汽车数据而造成的错误。\nb ugfix:没有将无效的汽车数据转给目标树\nd. 清洁采购方案图书馆"
       }
     },
-    "title": "Open KNX",
     "titleLang": {
       "en": "Open KNX",
       "de": "Open KNX",
@@ -129,7 +128,10 @@
     "keywords": [
       "knx free open source eib"
     ],
-    "license": "GPL-3.0-only",
+    "licenseInformation": {
+      "license": "GPL-3.0-only",
+      "type": "free"
+    },
     "platform": "Javascript/Node.js",
     "main": "main.js",
     "icon": "openknx.png",
@@ -155,12 +157,12 @@
     },
     "dependencies": [
       {
-        "js-controller": ">=3.3.22"
+        "js-controller": ">=5.0.19"
       }
     ],
     "globalDependencies": [
       {
-        "admin": ">=5.0.0"
+        "admin": ">=6.13.16"
       }
     ],
     "tier": 2
