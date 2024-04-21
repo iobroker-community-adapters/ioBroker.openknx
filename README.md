@@ -410,7 +410,7 @@ Openknx estimates the current bus load of the KNX line it is connected to in obj
   * update gui: iob upload openknx
   * update stable: https://github.com/ioBroker/ioBroker.repositories#add-a-new-adapter-to-the-stable-repository
 -->
-### **WORK IN PROGRESS**
+### 0.9.0 (2024-04-21)
 
 - (mcm1957) Adapter requires node.js >= 18 and js-controller >= 5 now
 - (mcm1957) Dependencies have been updated

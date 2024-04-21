@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.8.0",
+    "version": "0.9.0",
     "news": {
+      "0.9.0": {
+        "en": "Adapter requires node.js >= 18 and js-controller >= 5 now\nDependencies have been updated",
+        "de": "Adapter benötigt node.js >= 18 und js-controller >= 5 jetzt\nAbhängigkeiten wurden aktualisiert",
+        "ru": "Адаптер требует node.js >= 18 и js-контроллер >= 5 сейчас\nЗависимость обновлена",
+        "pt": "Adapter requer node.js >= 18 e js-controller >= 5 agora\nAs dependências foram atualizadas",
+        "nl": "Voor adaptor zijn node.js < 18 en js-controller > Nu 5\nAfhankelijkheden zijn bijgewerkt",
+        "fr": "L'adaptateur nécessite node.js >= 18 et js-controller >= 5 maintenant\nLes dépendances ont été actualisées",
+        "it": "Adattatore richiede node.js >= 18 e js-controller >= 5 ora\nLe dipendenze sono state aggiornate",
+        "es": "Adaptador requiere node.js √≥= 18 y js-controller 5 ahora\nSe han actualizado las dependencias",
+        "pl": "Adapter wymaga node.js > = 18 i kontroler js- > = 5 teraz\nZaktualizowano zależności",
+        "uk": "Адаптер вимагає node.js >= 18 і js-controller >= 5 тепер\nЗалежність було оновлено",
+        "zh-cn": "适配器需要节点.js QQ18和js控制器 QQ 现在5号\n依赖关系已更新"
+      },
       "0.8.0": {
         "en": "feature: put KNX interface name into log\nbugfix: #419 wait for connection complete before data processing in case of receiving data before\nbugfix: #457 Ack missing after changing IOB object value",
         "de": "feature: KNX-Schnittstellenname in Log setzen\nbugfix: #419 warten auf die vollständige verbindung vor der datenverarbeitung im falle des empfangens von daten vor\nbugfix: #457 Ack fehlt nach Änderung des IOB-Objektwerts",
@@ -80,19 +93,6 @@
         "pl": "funkcja: przy żądaniu szybkiej wiadomości sendout tworzyć iob acks na autobus status wiadomości, zanim uruchomi wszystkie acks na pierwszej wiadomości wysłać potwierdzenie\nfunkcja: dodaj obiekt liczenia wiadomości\ncecha: używać często. desc z ets xml Opis pola i przenieść dane typu do rodzimej\nczyszczenie: czas zatrzymania przy wyłączaniu\nbugfix: utworzyć wpis logowania na recepcji nieznanego ga\nbugfix: nie licz wysyłania jako duplikat wyzwalacza w pomiarze obciążenia\nzwiększyć domyślne minimalne opóźnienie wysyłania do 80ms",
         "uk": "функція: при запитуванні швидкого відправки повідомлень створюйте iob acks на статус повідомлення про автобус, перш ніж він запустив всі acks на першому повідомленні підтвердження\nфункція: додати об'єкт підрахунку повідомлень\nфункція: використовувати загальний. desc з ets xml Опис поля та переміщення інформації про тип даних для рідних\nприбиральниця: зупинити таймери на відключенні\nвиправлення помилок: створити запис журналу на прийом невідомого\nвиправлення помилок: не підрахуйте надсилання як дублікати вимірювання навантаження\nзбільшити мінімальну затримку за замовчуванням до 80ms",
         "zh-cn": "特性 : 当请求快速消息发送时, 每个总线消息状态都会创建 iob ocks , 在它触发第一个消息发送确认上的所有 ocks 之前\n特性: 添加信件计数对象\n特性: 常用。 desc from ets xml 描述字段,并将数据类型信息移动到本地\n清理:关闭时停止计时器\nbugfix: 在接收未知的 ga 时创建日志条目\n错误修正 : 在负载测量中不将发送算作重复触发\n将默认的最小延迟发送到 80ms"
-      },
-      "0.7.0": {
-        "en": "feature: adding support for DPT-28 and DPT-29\nfor gas appearing in multiple objects severity lifted to warning\nfeature: some more verbose failure outputs\nbugfix: do not report errors resulting from bad bus data to sentry #433\nbugfix: do not forward invalid bus data to iob object tree\ncleanup of DTP library",
-        "de": "feature: Unterstützung für DPT-28 und DPT-29 hinzufügen\nfür gas in mehreren objekten schwere angehoben, um warnung\nfeature: einige mehr verbose ausfall ausgänge\nbugfix: melden sie keine fehler, die von schlechten busdaten zu senden #433\nbugfix: nicht ungültige busdaten an iob object tree weiterleiten\nreinigung der DTP-Bibliothek",
-        "ru": "функция: добавление поддержки для DPT-28 и DPT-29\nдля газа, появляющегося в нескольких объектах тяжести, поднятых для предупреждения\nособенность: некоторые более глагол выходы сбоя\nbugfix: не сообщайте об ошибках, вытекающих из плохих данных автобуса к отправке #433\nbugfix: не передайте недействительные данные о автобусе в дерево объекта iob\nочистка библиотеки DTP",
-        "pt": "recurso: adicionando suporte para DPT-28 e DPT-29\npara o gás que aparece em múltiplos objetos gravidade levantada para aviso\ncaracterística: algumas saídas de falha mais verbais\nbugfix: não reporte erros resultantes de dados de mau ônibus para sentinela #433\nbugfix: não encaminhar dados de ônibus inválidos para iob árvore de objeto\nlimpeza da biblioteca DTP",
-        "nl": "vertaling:\nvoor gas verschijnen in meerdere objecten, verheven om te waarschuwen\ner zijn nog meer werkwoorden\nmeld geen fouten die resulteren van slechte busgegevens naar sentiment\nstuur geen invalide busgegevens naar iob object boom\nopruimen van de DTP bibliotheek",
-        "fr": "fonction: ajouter du support pour DPT-28 et DPT-29\npour le gaz apparaissant dans plusieurs objets sévérités levés pour avertir\nfonction: quelques sorties d'échec plus verbeux\nbugfix: ne signalez pas les erreurs résultant de mauvaises données de bus à la sentinelle #433\nbugfix: ne pas envoyer de données de bus invalides à iob objet arbre\nnettoyage de la bibliothèque DTP",
-        "it": "funzione: aggiunta di supporto per DPT-28 e DPT-29\nper il gas che appare in più oggetti la gravità sollevata a avvertimento\ncaratteristica: alcune uscite di guasto più verbose\nbugfix: non segnalare errori derivanti dai dati relativi al bus difettoso alla miseria #433\nbugfix: non inoltrare i dati dell'autobus non validi all'albero dell'oggetto iob\npulizia della libreria DTP",
-        "es": "característica: añadir soporte para DPT-28 y DPT-29\npara el gas que aparece en múltiples objetos severidad levantada a advertencia\ncaracterística: algunos más salidas de falla verbosa\nbugfix: no reporte errores resultantes de los malos datos del bus al centinela #433\nbugfix: no reenvíe los datos de bus inválidos a iob objeto árbol\nlimpieza de la biblioteca DTP",
-        "pl": "wykorzystywanie: DPT-28 i DPT-29\nzałóżmy, że gaz pojawia się w wielu obiektach ciężko podnosi się ostrzeżenie\ncechą charakterystyczną jest częściej czasoprzestrzeni\nobserwacje: nie podają błędów wynikających z złych danych autobusowych\ntrąbka: nie przejmuje danych z nieprawidłowego autobusu\nczystość biblioteki DTP",
-        "uk": "функція: додавання підтримки DPT-28 та DPT-29\nдля виявлення газу в декількох об'єктах, що піднімаються на попередження\nфункція: деякі більш дієслова недостатність виходів\nвиправлення помилок, що виникають внаслідок поганих даних автобусів, які надсилаються #433\nвиправлення помилок: не пересилати недійсні дані автобусів на iob\nочищення бібліотеки DTP",
-        "zh-cn": "特色:增加对预防母婴传播和预防疾病29的支持\n多种物品中出现的气体受到警告\n特点:一些更坏的产出\nb ugfix:没有报告因繁忙的汽车数据而造成的错误。\nb ugfix:没有将无效的汽车数据转给目标树\nd. 清洁采购方案图书馆"
       }
     },
     "titleLang": {
