@@ -31,7 +31,7 @@
     "node": ">= 18"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^3.1.6",
+    "@iobroker/adapter-core": "^3.2.3",
     "async-exit-hook": "^2.0.1",
     "binary-parser": "^2.2.1",
     "knx": "2.5.4",
