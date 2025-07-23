@@ -124,7 +124,6 @@
     "authors": [
       "Boellner <boellnerboellner@gmail.com>"
     ],
-    "contributors": [],
     "keywords": [
       "knx free open source eib"
     ],
@@ -136,8 +135,6 @@
     "main": "main.js",
     "icon": "openknx.png",
     "enabled": true,
-    "messagebox": true,
-    "subscribe": "messagebox",
     "extIcon": "https://raw.githubusercontent.com/iobroker-community-adapters/ioBroker.openknx/master/admin/openknx.png",
     "readme": "https://github.com/iobroker-community-adapters/ioBroker.openknx/blob/master/README.md",
     "loglevel": "info",
@@ -146,6 +143,10 @@
     "compact": true,
     "connectionType": "local",
     "dataSource": "push",
+    "supportedMessages": {
+      "custom": true,
+      "notifications": true
+    },
     "adminUI": {
       "config": "materialize"
     },
@@ -188,7 +189,19 @@
       "_id": "info",
       "type": "channel",
       "common": {
-        "name": "Information"
+        "name": {
+          "en": "Information",
+          "de": "Information",
+          "ru": "Информация",
+          "pt": "Em formação",
+          "nl": "Informatie",
+          "fr": "Informations",
+          "it": "Informazione",
+          "es": "Información",
+          "pl": "Informacja",
+          "uk": "Інформація",
+          "zh-cn": "信息"
+        }
       },
       "native": {}
     },
@@ -197,7 +210,19 @@
       "type": "state",
       "common": {
         "role": "indicator.connected",
-        "name": "KNX Gateway connected",
+        "name": {
+          "en": "KNX Gateway connected",
+          "de": "KNX Gateway verbunden",
+          "ru": "Подключен шлюз KNX",
+          "pt": "Gateway KNX ligado",
+          "nl": "Gekoppeld aan een KNX-gateway",
+          "fr": "Connecté à KNX Gateway",
+          "it": "Porta KNX connessa",
+          "es": "KNX Gateway conectado",
+          "pl": "Podłączona bramka KNX",
+          "uk": "KNX Шлюз підключений",
+          "zh-cn": "KNX 网关已连接"
+        },
         "type": "boolean",
         "read": true,
         "write": false,
@@ -210,7 +235,19 @@
       "type": "state",
       "common": {
         "role": "info",
-        "name": "Busload in last 5s period",
+        "name": {
+          "en": "Busload in the last 5 seconds",
+          "de": "Buslast in den letzten 5 Sekunden",
+          "ru": "Загрузка автобуса за последние 5 секунд",
+          "pt": "Carga nos últimos 5 segundos",
+          "nl": "Buslading in de laatste 5 seconden",
+          "fr": "Bus plein ces 5 dernières secondes",
+          "it": "Bus load negli ultimi 5 secondi",
+          "es": "Autobús en los últimos 5 segundos",
+          "pl": "Obciążenie autobusem w ciągu ostatnich 5 sekund",
+          "uk": "Завантаження автобуса за останні 5 секунд",
+          "zh-cn": "过去 5 秒内的总线负载"
+        },
         "type": "number",
         "read": true,
         "write": false,
@@ -224,7 +261,19 @@
       "type": "state",
       "common": {
         "role": "info",
-        "name": "Message count",
+        "name": {
+          "en": "Message count",
+          "de": "Meldungszahl",
+          "ru": "Количество сообщений",
+          "pt": "Nº de mensagens",
+          "nl": "Aantal berichten",
+          "fr": "Nombre de messages",
+          "it": "Numero messaggi",
+          "es": "Numero de mensajes",
+          "pl": "Liczba wiadomości",
+          "uk": "Кількість повідомлень",
+          "zh-cn": "留言数"
+        },
         "type": "number",
         "read": true,
         "write": false,
