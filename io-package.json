@@ -150,6 +150,11 @@
     "adminUI": {
       "config": "materialize"
     },
+    "docs": {
+      "en": [
+        "docs/en/README.md"
+      ]
+    },
     "eraseOnUpload": true,
     "plugins": {
       "sentry": {
