@@ -157,12 +157,12 @@
     },
     "dependencies": [
       {
-        "js-controller": ">=5.0.19"
+        "js-controller": ">=6.0.0"
       }
     ],
     "globalDependencies": [
       {
-        "admin": ">=6.13.16"
+        "admin": ">=7.4.10"
       }
     ],
     "tier": 2

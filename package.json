@@ -28,7 +28,7 @@
     "url": "https://github.com/iobroker-community-adapters/ioBroker.openknx"
   },
   "engines": {
-    "node": ">= 18"
+    "node": ">=20"
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.2.3",
