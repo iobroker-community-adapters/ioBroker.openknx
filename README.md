@@ -2,14 +2,23 @@
 
 # ioBroker.openknx
 
-[![NPM version](https://img.shields.io/npm/v/iobroker.openknx.svg)](https://www.npmjs.com/package/iobroker.openknx)
-[![Downloads](https://img.shields.io/npm/dm/iobroker.openknx.svg)](https://www.npmjs.com/package/iobroker.openknx)
-![Number of Installations](https://iobroker.live/badges/openknx-installed.svg)
-![Current version in stable repository](https://iobroker.live/badges/openknx-stable.svg)
+[![NPM version](https://img.shields.io/npm/v/iobroker.openknx?style=flat-square)](https://www.npmjs.com/package/iobroker.openknx)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.openknx?label=npm%20downloads&style=flat-square)](https://www.npmjs.com/package/iobroker.openknx)
+![node-lts](https://img.shields.io/node/v-lts/iobroker.openknx?style=flat-square)
+![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/iobroker.openknx?label=npm%20dependencies&style=flat-square)
 
-[![NPM](https://nodei.co/npm/iobroker.openknx.png?downloads=true)](https://nodei.co/npm/iobroker.openknx/)
+![GitHub](https://img.shields.io/github/license/iobroker-community-adapters/iobroker.openknx?style=flat-square)
+![GitHub repo size](https://img.shields.io/github/repo-size/iobroker-community-adapters/iobroker.openknx?logo=github&style=flat-square)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/iobroker-community-adapters/iobroker.openknx?logo=github&style=flat-square)
+![GitHub last commit](https://img.shields.io/github/last-commit/iobroker-community-adapters/iobroker.openknx?logo=github&style=flat-square)
+![GitHub issues](https://img.shields.io/github/issues/iobroker-community-adapters/iobroker.openknx?logo=github&style=flat-square)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/iobroker-community-adapters/iobroker.openknx/test-and-release.yml?branch=master&logo=github&style=flat-square)
 
-**Tests:** ![Test and Release](https://github.com/iobroker-community-adapters/ioBroker.openknx/workflows/Test%20and%20Release/badge.svg)
+## Versions
+
+![Beta](https://img.shields.io/npm/v/iobroker.openknx.svg?color=red&label=beta)
+![Stable](http://iobroker.live/badges/openknx-stable.svg)
+![Installed](http://iobroker.live/badges/openknx-installed.svg)
 
 This adapter serves as communication interface between Iobroker and your KNX IP Gateway.
 The adapter allows to generate the iobroker communication objects automatically by importing an ETS group address xml export.  
