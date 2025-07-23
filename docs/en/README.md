@@ -1,4 +1,4 @@
-![Logo](admin/openknx.png)
+![Logo](../../admin/openknx.png)
 
 # ioBroker.openknx
 
@@ -8,7 +8,7 @@ The adapter is available in the latest / beta repository. If this is selected in
 
 ## Adapter configuration
 
-![settings](docs/pictures/setting.png)
+![settings](../pictures/setting.png)
 Press "save & close" or "save" to restart the adapter and take over the changes.
 When starting, the adapter tries to read all GroupAdresses with have the autoread flag (default setting).
 This could take a while and can produce a higher load on your KNX-bus. This ensures that the adapter operates with up-to-date values from the start.
@@ -59,7 +59,7 @@ To clean up object tree
 
 ### import ETS xml and save
 
-![ETS export](docs/pictures/exportGA.png)
+![ETS export](../pictures/exportGA.png)
 
 1. In ETS go to Group Addresses, select export group address and select XML export in latest format version.
    ETS4 Format is not supported, it does not contain DPT information.
@@ -183,7 +183,7 @@ return msg;
 # log level
 
 Enable expert mode to enable switching between different log levels. Default loglevel is info.  
-![loglevel](docs/pictures/loglevel.png)
+![loglevel](../pictures/loglevel.png)
 
 # IOBroker Communication Object description
 
