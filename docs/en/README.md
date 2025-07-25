@@ -4,11 +4,12 @@
 
 ## Installation
 
-The adapter is available in the latest / beta repository. If this is selected in the ioBroker system settings as standard repository, the adapter can be searched in the adapter list under "openknx" and installed by clicking the + Symbol. An alternative is to install in expert mode via the Github symbol by selecting "from Github" and searching for openknx.
+The adapter can be searched in the adapter list under "openknx" and installed by clicking the + Symbol.
 
 ## Adapter configuration
 
-![settings](../pictures/setting.png)
+![settings](img/setting.png)
+
 Press "save & close" or "save" to restart the adapter and take over the changes.
 When starting, the adapter tries to read all GroupAdresses with have the autoread flag (default setting).
 This could take a while and can produce a higher load on your KNX-bus. This ensures that the adapter operates with up-to-date values from the start.
@@ -59,7 +60,7 @@ To clean up object tree
 
 ### import ETS xml and save
 
-![ETS export](../pictures/exportGA.png)
+![ETS export](img/exportGA.png)
 
 1. In ETS go to Group Addresses, select export group address and select XML export in latest format version.
    ETS4 Format is not supported, it does not contain DPT information.
@@ -109,9 +110,9 @@ The object folder where the aliases get generated.
 
 The whole name including path is used to check for similarity.
 
-# Adapter migration hints
+## Adapter migration hints
 
-## migrate Node Red
+### migrate Node Red
 
 -   in right side menu, select Export
 -   select All Flows, Download
@@ -121,7 +122,7 @@ The whole name including path is used to check for similarity.
 -   in the dialog select Flows (Subflows, Configuration-Nodes only if they are affected) -> new tabs get added
 -   delete old flows manually
 
-## migrate VIS
+### migrate VIS
 
 -   Open Vis Editor
 -   Setup -> Projekt-Export/import -> Exportieren normal
@@ -133,7 +134,7 @@ The whole name including path is used to check for similarity.
 -   Projektname = main
 -   Import project
 
-## migrate Scripts
+### migrate Scripts
 
 -   Open Scripts
 -   3 dots -> Export all scripts
@@ -143,7 +144,7 @@ The whole name including path is used to check for similarity.
 -   3 dots ->Import scripts
 -   Move zip file in Drop Area
 
-## migrate Grafana
+### migrate Grafana
 
 -   go through all dashboards and select share - export - save to file
 -   in text editor replace knx.0. with openknx.0.
@@ -151,7 +152,7 @@ The whole name including path is used to check for similarity.
 -   From here you can upload a dashboard JSON file
 -   select Import (Overwrite)
 
-## migrate Influx
+### migrate Influx
 
 -   login via SSH to your IOBroker and run command influx
 -   use iobroker (or your specific database listed via command show databases)
@@ -160,9 +161,7 @@ The whole name including path is used to check for similarity.
     where entry_new points to the old adapter object path and entry_new the openknx adapter instance
 -   set influx enabled for new object entry_new
 
-# howto use the adapter & basic concepts
-
-# howto use the adapter & basic concepts
+## howto use the adapter & basic concepts
 
 ### ACK flags with tunneling connections
 
@@ -180,12 +179,12 @@ Create a function node that connects to a ioBroker out node that connects with a
 msg.payload = {"priority":1 ,"data":0};
 return msg;
 
-# log level
+## log level
 
 Enable expert mode to enable switching between different log levels. Default loglevel is info.  
-![loglevel](../pictures/loglevel.png)
+![loglevel](img/loglevel.png)
 
-# IOBroker Communication Object description
+## IOBroker Communication Object description
 
 IoBroker defines Objects to hold communication interfaces settings.  
 GA import generates a communication object folder structure following the ga main-group/middle-group scheme. Each groupaddress is an oject with following automatically generated data.
@@ -230,7 +229,7 @@ Autoread is set to false where it is clear from the DPT that this is a trigger s
 }
 ```
 
-# Adapter communication Interface Description
+## Adapter communication Interface Description
 
 Handeled DPTs are: 1-21,232,237,238  
 Unhandeled DPTs are written as raw buffers, the interface is a sequencial string of hexadecimal numbers. For example write '0102feff' to send values 0x01 0x02 0xfe 0xff on the bus.
@@ -377,7 +376,14 @@ Openknx estimates the current bus load of the KNX line it is connected to in obj
 
 ## FAQ
 
-- Autoread trigger actors on the bus to react
-  Check in ETS if group objects of certain devices that are connected to the suspicious GA have the R/L flag configured. This should not be the case if te device is a consumer of the signal. If the signal has an event character, a groupValueRead would trigger that event. Change configuration in ETS or disable autoread for this object.
-- DISCONNECT_REQUEST on startup
-  Increase setting for Minimum send delay between two frames to avoid flooding the interface
+**Autoread trigger actors on the bus to react**
+
+Check in ETS if group objects of certain devices that are connected to the suspicious GA have the R/L flag configured. This should not be the case if te device is a consumer of the signal. If the signal has an event character, a groupValueRead would trigger that event. Change configuration in ETS or disable autoread for this object.
+
+**DISCONNECT_REQUEST on startup**
+
+Increase setting for Minimum send delay between two frames to avoid flooding the interface
+
+**Is secure tunneling supported?**
+
+No. Disable secure tunneling in your IP interface.
