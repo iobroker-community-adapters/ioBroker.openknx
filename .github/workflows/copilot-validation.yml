@@ -1,0 +1,51 @@
+name: Copilot PR Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  copilot-validation:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.title, '[copilot]') || contains(github.event.pull_request.labels.*.name, 'copilot-assisted')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Check package files
+        run: npm run test:package
+
+      - name: Validate copilot instructions
+        run: |
+          if [ ! -f ".github/copilot-instructions.md" ]; then
+            echo "❌ Missing .github/copilot-instructions.md file"
+            exit 1
+          fi
+          echo "✅ Copilot instructions file exists"
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🤖 **Copilot-assisted PR detected!**\n\nThis PR appears to be created with GitHub Copilot assistance. All validation checks have passed:\n\n- ✅ Linting\n- ✅ Tests\n- ✅ Package validation\n- ✅ Copilot instructions present\n\nPlease review the changes carefully before merging.'
+            })
