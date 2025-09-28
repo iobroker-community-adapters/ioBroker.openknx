@@ -23,5 +23,18 @@
             ],
             "url": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/jsonConfig/schemas/jsonConfig.json"
         }
-    ]
+    ],
+    "github.copilot.enable": {
+        "*": true,
+        "yaml": false,
+        "plaintext": false,
+        "markdown": true,
+        "javascript": true,
+        "typescript": true,
+        "json": true
+    },
+    "github.copilot.advanced": {
+        "debug.overrideEngine": "codex",
+        "inlineSuggestEnable": true
+    }
 }

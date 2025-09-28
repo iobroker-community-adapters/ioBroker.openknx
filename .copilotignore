@@ -1,0 +1,70 @@
+# .copilotignore
+# Exclude files and directories from GitHub Copilot context
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs
+admin/build/
+admin/dist/
+*.min.js
+*.bundle.js
+
+# Testing artifacts
+coverage/
+.nyc_output/
+test-results/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Environment and config secrets
+.env
+.env.local
+.env.*.local
+
+# Large data files
+*.dump
+*.backup
+*.archive
+
+# Generated documentation
+docs/generated/
+
+# Version control
+.git/
+.gitignore
+
+# IDE specific files (keep settings but ignore personal configs)
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store?
+ehthumbs.db
+
+# Large binary files
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Compiled binaries
+*.o
+*.a
+*.lib
+
+# Archive files
+*.zip
+*.rar
+*.tar.gz
+*.7z
