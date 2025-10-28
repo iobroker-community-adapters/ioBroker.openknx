@@ -22,3 +22,6 @@ admin/i18n/*/flat.txt
 todo.txt
 iob_npm.done
 .DS_Store
+
+#ignore .commitinfo created by ioBroker release script
+.commitinfo
