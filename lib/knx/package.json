@@ -92,7 +92,7 @@
     "machina": "^4.0.2"
   },
   "devDependencies": {
-    "multi-tape": "^1.2.1",
+    "multi-tape": "^1.10.1",
     "tape": "^4.10.1"
   }
 }
