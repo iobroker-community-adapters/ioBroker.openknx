@@ -12,6 +12,6 @@
   "dependencies": {
     "knx": "../",
     "tslint": "^5.1.0",
-    "typescript": "^2.2.2"
+    "typescript": "^5.9.3"
   }
 }
