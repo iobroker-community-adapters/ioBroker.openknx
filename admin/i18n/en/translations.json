@@ -19,7 +19,7 @@
     "include group range in search": "include group range in search",
     "generate aliases": "generate aliases",
     "Imported %s states successfully": "Imported %s states successfully",
-    "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export": "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export",
+    "KNXproj are not supported, please open in ETS the Group Addresses and right click on group addresses and then group adresse export": "KNXproj are not supported, please open in ETS the Group Addresses and right click on group addresses and then group adresse export",
     "Restarting adapter": "Restarting adapter",
     "Unsupported file format": "Unsupported file format",
     "Generated %s aliases.": "Generated %s aliases.",

@@ -40,7 +40,7 @@
 
         <script type="text/javascript">
             //ref https://github.com/ioBroker/ioBroker.docs/blob/master/docs/en/dev/adapterdev.md#adminhtml -->
-            var etsFile = '<input type="file" id="etsFile" style="display: inline-block"/>';
+            const etsFile = '<input type="file" id="etsFile" style="display: inline-block"/>';
 
             function disableAllButtons() {
                 $("#etsFile").prop("disabled", true);
@@ -52,7 +52,9 @@
 
             // This will be called by the admin adapter when the settings page loads
             function load(settings, onChange) {
-                if (!settings) return;
+                if (!settings) {
+                    return;
+                }
 
                 //if processing a background request, disable user interaction
                 window.isProcessingRequest = false;
@@ -89,14 +91,14 @@
 
                 //fill dropdown list from adapter-settings.js
                 getIPs(function (ips) {
-                    for (var i = 0; i < ips.length; i++) {
+                    for (let i = 0; i < ips.length; i++) {
                         if (
                             ips[i].family.indexOf("ipv4") > -1 &&
                             ips[i].address !== "0.0.0.0" &&
                             ips[i].address !== "127.0.0.1"
                         ) {
                             $("#localInterface").append(
-                                '<option value="' + ips[i].address + '">' + ips[i].name + "</option>",
+                                `<option value="${ips[i].address}">${ips[i].name}</option>`,
                             );
                         }
                     }
@@ -109,8 +111,8 @@
                 $("#progress2").hide();
 
                 $(".value").each(function () {
-                    var $key = $(this);
-                    var id = $key.attr("id");
+                    const $key = $(this);
+                    const id = $key.attr("id");
                     if ($key.attr("type") === "checkbox") {
                         // do not call onChange direct, because onChange could expect some arguments
                         $key.prop("checked", settings[id]).on("change", () => onChange());
@@ -124,7 +126,7 @@
                     //add sanity checks
                     $key.val(settings[id]).focusout("change", function () {
                         if (id === "gwip") {
-                            var ip1 = $("#gwip").val();
+                            const ip1 = $("#gwip").val();
                             if (isIpValid(ip1)) {
                                 $("#gwip").val(ip1);
                             } else {
@@ -135,8 +137,8 @@
                         }
 
                         if (id === "gwipport") {
-                            var gwipport1 = $("#gwipport").val();
-                            number = Number(gwipport1);
+                            const gwipport1 = $("#gwipport").val();
+                            const number = Number(gwipport1);
                             if (isNumber(gwipport1) && number >= 0 && number <= 65535) {
                                 $("#gwipport").val(number);
                             } else {
@@ -146,7 +148,7 @@
                         }
 
                         if (id === "eibadr") {
-                            var eibadr1 = $("#eibadr").val();
+                            const eibadr1 = $("#eibadr").val();
                             if (isKnxAddressValid(eibadr1)) {
                                 $("#eibadr").val(eibadr1);
                             } else {
@@ -156,8 +158,8 @@
                         }
 
                         if (id === "minimumDelay") {
-                            var intervall = $("#minimumDelay").val();
-                            number = Number(intervall);
+                            const intervall = $("#minimumDelay").val();
+                            const number = Number(intervall);
                             if (isNumber(intervall) && number >= 0 && number <= 1000) {
                                 $("#minimumDelay").val(number);
                             } else {
@@ -167,8 +169,8 @@
                         }
 
                         if (id === "aliasSimilarity") {
-                            var aliasSimilarity = $("#aliasSimilarity").val();
-                            number = Number(aliasSimilarity);
+                            const aliasSimilarity = $("#aliasSimilarity").val();
+                            const number = Number(aliasSimilarity);
                             if (isNumber(aliasSimilarity) && number >= 0 && number <= 1) {
                                 $("#aliasSimilarity").val(number);
                             } else {
@@ -182,7 +184,7 @@
                 $("#etsFile").change(processXmlFile);
                 $("#createAlias").change(processAlias);
                 $("#detectInterface").change(processDetectInterface);
-                //if not alive disable buttons
+                // if not alive, disable buttons
                 getIsAdapterAlive(function (isAlive) {
                     if (!isAlive) {
                         disableAllButtons();
@@ -197,18 +199,20 @@
                     processDetectInterface();
                 });
 
-                //start with no changed settings, disable save button
+                //start with no changed settings, disable the save button
                 onChange(false);
                 // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
-                if (M) M.updateTextFields();
+                if (M) {
+                    M.updateTextFields();
+                }
             }
 
             // This will be called by the admin adapter when the user presses the save button
             function save(callback) {
                 // example: select elements with class=value and build settings object
-                var obj = {};
+                const obj = {};
                 $(".value").each(function () {
-                    var $this = $(this);
+                    const $this = $(this);
                     if ($this.attr("type") === "checkbox") {
                         obj[$this.attr("id")] = $this.prop("checked");
                     } else if ($this.attr("type") === "number") {
@@ -226,20 +230,20 @@
 
             function processXmlFile(event) {
                 event.preventDefault();
-                var file = event.dataTransfer ? event.dataTransfer.files[0] : event.target.files[0];
+                const file = event.dataTransfer ? event.dataTransfer.files[0] : event.target.files[0];
                 if (!file) {
                     console.warn("invalid file object");
                     return false;
                 }
 
-                if (file.name.split(".").pop() == "xml") {
+                if (file.name.split(".").pop() === "xml") {
                     disableAllButtons();
                     window.isProcessingRequest = true;
-                    var reader = new FileReader();
+                    const reader = new FileReader();
                     reader.addEventListener("load", function readFile(event) {
                         $("#etsFile").replaceWith($(etsFile));
                         $("#etsFile").change(processXmlFile);
-                        showToast(null, _("Import started" + " ..."), null, 3000);
+                        showToast(null, _("Import started ..."), null, 3000);
                         $("#progress").show();
                         sendTo(
                             null,
@@ -261,16 +265,16 @@
                                     showMessage(_("Imported %s states successfully", result.count));
                                 }
                                 sendTo(null, "restart", null);
-                                showToast(null, _("Restarting adapter" + "..."), null, 10000);
+                                showToast(null, _("Restarting adapter..."), null, 10000);
                                 window.isProcessingRequest = false;
                             },
                         );
                     });
                     reader.readAsText(file);
-                } else if (file.name.split(".").pop() == "knxproj") {
+                } else if (file.name.split(".").pop() === "knxproj") {
                     showMessage(
                         _(
-                            "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export",
+                            "KNXproj are not supported, please open in ETS the Group Addresses and right click on group addresses and then group adresse export",
                         ),
                     );
                 } else {
@@ -295,7 +299,7 @@
                         if (!result /*|| result.error*/) {
                             showMessage(_("Error"));
                         } else {
-                            showMessage(_("Generated %s aliases." + "<br/>" + result.error, result.count));
+                            showMessage(_(`Generated %s aliases.<br/>${result.error}`, result.count));
                         }
                         window.isProcessingRequest = false;
                         $("#progress2").hide();
@@ -329,12 +333,12 @@
             }
 
             function isIpValid(inputText) {
-                var format = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$/;
+                const format = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$/;
                 return !!inputText.match(format);
             }
 
             function isKnxAddressValid(inputText) {
-                var format =
+                const format =
                     /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
                 return !!inputText.match(format);
             }
@@ -408,11 +412,11 @@
                                 <input class="value" id="autoreadEnabled" type="checkbox" />
                                 <label class="translate" for="autoreadEnabled"
                                     >readout values of autoread iob objects on startup</label>
-                            </div>  
+                            </div>
                             <div class="col s12 input-field">
                                 <input class="value" id="noWarnUnknownGa" type="checkbox" />
                                 <label class="translate" for="onlyAddNewObjects"
-                                    >do not warn on unknown KNX group adresses</label>
+                                    >do not warn on unknown KNX group addresses</label>
                             </div>
                         </div>
                     </div>
@@ -428,7 +432,7 @@
                                 <label class="translate" for="onlyAddNewObjects"
                                     >do not overwrite existing IOB objects</label
                                 >
-                            </div>                          
+                            </div>
                             <div class="col s12 input-field">
                                 <input class="value" id="removeUnusedObjects" type="checkbox" />
                                 <label class="translate" for="removeUnusedObjects"

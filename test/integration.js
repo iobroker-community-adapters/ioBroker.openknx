@@ -81,7 +81,7 @@ tests.integration(path.join(__dirname, ".."), {
                         onlyAddNewObjects: false,
                     },
                     (resp) => {
-                        if (resp.err == null && resp.count == 1) {
+                        if (resp.err == null && resp.count === 1) {
                             console.dir("****************** resolve1");
                             //do import
                             testStep2(harness, reject, resolve);
@@ -101,7 +101,7 @@ tests.integration(path.join(__dirname, ".."), {
                         onlyAddNewObjects: true,
                     },
                     (resp) => {
-                        if (resp.err == null && resp.count == 1) {
+                        if (resp.err == null && resp.count === 1) {
                             console.dir("****************** resolve2");
                             testStep3(harness, reject, resolve);
                         } else {
@@ -114,8 +114,8 @@ tests.integration(path.join(__dirname, ".."), {
             function testStep3(harness, reject, resolve) {
                 //check if dpt_222 was generated
                 harness.objects.getObject(objectid, async (err, obj) => {
-                    //check if the value is same
-                    console.dir("object changed to " + obj.native.address);
+                    //check if the value is the same
+                    console.dir(`object changed to ${obj.native.address}`);
                     if (obj.native.address == "0/0/0") {
                         console.dir("****************** resolve3");
                         testStep4(harness, reject, resolve);
@@ -134,7 +134,7 @@ tests.integration(path.join(__dirname, ".."), {
                         onlyAddNewObjects: false,
                     },
                     (resp) => {
-                        if (resp.err == null && resp.count == 1) {
+                        if (resp.err == null && resp.count === 1) {
                             console.dir("****************** resolve4");
                             //do import
                             testStep5(harness, reject, resolve);
@@ -148,8 +148,8 @@ tests.integration(path.join(__dirname, ".."), {
             function testStep5(harness, reject, resolve) {
                 //check if dpt_222 was generated
                 harness.objects.getObject(objectid, async (err, obj) => {
-                    //check if the value is same
-                    console.dir("object changed to " + obj.native.address);
+                    //check if the value is the same
+                    console.dir(`object changed to ${obj.native.address}`);
                     if (obj.native.address != "0/0/0") {
                         resolve();
                         console.dir("****************** resolve5");

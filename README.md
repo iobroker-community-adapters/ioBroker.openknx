@@ -20,8 +20,8 @@
 ![Stable](http://iobroker.live/badges/openknx-stable.svg)
 ![Installed](http://iobroker.live/badges/openknx-installed.svg)
 
-This adapter serves as communication interface between Iobroker and your KNX IP Gateway.
-The adapter allows to generate the iobroker communication objects automatically by importing an ETS group address xml export.  
+This adapter serves as a communication interface between ioBroker and your KNX IP Gateway.
+The adapter allows to generate the ioBroker communication objects automatically by importing an ETS group address XML export.  
 All generated communication objects are initially configured readable and writeable, values are fetched from the knx bus on adapter restart.
 
 ## Documentation
@@ -111,8 +111,8 @@ All generated communication objects are initially configured readable and writea
 
 ### 0.5.0 (2022-12-30)
 
--   feature: use common.type boolean for 1 bit enum instead of number
-    import enum with one bit as common.type mixed and not strict as number
+-   feature: use `common.type` boolean for 1 bit enum instead of number
+    import enum with one bit as `common.type` mixed and not strict as number
 -   handling of iob ack improved for tunneling connections, see description
 
 ### 0.4.5 (2022-12-19)
@@ -131,14 +131,14 @@ All generated communication objects are initially configured readable and writea
 ### 0.4.0 (2022-12-15)
 
 -   feature: support for Free and Two Level Group Address Style in addition to the existing Three Level support #320
--   feature: map knx datapoint type enconding to object common.states #313
+-   feature: map knx datapoint type encoding to object `common.states` #313
 -   debug message for send queue size
 
 ### 0.3.2 (2022-11-20)
 
 -   feature: sync knx library
 -   feature: sync with create adapter 0.2.3
--   feature: update to newer versions of dependant packages
+-   feature: update to newer versions of dependent packages
 -   feature: setting autoreadEnabled autoread
 -   bugfix: allow alias generation with missing gateway configuration
 -   bugfix in knx lib: keep correct order of send datagrams in case of burst write
@@ -181,7 +181,7 @@ All generated communication objects are initially configured readable and writea
 
 -   feature: change default regexp for alias
 -   feature: new option to set ack flag when application writes to object
--   feature: supportes knx device scan in iobroker.discovery 2.8.0
+-   feature: supportes knx device scan in ioBroker.discovery 2.8.0
 -   bugfix: min max common object values only for number
 
 ### 0.1.22 (2022-02-26)
@@ -190,7 +190,7 @@ All generated communication objects are initially configured readable and writea
 
 ### 0.1.21 (2022-02-25)
 
--   feature: dont sent ack request in ldata.ind, this is disturbing clients if not filtered out by gateway
+-   feature: don't sent ack request in `ldata.ind`, this is disturbing clients if not filtered out by gateway
 -   bugfix: reinit if event received before connection established to avoid deadlock
 -   dependency:adapter core must be 2.6.0 or higher
 
@@ -198,7 +198,7 @@ All generated communication objects are initially configured readable and writea
 
 -   feature: add more dpts
 -   bugfix: corrected some min max values
--   bugfix: some unhandeled dpts could not be received
+-   bugfix: some unhandled dpts could not be received
 -   bugfix: fix import
 -   bugfix: min max values
 
@@ -223,7 +223,7 @@ All generated communication objects are initially configured readable and writea
 -   feature: add back sentry
 -   fix: stability alias generation
 -   fix: better input settings plausibilization in admin
--   fix: reset after settings change was broken, dont reset for alias change
+-   fix: reset after settings change was broken, don't reset for alias change
 
 ### 0.1.15 (2022-01-23)
 
@@ -244,8 +244,8 @@ All generated communication objects are initially configured readable and writea
 
 ### 0.1.13 (2021-12-30)
 
--   bugfix: state.value of type object must be serialized
--   bugfix: alias algorithm error handling, takover more info to alias
+-   bugfix: `state.value` of type object must be serialized
+-   bugfix: alias algorithm error handling, takeover more info to alias
 
 ### 0.1.12 (2021-12-30)
 
@@ -273,9 +273,9 @@ All generated communication objects are initially configured readable and writea
 
 ### 0.1.9 (2021-12-22)
 
--   fix: algorith to generate the iob objects improved
+-   fix: algorithm to generate the iob objects improved
 -   fix: min max removed for boolean
--   fix: ackqnowledgement handling
+-   fix: acknowledgement handling
 -   removed feature: override path of knx objects
 -   feature: new logo
 
@@ -284,7 +284,7 @@ All generated communication objects are initially configured readable and writea
 -   (tombox) feature: changed ui and many fixes
 -   (boellner) feature: skip wrong initial disconnect warning
 -   (boellner) feature: add translation
--   (boellner) doc: github ci pipleline, testing
+-   (boellner) doc: github ci pipeline, testing
 
 ### 0.1.6
 
@@ -292,7 +292,7 @@ All generated communication objects are initially configured readable and writea
 
 ### 0.1.5
 
--   (boellner) feature: corrected adapter status info.connection (green, yellow, red indicator)
+-   (boellner) feature: corrected adapter status `info.connection` (green, yellow, red indicator)
 -   (boellner) fix: remove default fallback ip settings from stack to get error message on missing configuration
 -   (boellner) fix: autoread
 -   (boellner) fix: finding non knx objects int tree leading to problems on startup
@@ -329,7 +329,7 @@ All generated communication objects are initially configured readable and writea
 
 ## License
 
-Copyright 2024 contributors to the ioBroker.openknx project
+Copyright 2024-2025 contributors to the ioBroker.openknx project
 
     				GNU GENERAL PUBLIC LICENSE
 
