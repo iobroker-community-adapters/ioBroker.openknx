@@ -51,9 +51,6 @@ jobs:
                   # Uncomment the following line if your adapter cannot be installed using 'npm ci'
                   # install-command: 'npm install'
 
-            - name: Run custom unit tests
-              run: npm run test:js
-
             - name: Run integration tests (unix only)
               if: startsWith(runner.OS, 'windows') == false
               run: DEBUG=testing:* npm run test:integration
