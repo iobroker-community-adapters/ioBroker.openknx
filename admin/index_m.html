@@ -81,11 +81,18 @@
                 if (settings.gwip === undefined) settings.gwip = "127.0.0.1";
                 if (settings.gwipport === undefined) settings.gwipport = 3671;
                 if (settings.localInterface === undefined) settings.localInterface = "";
+                if (settings.hostProtocol === undefined) settings.hostProtocol = "TunnelUDP";
                 if (settings.minimumDelay === undefined) settings.minimumDelay = 80;
                 if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
                 if (settings.removeUnusedObjects === undefined) settings.removeUnusedObjects = false;
                 if (settings.setAckOnWrite === undefined) settings.setAckOnWrite = false;
                 if (settings.useBoolean === undefined) settings.useBoolean = false;
+                if (settings.isSecureKNXEnabled === undefined) settings.isSecureKNXEnabled = false;
+                if (settings.knxKeysContent === undefined) settings.knxKeysContent = "";
+                if (settings.knxKeysPassword === undefined) settings.knxKeysPassword = "";
+                if (settings.tunnelInterfaceAddress === undefined) settings.tunnelInterfaceAddress = "";
+                if (settings.tunnelUserPassword === undefined) settings.tunnelUserPassword = "";
+                if (settings.tunnelUserId === undefined) settings.tunnelUserId = "";
 
                 //fill dropdown list from adapter-settings.js
                 getIPs(function (ips) {
@@ -102,6 +109,8 @@
                     }
                     $("#localInterface.value").val(settings.localInterface).select();
                 });
+                // Initialize hostProtocol dropdown
+                $("#hostProtocol.value").val(settings.hostProtocol).select();
                 //triggerst getIPs
                 fillSelectIPs("#adapterAddress", settings.adapterAddress, false, true);
 
@@ -360,17 +369,7 @@
             <div id="configDialog" class="row">
                 <div class="card">
                     <div class="card-content">
-                        <div class="row">
-                            <div class="col s12">
-                                <span class="translate">
-                                    Note: KNX secure is not supported, please do not activate secure comissioning in
-                                    ETS.<br />
-                                    If you like OpenKNX, please consider a donation:<br />
-                                    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Z8UFC8QEC4ARW&source=url">
-                                        <img src=https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif></a>
-                                </span>
-                            </div>
-                        </div>
+                 
                         <div class="row">
                             <div class="col s6 l2 input-field">
                                 <input class="value" id="gwip" type="text" />
@@ -398,6 +397,14 @@
                                 <select class="value" id="localInterface"></select>
                                 <label class="translate" for="localInterface">Local IPv4 network interface</label>
                             </div>
+                            <div class="col s6 l3 input-field">
+                                <select class="value" id="hostProtocol">
+                                    <option value="TunnelUDP">Tunnel UDP</option>
+                                    <option value="TunnelTCP">Tunnel TCP</option>
+                                    <option value="Multicast">Multicast (Routing)</option>
+                                </select>
+                                <label class="translate" for="hostProtocol">Protocol</label>
+                            </div>
                             <div class="col s12 l3 input-field">
                                 <input class="value" id="minimumDelay" type="text" />
                                 <label for="minimumDelay" class="translate"
@@ -411,8 +418,43 @@
                             </div>  
                             <div class="col s12 input-field">
                                 <input class="value" id="noWarnUnknownGa" type="checkbox" />
-                                <label class="translate" for="onlyAddNewObjects"
+                                <label class="translate" for="noWarnUnknownGa"
                                     >do not warn on unknown KNX group adresses</label>
+                            </div>
+ 
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row">
+                            <span class="translate">
+                                KNX Secure (optional)
+                            </span>
+                            <div class="col s12 input-field">
+                                <input class="value" id="isSecureKNXEnabled" type="checkbox" />
+                                <label class="translate" for="isSecureKNXEnabled"
+                                    >Enable KNX Secure</label>
+                            </div>
+                            <div class="col s12 input-field">
+                                <textarea class="value" id="knxKeysContent" style="height: 150px; font-family: monospace; font-size: 12px; overflow-y: auto; resize: vertical; white-space: pre; overflow-x: auto;"></textarea>
+                                <label class="translate" for="knxKeysContent">Keyfile content (paste .knxkeys file content)</label>
+                            </div>
+                            <div class="col s12 l6 input-field">
+                                <input class="value" id="knxKeysPassword" type="password" />
+                                <label class="translate" for="knxKeysPassword">Keyfile password</label>
+                            </div>
+                            <div class="col s12 l4 input-field">
+                                <input class="value" id="tunnelInterfaceAddress" type="text" />
+                                <label class="translate" for="tunnelInterfaceAddress">Tunnel Interface IA (optional, e.g. 1.1.254)</label>
+                            </div>
+                            <div class="col s12 l4 input-field">
+                                <input class="value" id="tunnelUserPassword" type="password" />
+                                <label class="translate" for="tunnelUserPassword">Tunnel User Password (alternative to keyfile)</label>
+                            </div>
+                            <div class="col s12 l4 input-field">
+                                <input class="value" id="tunnelUserId" type="text" />
+                                <label class="translate" for="tunnelUserId">Tunnel User ID (default: 2)</label>
                             </div>
                         </div>
                     </div>
@@ -490,6 +532,7 @@
                                 <input class="value" id="aliasRange" type="checkbox" />
                                 <label class="translate" for="aliasRange">include group range in search</label>
                             </div>
+ 
                             <div class="col s12">
                                 <a id="createAlias" class="waves-effect waves-light btn"
                                     ><i class="material-icons right">list</i
@@ -498,6 +541,24 @@
                             </div>
                             <div class="col s12 progress" id="progress2">
                                 <div class="indeterminate" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row">
+                            <span class="translate">
+                                Compatibility
+                            </span>
+                            <div class="input-field col s12">
+                                <input class="value" id="knxCompatMode" type="checkbox" />
+                                <label class="translate" for="knxCompatMode">ioBroker.knx Compatibility Mode (link status GAs internally instead of aliases)</label>
+                            </div>
+                            <div class="col s12 l3 input-field">
+                                <input class="value" id="targetNamespace" type="text" placeholder="openknx.0" />
+                                <label class="translate active" for="targetNamespace"
+                                    >Target namespace (e.g. knx.0 to avoid script adjustments)</label>
                             </div>
                         </div>
                     </div>

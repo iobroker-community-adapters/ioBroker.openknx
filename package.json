@@ -1,6 +1,6 @@
 {
   "name": "iobroker.openknx",
-  "version": "0.9.1",
+  "version": "1.0.0-beta.0",
   "description": "ioBroker knx Adapter",
   "author": "boellner",
   "contributors": [
@@ -37,7 +37,7 @@
     "@iobroker/adapter-core": "^3.3.2",
     "async-exit-hook": "^2.0.1",
     "binary-parser": "^2.3.0",
-    "knx": "2.5.4",
+    "knxultimate": "^5.2.8",
     "similarity": "^1.2.1",
     "xmldom": "^0.6.0",
     "xpath": "0.0.34"

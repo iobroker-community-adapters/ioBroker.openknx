@@ -12,14 +12,14 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
-const knx = require(`${__dirname}/lib/knx`);
+const { KNXClient, KNXClientEvents, dptlib, logStream } = require("knxultimate");
 const loadMeasurement = require("./lib/loadMeasurement");
 const projectImport = require("./lib/projectImport");
 const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 const detect = require("./lib/openknx.js");
 const os = require("os");
-const exitHook = require("async-exit-hook");
+const similarity = require("similarity");
 
 class openknx extends utils.Adapter {
     /**
@@ -38,50 +38,31 @@ class openknx extends utils.Adapter {
         this.on("unload", this.onUnload.bind(this));
 
         this.mynamespace = this.namespace;
-        this.knxConnection;
-        this.knx = knx;
+        this.isForeign = false;
+        this.knxConnection = undefined;
         this.connected = false;
 
-        this.timeout1;
-        this.timeout2;
-        this.interval1;
+        this.timeout1 = undefined;
+        this.timeout2 = undefined;
+        this.interval1 = undefined;
 
-        // redirect log from knx.js that contain [..] to adapter log
-        console.log = args => {
-            if (args && typeof args === "string") {
-                // handling special messages of the KNX lib
-                if (args.indexOf("deferring outbound_TUNNELING_REQUEST") !== -1) {
-                    return;
-                } else if (args.indexOf("empty internal fsm queue due to inbound_DISCONNECT_REQUEST") !== -1) {
-                    // this.log.warn("possible data loss due to gateway reset, consider increasing minimum send delay between two frames");
-                }
-
-                if (args.indexOf("[trace]") !== -1) {
-                    this.log.silly(args);
-                } else if (args.indexOf("[debug]") !== -1) {
-                    this.log.debug(args);
-                } else if (args.indexOf("[info]") !== -1) {
-                    this.log.info(args);
-                } else if (args.indexOf("[warn]") !== -1) {
-                    this.log.warn(args);
-                } else if (args.indexOf("[error]") !== -1) {
-                    this.log.error(args);
-                    if (args.indexOf("Conversion error DPT") == -1) {
-                        // do not report errors from bad bus data
-                        if (this.getSentry()) {
-                            this.getSentry().withScope(scope => {
-                                scope.setLevel("error");
-                                scope.setExtra("error message", args);
-                                this.getSentry().captureMessage("knx library error event", "error");
-                            });
-                        }
-                    }
-                } else {
-                    // dont forward all other internal console.logs
-                    // this.log.info(args);
-                }
+        // redirect log from KNXUltimate (winston-based logStream) to adapter log
+        this.logHandler = entry => {
+            const level = entry.level?.toLowerCase();
+            const msg = entry.message || String(entry);
+            if (level === "error") {
+                this.log.error(msg);
+            } else if (level === "warn") {
+                this.log.warn(msg);
+            } else if (level === "info") {
+                this.log.info(msg);
+            } else if (level === "debug") {
+                this.log.debug(msg);
+            } else {
+                this.log.silly(msg);
             }
         };
+        logStream.on("data", this.logHandler);
     }
 
     /**
@@ -90,19 +71,22 @@ class openknx extends utils.Adapter {
     async onReady() {
         // adapter initialization
 
-        this.getSentry()?.Sentry?.init({
-            // "development" or "production"
-            // environment: "production",
-        });
-
         //after installation
         if (tools.isEmptyObject(this.config)) {
             this.log.warn("Adapter configuration missing, please do configuration first.");
             return;
         }
 
-        // In order to get state updates, you need to subscribe to them.
-        this.subscribeStates("*");
+
+        if (this.config.targetNamespace && this.config.targetNamespace !== this.namespace) {
+            /** @type {any} */
+            this.mynamespace = this.config.targetNamespace;
+            this.isForeign = true;
+            this.log.info(`Using namespace ${this.mynamespace}`);
+            await this.subscribeForeignStatesAsync(`${this.mynamespace}.*`);
+        } else {
+            this.subscribeStates("*");
+        }
         this.setState("info.busload", 0, true);
 
         this.main(true);
@@ -121,16 +105,48 @@ class openknx extends utils.Adapter {
             clearInterval(this.interval1);
 
             this.connected = false;
+
+            const cleanupLogHandler = () => {
+                // Remove logStream listener to prevent memory leak
+                // MUST be done after Disconnect, otherwise Disconnect-Logs are lost
+                if (this.logHandler) {
+                    logStream.removeListener("data", this.logHandler);
+                }
+            };
+
             if (this.knxConnection) {
-                exitHook(() => {
-                    this.knxConnection.Disconnect(() => {
+                // Prevent processing of late events during shutdown
+                this.knxConnection.removeAllListeners();
+
+                // Disconnect with timeout fallback
+                const disconnectTimeout = setTimeout(() => {
+                    cleanupLogHandler();
+                    callback();
+                }, 2000);
+
+                this.knxConnection
+                    .Disconnect()
+                    .then(() => {
+                        clearTimeout(disconnectTimeout);
+                        cleanupLogHandler();
+                        callback();
+                    })
+                    .catch(err => {
+                        this.log.warn(`Error during KNX disconnect: ${err}`);
+                        clearTimeout(disconnectTimeout);
+                        cleanupLogHandler();
                         callback();
                     });
-                });
             } else {
+                cleanupLogHandler();
                 callback();
             }
-        } catch {
+        } catch (e) {
+            this.log.error(`Error in onUnload: ${e}`);
+            // In case of error we should still try to clean up and call the callback
+            if (this.logHandler) {
+                logStream.removeListener("data", this.logHandler);
+            }
             callback();
         }
     }
@@ -220,9 +236,7 @@ class openknx extends utils.Adapter {
     async removeUnusedObjects(importObjects, removeUnusedObjects) {
         const objects = await this.getAdapterObjectsAsync();
 
-        Object.entries(objects).map(object => {
-            console.log(object);
-
+        Object.entries(objects).forEach(object => {
             if (
                 object[1].native &&
                 Object.keys(object[1].native).length === 0 &&
@@ -265,10 +279,7 @@ class openknx extends utils.Adapter {
                     const duplicates = [];
                     if (result) {
                         result.rows.forEach(element => {
-                            if (
-                                Object.prototype.hasOwnProperty.call(element.value, "native") &&
-                                Object.prototype.hasOwnProperty.call(element.value, "address")
-                            ) {
+                            if (element.value?.native?.address) {
                                 gas.push(`${element.value.native.address} ${element.value.common.name}`);
                             }
                         });
@@ -358,6 +369,9 @@ class openknx extends utils.Adapter {
         if (val instanceof Date) {
             // convert Date to number
             ret = Number(new Date(val));
+        } else if (typeof val === "bigint") {
+            // DPT29 returns BigInt which ioBroker cannot store
+            ret = val.toString();
         } else if (Buffer.isBuffer(val)) {
             // before object check
             ret = val.toString("hex");
@@ -416,7 +430,7 @@ class openknx extends utils.Adapter {
 
         // plausibilize against configured datatype
         if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type == "boolean") {
-            knxVal = knxVal ? true : false;
+            knxVal = !!knxVal;
         } else if (
             this.gaList?.getDataById(id)?.common?.type == "number" ||
             this.gaList?.getDataById(id)?.common?.type == "enum"
@@ -460,252 +474,340 @@ class openknx extends utils.Adapter {
                 error = `cannot interprete data, please check your configuration. ${dpt} unplausible type: ${
                     this.gaList?.getDataById(id)?.common?.type
                 }`;
-                if (this.getSentry()) {
-                    this.getSentry().captureException(error);
-                }
             }
-            console.warn(error);
             this.log.warn(error);
         }
 
         if (state.c == "GroupValue_Read" || state.q == 0x10) {
             // interface to trigger GrouValue_Read is this object comment or StateQuality 16
             this.log.debug(`Outbound GroupValue_Read to GA ${ga}`);
-            this.knxConnection.read(ga, () => {
-                // ack is generated with GroupValue_Response
-            });
+            this.knxConnection.read(ga);
+            // ack is generated with GroupValue_Response via indication event
             return "read";
         } else if (this.gaList.getDataById(id).common.write) {
             this.log.debug(
                 `Outbound GroupValue_Write to " ${ga} value: ${isRaw ? rawVal : JSON.stringify(knxVal)} from ${id}`,
             );
-            if (isRaw) {
-                this.knxConnection.writeRaw(ga, rawVal, (grpaddr, confirmed, timeout) => {
-                    // l_data.con confirmation set by any receiver connected to the ga
-                    if (confirmed) {
-                        //set iob ack when value was sent successful on the bus
-                        this.log.debug(`Inbound GroupValue_Write confirmation true received for ${grpaddr} ${id}`);
-                        this.setState(id, {
-                            ack: true,
-                        });
-                    } else if (timeout) {
-                        this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
-                    } else {
-                        this.log.info(`Inbound GroupValue_Write confirmation false received for ${grpaddr} ${id}`);
-                    }
-                });
-                return "write raw";
-            }
-            this.knxConnection.write(ga, knxVal, dpt, (grpaddr, confirmed, timeout) => {
-                // l_data.con confirmation set by any receiver connected to the ga
-                if (confirmed) {
-                    //set iob ack when value was sent successful on the bus
-                    this.log.debug(`Inbound GroupValue_Write confirmation true received for ${grpaddr} ${id}`);
-                    this.setState(id, {
-                        ack: true,
-                    });
-                } else if (timeout) {
-                    this.log.info(`GroupValue_Write timeout for ${grpaddr} ${id}`);
-                } else {
-                    this.log.info(`Inbound GroupValue_Write confirmation false received for ${grpaddr} ${id}`);
+            try {
+                if (isRaw) {
+                    // KNXUltimate requires bitlength as 3rd parameter
+                    const bitlength = rawVal.byteLength * 8;
+                    this.knxConnection.writeRaw(ga, rawVal, bitlength);
+                    return "write raw";
                 }
-            });
-            return "write";
+                this.knxConnection.write(ga, knxVal, dpt);
+
+                // KNX Compat Mode: After write, sync value from linked status GA
+                if (this.config.knxCompatMode) {
+                    const gaData = this.gaList.getDataById(id);
+                    if (gaData?.native?.statusGA) {
+                        const statusState = this.isForeign
+                            ? await this.getForeignStateAsync(gaData.native.statusGA)
+                            : await this.getStateAsync(gaData.native.statusGA);
+                        if (statusState) {
+                            if (this.isForeign) {
+                                await this.setForeignStateAsync(id, statusState.val, true);
+                            } else {
+                                await this.setStateAsync(id, statusState.val, true);
+                            }
+                        }
+                    }
+                }
+
+                return "write";
+            } catch (e) {
+                this.log.error(`Failed to write to ${ga}: ${e.message}`);
+                return "write error";
+            }
         }
         this.log.warn(`not configured write to ga: ${state.val}`);
         return "configuration error";
     }
 
     startKnxStack() {
-        this.knxConnection = this.knx.Connection({
-            ipAddr: this.config.gwip,
-            ipPort: this.config.gwipport,
-            physAddr: "0.0.0",
-            interface: this.translateInterface(this.config.localInterface),
-            minimumDelay: this.config.minimumDelay,
-            // https://github.com/Supergiovane/node-red-contrib-knx-ultimate/issues/78, some receivers cannot handle a ack request, spec makes no difference
-            suppress_ack_ldatareq: true,
-            // map set the log level for messsages printed on the console. This can be 'error', 'warn', 'info' (default), 'debug', or 'trace'.
-            // log is written to console, not in IoB log
-            loglevel: this.log.level == "silly" ? "trace" : this.log.level,
-            handlers: {
-                connected: () => {
-                    this.log.info("Connected!");
-                    this.setState("info.messagecount", 0, true);
+        // Determine protocol - KNX Secure requires TunnelTCP or Multicast
+        let hostProtocol = this.config.hostProtocol || "TunnelUDP";
+        if (this.config.isSecureKNXEnabled && hostProtocol === "TunnelUDP") {
+            this.log.warn("KNX Secure requires TunnelTCP or Multicast. Switching from TunnelUDP to TunnelTCP.");
+            hostProtocol = "TunnelTCP";
+        }
 
-                    // create new knx datapoint and bind to connection
-                    // in order to have autoread work
-                    let cnt_withDPT = 0;
-                    if (!this.autoreaddone) {
-                        // do autoread on start of adapter and not every connection
-                        for (const key of this.gaList) {
+        // Multicast requires specific IP address and physAddr
+        let ipAddr = this.config.gwip;
+        if (hostProtocol === "Multicast") {
+            ipAddr = "224.0.23.12"; // KNX multicast address
+            if (!this.config.eibadr || this.config.eibadr === "0.0.0") {
+                this.log.warn(
+                    "Multicast mode requires a valid physical KNX address (physAddr). Please configure eibadr.",
+                );
+            }
+        }
+
+        // Build KNXUltimate client options
+        const knxOptions = {
+            hostProtocol,
+            ipAddr,
+            ipPort: this.config.gwipport,
+            physAddr: this.config.eibadr || "0.0.0",
+            localIPAddress: this.config.localInterface,
+            KNXQueueSendIntervalMilliseconds: this.config.minimumDelay || 25,
+            // https://github.com/Supergiovane/node-red-contrib-knx-ultimate/issues/78
+            suppress_ack_ldatareq: true,
+            // Disable KNXUltimate internal logging - we use logStream handler instead
+            // This prevents EPIPE errors during shutdown
+            loglevel: this.log.level === "silly" ? "trace" : "info",
+        };
+
+        // KNX Secure options
+        if (this.config.isSecureKNXEnabled) {
+            knxOptions.isSecureKNXEnabled = true;
+
+            // Build secureTunnelConfig
+            const secureTunnelConfig = {};
+
+            // Keyring-based authentication
+            if (this.config.knxKeysContent) {
+                secureTunnelConfig.knxkeys_buffer = Buffer.from(this.config.knxKeysContent, "utf8");
+            }
+            if (this.config.knxKeysPassword) {
+                secureTunnelConfig.knxkeys_password = this.config.knxKeysPassword;
+            }
+
+            // Optional tunnel interface address (auto-select if empty)
+            if (this.config.tunnelInterfaceAddress) {
+                secureTunnelConfig.tunnelInterfaceIndividualAddress = this.config.tunnelInterfaceAddress;
+            }
+
+            // Alternative: manual tunnel password (without keyring)
+            if (this.config.tunnelUserPassword) {
+                secureTunnelConfig.tunnelUserPassword = this.config.tunnelUserPassword;
+            }
+            if (this.config.tunnelUserId) {
+                secureTunnelConfig.tunnelUserId = parseInt(this.config.tunnelUserId, 10) || 2;
+            }
+
+            if (Object.keys(secureTunnelConfig).length > 0) {
+                knxOptions.secureTunnelConfig = secureTunnelConfig;
+            }
+
+            this.log.info("KNX Secure enabled");
+        }
+
+        // Create KNXUltimate client
+        this.knxConnection = new KNXClient(knxOptions);
+
+        // Event: connected
+        this.knxConnection.on(KNXClientEvents.connected, () => {
+            this.log.info("Connected!");
+            this.setState("info.messagecount", 0, true);
+
+            // resolve DPT configs and send autoread requests
+            let cnt_withDPT = 0;
+            if (!this.autoreaddone) {
+                for (const key of this.gaList) {
+                    try {
+                        const data = this.gaList.getDataById(key);
+                        // Store DPT config instead of Datapoint object
+                        let dptConfig = null;
+                        try {
+                            dptConfig = dptlib.resolve(data.native.dpt);
+                        } catch {
+                            // Unknown DPT - will use raw mode
+                        }
+                        this.gaList.setDpById(key, dptConfig);
+
+                        // Manual autoread (no Datapoint class in KNXUltimate)
+                        if (data.native.autoread && this.config.autoreadEnabled) {
                             try {
-                                const datapoint = new this.knx.Datapoint(
-                                    {
-                                        ga: this.gaList.getDataById(key).native.address,
-                                        dpt: this.gaList.getDataById(key).native.dpt,
-                                        // issue a GroupValue_Read request to try to get the initial state from the bus (if any)
-                                        autoread:
-                                            this.gaList.getDataById(key).native.autoread && this.config.autoreadEnabled,
-                                    },
-                                    this.knxConnection,
-                                );
-                                datapoint.on("error", (ga, dptid) => {
-                                    this.log.warn(
-                                        `Received data length for GA ${ga} does not match configured ${dptid}`,
-                                    );
-                                });
-                                this.gaList.setDpById(key, datapoint);
-                                cnt_withDPT++;
-                                this.log.debug(
-                                    `Datapoint ${
-                                        this.gaList.getDataById(key).native.autoread
-                                            ? "autoread created and GroupValueRead sent"
-                                            : "created"
-                                    } ${this.gaList.getDataById(key).native.address} ${key}`,
-                                );
+                                this.knxConnection.read(data.native.address);
+                                this.log.debug(`Autoread GroupValueRead sent ${data.native.address} ${key}`);
                             } catch (e) {
-                                this.log.error(`Could not create KNX Datapoint for ${key} with error: ${e}`);
+                                this.log.warn(`Autoread failed for ${data.native.address}: ${e.message}`);
+                            }
+                        } else {
+                            this.log.debug(`DPT config created ${data.native.address} ${key}`);
+                        }
+                        cnt_withDPT++;
+                    } catch (e) {
+                        this.log.error(`Could not create DPT config for ${key} with error: ${e}`);
+                    }
+                }
+                this.autoreaddone = true;
+                this.countObjectsNotification(cnt_withDPT);
+            }
+            this.connected = true;
+            this.setState("info.connection", this.connected, true);
+        });
+
+        // Event: disconnected
+        this.knxConnection.on(KNXClientEvents.disconnected, reason => {
+            if (this.connected) {
+                this.log.error(`Connection lost: ${reason}`);
+            }
+            this.connected = false;
+            this.setState("info.connection", this.connected, true);
+            this.setState("info.busload", 0, true);
+        });
+
+        // Event: error
+        this.knxConnection.on(KNXClientEvents.error, err => {
+            this.log.warn(err.message || String(err));
+        });
+
+        // Event: ackReceived - only useful for ack:false (timeout), since ack:true packet has no GA info
+        this.knxConnection.on(KNXClientEvents.ackReceived, (packet, ack) => {
+            if (ack) {
+                return; // Success case handled via echoed indication
+            }
+            const dest = packet.cEMIMessage?.dstAddress?.toString();
+            if (!dest) {
+                return;
+            }
+            for (const id of this.gaList.getIdsByGa(dest)) {
+                this.log.info(`No ACK received for ${dest} ${id}. Possibly no receiver or missing ETS configuration.`);
+            }
+        });
+
+        // Event: indication (replaces 'event' handler)
+        this.knxConnection.on(KNXClientEvents.indication, (packet, echoed) => {
+            if (!this.autoreaddone && !echoed) {
+                this.log.info(`received data although connection process not completed - skipped`);
+                return;
+            }
+
+            loadMeasurement.logBusEvent();
+
+            const cemi = packet.cEMIMessage;
+            const src = cemi.srcAddress.toString();
+            const dest = cemi.dstAddress.toString();
+            const npdu = cemi.npdu;
+            const rawData = npdu.dataValue;
+
+            // Determine event type
+            let evt;
+            if (npdu.isGroupWrite) {
+                evt = "GroupValue_Write";
+            } else if (npdu.isGroupResponse) {
+                evt = "GroupValue_Response";
+            } else if (npdu.isGroupRead) {
+                evt = "GroupValue_Read";
+            } else {
+                return;
+            }
+
+            // Some checks
+            if (dest === "0/0/0" || tools.isDeviceAddress(dest)) {
+                return;
+            }
+            if (!this.config.noWarnUnknownGa && !this.gaList.getIdsByGa(dest).length) {
+                this.log.warn(`Ignoring ${evt} of unknown GA ${dest}`);
+                return;
+            }
+
+            for (const id of this.gaList.getIdsByGa(dest)) {
+                const data = this.gaList.getDataById(id);
+                const dptConfig = this.gaList.getDpById(id);
+
+                if (id === undefined || data === undefined) {
+                    throw new Error(`Invalid data for GA ${dest} id ${id} data ${data}`);
+                }
+
+                // Decode value manually (no Datapoint class)
+                // We do this for both incoming telegrams AND our own echoed messages.
+                let convertedVal;
+                if (rawData && dptConfig && (evt === "GroupValue_Write" || evt === "GroupValue_Response")) {
+                    try {
+                        const jsValue = dptlib.fromBuffer(rawData, dptConfig);
+                        if (tools.isStringDPT(data.native.dpt)) {
+                            convertedVal = jsValue;
+                        } else {
+                            convertedVal = this.convertType(jsValue);
+                        }
+                    } catch (e) {
+                        this.log.warn(`Decode error for GA ${dest}: ${e.message}`);
+                        convertedVal = rawData.toString("hex");
+                    }
+                }
+
+                switch (evt) {
+                    case "GroupValue_Read": {
+                        // If we echoed a GroupValue_Read to the bus, we do not want to respond to ourselves.
+                        if (echoed) {
+                            break;
+                        }
+
+                        const readCb = (err, state) => {
+                            if (state) {
+                                this.log.debug(`Inbound GroupValue_Read from ${src} GA ${dest} to ${id}`);
+                                if (this.gaList.getDataById(id).native.answer_groupValueResponse) {
+                                    let stateval = state.val;
+                                    try {
+                                        stateval = JSON.parse(state.val);
+                                    } catch {
+                                        /* empty */
+                                    }
+                                    try {
+                                        this.knxConnection.respond(
+                                            dest,
+                                            stateval,
+                                            this.gaList.getDataById(id).native.dpt,
+                                        );
+                                        this.log.debug(`responding with value ${state.val}`);
+                                    } catch (e) {
+                                        this.log.error(`Failed to respond to ${dest}: ${e.message || e}`);
+                                    }
+                                }
+                            }
+                        };
+                        if (this.isForeign) {
+                            this.getForeignState(id, readCb);
+                        } else {
+                            this.getState(id, readCb);
+                        }
+                        break;
+                    }
+
+                    case "GroupValue_Response":
+                    case "GroupValue_Write":
+                        // Why we handle echoed = true here:
+                        // When a user writes via ioBroker, we send the value to KNX. If successful, we receive it right
+                        // back as an echoed indication. We use this echo to immediately set the ioBroker state to ack: true.
+                        // We do this synchronously without calling getState() to save immense load on the database,
+                        // as ioBroker internally optimizes redundant updates automatically.
+                        if (this.isForeign) {
+                            this.setForeignState(id, { val: convertedVal, ack: true });
+                        } else {
+                            this.setState(id, { val: convertedVal, ack: true });
+                        }
+
+                        // KNX Compat Mode: Also update linked act-GA when status-GA changes
+                        if (this.config.knxCompatMode && data.native?.actGA) {
+                            if (this.isForeign) {
+                                this.setForeignState(data.native.actGA, { val: convertedVal, ack: true });
+                            } else {
+                                this.setState(data.native.actGA, { val: convertedVal, ack: true });
                             }
                         }
-                        this.autoreaddone = true;
-                        this.countObjectsNotification(cnt_withDPT);
-                    }
-                    this.connected = true;
-                    this.setState("info.connection", this.connected, true);
-                },
 
-                disconnected: () => {
-                    if (this.connected) {
-                        this.log.error("Connection lost");
-                    }
-                    this.connected = false;
-                    this.setState("info.connection", this.connected, true);
-                    this.setState("info.busload", 0, true);
-                },
-
-                error: connstatus => {
-                    this.log.warn(connstatus);
-                },
-
-                // l_data.con, confirmation set by a receiver which has the sending flag
-                confirmed: (dest, confirmed) => {
-                    for (const id of this.gaList.getIdsByGa(dest)) {
-                        if (confirmed) {
-                            this.log.debug(`A receiver confirmed reception of our message for ${dest} ${id}`);
+                        if (echoed) {
+                            this.log.debug(
+                                `Acknowledged own message for GA ${dest} to Object ${id} value: ${convertedVal} dpt: ${data.native.dpt}`,
+                            );
                         } else {
-                            // otherwise keep unset
-                            this.log.info(
-                                `Got confirmation flag false for ${dest} ${id}. Possibly no receiver available or missing ETS receiver configuration.`,
+                            this.log.debug(
+                                `Inbound ${evt} from ${src} GA ${dest} to Object ${id} value: ${convertedVal} dpt: ${data.native.dpt}`,
                             );
                         }
-                    }
-                },
+                        break;
 
-                // KNX Bus event received
-                // src: KnxDeviceAddress, dest: KnxGroupAddress,
-                // val: raw value not used, using dp interface instead
-                event: (
-                    evt,
-                    src,
-                    dest,
-                    /** val ,*/
-                ) => {
-                    let convertedVal = [];
-                    let ret = "unknown";
-
-                    if (!this.autoreaddone) {
-                        this.log.info(`received data although connection process not completed - skiped`);
-                        return "illegal state";
-                    }
-
-                    loadMeasurement.logBusEvent();
-
-                    /* some checks */
-                    if (dest == "0/0/0" || tools.isDeviceAddress(dest)) {
-                        // seems that knx lib does not guarantee dest group adresses
-                        return "bad address";
-                    }
-                    if (!this.config.noWarnUnknownGa && !this.gaList.getIdsByGa(dest).length) {
-                        this.log.warn(`Ignoring ${evt} of unknown GA ${dest}`);
-                        return "unknown GA";
-                    }
-
-                    for (const id of this.gaList.getIdsByGa(dest)) {
-                        const data = this.gaList.getDataById(id);
-                        const dp = this.gaList.getDpById(id);
-
-                        if (id == undefined || data == undefined || dp == undefined) {
-                            // debug trap, should not be reached
-                            throw new Error(`Invalid data for GA ${dest} id ${id} data ${data} dp ${dp}`);
-                        }
-
-                        if (tools.isStringDPT(data.native.dpt)) {
-                            convertedVal = dp.current_value;
-                        } else {
-                            convertedVal = this.convertType(dp.current_value);
-                        }
-
-                        switch (evt) {
-                            case "GroupValue_Read":
-                                // fetch val from addressed object and write on bus if configured to answer
-                                this.getState(id, (err, state) => {
-                                    let ret;
-                                    if (state) {
-                                        this.log.debug(`Inbound GroupValue_Read from ${src} GA ${dest} to ${id}`);
-                                        ret = "GroupValue_Read";
-                                        if (this.gaList.getDataById(id).native.answer_groupValueResponse) {
-                                            let stateval = state.val;
-                                            try {
-                                                // @ts-expect-error .val is a string
-                                                stateval = JSON.parse(state.val);
-                                            } catch {
-                                                /* empty */
-                                            }
-                                            this.knxConnection.respond(
-                                                dest,
-                                                stateval,
-                                                this.gaList.getDataById(id).native.dpt,
-                                            );
-                                            this.log.debug(`responding with value ${state.val}`);
-                                            ret = "GroupValue_Read Respond";
-                                        }
-                                        return ret;
-                                    }
-                                });
-                                break;
-
-                            case "GroupValue_Response":
-                                this.setState(id, {
-                                    val: convertedVal,
-                                    ack: true,
-                                });
-                                this.log.debug(
-                                    `Inbound GroupValue_Response from ${src} GA ${dest} to Object ${id} value: ${convertedVal} dpt: ${data.native.dpt}`,
-                                );
-                                ret = "GroupValue_Response";
-                                break;
-
-                            case "GroupValue_Write":
-                                this.setState(id, {
-                                    val: convertedVal,
-                                    ack: true,
-                                });
-                                this.log.debug(
-                                    `Inbound GroupValue_Write from ${src} GA ${dest} to Object ${id} value: ${convertedVal} dpt: ${data.native.dpt}`,
-                                );
-                                ret = "GroupValue_Write";
-                                break;
-
-                            default:
-                                this.log.debug(`received unhandeled event " ${evt} ${src} ${dest} ${convertedVal}`);
-                                ret = "unhandeled";
-                        }
-                    }
-                    return ret; // last processed
-                },
-            },
+                    default:
+                        this.log.debug(`received unhandled event ${evt} ${src} ${dest} ${convertedVal}`);
+                }
+            }
         });
+
+        // Start connection
+        this.knxConnection.Connect();
     }
 
     /* for testing, forward msg from one to another test address
@@ -742,8 +844,8 @@ class openknx extends utils.Adapter {
     countObjectsNotification(cnt_withDPT) {
         this.getObjectList(
             {
-                startkey: this.namespace,
-                endkey: `${this.namespace}\u9999`,
+                startkey: this.mynamespace,
+                endkey: `${this.mynamespace}\u9999`,
             },
             (e, result) => {
                 if (result) {
@@ -753,6 +855,85 @@ class openknx extends utils.Adapter {
                 }
             },
         );
+    }
+
+    /**
+     * KNX Compat Mode: Create status links between act and status GAs
+     * Uses the same regex/similarity settings as alias creation
+     */
+    async createStatusLinks() {
+        this.log.info("KNX Compatibility Mode: Creating status links...");
+        const regexPattern = this.config.aliasRegexp || "status|state";
+        const minSimilarity = this.config.aliasSimilarity || 0.9;
+        let count = 0;
+
+        // Get all state IDs from gaList
+        const allIds = [];
+        for (const id of this.gaList) {
+            allIds.push(id);
+        }
+
+        for (const statusId of allIds) {
+            // Check if this is a status GA
+            const statusRegex = new RegExp(regexPattern, "gi");
+            if (!statusRegex.test(statusId)) {
+                continue;
+            } // Only process status GAs
+
+            // Find best matching act-GA
+            const statusBaseName = statusId.replace(new RegExp(regexPattern, "gi"), "");
+            let bestMatch = null;
+            let bestSimilarity = 0;
+
+            for (const candidateId of allIds) {
+                if (candidateId === statusId) {
+                    continue;
+                }
+                // Skip if candidate is also a status GA
+                const candidateRegex = new RegExp(regexPattern, "gi");
+                if (candidateRegex.test(candidateId)) {
+                    continue;
+                }
+
+                // Compare similarity
+                const candidateBase = candidateId.toLowerCase().replace(/_/g, "");
+                const statusBase = statusBaseName.toLowerCase().replace(/_/g, "");
+                const sim = similarity(candidateBase, statusBase);
+
+                if (sim > bestSimilarity && sim >= minSimilarity) {
+                    bestSimilarity = sim;
+                    bestMatch = candidateId;
+                }
+            }
+
+            if (bestMatch) {
+                // Store link in native of both objects
+                const statusObj = this.gaList.getDataById(statusId);
+                const actObj = this.gaList.getDataById(bestMatch);
+
+                if (statusObj && actObj) {
+                    // Update status object
+                    statusObj.native.actGA = bestMatch;
+                    if (this.isForeign) {
+                        await this.extendForeignObjectAsync(statusId, { native: { actGA: bestMatch } });
+                    } else {
+                        await this.extendObjectAsync(statusId, { native: { actGA: bestMatch } });
+                    }
+
+                    // Update act object
+                    actObj.native.statusGA = statusId;
+                    if (this.isForeign) {
+                        await this.extendForeignObjectAsync(bestMatch, { native: { statusGA: statusId } });
+                    } else {
+                        await this.extendObjectAsync(bestMatch, { native: { statusGA: statusId } });
+                    }
+
+                    count++;
+                    this.log.debug(`KNX Compat: Linked ${bestMatch} <-> ${statusId}`);
+                }
+            }
+        }
+        this.log.info(`KNX Compatibility Mode: Created ${count} status links`);
     }
 
     main(startKnxConnection) {
@@ -812,6 +993,14 @@ class openknx extends utils.Adapter {
                             this.log.warn(`Incomplete configuration in iob object ${id}`);
                         }
                     }
+
+                    // KNX Compat Mode: Create status links if enabled
+                    if (this.config.knxCompatMode) {
+                        this.createStatusLinks().catch(e => {
+                            this.log.error(`Error creating status links: ${e}`);
+                        });
+                    }
+
                     if (startKnxConnection) {
                         try {
                             this.startKnxStack();
@@ -829,29 +1018,15 @@ class openknx extends utils.Adapter {
             },
         );
     }
-
-    getSentry() {
-        if (this.supportsFeature && this.supportsFeature("PLUGINS")) {
-            const sentryInstance = this.getPluginInstance("sentry");
-            if (sentryInstance) {
-                return sentryInstance.getSentryObject();
-            }
-        }
-    }
 }
 
 if (require.main !== module) {
-    // this module was run directly from the command line as in node xxx.js
-
-    // Export the constructor in compact mode
+    // Export the constructor in compact mode (loaded as module by ioBroker)
     /**
      * @param {Partial<utils.AdapterOptions>} [options]
      */
     module.exports = options => new openknx(options);
-    //module.exports = new openknx();
 } else {
-    // this module was not run directly from the command line and probably loaded by something else
-
-    // otherwise start the instance directly
+    // Started directly from command line
     new openknx();
 }

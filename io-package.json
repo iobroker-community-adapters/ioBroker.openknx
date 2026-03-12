@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "0.9.1",
+    "version": "1.0.0-beta.0",
     "news": {
+      "1.0.0-beta.0": {
+        "en": "**breaking:** KNX-Kommunikation auf KNXUltimate umgestellt\nfeature: KNX Secure Unterstützung\nfeature: Erweiterte DPT-Abdeckung (9 zusätzliche DPTs, u.a. DPT-22, 213, 222, 235, 242, 249, 251)\nfeature: Verbesserte Verbindungsstabilität",
+        "de": "**breaking:** KNX-Kommunikation auf KNXUltimate umgestellt\nfunktion: KNX Secure Unterstützung\nfeature: DPT-Abdeckung (9 zusätzliche DPT, u.a. DPT-22, 213, 222, 235, 242, 249, 251)\nfunktion: Verbesserte Verbindungsstabilität",
+        "ru": "**breaking:** KNX-Kommunikation auf KNXUltimate umgestellt\nособенности: KNX Безопасный Unterstützung\nособенность: Erweiterte DPT-Abdeckung (9 zusätzliche DPTs, u.a. DPT-22, 213, 222, 235, 242, 249, 251)\nоригинальное название: Verbesserte Verbindungsstabilität",
+        "pt": "** quebra:** KNX- Kommunikation auf KNXUltimate umgestellt\nrecurso: KNX Secure Unterstützung\ncaracterística: Erweiterte DPT-Abdeckung (9 zusätzliche DPTs, u.a. DPT-22, 213, 222, 235, 242, 249, 251)\nrecurso: Verbesserte Verbindungsstabilität",
+        "nl": "*** KNX-Kommunikation auf KNXUltimate umgestellt\nfunctie: KNX Beveiligde Unterstützung\nfeature: Erweiterte DPT-Abdeckung (9 zusätzliche DPTs, u.a. DPT-22, 213, 222, 235, 242, 249, 251)\nfunctie: Verbesserte Verbindungsstabilität",
+        "fr": "** rupture :** KNX-Kommunikation auf KNXUltimate umgestellt\ncaractéristique: KNX Unterstützung sécurisé\ncaractéristiques: Erweiterte DPT-Abdeckung (9 DPT zusätzliche, u.a. DPT-22, 213, 222, 235, 242, 249, 251)\ncaractéristiques: Verbesserte Verbindungsstabilität",
+        "it": "# KNX-Kommunikation auf KNXUltimate umgestellt #\ncaratteristica: KNX Secure Unterstützung\ncaratteristica: Erweiterte DPT-Abdeckung (9 zusätzliche DPTs, u.a. DPT-22, 213, 222, 235, 242, 249, 251)\ncaratteristica: Verbesserte Verbindungsstabilität",
+        "es": "**breaking:** KNX-Kommunikation auf KNXUltimate umgestellt\ncaracterística: KNX Secure Unterstützung\ncaracterística: Erweiterte DPT-Abdeckung (9 zusätzliche DPTs, u.a. DPT-22, 213, 222, 235, 242, 249, 251)\ncaracterística: Verbesserte Verbindungsstabilität",
+        "pl": "* *breaking:* * KNX- Kommunikation auf KNXUltimate umgestellt \nfunkcja: KNX Secure Unterstützung\ncecha: Erweiterte DPT- Abdeckung (9 zusätzliche DPT, u.a. DPT- 22, 213, 222, 235, 242, 249, 251)\nfunkcja: Verbesserte Verbindungsstabilität",
+        "uk": "**Уроки:*** KNX-Kommunikation Auf KNXUltimate umgestellt\nмодель: KNX Безпека Unterstützung\nфункція: Erweiterte DPT-Abdeckung (9 zusätzliche DPTs, u.a. DPT-22, 213, 222, 235, 242, 249, 251)\nособливості: Verbesserte Verbindungstabilität",
+        "zh-cn": "**破损:** KNX-Kommunikation auf KNXUltimate umgestellt\n特性: KNX 安全 Unterstützung 系统\n特征: Erweiterte DPT-ABDeckung (9 zusätzliche DPTs, u.a. DPT-22, 213, 222, 235, 242, 249, 251)\n特性: Verbesserte Verbindungsstabilität"
+      },
       "0.9.1": {
         "en": "bugfix: Fixing increased delay in knx commands after several days\nAdapter requires admin >= 7.7.22 now\nAdapter requires js-controller >= 6.0.11 now\nAdapter requires admin >= 7.6.17 now\n\nAdapter requires node.js >= 20 and js-controller >= 6 now",
         "de": "bugfix: Erhöhte Verzögerung in knx-Befehlen nach mehreren Tagen behoben\nAdapter benötigt admin >= 7.7.22 jetzt\nAdapter benötigt jetzt js-controller >= 6.0.11\nAdapter benötigt admin >= 7.6.17 jetzt\n\nAdapter benötigt node.js >= 20 und js-controller >= 6 jetzt",
@@ -80,19 +93,6 @@
         "pl": "funkcja: jeden z ostrzeżeń jest konfigurowalny w oknie dialogowym",
         "uk": "функція: один з попереджень налаштований у діалоговому вікні",
         "zh-cn": "特性: 在对话框中可配置警告之一"
-      },
-      "0.7.2": {
-        "en": "feature: handle network connection instability issesues\nfeature: generate more log messages\nbugfix: telegram count",
-        "de": "funktion: netzwerk-verbindung instabilität ist\nfeature: mehr log-nachrichten generieren\nbugfix: telegrammzählung",
-        "ru": "особенность: обрабатывать нестабильность сетевого подключения\nфункция: генерировать больше сообщений журнала\nbugfix: число телеграмм",
-        "pt": "característica: lidar com issesues de instabilidade de conexão de rede\nrecurso: gerar mais mensagens de log\nbugfix: contagem de telegramas",
-        "nl": "feature: handle netwerkverbinding instabiliteit issesues\nfunctie: meer logberichten genereren\nbugfix: aantal telegrammen",
-        "fr": "caractéristique: gérer l'instabilité de connexion réseau issesues\nfonctionnalité: générer plus de messages journal\nbugfix : nombre de télégrammes",
-        "it": "funzione: gestire connessioni di rete instabilità esue\nfunzione: generare più messaggi di log\nbugfix: conta telegram",
-        "es": "característica: manejar la inestabilidad de conexión de red issesues\nfunción: generar más mensajes de registro\nbugfix: cuenta de telegramas",
-        "pl": "cecha: uchwyt niestabilności połączeń sieciowych\nfunkcja: generować więcej wiadomości dziennika\nbugfix: liczba telegramów",
-        "uk": "особливість: нестійкість підключення ручок\nфункція: генерувати більше повідомлень журналу\nвиправлення помилок: кількість телеграм",
-        "zh-cn": "特性: 处理网络连接不稳定性\n特性: 生成更多日志消息\n错误修正: 电报计数"
       }
     },
     "titleLang": {
@@ -183,10 +183,19 @@
     "eibadr": "0.0.0",
     "gwip": "",
     "gwipport": "3671",
+    "hostProtocol": "TunnelUDP",
+    "isSecureKNXEnabled": false,
+    "knxKeysContent": "",
+    "knxKeysPassword": "",
+    "tunnelInterfaceAddress": "",
+    "tunnelUserPassword": "",
+    "tunnelUserId": "",
     "localInterface": "",
     "minimumDelay": 80,
     "noWarnUnknownGa": false,
-    "useBoolean": true
+    "useBoolean": true,
+    "knxCompatMode": false,
+    "targetNamespace": ""
   },
   "objects": [],
   "instanceObjects": [

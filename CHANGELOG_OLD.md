@@ -1,4 +1,10 @@
 # Older changes
+## 0.7.2 (2024-01-09)
+
+-   feature: handle network connection instability issues
+-   feature: generate more log messages
+-   bugfix: telegram count
+
 ## 0.7.1 (2024-01-07)
 
 -   feature: when requesting fast message sendout create iob acks per bus message status, situation before: it triggered all acks on first message send confirmance

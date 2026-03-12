@@ -43,6 +43,12 @@ All generated communication objects are initially configured readable and writea
   * update gui: iob upload openknx
   * update stable: https://github.com/ioBroker/ioBroker.repositories#add-a-new-adapter-to-the-stable-repository
 -->
+### 1.0.0-beta.0 (2026-03-12)
+- **breaking:** KNX-Kommunikation auf KNXUltimate umgestellt
+- feature: KNX Secure Unterstützung
+- feature: Erweiterte DPT-Abdeckung (9 zusätzliche DPTs, u.a. DPT-22, 213, 222, 235, 242, 249, 251)
+- feature: Verbesserte Verbindungsstabilität
+
 ### 0.9.1 (2026-03-12)
 - bugfix: Fixing increased delay in knx commands after several days
 - (copilot) Adapter requires admin >= 7.7.22 now
@@ -65,12 +71,6 @@ All generated communication objects are initially configured readable and writea
 ### 0.7.3 (2024-03-05)
 
 -   feature: one of the warnings is configurable in the dialog
-
-### 0.7.2 (2024-01-09)
-
--   feature: handle network connection instability issues
--   feature: generate more log messages
--   bugfix: telegram count
 
 ### initial version
 
