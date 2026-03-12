@@ -77,9 +77,7 @@ class openknx extends utils.Adapter {
             return;
         }
 
-
         if (this.config.targetNamespace && this.config.targetNamespace !== this.namespace) {
-            /** @type {any} */
             this.mynamespace = this.config.targetNamespace;
             this.isForeign = true;
             this.log.info(`Using namespace ${this.mynamespace}`);
