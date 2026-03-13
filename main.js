@@ -654,8 +654,12 @@ class openknx extends utils.Adapter {
                     // use realistic per-telegram time so queue stays empty between reads
                     const autoreadInterval = Math.max(this.config.minimumDelay || 25, 200);
                     const estimatedSec = Math.ceil((autoreadGAs.length * autoreadInterval) / 1000);
+                    const estimatedTime =
+                        estimatedSec >= 60
+                            ? `${Math.floor(estimatedSec / 60)}m${estimatedSec % 60 ? ` ${estimatedSec % 60}s` : ""}`
+                            : `${estimatedSec}s`;
                     this.log.info(
-                        `Autoread on startup: ${autoreadGAs.length} read requests, ${cnt_withDPT} DPT configs resolved, estimated ~${estimatedSec}s (${autoreadInterval}ms interval). Write commands may be delayed during this period.`,
+                        `Autoread on startup: ${autoreadGAs.length} read requests, ${cnt_withDPT} DPT configs resolved, estimated ~${estimatedTime} (${autoreadInterval}ms interval). Write commands may be delayed during this period.`,
                     );
                     let i = 0;
                     this.autoreadTimer = setInterval(() => {
