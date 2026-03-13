@@ -628,10 +628,11 @@ class openknx extends utils.Adapter {
 
                 // Phase 2: send autoread requests (asynchronous, non-blocking)
                 if (autoreadGAs.length > 0) {
-                    const delay = this.config.minimumDelay || 25;
-                    const estimatedSec = Math.ceil((autoreadGAs.length * Math.max(delay, 200)) / 1000);
+                    // use realistic per-telegram time so queue stays empty between reads
+                    const autoreadInterval = Math.max(this.config.minimumDelay || 25, 200);
+                    const estimatedSec = Math.ceil((autoreadGAs.length * autoreadInterval) / 1000);
                     this.log.info(
-                        `Autoread on startup: ${autoreadGAs.length} read requests queued, ${cnt_withDPT} DPT configs resolved, estimated bus time ~${estimatedSec}s`,
+                        `Autoread on startup: ${autoreadGAs.length} read requests, ${cnt_withDPT} DPT configs resolved, estimated ~${estimatedSec}s (${autoreadInterval}ms interval)`,
                     );
                     let i = 0;
                     this.autoreadTimer = setInterval(() => {
@@ -648,7 +649,7 @@ class openknx extends utils.Adapter {
                             this.log.warn(`Autoread failed for ${autoreadGAs[i]}: ${e.message}`);
                         }
                         i++;
-                    }, delay);
+                    }, autoreadInterval);
                 } else {
                     this.log.info(`DPT configs resolved: ${cnt_withDPT}, autoread disabled or no GAs marked`);
                 }
