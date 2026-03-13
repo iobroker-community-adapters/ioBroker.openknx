@@ -197,6 +197,8 @@
     "knxCompatMode": false,
     "targetNamespace": ""
   },
+  "encryptedNative": ["knxKeysPassword", "tunnelUserPassword"],
+  "protectedNative": ["knxKeysPassword", "tunnelUserPassword"],
   "objects": [],
   "instanceObjects": [
     {
