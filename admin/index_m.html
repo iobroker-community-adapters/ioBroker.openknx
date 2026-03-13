@@ -108,7 +108,7 @@
                         }
                     }
                     var iface = settings.localInterface || $("#localInterface option:first").val() || "";
-                    $("#localInterface").val(iface).trigger("change");
+                    $("#localInterface.value").val(iface).select();
                 });
                 // Initialize hostProtocol dropdown
                 $("#hostProtocol.value").val(settings.hostProtocol).select();
