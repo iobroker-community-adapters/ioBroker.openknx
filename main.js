@@ -445,15 +445,12 @@ class openknx extends utils.Adapter {
         let rawVal;
 
         // plausibilize against configured datatype
-        if (gaData.common?.type == "boolean") {
-            knxVal = !!knxVal;
-        } else if (gaData.common?.type == "number" || gaData.common?.type == "enum") {
-            if (isNaN(Number(knxVal))) {
-                this.log.warn(`Value ${knxVal} for ${id} is not a number`);
-            }
-            // else take plain value
-        } else if (tools.isDateDPT(dpt)) {
-            // before composite check, date is possibly composite
+        if (knxVal == null) {
+            this.log.warn(`Ignoring null/undefined value for ${id}`);
+            return "null value";
+        }
+        // date DPTs must be checked before "number" because common.type is "number" for dates
+        if (tools.isDateDPT(dpt)) {
             // handle DD.MM.YYYY format not parseable by Date constructor
             if (typeof knxVal === "string" && /^\d{1,2}\.\d{1,2}\.\d{4}$/.test(knxVal)) {
                 const [d, m, y] = knxVal.split(".");
@@ -461,6 +458,13 @@ class openknx extends utils.Adapter {
             } else {
                 knxVal = new Date(knxVal);
             }
+        } else if (gaData.common?.type == "boolean") {
+            knxVal = !!knxVal;
+        } else if (gaData.common?.type == "number" || gaData.common?.type == "enum") {
+            if (isNaN(Number(knxVal))) {
+                this.log.warn(`Value ${knxVal} for ${id} is not a number`);
+            }
+            // else take plain value
         } else if (gaData.native.valuetype == "composite") {
             // input from IOB is either object or string in object notation, type of this conversion is object needed by the knx lib
             if (typeof knxVal !== "object") {
