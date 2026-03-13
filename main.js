@@ -43,6 +43,9 @@ class openknx extends utils.Adapter {
         this.timeout1 = undefined;
         this.timeout2 = undefined;
         this.interval1 = undefined;
+        this.reconnectCount = 0;
+        this.reconnectTimer = undefined;
+        this.stopping = false;
 
         // redirect log from KNXUltimate (winston-based logStream) to adapter log
         this.logHandler = entry => {
@@ -100,7 +103,8 @@ class openknx extends utils.Adapter {
             clearTimeout(this.timeout2);
             clearInterval(this.interval1);
             clearInterval(this.autoreadTimer);
-
+            clearTimeout(this.reconnectTimer);
+            this.stopping = true;
             this.connected = false;
 
             const cleanupLogHandler = () => {
@@ -622,8 +626,8 @@ class openknx extends utils.Adapter {
             // request gateway description for detailed logging
             try {
                 this.knxConnection?.startGatewayDescription();
-            } catch {
-                // may fail if already running or not supported
+            } catch (e) {
+                this.log.debug(`startGatewayDescription failed: ${e.message}`);
             }
 
             // Phase 1: resolve DPT configs (synchronous, immediate)
@@ -682,10 +686,13 @@ class openknx extends utils.Adapter {
                 }
             }
             this.connected = true;
+            this.reconnectCount = 0;
             this.setState("info.connection", this.connected, true);
         });
 
         // Event: disconnected
+        // Reconnect delays in seconds: 10, 30, 60, 120, 120, 120, 120
+        const reconnectDelays = [10, 30, 60, 120, 120, 120, 120];
         this.knxConnection.on(KNXClientEvents.disconnected, reason => {
             if (this.connected) {
                 this.log.error(`Connection lost: ${reason}`);
@@ -693,6 +700,17 @@ class openknx extends utils.Adapter {
             this.connected = false;
             this.setState("info.connection", this.connected, true);
             this.setState("info.busload", 0, true);
+
+            if (!this.stopping && this.reconnectCount < reconnectDelays.length) {
+                const delay = reconnectDelays[this.reconnectCount];
+                this.reconnectCount++;
+                this.log.info(`Reconnect attempt ${this.reconnectCount}/${reconnectDelays.length} in ${delay}s...`);
+                this.reconnectTimer = setTimeout(() => {
+                    this.knxConnection.Connect();
+                }, delay * 1000);
+            } else if (this.reconnectCount >= reconnectDelays.length) {
+                this.log.error(`Giving up after ${reconnectDelays.length} reconnect attempts`);
+            }
         });
 
         // Event: error
