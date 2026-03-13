@@ -19,7 +19,7 @@ const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 const detect = require("./lib/openknx.js");
 const os = require("os");
-const similarity = require("similarity");
+const similarity = require("./lib/similarity.js");
 
 class openknx extends utils.Adapter {
     /**

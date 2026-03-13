@@ -36,8 +36,7 @@
   "dependencies": {
     "@iobroker/adapter-core": "^3.3.2",
     "knxultimate": "^5.2.8",
-    "similarity": "^1.2.1",
-    "xmldom": "^0.6.0",
+    "@xmldom/xmldom": "^0.9.8",
     "xpath": "^0.0.34"
   },
   "devDependencies": {
@@ -48,7 +47,7 @@
     "@iobroker/adapter-dev": "^1.5.0",
     "@iobroker/eslint-config": "^2.2.0",
     "@iobroker/testing": "^5.2.2",
-    "@tsconfig/node14": "^14.1.8",
+    "@tsconfig/node20": "^20.1.9",
     "@types/chai": "^5.2.3",
     "@types/chai-as-promised": "^8.0.2",
     "@types/mocha": "^10.0.10",
