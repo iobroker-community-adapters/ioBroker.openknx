@@ -48,11 +48,15 @@ class openknx extends utils.Adapter {
         this.stopping = false;
 
         // redirect log from KNXUltimate (winston-based logStream) to adapter log
+        // Collapse multiline messages (stack traces) into a single line
         this.logHandler = entry => {
             const level = entry.level?.toLowerCase();
-            const msg = entry.message || String(entry);
+            const msg = (entry.message || String(entry)).replace(/\n/g, " | ");
             if (level === "error") {
-                this.log.error(msg);
+                if (this.stopping) {
+                    return;
+                }
+                this.log.warn(`KNXENGINE: ${msg}`);
             } else if (level === "warn") {
                 this.log.warn(msg);
             } else if (level === "info") {
@@ -611,24 +615,12 @@ class openknx extends utils.Adapter {
         // Create KNXUltimate client
         this.knxConnection = new KNXClient(knxOptions);
 
-        // Event: descriptionResponse - log gateway details
-        this.knxConnection.on(KNXClientEvents.descriptionResponse, resp => {
-            this.log.info(`Gateway description: ${JSON.stringify(resp)}`);
-        });
-
         // Event: connected
         this.knxConnection.on(KNXClientEvents.connected, () => {
             const chId = this.knxConnection?.channelID;
             const pa = this.knxConnection?.physAddr ? this.knxConnection.physAddr.toString() : "";
             this.log.info(`Connected! channelID=${chId} physAddr=${pa}`);
             this.setState("info.messagecount", 0, true);
-
-            // request gateway description for detailed logging
-            try {
-                this.knxConnection?.startGatewayDescription();
-            } catch (e) {
-                this.log.debug(`startGatewayDescription failed: ${e.message}`);
-            }
 
             // Phase 1: resolve DPT configs (synchronous, immediate)
             let cnt_withDPT = 0;
