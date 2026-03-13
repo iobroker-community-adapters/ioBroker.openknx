@@ -940,20 +940,36 @@ class openknx extends utils.Adapter {
                 const actObj = this.gaList.getDataById(bestMatch);
 
                 if (statusObj && actObj) {
-                    // Update status object
+                    // Update status object: read-only, receives values from bus
                     statusObj.native.actGA = bestMatch;
+                    statusObj.common.read = true;
+                    statusObj.common.write = false;
                     if (this.isForeign) {
-                        await this.extendForeignObjectAsync(statusId, { native: { actGA: bestMatch } });
+                        await this.extendForeignObjectAsync(statusId, {
+                            native: { actGA: bestMatch },
+                            common: { read: true, write: false },
+                        });
                     } else {
-                        await this.extendObjectAsync(statusId, { native: { actGA: bestMatch } });
+                        await this.extendObjectAsync(statusId, {
+                            native: { actGA: bestMatch },
+                            common: { read: true, write: false },
+                        });
                     }
 
-                    // Update act object
+                    // Update act object: write-only, reads come from status GA
                     actObj.native.statusGA = statusId;
+                    actObj.common.read = false;
+                    actObj.common.write = true;
                     if (this.isForeign) {
-                        await this.extendForeignObjectAsync(bestMatch, { native: { statusGA: statusId } });
+                        await this.extendForeignObjectAsync(bestMatch, {
+                            native: { statusGA: statusId },
+                            common: { read: false, write: true },
+                        });
                     } else {
-                        await this.extendObjectAsync(bestMatch, { native: { statusGA: statusId } });
+                        await this.extendObjectAsync(bestMatch, {
+                            native: { statusGA: statusId },
+                            common: { read: false, write: true },
+                        });
                     }
 
                     count++;
