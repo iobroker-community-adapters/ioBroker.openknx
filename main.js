@@ -770,7 +770,8 @@ class openknx extends utils.Adapter {
                 const dptConfig = this.gaList.getDpById(id);
 
                 if (id === undefined || data === undefined) {
-                    throw new Error(`Invalid data for GA ${dest} id ${id} data ${data}`);
+                    this.log.error(`Invalid data for GA ${dest} id ${id} data ${data}`);
+                    continue;
                 }
 
                 // Decode value manually (no Datapoint class)
