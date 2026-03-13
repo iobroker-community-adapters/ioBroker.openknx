@@ -4,9 +4,9 @@ const path = require("path");
 const { tests, utils } = require("@iobroker/testing");
 
 const xml =
-    '\'"<?xml version="1.0" encoding="utf-8" standalone="yes"?>\r\n<GroupAddress-Export xmlns="http://knx.org/xml/ga-export/01">\r\n<GroupAddress Name="dpt 222" Address="0/0/0" Description="dpt 222" DPTs="DPT-222" />\r\n</GroupAddress-Export>"\'';
+    '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\r\n<GroupAddress-Export xmlns="http://knx.org/xml/ga-export/01">\r\n<GroupAddress Name="dpt 222" Address="0/0/0" Description="dpt 222" DPTs="DPT-222" />\r\n</GroupAddress-Export>';
 const xml2 =
-    '\'"<?xml version="1.0" encoding="utf-8" standalone="yes"?>\r\n<GroupAddress-Export xmlns="http://knx.org/xml/ga-export/01">\r\n<GroupAddress Name="dpt 222" Address="1/1/1" Description="dpt 222" DPTs="DPT-222" />\r\n</GroupAddress-Export>"\'';
+    '<?xml version="1.0" encoding="utf-8" standalone="yes"?>\r\n<GroupAddress-Export xmlns="http://knx.org/xml/ga-export/01">\r\n<GroupAddress Name="dpt 222" Address="1/1/1" Description="dpt 222" DPTs="DPT-222" />\r\n</GroupAddress-Export>';
 const adaptername = "openknx.0";
 const objectid = adaptername + ".dpt_222";
 const settings = {
