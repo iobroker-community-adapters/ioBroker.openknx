@@ -20,17 +20,21 @@
 ![Stable](http://iobroker.live/badges/openknx-stable.svg)
 ![Installed](http://iobroker.live/badges/openknx-installed.svg)
 
-This adapter serves as communication interface between Iobroker and your KNX IP Gateway.
-The adapter allows to generate the iobroker communication objects automatically by importing an ETS group address xml export.  
-All generated communication objects are initially configured readable and writeable, values are fetched from the knx bus on adapter restart.
+ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://github.com/Supergiovane/knxultimate).
+
+- ETS group address XML import (ETS version independent) with automatic ioBroker object generation
+- KNX Secure (IP Secure tunneling via .knxkeys keyfile or password)
+- Tunneling (UDP/TCP) and Routing (Multicast) protocols
+- Alias generation to merge action and status GAs into a single ioBroker object
+
+- Automatic gateway discovery
+- Automatic reconnect with exponential backoff
+- Autoread of configured datapoints on startup
 
 ## Documentation
 
 [🇺🇸 Documentation](./docs/en/README.md)
 
-**If you like OpenKNX, please consider a donation:**
-
-[![paypal](https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Z8UFC8QEC4ARW&source=url)
 
 ## Changelog
 
