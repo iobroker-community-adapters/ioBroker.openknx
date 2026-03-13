@@ -17,7 +17,6 @@ const loadMeasurement = require("./lib/loadMeasurement");
 const projectImport = require("./lib/projectImport");
 const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
-const detect = require("./lib/openknx.js");
 const similarity = require("./lib/similarity.js");
 
 class openknx extends utils.Adapter {
@@ -197,24 +196,38 @@ class openknx extends utils.Adapter {
                     break;
                 case "detectInterface":
                     this.log.info("Detect Interface...");
-                    detect.detect(
-                        obj.message.ip,
-                        0,
-                        null,
-                        (err, isFound, addr, port, knxAdr, deviceName, devicesFound) => {
+                    KNXClient.discoverInterfaces()
+                        .then(interfaces => {
+                            this.log.info(`Discovery found ${interfaces.length} interface(s)`);
+                            // pick first match or use provided IP
+                            const match = obj.message.ip
+                                ? interfaces.find(i => i.ip === obj.message.ip) || interfaces[0]
+                                : interfaces[0];
                             if (obj.callback) {
-                                const res = {
-                                    error: null,
-                                    ip: addr,
-                                    port: port,
-                                    knxAdr: knxAdr,
-                                    deviceName: deviceName,
-                                    devicesFound: devicesFound,
-                                };
+                                const res = match
+                                    ? {
+                                          error: null,
+                                          ip: match.ip,
+                                          port: match.port,
+                                          knxAdr: match.ia,
+                                          deviceName: match.name,
+                                          devicesFound: interfaces.length,
+                                      }
+                                    : { error: "No KNX interfaces found", devicesFound: 0 };
                                 this.sendTo(obj.from, obj.command, res, obj.callback);
                             }
-                        },
-                    );
+                        })
+                        .catch(err => {
+                            this.log.warn(`Discovery failed: ${err.message}`);
+                            if (obj.callback) {
+                                this.sendTo(
+                                    obj.from,
+                                    obj.command,
+                                    { error: err.message, devicesFound: 0 },
+                                    obj.callback,
+                                );
+                            }
+                        });
                     break;
                 case "restart":
                     this.log.info("Restarting...");
