@@ -2,7 +2,6 @@
 
 const path = require("path");
 const { tests, utils } = require("@iobroker/testing");
-const { doesNotMatch } = require("assert");
 
 const xml =
     '\'"<?xml version="1.0" encoding="utf-8" standalone="yes"?>\r\n<GroupAddress-Export xmlns="http://knx.org/xml/ga-export/01">\r\n<GroupAddress Name="dpt 222" Address="0/0/0" Description="dpt 222" DPTs="DPT-222" />\r\n</GroupAddress-Export>"\'';
@@ -159,15 +158,6 @@ tests.integration(path.join(__dirname, ".."), {
                     }
                 });
             }
-        });
-
-        // While developing the tests, you can run only a single suite using `suite.only`...
-        suite.only("Only this will run", (getHarness) => {
-            // ...
-        });
-        // ...or prevent a suite from running using `suite.skip`:
-        suite.skip("This will never run", (getHarness) => {
-            // ...
         });
     },
 });

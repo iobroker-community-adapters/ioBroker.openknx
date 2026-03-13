@@ -36,6 +36,7 @@
   "dependencies": {
     "@iobroker/adapter-core": "^3.3.2",
     "knxultimate": "^5.2.8",
+    "ipaddr.js": "^2.3.0",
     "@xmldom/xmldom": "^0.9.8",
     "xpath": "^0.0.34"
   },

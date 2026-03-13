@@ -18,7 +18,6 @@ const projectImport = require("./lib/projectImport");
 const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 const detect = require("./lib/openknx.js");
-const os = require("os");
 const similarity = require("./lib/similarity.js");
 
 class openknx extends utils.Adapter {
@@ -806,37 +805,6 @@ class openknx extends utils.Adapter {
 
         // Start connection
         this.knxConnection.Connect();
-    }
-
-    /* for testing, forward msg from one to another test address
-        better approach: send all test values via ets, send received value back from iobroker, compare in ets
-    */
-    interfaceTest(id, state) {
-        const inpath = `${this.mynamespace}.test.testin`;
-        const outpath = `${this.mynamespace}.test.testout`;
-        if (id.startsWith(inpath)) {
-            const out = outpath + id.replace(inpath, "");
-            this.setState(out, {
-                val: state.val,
-                ack: false,
-            });
-        }
-    }
-
-    // admin dialog uses different name than knx lib, translate ip to interface name
-    translateInterface(interfaceIp) {
-        const interfaces = os.networkInterfaces();
-
-        for (const [iface, addrs] of Object.entries(interfaces)) {
-            if (addrs) {
-                for (const addr of addrs) {
-                    if (addr.address == interfaceIp) {
-                        return iface;
-                    }
-                }
-            }
-        }
-        return interfaceIp;
     }
 
     countObjectsNotification(cnt_withDPT) {
