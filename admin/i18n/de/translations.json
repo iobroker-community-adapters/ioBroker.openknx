@@ -46,7 +46,7 @@
     "no KNX gateway found": "Kein KNX-Gateway gefunden",
     "physical KNX address in format a/b/c not valid": "Physikalische KNX-Adresse im Format a/b/c ungültig",
     "please provide a valid minimum send delay value between 0 and 1000 [ms]": "Bitte geben Sie einen gültigen Wert für die Sendeverzögerung zwischen 0 und 1000 [ms] an",
-    "readout values of autoread iob objects on startup": "Werte von Autoread-IOB-Objekten beim Start auslesen",
+    "readout values of autoread iob objects on startup": "Werte von Autoread-IOB-Objekten beim Start des Adapters auslesen",
     "remove existing IOB objects that are not in ETS import file": "Vorhandene IOB-Objekte entfernen, die nicht in der ETS-Importdatei enthalten sind",
     "use common.type boolean for 1 bit enum instead of number": "common.type boolean für 1-Bit-Enum anstelle von Zahl verwenden"
 }
