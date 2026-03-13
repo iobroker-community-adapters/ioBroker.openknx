@@ -459,9 +459,10 @@ class openknx extends utils.Adapter {
                 const [d, m, y] = knxVal.split(".");
                 dateVal = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
             } else {
-                dateVal = new Date(knxVal);
+                // numeric strings like "1773424478439" must be converted to number first
+                dateVal = new Date(typeof knxVal === "string" && /^\d+$/.test(knxVal) ? Number(knxVal) : knxVal);
             }
-            this.log.debug(`date conversion: input=${JSON.stringify(knxVal)} → Date=${dateVal.toISOString ? dateVal.toISOString() : dateVal} valid=${!isNaN(dateVal.getTime())}`);
+            this.log.debug(`date conversion: input=${JSON.stringify(knxVal)} → Date=${JSON.stringify(dateVal)} valid=${!isNaN(dateVal.getTime())}`);
             if (isNaN(dateVal.getTime())) {
                 this.log.warn(`Invalid date value "${state.val}" for ${id}, cannot convert to Date`);
                 return "invalid date";
