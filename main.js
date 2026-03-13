@@ -100,6 +100,7 @@ class openknx extends utils.Adapter {
             clearTimeout(this.timeout1);
             clearTimeout(this.timeout2);
             clearInterval(this.interval1);
+            clearInterval(this.autoreadTimer);
 
             this.connected = false;
 
@@ -598,13 +599,14 @@ class openknx extends utils.Adapter {
             this.log.info("Connected!");
             this.setState("info.messagecount", 0, true);
 
-            // resolve DPT configs and send autoread requests
+            // Phase 1: resolve DPT configs (synchronous, immediate)
             let cnt_withDPT = 0;
+            const autoreadGAs = [];
             if (!this.autoreaddone) {
+                this.log.info("Resolving DPT configs...");
                 for (const key of this.gaList) {
                     try {
                         const data = this.gaList.getDataById(key);
-                        // Store DPT config instead of Datapoint object
                         let dptConfig = null;
                         try {
                             dptConfig = dptlib.resolve(data.native.dpt);
@@ -613,16 +615,8 @@ class openknx extends utils.Adapter {
                         }
                         this.gaList.setDpById(key, dptConfig);
 
-                        // Manual autoread (no Datapoint class in KNXUltimate)
                         if (data.native.autoread && this.config.autoreadEnabled) {
-                            try {
-                                this.knxConnection.read(data.native.address);
-                                this.log.debug(`Autoread GroupValueRead sent ${data.native.address} ${key}`);
-                            } catch (e) {
-                                this.log.warn(`Autoread failed for ${data.native.address}: ${e.message}`);
-                            }
-                        } else {
-                            this.log.debug(`DPT config created ${data.native.address} ${key}`);
+                            autoreadGAs.push(data.native.address);
                         }
                         cnt_withDPT++;
                     } catch (e) {
@@ -631,6 +625,33 @@ class openknx extends utils.Adapter {
                 }
                 this.autoreaddone = true;
                 this.countObjectsNotification(cnt_withDPT);
+
+                // Phase 2: send autoread requests (asynchronous, non-blocking)
+                if (autoreadGAs.length > 0) {
+                    const delay = this.config.minimumDelay || 25;
+                    const estimatedSec = Math.ceil((autoreadGAs.length * Math.max(delay, 200)) / 1000);
+                    this.log.info(
+                        `Autoread on startup: ${autoreadGAs.length} read requests queued, ${cnt_withDPT} DPT configs resolved, estimated bus time ~${estimatedSec}s`,
+                    );
+                    let i = 0;
+                    this.autoreadTimer = setInterval(() => {
+                        if (i >= autoreadGAs.length || !this.knxConnection) {
+                            clearInterval(this.autoreadTimer);
+                            this.autoreadTimer = null;
+                            this.log.info(`Autoread on startup finished: ${i} of ${autoreadGAs.length} requests sent`);
+                            return;
+                        }
+                        try {
+                            this.knxConnection.read(autoreadGAs[i]);
+                            this.log.debug(`Autoread GroupValueRead sent ${autoreadGAs[i]}`);
+                        } catch (e) {
+                            this.log.warn(`Autoread failed for ${autoreadGAs[i]}: ${e.message}`);
+                        }
+                        i++;
+                    }, delay);
+                } else {
+                    this.log.info(`DPT configs resolved: ${cnt_withDPT}, autoread disabled or no GAs marked`);
+                }
             }
             this.connected = true;
             this.setState("info.connection", this.connected, true);
