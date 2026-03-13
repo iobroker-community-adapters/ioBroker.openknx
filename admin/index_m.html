@@ -363,6 +363,7 @@
             <div class="row">
                 <ul class="tabs">
                     <li class="tab col s3 c-tab translate"><a href="#configDialog">Settings and Import</a></li>
+                    <li class="tab col s3 c-tab translate"><a href="#secureDialog">KNX Secure</a></li>
                     <li class="tab col s3 c-tab translate"><a href="#extendedDialog">Alias Generation</a></li>
                 </ul>
             </div>
@@ -374,7 +375,7 @@
                             <div class="col s12 l3">
                                 <a id="detectInterface" class="waves-effect waves-light btn"
                                     ><i class="material-icons right">live_help</i
-                                    ><span class="translate">detect</span></a>
+                                    ><span class="translate">detect KNX gateway</span></a>
                             </div>
                         </div>
                         <div class="row">
@@ -466,12 +467,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div id="secureDialog" class="row">
                 <div class="card">
                     <div class="card-content">
                         <div class="row">
-                            <span class="translate">
-                                KNX Secure (optional)
-                            </span>
                             <div class="col s12 input-field">
                                 <input class="value" id="isSecureKNXEnabled" type="checkbox" />
                                 <label class="translate" for="isSecureKNXEnabled">Enable KNX Secure</label>
