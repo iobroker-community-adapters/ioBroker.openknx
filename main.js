@@ -419,11 +419,8 @@ class openknx extends utils.Adapter {
         if (!id || !state /*obj deleted*/ || typeof state !== "object") {
             return "invalid input";
         }
-        if (
-            !this.gaList.getDataById(id) ||
-            !this.gaList.getDataById(id).native ||
-            !this.gaList.getDataById(id).native.address
-        ) {
+        const gaData = this.gaList.getDataById(id);
+        if (!gaData?.native?.address) {
             return "not a KNX object";
         }
         if (this.knxConnection == undefined) {
@@ -442,26 +439,29 @@ class openknx extends utils.Adapter {
             return "not connected to KNX bus";
         }
 
-        const dpt = this.gaList.getDataById(id).native.dpt;
-        const ga = this.gaList.getDataById(id).native.address;
+        const dpt = gaData.native.dpt;
+        const ga = gaData.native.address;
         let knxVal = state.val;
         let rawVal;
 
         // plausibilize against configured datatype
-        if (this.gaList.getDataById(id).common && this.gaList.getDataById(id).common.type == "boolean") {
+        if (gaData.common?.type == "boolean") {
             knxVal = !!knxVal;
-        } else if (
-            this.gaList?.getDataById(id)?.common?.type == "number" ||
-            this.gaList?.getDataById(id)?.common?.type == "enum"
-        ) {
+        } else if (gaData.common?.type == "number" || gaData.common?.type == "enum") {
             if (isNaN(Number(knxVal))) {
                 this.log.warn(`Value ${knxVal} for ${id} is not a number`);
             }
             // else take plain value
         } else if (tools.isDateDPT(dpt)) {
             // before composite check, date is possibly composite
-            knxVal = new Date(knxVal);
-        } else if (this.gaList.getDataById(id).native.valuetype == "composite") {
+            // handle DD.MM.YYYY format not parseable by Date constructor
+            if (typeof knxVal === "string" && /^\d{1,2}\.\d{1,2}\.\d{4}$/.test(knxVal)) {
+                const [d, m, y] = knxVal.split(".");
+                knxVal = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+            } else {
+                knxVal = new Date(knxVal);
+            }
+        } else if (gaData.native.valuetype == "composite") {
             // input from IOB is either object or string in object notation, type of this conversion is object needed by the knx lib
             if (typeof knxVal !== "object") {
                 try {
@@ -483,16 +483,14 @@ class openknx extends utils.Adapter {
             }
             rawVal = Buffer.from(knxVal, "hex");
             isRaw = true;
-            this.log.info(`Unhandeled DPT ${dpt}, assuming raw value`);
+            this.log.info(`Unhandled DPT ${dpt}, assuming raw value`);
         } else {
             let error;
-            if (!this.gaList.getDataById(id).common || !this.gaList.getDataById(id).common.type) {
+            if (!gaData.common?.type) {
                 // configuration that is checked before does not exist, unplausible
                 error = `bad or missing configuration for object with id: ${id}`;
             } else {
-                error = `cannot interprete data, please check your configuration. ${dpt} unplausible type: ${
-                    this.gaList?.getDataById(id)?.common?.type
-                }`;
+                error = `cannot interprete data, please check your configuration. ${dpt} unplausible type: ${gaData.common.type}`;
             }
             this.log.warn(error);
         }
@@ -503,7 +501,7 @@ class openknx extends utils.Adapter {
             this.knxConnection.read(ga);
             // ack is generated with GroupValue_Response via indication event
             return "read";
-        } else if (this.gaList.getDataById(id).common.write) {
+        } else if (gaData.common.write) {
             this.log.debug(
                 `Outbound GroupValue_Write to " ${ga} value: ${isRaw ? rawVal : JSON.stringify(knxVal)} from ${id}`,
             );
@@ -518,8 +516,7 @@ class openknx extends utils.Adapter {
 
                 // KNX Compat Mode: After write, sync value from linked status GA
                 if (this.config.knxCompatMode) {
-                    const gaData = this.gaList.getDataById(id);
-                    if (gaData?.native?.statusGA) {
+                    if (gaData.native?.statusGA) {
                         const statusState = this.isForeign
                             ? await this.getForeignStateAsync(gaData.native.statusGA)
                             : await this.getStateAsync(gaData.native.statusGA);
@@ -539,7 +536,7 @@ class openknx extends utils.Adapter {
                 return "write error";
             }
         }
-        this.log.warn(`not configured write to ga: ${state.val}`);
+        this.log.warn(`GA ${ga} (${id}) is not configured as writable`);
         return "configuration error";
     }
 
