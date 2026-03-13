@@ -444,6 +444,8 @@ class openknx extends utils.Adapter {
         let knxVal = state.val;
         let rawVal;
 
+        this.log.debug(`onStateChange ${id}: val=${JSON.stringify(state.val)} type=${typeof state.val} dpt=${dpt}`);
+
         // plausibilize against configured datatype
         if (knxVal == null) {
             this.log.warn(`Ignoring null/undefined value for ${id}`);
@@ -452,12 +454,19 @@ class openknx extends utils.Adapter {
         // date DPTs must be checked before "number" because common.type is "number" for dates
         if (tools.isDateDPT(dpt)) {
             // handle DD.MM.YYYY format not parseable by Date constructor
+            let dateVal;
             if (typeof knxVal === "string" && /^\d{1,2}\.\d{1,2}\.\d{4}$/.test(knxVal)) {
                 const [d, m, y] = knxVal.split(".");
-                knxVal = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+                dateVal = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
             } else {
-                knxVal = new Date(knxVal);
+                dateVal = new Date(knxVal);
             }
+            this.log.debug(`date conversion: input=${JSON.stringify(knxVal)} → Date=${dateVal.toISOString ? dateVal.toISOString() : dateVal} valid=${!isNaN(dateVal.getTime())}`);
+            if (isNaN(dateVal.getTime())) {
+                this.log.warn(`Invalid date value "${state.val}" for ${id}, cannot convert to Date`);
+                return "invalid date";
+            }
+            knxVal = dateVal;
         } else if (gaData.common?.type == "boolean") {
             knxVal = !!knxVal;
         } else if (gaData.common?.type == "number" || gaData.common?.type == "enum") {
