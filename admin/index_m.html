@@ -503,6 +503,7 @@
                 <div class="card">
                     <div class="card-content">
                         <div class="row">
+                            <span class="translate"><b>Option A: Aliases</b> (recommended)</span>
                             <div class="col s12">
                                 <h6>
                                     <span class="translate"
@@ -532,7 +533,7 @@
                                 <input class="value" id="aliasRange" type="checkbox" />
                                 <label class="translate" for="aliasRange">include group range in search</label>
                             </div>
- 
+
                             <div class="col s12">
                                 <a id="createAlias" class="waves-effect waves-light btn"
                                     ><i class="material-icons right">list</i
@@ -548,17 +549,14 @@
                 <div class="card">
                     <div class="card-content">
                         <div class="row">
-                            <span class="translate">
-                                Compatibility
-                            </span>
+                            <span class="translate"><b>Option B: Compatibility</b></span>
                             <div class="input-field col s12">
                                 <input class="value" id="knxCompatMode" type="checkbox" />
                                 <label class="translate" for="knxCompatMode">ioBroker.knx Compatibility Mode (link status GAs internally instead of aliases)</label>
                             </div>
-                            <div class="col s12 l3 input-field">
+                            <div class="col s12 l6 input-field">
                                 <input class="value" id="targetNamespace" type="text" placeholder="openknx.0" />
-                                <label class="translate active" for="targetNamespace"
-                                    >Target namespace (e.g. knx.0 to avoid script adjustments)</label>
+                                <label class="translate active" for="targetNamespace">Target namespace (e.g. knx.0 to avoid script adjustments)</label>
                             </div>
                         </div>
                     </div>

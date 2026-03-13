@@ -632,7 +632,7 @@ class openknx extends utils.Adapter {
                     const autoreadInterval = Math.max(this.config.minimumDelay || 25, 200);
                     const estimatedSec = Math.ceil((autoreadGAs.length * autoreadInterval) / 1000);
                     this.log.info(
-                        `Autoread on startup: ${autoreadGAs.length} read requests, ${cnt_withDPT} DPT configs resolved, estimated ~${estimatedSec}s (${autoreadInterval}ms interval)`,
+                        `Autoread on startup: ${autoreadGAs.length} read requests, ${cnt_withDPT} DPT configs resolved, estimated ~${estimatedSec}s (${autoreadInterval}ms interval). Write commands may be delayed during this period.`,
                     );
                     let i = 0;
                     this.autoreadTimer = setInterval(() => {
