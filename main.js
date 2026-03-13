@@ -594,10 +594,24 @@ class openknx extends utils.Adapter {
         // Create KNXUltimate client
         this.knxConnection = new KNXClient(knxOptions);
 
+        // Event: descriptionResponse - log gateway details
+        this.knxConnection.on(KNXClientEvents.descriptionResponse, resp => {
+            this.log.info(`Gateway description: ${JSON.stringify(resp)}`);
+        });
+
         // Event: connected
         this.knxConnection.on(KNXClientEvents.connected, () => {
-            this.log.info("Connected!");
+            const chId = this.knxConnection?.channelID;
+            const pa = this.knxConnection?.physAddr ? this.knxConnection.physAddr.toString() : "";
+            this.log.info(`Connected! channelID=${chId} physAddr=${pa}`);
             this.setState("info.messagecount", 0, true);
+
+            // request gateway description for detailed logging
+            try {
+                this.knxConnection?.startGatewayDescription();
+            } catch {
+                // may fail if already running or not supported
+            }
 
             // Phase 1: resolve DPT configs (synchronous, immediate)
             let cnt_withDPT = 0;
@@ -719,7 +733,8 @@ class openknx extends utils.Adapter {
                 return;
             }
             if (!this.config.noWarnUnknownGa && !this.gaList.getIdsByGa(dest).length) {
-                this.log.warn(`Ignoring ${evt} of unknown GA ${dest}`);
+                const hex = rawData ? Buffer.from(rawData).toString("hex") : "";
+                this.log.warn(`Ignoring ${evt} of unknown GA ${dest} from ${src} data=[${hex}]`);
                 return;
             }
 
