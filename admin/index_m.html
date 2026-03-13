@@ -371,11 +371,18 @@
                     <div class="card-content">
                  
                         <div class="row">
-                            <div class="col s6 l2 input-field">
+                            <div class="col s12 l3">
+                                <a id="detectInterface" class="waves-effect waves-light btn"
+                                    ><i class="material-icons right">live_help</i
+                                    ><span class="translate">detect</span></a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s6 l3 input-field">
                                 <input class="value" id="gwip" type="text" />
                                 <label for="gwip" class="translate">Gateway IP</label>
                             </div>
-                            <div class="col s3 l1 input-field">
+                            <div class="col s3 l2 input-field">
                                 <input class="value" id="gwipport" type="text" />
                                 <label for="gwipport" class="translate">Port</label>
                             </div>
@@ -383,12 +390,7 @@
                                 <input class="value" id="eibadr" type="text" />
                                 <label for="eibadr" class="translate">Physical KNX address</label>
                             </div>
-                            <div class="col s6 l2">
-                                <a id="detectInterface" class="waves-effect waves-light btn"
-                                    ><i class="material-icons right">live help</i
-                                    ><span class="translate">detect interface</span></a>
-                            </div>
-                            <div class="col s12 l3">
+                            <div class="col s12 l4">
                                 <h7 class="value" id="deviceName"></h7>
                             </div>
                         </div>
@@ -429,40 +431,6 @@
                     <div class="card-content">
                         <div class="row">
                             <span class="translate">
-                                KNX Secure (optional)
-                            </span>
-                            <div class="col s12 input-field">
-                                <input class="value" id="isSecureKNXEnabled" type="checkbox" />
-                                <label class="translate" for="isSecureKNXEnabled"
-                                    >Enable KNX Secure</label>
-                            </div>
-                            <div class="col s12 input-field">
-                                <textarea class="value" id="knxKeysContent" style="height: 150px; font-family: monospace; font-size: 12px; overflow-y: auto; resize: vertical; white-space: pre; overflow-x: auto;"></textarea>
-                                <label class="translate" for="knxKeysContent">Keyfile content (paste .knxkeys file content)</label>
-                            </div>
-                            <div class="col s12 l6 input-field">
-                                <input class="value" id="knxKeysPassword" type="password" />
-                                <label class="translate" for="knxKeysPassword">Keyfile password</label>
-                            </div>
-                            <div class="col s12 l4 input-field">
-                                <input class="value" id="tunnelInterfaceAddress" type="text" />
-                                <label class="translate" for="tunnelInterfaceAddress">Tunnel Interface IA (optional, e.g. 1.1.254)</label>
-                            </div>
-                            <div class="col s12 l4 input-field">
-                                <input class="value" id="tunnelUserPassword" type="password" />
-                                <label class="translate" for="tunnelUserPassword">Tunnel User Password (alternative to keyfile)</label>
-                            </div>
-                            <div class="col s12 l4 input-field">
-                                <input class="value" id="tunnelUserId" type="text" />
-                                <label class="translate" for="tunnelUserId">Tunnel User ID (default: 2)</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-content">
-                        <div class="row">
-                            <span class="translate">
                                 Import settings
                             </span>
                             <div class="col s12 input-field">
@@ -494,6 +462,39 @@
                             </div>
                             <div class="col s12 progress" id="progress">
                                 <div class="indeterminate" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <div class="row">
+                            <span class="translate">
+                                KNX Secure (optional)
+                            </span>
+                            <div class="col s12 input-field">
+                                <input class="value" id="isSecureKNXEnabled" type="checkbox" />
+                                <label class="translate" for="isSecureKNXEnabled">Enable KNX Secure</label>
+                            </div>
+                            <div class="col s12 input-field">
+                                <textarea class="value" id="knxKeysContent" style="height: 150px; font-family: monospace; font-size: 12px; overflow-y: auto; resize: vertical; white-space: pre; overflow-x: auto;"></textarea>
+                                <label class="translate" for="knxKeysContent">Keyfile content (paste .knxkeys file content)</label>
+                            </div>
+                            <div class="col s12 l6 input-field">
+                                <input class="value" id="knxKeysPassword" type="password" />
+                                <label class="translate" for="knxKeysPassword">Keyfile password</label>
+                            </div>
+                            <div class="col s12 l4 input-field">
+                                <input class="value" id="tunnelInterfaceAddress" type="text" />
+                                <label class="translate" for="tunnelInterfaceAddress">Tunnel Interface IA (optional, e.g. 1.1.254)</label>
+                            </div>
+                            <div class="col s12 l4 input-field">
+                                <input class="value" id="tunnelUserPassword" type="password" />
+                                <label class="translate" for="tunnelUserPassword">Tunnel User Password (alternative to keyfile)</label>
+                            </div>
+                            <div class="col s12 l4 input-field">
+                                <input class="value" id="tunnelUserId" type="text" />
+                                <label class="translate" for="tunnelUserId">Tunnel User ID (default: 2)</label>
                             </div>
                         </div>
                     </div>
