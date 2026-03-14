@@ -468,7 +468,9 @@ class openknx extends utils.Adapter {
             knxVal = !!knxVal;
         } else if (gaData.common?.type == "number" || gaData.common?.type == "enum") {
             if (isNaN(Number(knxVal))) {
-                this.log.warn(`Value ${knxVal} for ${id} is not a number`);
+                this.log.warn(
+                    `Value "${knxVal}" (${typeof knxVal}) for ${id} is not a number, DPT ${dpt} expects numeric input`,
+                );
             }
             // else take plain value
         } else if (gaData.native.valuetype == "composite") {
@@ -478,7 +480,7 @@ class openknx extends utils.Adapter {
                     // @ts-expect-error knxVal is a string
                     knxVal = JSON.parse(knxVal);
                 } catch {
-                    this.log.warn(`stateChange: unsupported value format ${knxVal} for ${ga}`);
+                    this.log.warn(`Cannot parse composite value "${knxVal}" as JSON for GA ${ga} (DPT ${dpt})`);
                     return "unsupported value";
                 }
             }
@@ -488,7 +490,7 @@ class openknx extends utils.Adapter {
             // write raw buffers for unknown dpts, iterface is a hex value
             // bitlength is the buffers bytelength * 8.
             if (typeof knxVal != "string") {
-                this.log.warn("unsupported datatype for raw value");
+                this.log.warn(`Expected hex string for unknown DPT ${dpt} on GA ${ga}, got ${typeof knxVal}`);
                 return "unsupported datatype";
             }
             rawVal = Buffer.from(knxVal, "hex");
@@ -549,7 +551,7 @@ class openknx extends utils.Adapter {
                 return "write error";
             }
         }
-        this.log.warn(`GA ${ga} (${id}) is not configured as writable`);
+        this.log.warn(`GA ${ga} (${id}) is not writable. Set common.write=true or reimport ETS project.`);
         return "configuration error";
     }
 
@@ -653,7 +655,7 @@ class openknx extends utils.Adapter {
                         }
                         cnt_withDPT++;
                     } catch (e) {
-                        this.log.error(`Could not create DPT config for ${key} with error: ${e}`);
+                        this.log.error(`Could not create DPT config for ${key}: ${e}`);
                     }
                 }
                 this.autoreaddone = true;
@@ -771,7 +773,7 @@ class openknx extends utils.Adapter {
             }
             if (!this.config.noWarnUnknownGa && !this.gaList.getIdsByGa(dest).length) {
                 const hex = rawData ? Buffer.from(rawData).toString("hex") : "";
-                this.log.warn(`Ignoring ${evt} of unknown GA ${dest} from ${src} data=[${hex}]`);
+                this.log.warn(`Ignoring ${evt} from ${src} for GA ${dest} (not in ETS project). data=[${hex}]`);
                 return;
             }
 
@@ -1045,14 +1047,18 @@ class openknx extends utils.Adapter {
                             // add only elements from tree that are knx objects, identified by a group adress
                             this.gaList.set(id, value.native.address, res.rows[i].value);
                             if (this.gaList.getIdsByGa(value.native.address).length > 1) {
+                                const ids = this.gaList.getIdsByGa(value.native.address);
                                 this.log.warn(
-                                    `${id} has assigned a non exclusive group address: ${
-                                        value.native.address
-                                    }. Consider to delete duplicate entries.`,
+                                    `GA ${value.native.address} is used by multiple objects: ${ids.join(", ")}. Delete duplicates to avoid conflicts.`,
                                 );
                             }
                         } else if (!id.startsWith(`${this.mynamespace}.info.`)) {
-                            this.log.warn(`Incomplete configuration in iob object ${id}`);
+                            const missing = [];
+                            if (!value?.native?.address) missing.push("native.address");
+                            if (!value?.native?.dpt) missing.push("native.dpt");
+                            this.log.warn(
+                                `Skipping ${id}: missing ${missing.join(" and ") || "valid GA format"}. Delete or reconfigure this object.`,
+                            );
                         }
                     }
 
