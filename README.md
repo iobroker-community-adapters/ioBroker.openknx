@@ -48,18 +48,15 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
   * update stable: https://github.com/ioBroker/ioBroker.repositories#add-a-new-adapter-to-the-stable-repository
 -->
 ### 1.0.0-beta.0 (2026-03-12)
-- **breaking:** KNX-Kommunikation auf KNXUltimate umgestellt
-- **breaking:** DPT19 (DateTime) akzeptiert nur noch Date-Objekte, keine Strings/Numbers
-- **breaking:** DPT21 Property-Namen geändert (outofservice → outOfService, inalarm → inAlarm, alarmeunack → alarmUnAck), Werte müssen boolean sein
-- **breaking:** DPT237 Property-Namen geändert (camelCase), Validierung fehlerhaft (upstream knxultimate Bug)
-- feature: KNX Secure Unterstützung
-- feature: Erweiterte DPT-Abdeckung (9 zusätzliche DPTs, u.a. DPT-22, 213, 222, 235, 242, 249, 251)
-- feature: Verbesserte Verbindungsstabilität
-- feature: Verbesserte Rollenerkennung (switch, level, value, text, date) basierend auf DPT-Typ
-- feature: Status-/Aktor-GAs setzen read/write Flags korrekt via createStatusLinks
-- bugfix: DPT11/DPT10 Datum-/Uhrzeitschreiben funktioniert jetzt mit allen gängigen Formaten
-- bugfix: Kompatibilität mit Objekten vom alten knx-Adapter (common.type "mixed", "object")
-- bugfix: Null-Checks für KNX-Encoding/Decoding verhindern stille Fehler
+
+- **breaking:** KNX communication switched to KNXUltimate
+- **breaking:** DPT21 property names changed (outofservice → outOfService, inalarm → inAlarm, alarmeunack → alarmUnAck), values must be boolean
+- **breaking:** DPT237 property names changed to camelCase
+- feature: KNX Secure support
+- feature: Extended DPT coverage (9 additional DPTs, including DPT-22, 213, 222, 235, 242, 249, 251)
+- feature: Improved connection stability
+- feature: Improved role detection (switch, level, value, text, date) based on DPT type
+
 
 ### 0.9.1 (2026-03-12)
 - bugfix: Fixing increased delay in knx commands after several days
