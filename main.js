@@ -499,14 +499,10 @@ class openknx extends utils.Adapter {
             isRaw = true;
             this.log.info(`Unhandled DPT ${dpt}, assuming raw value`);
         } else {
-            let error;
-            if (!gaData.common?.type) {
-                // configuration that is checked before does not exist, unplausible
-                error = `bad or missing configuration for object with id: ${id}`;
-            } else {
-                error = `cannot interprete data, please check your configuration. ${dpt} unplausible type: ${gaData.common.type}`;
-            }
-            this.log.warn(error);
+            // unhandled common.type (e.g. "mixed", "object" from old knx adapter) — pass through to knxultimate
+            this.log.debug(
+                `${id}: common.type "${gaData.common?.type}" not explicitly handled for DPT ${dpt}, passing value through`,
+            );
         }
 
         if (state.c == "GroupValue_Read" || state.q == 0x10) {
@@ -525,6 +521,13 @@ class openknx extends utils.Adapter {
                     const bitlength = rawVal.byteLength * 8;
                     this.knxConnection.writeRaw(ga, rawVal, bitlength);
                     return "write raw";
+                }
+                // check if knxultimate can encode the value before sending
+                const apdu = {};
+                // @ts-expect-error populateAPDU fills the empty object
+                dptlib.populateAPDU(knxVal, apdu, dpt);
+                if (!apdu.data) {
+                    this.log.warn(`Value ${JSON.stringify(knxVal)} could not be encoded for DPT ${dpt} on ${ga}`);
                 }
                 this.knxConnection.write(ga, knxVal, dpt);
 
@@ -791,7 +794,12 @@ class openknx extends utils.Adapter {
                 if (rawData && dptConfig && (evt === "GroupValue_Write" || evt === "GroupValue_Response")) {
                     try {
                         const jsValue = dptlib.fromBuffer(rawData, dptConfig);
-                        if (tools.isStringDPT(data.native.dpt)) {
+                        if (jsValue == null) {
+                            this.log.warn(
+                                `Could not decode GA ${dest} (${data.native.dpt}), raw=[${rawData.toString("hex")}]`,
+                            );
+                            convertedVal = rawData.toString("hex");
+                        } else if (tools.isStringDPT(data.native.dpt)) {
                             convertedVal = jsValue;
                         } else {
                             convertedVal = this.convertType(jsValue);
