@@ -26,6 +26,7 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 - KNX Secure (IP Secure tunneling via .knxkeys keyfile or password)
 - Tunneling (UDP/TCP) and Routing (Multicast) protocols
 - Alias generation to merge action and status GAs into a single ioBroker object
+- Direct Link all iobroker states to a KNX state
 
 - Automatic gateway discovery
 - Automatic reconnect with exponential backoff
@@ -47,7 +48,7 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
   * update gui: iob upload openknx
   * update stable: https://github.com/ioBroker/ioBroker.repositories#add-a-new-adapter-to-the-stable-repository
 -->
-### 1.0.0-beta.0 (2026-03-12)
+### **WORK IN PROGRESS**
 
 - **breaking:** KNX communication switched to KNXUltimate
 - **breaking:** DPT21 property names changed (outofservice → outOfService, inalarm → inAlarm, alarmeunack → alarmUnAck), values must be boolean
@@ -56,6 +57,7 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 - feature: Extended DPT coverage (9 additional DPTs, including DPT-22, 213, 222, 235, 242, 249, 251)
 - feature: Improved connection stability
 - feature: Improved role detection (switch, level, value, text, date) based on DPT type
+- feature: Direct Link all iobroker states to a KNX state
 
 
 ### 0.9.1 (2026-03-12)
