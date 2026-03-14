@@ -453,21 +453,17 @@ class openknx extends utils.Adapter {
         }
         // date DPTs must be checked before "number" because common.type is "number" for dates
         if (tools.isDateDPT(dpt)) {
-            // handle DD.MM.YYYY format not parseable by Date constructor
-            let dateVal;
+            // only transform values that knxultimate cannot parse itself
             if (typeof knxVal === "string" && /^\d{1,2}\.\d{1,2}\.\d{4}$/.test(knxVal)) {
+                // DD.MM.YYYY → Date
                 const [d, m, y] = knxVal.split(".");
-                dateVal = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
-            } else {
-                // numeric strings like "1773424478439" must be converted to number first
-                dateVal = new Date(typeof knxVal === "string" && /^\d+$/.test(knxVal) ? Number(knxVal) : knxVal);
+                knxVal = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+            } else if (typeof knxVal === "string" && /^\d+$/.test(knxVal)) {
+                // numeric string timestamp → number so knxultimate can use it
+                knxVal = Number(knxVal);
             }
-            this.log.debug(`date conversion: input=${JSON.stringify(knxVal)} → Date=${JSON.stringify(dateVal)} valid=${!isNaN(dateVal.getTime())}`);
-            if (isNaN(dateVal.getTime())) {
-                this.log.warn(`Invalid date value "${state.val}" for ${id}, cannot convert to Date`);
-                return "invalid date";
-            }
-            knxVal = dateVal;
+            // all other formats (Date objects, ISO strings, time strings like "Sat, 10:27:00")
+            // are passed through to knxultimate — the populateAPDU null check catches failures
         } else if (gaData.common?.type == "boolean") {
             knxVal = !!knxVal;
         } else if (gaData.common?.type == "number" || gaData.common?.type == "enum") {
