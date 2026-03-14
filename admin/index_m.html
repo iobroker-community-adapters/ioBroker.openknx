@@ -381,7 +381,8 @@
             var gaStateSubscribed = false;
 
             function loadGaTree() {
-                gaNamespace = adapter + '.' + instance;
+                var targetNs = ($('#targetNamespace').val() || '').trim();
+                gaNamespace = targetNs || (adapter + '.' + instance);
                 socket.emit('getObjectView', 'system', 'state',
                     { startkey: gaNamespace + '.', endkey: gaNamespace + '.\u9999' },
                     function (err, res) {
@@ -569,7 +570,7 @@
             }
 
             function checkAdapterAlive(callback) {
-                socket.emit('getState', 'system.adapter.' + gaNamespace + '.alive', function (err, state) {
+                socket.emit('getState', 'system.adapter.' + adapter + '.' + instance + '.alive', function (err, state) {
                     if (state && state.val) {
                         callback();
                     } else {
