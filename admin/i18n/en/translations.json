@@ -48,5 +48,9 @@
     "please provide a valid minimum send delay value between 0 and 1000 [ms]": "please provide a valid minimum send delay value between 0 and 1000 [ms]",
     "physical KNX address in format a/b/c not valid": "physical KNX address in format a/b/c not valid",
     "invalid IP address": "invalid IP address",
-    "invalid port number": "invalid port number"
+    "invalid port number": "invalid port number",
+    "GA-Tools": "GA-Tools",
+    "Properties": "Properties",
+    "Select a GA from the tree": "Select a GA from the tree",
+    "Select a GA first": "Select a GA first"
 }

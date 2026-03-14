@@ -5,12 +5,16 @@
         <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css" />
 
         <link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css" />
+        <link rel="stylesheet" type="text/css" href="../../lib/css/fancytree/ui.fancytree.min.css" />
 
         <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript" src="../../lib/js/jquery-ui.min.js"></script>
         <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 
         <script type="text/javascript" src="../../js/translate.js"></script>
         <script type="text/javascript" src="../../lib/js/materialize.js"></script>
+        <script type="text/javascript" src="../../lib/js/jquery.fancytree-all.min.js"></script>
+        <script type="text/javascript" src="../../lib/js/selectID.js"></script>
         <script type="text/javascript" src="../../js/adapter-settings.js"></script>
 
         <!-- Load our own files -->
@@ -36,6 +40,25 @@
             .m.react-dark .tabs .tab a:hover {
                 background-color: #000;
             }
+
+            /* GA-Tools tree styles */
+            .ga-tree { list-style: none; padding: 0 !important; margin: 0; }
+            .ga-tree ul { list-style: none; padding-left: 16px; margin: 0; }
+            .ga-tree .ga-leaf {
+                padding: 3px 8px; cursor: pointer; white-space: nowrap;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .ga-tree .ga-leaf:hover { background-color: #e3f2fd; }
+            .ga-tree .ga-leaf.selected { background-color: #bbdefb; }
+            .ga-tree .ga-folder > span { cursor: pointer; font-weight: bold; padding: 3px 8px; display: block; }
+            .ga-tree .ga-folder > span:hover { background-color: #f5f5f5; }
+            .ga-tree .ga-children.collapsed { display: none; }
+            .ga-tree .ga-addr { color: #666; font-family: monospace; font-size: 0.85em; margin-right: 6px; }
+            .ga-tree .ga-val { color: #1565c0; font-weight: bold; float: right; font-size: 0.9em; }
+            .ga-tree .ga-dpt { color: #999; font-size: 0.8em; margin-left: 4px; }
+            #gaFilter { margin: 0; padding: 4px 8px; box-sizing: border-box; width: 100%; }
+            .ga-prop-table td { padding: 2px 8px; }
+            .ga-prop-table td:first-child { font-weight: bold; white-space: nowrap; color: #666; }
         </style>
 
         <script type="text/javascript">
@@ -211,6 +234,8 @@
                 onChange(false);
                 // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
                 if (M) M.updateTextFields();
+                // Load GA-Tools tree
+                loadGaTree();
             }
 
             // This will be called by the admin adapter when the user presses the save button
@@ -348,6 +373,329 @@
                     /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
                 return !!inputText.match(format);
             }
+
+            // ========== GA-Tools ==========
+            var gaObjects = {};
+            var selectedGaId = null;
+            var gaNamespace = '';
+            var gaStateSubscribed = false;
+
+            function loadGaTree() {
+                gaNamespace = adapter + '.' + instance;
+                socket.emit('getObjectView', 'system', 'state',
+                    { startkey: gaNamespace + '.', endkey: gaNamespace + '.\u9999' },
+                    function (err, res) {
+                        if (err || !res) return;
+                        gaObjects = {};
+                        var tree = {};
+                        for (var i = 0; i < res.rows.length; i++) {
+                            var obj = res.rows[i].value;
+                            var id = res.rows[i].id;
+                            if (id.indexOf('.info.') !== -1) continue;
+                            if (!obj || !obj.native || !obj.native.address) continue;
+                            gaObjects[id] = obj;
+                            var path = id.substring(gaNamespace.length + 1).split('.');
+                            var node = tree;
+                            for (var j = 0; j < path.length - 1; j++) {
+                                if (!node[path[j]]) node[path[j]] = { _children: {} };
+                                node = node[path[j]]._children;
+                            }
+                            node[path[path.length - 1]] = id;
+                        }
+                        $('#gaTree').html(renderGaTree(tree, true));
+
+                        // Subscribe for live values
+                        if (!gaStateSubscribed) {
+                            gaStateSubscribed = true;
+                            socket.emit('subscribe', gaNamespace + '.*');
+                            socket.on('stateChange', function (id, state) {
+                                if (!id || !state || !id.startsWith(gaNamespace)) return;
+                                var el = document.getElementById('gaval_' + id.replace(/\./g, '_'));
+                                if (el) el.textContent = formatGaVal(state.val);
+                                if (id === selectedGaId) {
+                                    $('#gaCurrentVal').text(formatGaVal(state.val));
+                                }
+                            });
+                        }
+
+                        // Load current values
+                        Object.keys(gaObjects).forEach(function (id) {
+                            socket.emit('getState', id, function (err, state) {
+                                if (state) {
+                                    var el = document.getElementById('gaval_' + id.replace(/\./g, '_'));
+                                    if (el) el.textContent = formatGaVal(state.val);
+                                }
+                            });
+                        });
+                    });
+            }
+
+            function formatGaVal(val) {
+                if (val === null || val === undefined) return '';
+                if (typeof val === 'boolean') return val ? 'true' : 'false';
+                if (typeof val === 'number') return String(Math.round(val * 100) / 100);
+                return String(val);
+            }
+
+            function renderGaTree(node, isRoot) {
+                var html = '';
+                var keys = Object.keys(node).sort();
+                for (var i = 0; i < keys.length; i++) {
+                    var key = keys[i];
+                    if (key === '_children') continue;
+                    var val = node[key];
+                    if (typeof val === 'string') {
+                        // Leaf: GA object
+                        var obj = gaObjects[val];
+                        var addr = obj ? obj.native.address : '';
+                        var dpt = obj ? obj.native.dpt : '';
+                        html += '<li class="ga-leaf" data-id="' + val + '" onclick="selectGa(\'' + val + '\')">';
+                        html += '<span class="ga-addr">' + addr + '</span>';
+                        html += '<span>' + key + '</span>';
+                        html += '<span class="ga-dpt">' + dpt + '</span>';
+                        html += '<span class="ga-val" id="gaval_' + val.replace(/\./g, '_') + '"></span>';
+                        html += '</li>';
+                    } else if (val._children) {
+                        // Folder
+                        html += '<li class="ga-folder">';
+                        html += '<span onclick="toggleGaFolder(this)"><i class="material-icons tiny">chevron_right</i> ' + key + '</span>';
+                        html += '<ul class="ga-children collapsed">' + renderGaTree(val._children, false) + '</ul>';
+                        html += '</li>';
+                    }
+                }
+                if (isRoot) return '<ul class="ga-tree">' + html + '</ul>';
+                return html;
+            }
+
+            function toggleGaFolder(el) {
+                var children = $(el).next('.ga-children');
+                children.toggleClass('collapsed');
+                var icon = $(el).find('i');
+                icon.text(children.hasClass('collapsed') ? 'chevron_right' : 'expand_more');
+            }
+
+            function selectGa(id) {
+                selectedGaId = id;
+                $('.ga-leaf').removeClass('selected');
+                $('.ga-leaf[data-id="' + id + '"]').addClass('selected');
+                updateGaProperties(id);
+                updateGaAccess(id);
+                updateGaLink(id);
+            }
+
+            function updateGaProperties(id) {
+                var obj = gaObjects[id];
+                if (!obj) { $('#gaPropContent').html('<p style="color:#999">GA not found</p>'); return; }
+                var n = obj.native || {};
+                var c = obj.common || {};
+                var rows = [];
+                rows.push(['Name', c.name || '']);
+                rows.push(['Address', n.address || '']);
+                rows.push(['DPT', n.dpt || '']);
+                rows.push(['Type', c.type || '']);
+                if (n.desc) rows.push(['Description', n.desc]);
+                rows.push(['Read', c.read ? 'yes' : 'no']);
+                rows.push(['Write', c.write ? 'yes' : 'no']);
+                rows.push(['Autoread', n.autoread ? 'yes' : 'no']);
+                rows.push(['Response', n.answer_groupValueResponse ? 'yes' : 'no']);
+                if (n.bitlength != null) rows.push(['Bitlength', n.bitlength]);
+                if (n.valuetype) rows.push(['Valuetype', n.valuetype]);
+                if (n.encoding) rows.push(['Encoding', JSON.stringify(n.encoding)]);
+                if (n.min != null) rows.push(['Min', n.min]);
+                if (n.max != null) rows.push(['Max', n.max]);
+                if (n.linkedState) rows.push(['Linked State', n.linkedState]);
+                rows.push(['Object ID', '<span style="font-size:0.8em;word-break:break-all">' + id + '</span>']);
+                var html = '<table class="ga-prop-table">';
+                for (var i = 0; i < rows.length; i++) {
+                    html += '<tr><td>' + rows[i][0] + '</td><td>' + rows[i][1] + '</td></tr>';
+                }
+                html += '</table>';
+                // Editable Status GA / Act GA
+                html += '<div style="margin-top:8px">';
+                html += '<label style="font-size:0.85em">Status GA</label>';
+                html += '<div style="display:flex;gap:4px;align-items:center">';
+                html += '<input type="text" id="gaStatusGAInput" value="' + (n.statusGA || '') + '" style="flex:1;margin:0;height:2rem;font-size:0.85em"/>';
+                html += '<a class="btn-small btn-flat" onclick="gaBrowseGA(\'gaStatusGAInput\')"><i class="material-icons">search</i></a>';
+                html += '<a class="btn-small btn-flat" onclick="gaSaveNativeProp(\'statusGA\',\'gaStatusGAInput\')"><i class="material-icons">save</i></a>';
+                html += '</div>';
+                html += '<label style="font-size:0.85em">Act GA</label>';
+                html += '<div style="display:flex;gap:4px;align-items:center">';
+                html += '<input type="text" id="gaActGAInput" value="' + (n.actGA || '') + '" style="flex:1;margin:0;height:2rem;font-size:0.85em"/>';
+                html += '<a class="btn-small btn-flat" onclick="gaBrowseGA(\'gaActGAInput\')"><i class="material-icons">search</i></a>';
+                html += '<a class="btn-small btn-flat" onclick="gaSaveNativeProp(\'actGA\',\'gaActGAInput\')"><i class="material-icons">save</i></a>';
+                html += '</div>';
+                html += '</div>';
+                $('#gaPropContent').html(html);
+            }
+
+            function updateGaAccess(id) {
+                var obj = gaObjects[id];
+                if (!obj) { $('#gaAccessContent').html('<p style="color:#999">Select a GA first</p>'); return; }
+                var html = '<div class="row" style="margin-bottom:0">';
+                html += '<div class="col s12"><b>Current Value: </b><span id="gaCurrentVal">-</span></div>';
+                html += '</div>';
+                if (obj.common.write) {
+                    html += '<div class="row" style="margin-bottom:8px">';
+                    html += '<div class="input-field col s8"><input type="text" id="gaWriteInput" placeholder="Value"/></div>';
+                    html += '<div class="col s4" style="margin-top:22px"><a class="waves-effect waves-light btn-small" onclick="gaWriteValue()">Write</a></div>';
+                    html += '</div>';
+                }
+                html += '<div class="row" style="margin-bottom:0">';
+                html += '<div class="col s12"><a class="waves-effect waves-light btn-small" onclick="gaReadValue()">Read</a></div>';
+                html += '</div>';
+                $('#gaAccessContent').html(html);
+                // Load current value
+                socket.emit('getState', id, function (err, state) {
+                    if (state) $('#gaCurrentVal').text(formatGaVal(state.val));
+                });
+            }
+
+            function updateGaLink(id) {
+                var obj = gaObjects[id];
+                if (!obj) { $('#gaLinkContent').html('<p style="color:#999">Select a GA first</p>'); return; }
+                var linked = obj.native.linkedState || '';
+                var html = '';
+                if (linked) {
+                    html += '<p><b>Linked to:</b><br/><span style="word-break:break-all">' + linked + '</span></p>';
+                    html += '<a class="waves-effect waves-light btn-small red" onclick="gaRemoveLink()">Remove Link</a>';
+                } else {
+                    html += '<div class="row" style="margin-bottom:8px">';
+                    html += '<div class="input-field col s7"><input type="text" id="gaLinkInput" placeholder="Foreign State ID"/></div>';
+                    html += '<div class="col s2" style="margin-top:22px"><a class="waves-effect waves-light btn-small" onclick="gaBrowseStates()" title="Browse"><i class="material-icons">search</i></a></div>';
+                    html += '<div class="col s3" style="margin-top:22px"><a class="waves-effect waves-light btn-small" onclick="gaSetLink()">Link</a></div>';
+                    html += '</div>';
+                }
+                $('#gaLinkContent').html(html);
+            }
+
+            function checkAdapterAlive(callback) {
+                socket.emit('getState', 'system.adapter.' + gaNamespace + '.alive', function (err, state) {
+                    if (state && state.val) {
+                        callback();
+                    } else {
+                        showToast(null, _('Adapter is not running'), null, 3000);
+                    }
+                });
+            }
+
+            function gaWriteValue() {
+                if (!selectedGaId) return;
+                var val = $('#gaWriteInput').val();
+                var obj = gaObjects[selectedGaId];
+                if (!obj) return;
+                // Convert value based on common.type
+                var typed = val;
+                if (obj.common.type === 'boolean') {
+                    typed = val === 'true' || val === '1' || val === 'on';
+                } else if (obj.common.type === 'number') {
+                    typed = parseFloat(val);
+                    if (isNaN(typed)) { showToast(null, 'Invalid number', null, 2000); return; }
+                }
+                checkAdapterAlive(function () {
+                    socket.emit('setState', selectedGaId, { val: typed, ack: false });
+                    showToast(null, 'Write: ' + val + ' → ' + obj.native.address, null, 2000);
+                });
+            }
+
+            function gaReadValue() {
+                if (!selectedGaId) return;
+                var obj = gaObjects[selectedGaId];
+                if (!obj) return;
+                checkAdapterAlive(function () {
+                    socket.emit('setState', selectedGaId, { val: true, ack: false, c: 'GroupValue_Read' });
+                    showToast(null, 'Read request → ' + obj.native.address, null, 2000);
+                });
+            }
+
+            function gaSetLink() {
+                if (!selectedGaId) return;
+                var foreignId = ($('#gaLinkInput').val() || '').trim();
+                if (!foreignId) { showToast(null, 'Please enter a state ID', null, 2000); return; }
+                // Validate that foreign state exists
+                socket.emit('getObject', foreignId, function (err, foreignObj) {
+                    if (err || !foreignObj) {
+                        showToast(null, 'State "' + foreignId + '" not found', null, 3000);
+                        return;
+                    }
+                    // Set linkedState on GA object
+                    socket.emit('getObject', selectedGaId, function (err, gaObj) {
+                        if (err || !gaObj) return;
+                        gaObj.native.linkedState = foreignId;
+                        socket.emit('setObject', selectedGaId, gaObj, function () {
+                            gaObjects[selectedGaId] = gaObj;
+                            updateGaLink(selectedGaId);
+                            showToast(null, 'Direct Link created: ' + foreignId, null, 3000);
+                        });
+                    });
+                });
+            }
+
+            function gaRemoveLink() {
+                if (!selectedGaId) return;
+                socket.emit('getObject', selectedGaId, function (err, gaObj) {
+                    if (err || !gaObj) return;
+                    delete gaObj.native.linkedState;
+                    socket.emit('setObject', selectedGaId, gaObj, function () {
+                        gaObjects[selectedGaId] = gaObj;
+                        updateGaLink(selectedGaId);
+                        showToast(null, 'Direct Link removed', null, 3000);
+                    });
+                });
+            }
+
+            function gaBrowseGA(inputId) {
+                var current = ($('#' + inputId).val() || '').trim();
+                showSelectIdDialog(current, function (newId) {
+                    if (newId) {
+                        $('#' + inputId).val(newId);
+                    }
+                });
+            }
+
+            function gaSaveNativeProp(prop, inputId) {
+                if (!selectedGaId) return;
+                var val = ($('#' + inputId).val() || '').trim();
+                socket.emit('getObject', selectedGaId, function (err, gaObj) {
+                    if (err || !gaObj) return;
+                    if (val) {
+                        gaObj.native[prop] = val;
+                    } else {
+                        delete gaObj.native[prop];
+                    }
+                    socket.emit('setObject', selectedGaId, gaObj, function () {
+                        gaObjects[selectedGaId] = gaObj;
+                        showToast(null, prop + ' saved', null, 2000);
+                    });
+                });
+            }
+
+            function gaBrowseStates() {
+                var current = ($('#gaLinkInput').val() || '').trim();
+                showSelectIdDialog(current, function (newId) {
+                    if (newId) {
+                        $('#gaLinkInput').val(newId);
+                        gaSetLink();
+                    }
+                });
+            }
+
+            function filterGaTree() {
+                var filter = ($('#gaFilter').val() || '').toLowerCase();
+                if (!filter) {
+                    $('.ga-leaf, .ga-folder').show();
+                    return;
+                }
+                $('.ga-leaf').each(function () {
+                    var text = $(this).text().toLowerCase();
+                    $(this).toggle(text.indexOf(filter) !== -1);
+                });
+                // Show folders that have visible children
+                $('.ga-folder').each(function () {
+                    var hasVisible = $(this).find('.ga-leaf:visible').length > 0;
+                    $(this).toggle(hasVisible);
+                    if (hasVisible) $(this).find('> .ga-children').removeClass('collapsed');
+                });
+            }
         </script>
     </head>
 
@@ -366,6 +714,7 @@
                     <li class="tab col s3 c-tab translate"><a href="#configDialog">Settings and Import</a></li>
                     <li class="tab col s3 c-tab translate"><a href="#secureDialog">KNX Secure</a></li>
                     <li class="tab col s3 c-tab translate"><a href="#extendedDialog">Alias Generation</a></li>
+                    <li class="tab col s3 c-tab translate"><a href="#gaToolDialog">GA-Tools</a></li>
                 </ul>
             </div>
             <div id="configDialog" class="row">
@@ -560,6 +909,34 @@
                                 <input class="value" id="targetNamespace" type="text" placeholder="openknx.0" />
                                 <label class="translate active" for="targetNamespace">Target namespace (e.g. knx.0 to avoid script adjustments)</label>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="gaToolDialog" class="row">
+                <div class="col s4" style="height: 70vh; overflow-y: auto; border-right: 1px solid #ddd;">
+                    <input type="text" id="gaFilter" placeholder="Filter..." oninput="filterGaTree()" />
+                    <ul id="gaTree" style="padding: 0; margin: 0;"></ul>
+                </div>
+                <div class="col s4">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title translate">Properties</span>
+                            <div id="gaPropContent"><p style="color: #999" class="translate">Select a GA from the tree</p></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s4">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title">Direct Access</span>
+                            <div id="gaAccessContent"><p style="color: #999" class="translate">Select a GA first</p></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title">Direct Link</span>
+                            <div id="gaLinkContent"><p style="color: #999" class="translate">Select a GA first</p></div>
                         </div>
                     </div>
                 </div>

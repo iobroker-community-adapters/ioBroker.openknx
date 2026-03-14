@@ -46,5 +46,9 @@
     "please provide a valid minimum send delay value between 0 and 1000 [ms]": "geef een geldige minimale verzendvertragingswaarde op tussen 0 en 1000 [ms]",
     "readout values of autoread iob objects on startup": "uitleeswaarden van autoread iob-objecten bij het opstarten",
     "remove existing IOB objects that are not in ETS import file": "verwijder bestaande IOB-objecten die niet in het ETS-importbestand staan",
-    "use common.type boolean for 1 bit enum instead of number": "gebruik common.type boolean voor 1 bit enum in plaats van getal"
+    "use common.type boolean for 1 bit enum instead of number": "gebruik common.type boolean voor 1 bit enum in plaats van getal",
+    "GA-Tools": "GA-Tools",
+    "Properties": "Properties",
+    "Select a GA from the tree": "Select a GA from the tree",
+    "Select a GA first": "Select a GA first"
 }

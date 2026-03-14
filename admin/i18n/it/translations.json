@@ -46,5 +46,9 @@
     "please provide a valid minimum send delay value between 0 and 1000 [ms]": "fornire un valore di ritardo di invio minimo valido compreso tra 0 e 1000 [ms]",
     "readout values of autoread iob objects on startup": "valori di lettura degli oggetti iob con lettura automatica all'avvio",
     "remove existing IOB objects that are not in ETS import file": "rimuovere gli oggetti IOB esistenti che non si trovano nel file di importazione ETS",
-    "use common.type boolean for 1 bit enum instead of number": "utilizzare common.type booleano per l'enumerazione a 1 bit anziché il numero"
+    "use common.type boolean for 1 bit enum instead of number": "utilizzare common.type booleano per l'enumerazione a 1 bit anziché il numero",
+    "GA-Tools": "GA-Tools",
+    "Properties": "Properties",
+    "Select a GA from the tree": "Select a GA from the tree",
+    "Select a GA first": "Select a GA first"
 }

@@ -46,5 +46,9 @@
     "please provide a valid minimum send delay value between 0 and 1000 [ms]": "请提供 0 到 1000 [ms] 之间的有效最小发送延迟值",
     "readout values of autoread iob objects on startup": "启动时自动读取 iob 对象的读数值",
     "remove existing IOB objects that are not in ETS import file": "删除 ETS 导入文件中不存在的现有 IOB 对象",
-    "use common.type boolean for 1 bit enum instead of number": "使用 common.type boolean 作为 1 位枚举而不是数字"
+    "use common.type boolean for 1 bit enum instead of number": "使用 common.type boolean 作为 1 位枚举而不是数字",
+    "GA-Tools": "GA-Tools",
+    "Properties": "Properties",
+    "Select a GA from the tree": "Select a GA from the tree",
+    "Select a GA first": "Select a GA first"
 }

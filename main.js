@@ -33,6 +33,7 @@ class openknx extends utils.Adapter {
         this.on("ready", this.onReady.bind(this));
         this.on("stateChange", this.onStateChange.bind(this));
         this.on("message", this.onMessage.bind(this));
+        this.on("objectChange", this.onObjectChange.bind(this));
         this.on("unload", this.onUnload.bind(this));
 
         this.mynamespace = this.namespace;
@@ -46,6 +47,7 @@ class openknx extends utils.Adapter {
         this.reconnectCount = 0;
         this.reconnectTimer = undefined;
         this.stopping = false;
+        this.linkedStateMap = {}; // foreignStateId → knxObjectId (reverse lookup for Direct Link)
 
         // redirect log from KNXUltimate (winston-based logStream) to adapter log
         // Collapse multiline messages (stack traces) into a single line
@@ -87,8 +89,10 @@ class openknx extends utils.Adapter {
             this.isForeign = true;
             this.log.info(`Using namespace ${this.mynamespace}`);
             await this.subscribeForeignStatesAsync(`${this.mynamespace}.*`);
+            await this.subscribeForeignObjectsAsync(`${this.mynamespace}.*`);
         } else {
             this.subscribeStates("*");
+            await this.subscribeObjectsAsync("*");
         }
         this.setState("info.busload", 0, true);
 
@@ -419,6 +423,37 @@ class openknx extends utils.Adapter {
         if (!id || !state /*obj deleted*/ || typeof state !== "object") {
             return "invalid input";
         }
+
+        // Direct Link: Check if this is a linked foreign state
+        const linkedKnxId = this.linkedStateMap[id];
+        if (linkedKnxId) {
+            // Skip changes from our own adapter (avoid loops)
+            if (state.from && state.from.startsWith(`system.adapter.${this.namespace}`)) {
+                return "own change";
+            }
+            // Only react when the value actually changed (ts === lc)
+            if (state.ts !== state.lc) {
+                return "value unchanged";
+            }
+            if (!this.connected || !this.knxConnection) {
+                return "not connected";
+            }
+            const gaData = this.gaList.getDataById(linkedKnxId);
+            if (gaData?.native?.address && gaData?.native?.dpt) {
+                this.log.debug(
+                    `Direct Link: ${id} changed to ${JSON.stringify(state.val)}, writing to GA ${gaData.native.address}`,
+                );
+                this.knxConnection.write(gaData.native.address, state.val, gaData.native.dpt);
+                // Update KNX object state
+                if (this.isForeign) {
+                    this.setForeignState(linkedKnxId, { val: state.val, ack: true });
+                } else {
+                    this.setState(linkedKnxId, { val: state.val, ack: true });
+                }
+            }
+            return "linkedState";
+        }
+
         const gaData = this.gaList.getDataById(id);
         if (!gaData?.native?.address) {
             return "not a KNX object";
@@ -553,6 +588,69 @@ class openknx extends utils.Adapter {
         }
         this.log.warn(`GA ${ga} (${id}) is not writable. Set common.write=true or reimport ETS project.`);
         return "configuration error";
+    }
+
+    /**
+     * Direct Link: Handle object changes for dynamic linkedState subscription management.
+     * Called when GA objects are modified (e.g., linkedState added/removed via admin UI).
+     *
+     * @param {string} id
+     * @param {ioBroker.Object | null | undefined} obj
+     */
+    async onObjectChange(id, obj) {
+        const oldData = this.gaList.getDataById(id);
+        if (!oldData) {
+            return; // not a known GA object
+        }
+
+        const oldLinked = oldData.native?.linkedState;
+        const newLinked = obj?.native?.linkedState;
+
+        if (oldLinked === newLinked) {
+            return;
+        }
+
+        // Remove old subscription
+        if (oldLinked) {
+            await this.unsubscribeForeignStatesAsync(oldLinked);
+            delete this.linkedStateMap[oldLinked];
+            this.log.info(`Direct Link removed: ${id} ↔ ${oldLinked}`);
+        }
+
+        // Add new subscription
+        if (newLinked) {
+            await this.subscribeForeignStatesAsync(newLinked);
+            this.linkedStateMap[newLinked] = id;
+            this.log.info(`Direct Link added: ${id} ↔ ${newLinked}`);
+        }
+
+        // Update gaList with new object data
+        if (obj) {
+            this.gaList.set(id, obj.native.address, obj);
+        }
+    }
+
+    /**
+     * Direct Link: Sync linked foreign state values to KNX bus after connection established.
+     */
+    async syncLinkedStates() {
+        if (!this.knxConnection) {
+            return;
+        }
+        for (const [foreignId, knxId] of Object.entries(this.linkedStateMap)) {
+            try {
+                const foreignState = await this.getForeignStateAsync(foreignId);
+                if (foreignState?.val != null) {
+                    const gaData = this.gaList.getDataById(knxId);
+                    if (gaData?.native?.address && gaData?.native?.dpt) {
+                        this.knxConnection.write(gaData.native.address, foreignState.val, gaData.native.dpt);
+                        this.log.debug(`Direct Link sync: ${foreignId}=${foreignState.val} → ${gaData.native.address}`);
+                    }
+                }
+            } catch (e) {
+                this.log.warn(`Direct Link sync failed for ${foreignId}: ${e.message}`);
+            }
+        }
     }
 
     startKnxStack() {
@@ -696,6 +794,9 @@ class openknx extends utils.Adapter {
             this.connected = true;
             this.reconnectCount = 0;
             this.setState("info.connection", this.connected, true);
+
+            // Direct Link: Sync linked foreign state values to KNX bus
+            this.syncLinkedStates();
         });
 
         // Event: disconnected
@@ -815,6 +916,21 @@ class openknx extends utils.Adapter {
                             break;
                         }
 
+                        // Direct Link: Respond with linked foreign state value
+                        if (data.native.linkedState) {
+                            this.getForeignState(data.native.linkedState, (fErr, fState) => {
+                                if (!fErr && fState && fState.val != null) {
+                                    try {
+                                        this.knxConnection.respond(dest, fState.val, data.native.dpt);
+                                        this.log.debug(`Direct Link: Read ${dest} → ${fState.val}`);
+                                    } catch (e) {
+                                        this.log.error(`Direct Link: respond ${dest}: ${e.message || e}`);
+                                    }
+                                }
+                            });
+                            break;
+                        }
+
                         const readCb = (err, state) => {
                             if (state) {
                                 this.log.debug(`Inbound GroupValue_Read from ${src} GA ${dest} to ${id}`);
@@ -857,6 +973,15 @@ class openknx extends utils.Adapter {
                             this.setForeignState(id, { val: convertedVal, ack: true });
                         } else {
                             this.setState(id, { val: convertedVal, ack: true });
+                        }
+
+                        // Direct Link: Forward KNX value to linked foreign state
+                        if (!echoed && data.native.linkedState) {
+                            this.setForeignState(data.native.linkedState, {
+                                val: convertedVal,
+                                ack: false,
+                            });
+                            this.log.debug(`Direct Link: ${dest} → ${data.native.linkedState}=${convertedVal}`);
                         }
 
                         // KNX Compat Mode: Also update linked act-GA when status-GA changes
@@ -1030,7 +1155,7 @@ class openknx extends utils.Adapter {
                 endkey: `${this.mynamespace}.\u9999`,
                 include_docs: true,
             },
-            (err, res) => {
+            async (err, res) => {
                 if (err) {
                     this.log.error(`Cannot get objects: ${err}`);
                 } else if (res) {
@@ -1067,6 +1192,24 @@ class openknx extends utils.Adapter {
                         this.createStatusLinks().catch(e => {
                             this.log.error(`Error creating status links: ${e}`);
                         });
+                    }
+
+                    // Direct Link: Subscribe to linked foreign states
+                    for (const key of this.gaList) {
+                        const data = this.gaList.getDataById(key);
+                        if (data.native.linkedState) {
+                            try {
+                                await this.subscribeForeignStatesAsync(data.native.linkedState);
+                                this.linkedStateMap[data.native.linkedState] = key;
+                            } catch {
+                                this.log.warn(`Direct Link: ${data.native.linkedState} does not exist`);
+                            }
+                        }
+                    }
+                    if (Object.keys(this.linkedStateMap).length) {
+                        this.log.info(
+                            `Direct Link: ${Object.keys(this.linkedStateMap).length} linked states subscribed`,
+                        );
                     }
 
                     if (startKnxConnection) {
