@@ -48,7 +48,7 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
   * update gui: iob upload openknx
   * update stable: https://github.com/ioBroker/ioBroker.repositories#add-a-new-adapter-to-the-stable-repository
 -->
-### **WORK IN PROGRESS**
+### 1.0.0 (2026-03-14)
 
 - **breaking:** KNX communication switched to KNXUltimate
 - **breaking:** DPT21 property names changed (outofservice → outOfService, inalarm → inAlarm, alarmeunack → alarmUnAck), values must be boolean
@@ -58,7 +58,6 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 - feature: Improved connection stability
 - feature: Improved role detection (switch, level, value, text, date) based on DPT type
 - feature: Direct Link all iobroker states to a KNX state
-
 
 ### 0.9.1 (2026-03-12)
 - bugfix: Fixing increased delay in knx commands after several days
