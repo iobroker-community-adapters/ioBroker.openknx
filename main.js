@@ -598,8 +598,10 @@ class openknx extends utils.Adapter {
      * @param {ioBroker.Object | null | undefined} obj
      */
     async onObjectChange(id, obj) {
+        this.log.debug(`onObjectChange: ${id}`);
         const oldData = this.gaList.getDataById(id);
         if (!oldData) {
+            this.log.debug(`onObjectChange: ${id} not in gaList, ignoring`);
             return; // not a known GA object
         }
 
@@ -979,7 +981,7 @@ class openknx extends utils.Adapter {
                         if (!echoed && data.native.linkedState) {
                             this.setForeignState(data.native.linkedState, {
                                 val: convertedVal,
-                                ack: false,
+                                ack: true,
                             });
                             this.log.debug(`Direct Link: ${dest} → ${data.native.linkedState}=${convertedVal}`);
                         }

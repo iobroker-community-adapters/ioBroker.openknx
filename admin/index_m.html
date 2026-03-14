@@ -601,8 +601,10 @@
                 if (!selectedGaId) return;
                 var obj = gaObjects[selectedGaId];
                 if (!obj) return;
+                // Send type-matching dummy value, adapter only checks comment 'GroupValue_Read'
+                var dummyVal = obj.common.type === 'number' ? 0 : obj.common.type === 'string' ? '' : false;
                 checkAdapterAlive(function () {
-                    socket.emit('setState', selectedGaId, { val: true, ack: false, c: 'GroupValue_Read' });
+                    socket.emit('setState', selectedGaId, { val: dummyVal, ack: false, q: 0x10 });
                     showToast(null, 'Read request → ' + obj.native.address, null, 2000);
                 });
             }
