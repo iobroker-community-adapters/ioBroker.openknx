@@ -49,17 +49,17 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 -->
 ### 1.0.0-beta.0 (2026-03-12)
 - **breaking:** KNX-Kommunikation auf KNXUltimate umgestellt
+- **breaking:** DPT19 (DateTime) akzeptiert nur noch Date-Objekte, keine Strings/Numbers
+- **breaking:** DPT21 Property-Namen geändert (outofservice → outOfService, inalarm → inAlarm, alarmeunack → alarmUnAck), Werte müssen boolean sein
+- **breaking:** DPT237 Property-Namen geändert (camelCase), Validierung fehlerhaft (upstream knxultimate Bug)
 - feature: KNX Secure Unterstützung
 - feature: Erweiterte DPT-Abdeckung (9 zusätzliche DPTs, u.a. DPT-22, 213, 222, 235, 242, 249, 251)
 - feature: Verbesserte Verbindungsstabilität
 - feature: Verbesserte Rollenerkennung (switch, level, value, text, date) basierend auf DPT-Typ
 - feature: Status-/Aktor-GAs setzen read/write Flags korrekt via createStatusLinks
-- bugfix: DPT11/DPT10 Datum-/Uhrzeitschreiben: Date-DPTs werden vor Typ-Check geprüft, null-Guard
-- bugfix: Numerische String-Timestamps ("1773424478439") werden korrekt konvertiert
-- bugfix: DPT10 Uhrzeit-Strings ("Sat, 10:27:00") werden direkt an KNXUltimate durchgereicht
-- bugfix: populateAPDU null-Check verhindert stille Schreibfehler auf den KNX-Bus
-- bugfix: fromBuffer null-Check mit Warning und Hex-Fallback statt stilles null
-- bugfix: Unbekannte common.type Werte (z.B. "mixed" vom alten knx-Adapter) werden durchgelassen
+- bugfix: DPT11/DPT10 Datum-/Uhrzeitschreiben funktioniert jetzt mit allen gängigen Formaten
+- bugfix: Kompatibilität mit Objekten vom alten knx-Adapter (common.type "mixed", "object")
+- bugfix: Null-Checks für KNX-Encoding/Decoding verhindern stille Fehler
 
 ### 0.9.1 (2026-03-12)
 - bugfix: Fixing increased delay in knx commands after several days
