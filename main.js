@@ -1171,6 +1171,8 @@ class openknx extends utils.Adapter {
                             value.native.address.match(/\d*\/\d*\/\d*/) &&
                             value.native.dpt
                         ) {
+                            // fix unresolvable subtypes from older imports (e.g. DPT5.000)
+                            value.native.dpt = tools.resolveDpt(value.native.dpt).dpt;
                             // add only elements from tree that are knx objects, identified by a group adress
                             this.gaList.set(id, value.native.address, res.rows[i].value);
                             if (this.gaList.getIdsByGa(value.native.address).length > 1) {
