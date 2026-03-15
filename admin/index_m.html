@@ -504,7 +504,7 @@
                 if (n.encoding) rows.push(['Encoding', JSON.stringify(n.encoding)]);
                 if (n.min != null) rows.push(['Min', n.min]);
                 if (n.max != null) rows.push(['Max', n.max]);
-                if (n.linkedState) rows.push(['Linked State', n.linkedState]);
+                if (n.linkedState) rows.push(['Linked State', n.linkedState + ' (' + (n.linkedStateMode || 'direct') + ')']);
                 rows.push(['Object ID', '<span style="font-size:0.8em;word-break:break-all">' + id + '</span>']);
                 var html = '<table class="ga-prop-table">';
                 for (var i = 0; i < rows.length; i++) {
@@ -556,17 +556,43 @@
                 if (!obj) { $('#gaLinkContent').html('<p style="color:#999">Select a GA first</p>'); return; }
                 var linked = obj.native.linkedState || '';
                 var html = '';
+                var modeSelect = '<select id="gaLinkMode" style="display:inline-block;width:auto;margin-left:8px">'
+                    + '<option value="direct">Direct (1:1)</option>'
+                    + '<option value="trigger">Trigger (only ON)</option>'
+                    + '<option value="toggle">Toggle (invert on ON)</option>'
+                    + '</select>'
+                    + '<p id="gaLinkModeDesc" style="color:#666;font-size:0.85em;margin-top:4px"></p>';
+                var modeDescs = {
+                    direct: 'Every value is forwarded as-is. Use for sensors, dimmers, or sliders.',
+                    trigger: 'Only ON values are forwarded, OFF is ignored. Use for scene triggers or door openers where the source sends ON/OFF (press/release).',
+                    toggle: 'On each ON value the current KNX state is read and the inverse is sent. Use for buttons that should toggle a KNX light on/off.'
+                };
                 if (linked) {
+                    var mode = obj.native.linkedStateMode || 'direct';
                     html += '<p><b>Linked to:</b><br/><span style="word-break:break-all">' + linked + '</span></p>';
+                    html += '<p><b>Mode:</b> ' + modeSelect + '</p>';
                     html += '<a class="waves-effect waves-light btn-small red" onclick="gaRemoveLink()">Remove Link</a>';
+                    $('#gaLinkContent').html(html);
+                    $('#gaLinkMode').val(mode);
+                    $('#gaLinkModeDesc').text(modeDescs[mode] || '');
+                    $('#gaLinkMode').on('change', function () {
+                        $('#gaLinkModeDesc').text(modeDescs[$(this).val()] || '');
+                        gaUpdateMode();
+                    });
+                    return;
                 } else {
                     html += '<div class="row" style="margin-bottom:8px">';
                     html += '<div class="input-field col s7"><input type="text" id="gaLinkInput" placeholder="Foreign State ID"/></div>';
                     html += '<div class="col s2" style="margin-top:22px"><a class="waves-effect waves-light btn-small" onclick="gaBrowseStates()" title="Browse"><i class="material-icons">search</i></a></div>';
                     html += '<div class="col s3" style="margin-top:22px"><a class="waves-effect waves-light btn-small" onclick="gaSetLink()">Link</a></div>';
                     html += '</div>';
+                    html += '<p><b>Mode:</b> ' + modeSelect + '</p>';
                 }
                 $('#gaLinkContent').html(html);
+                $('#gaLinkModeDesc').text(modeDescs.direct);
+                $('#gaLinkMode').on('change', function () {
+                    $('#gaLinkModeDesc').text(modeDescs[$(this).val()] || '');
+                });
             }
 
             function checkAdapterAlive(callback) {
@@ -620,10 +646,12 @@
                         showToast(null, 'State "' + foreignId + '" not found', null, 3000);
                         return;
                     }
-                    // Set linkedState on GA object
+                    // Set linkedState and mode on GA object
+                    var mode = $('#gaLinkMode').val() || 'direct';
                     socket.emit('getObject', selectedGaId, function (err, gaObj) {
                         if (err || !gaObj) return;
                         gaObj.native.linkedState = foreignId;
+                        gaObj.native.linkedStateMode = mode;
                         socket.emit('setObject', selectedGaId, gaObj, function () {
                             gaObjects[selectedGaId] = gaObj;
                             updateGaLink(selectedGaId);
@@ -638,10 +666,24 @@
                 socket.emit('getObject', selectedGaId, function (err, gaObj) {
                     if (err || !gaObj) return;
                     delete gaObj.native.linkedState;
+                    delete gaObj.native.linkedStateMode;
                     socket.emit('setObject', selectedGaId, gaObj, function () {
                         gaObjects[selectedGaId] = gaObj;
                         updateGaLink(selectedGaId);
                         showToast(null, 'Direct Link removed', null, 3000);
+                    });
+                });
+            }
+
+            function gaUpdateMode() {
+                if (!selectedGaId) return;
+                var mode = $('#gaLinkMode').val() || 'direct';
+                socket.emit('getObject', selectedGaId, function (err, gaObj) {
+                    if (err || !gaObj) return;
+                    gaObj.native.linkedStateMode = mode;
+                    socket.emit('setObject', selectedGaId, gaObj, function () {
+                        gaObjects[selectedGaId] = gaObj;
+                        showToast(null, 'Mode changed to: ' + mode, null, 2000);
                     });
                 });
             }
@@ -813,6 +855,9 @@
                                 <div class="file-path-wrapper">
                                     <input class="file-path validate" type="text" />
                                 </div>
+                            </div>
+                            <div class="col s12" style="margin-top:8px">
+                                <img src="exportGA.png" alt="ETS Group Address Export" style="max-width:320px;border:1px solid #ccc;border-radius:4px" />
                             </div>
                             <div class="col s12 progress" id="progress">
                                 <div class="indeterminate" style="width: 70%"></div>

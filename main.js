@@ -440,15 +440,33 @@ class openknx extends utils.Adapter {
             }
             const gaData = this.gaList.getDataById(linkedKnxId);
             if (gaData?.native?.address && gaData?.native?.dpt) {
+                const mode = gaData.native.linkedStateMode || "direct";
+                let writeVal = state.val;
+
+                if (mode === "trigger" || mode === "toggle") {
+                    // trigger/toggle: only react on EIN, ignore AUS (release events)
+                    if (!state.val) {
+                        return "trigger skip";
+                    }
+                }
+
+                if (mode === "toggle") {
+                    // read current KNX state and invert
+                    const curState = this.isForeign
+                        ? await this.getForeignStateAsync(linkedKnxId)
+                        : await this.getStateAsync(linkedKnxId);
+                    writeVal = !curState?.val;
+                }
+
                 this.log.debug(
-                    `Direct Link: ${id} changed to ${JSON.stringify(state.val)}, writing to GA ${gaData.native.address}`,
+                    `Direct Link [${mode}]: ${id} changed to ${JSON.stringify(state.val)}, writing ${JSON.stringify(writeVal)} to GA ${gaData.native.address}`,
                 );
-                this.knxConnection.write(gaData.native.address, state.val, gaData.native.dpt);
+                this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
                 // Update KNX object state
                 if (this.isForeign) {
-                    this.setForeignState(linkedKnxId, { val: state.val, ack: true });
+                    this.setForeignState(linkedKnxId, { val: writeVal, ack: true });
                 } else {
-                    this.setState(linkedKnxId, { val: state.val, ack: true });
+                    this.setState(linkedKnxId, { val: writeVal, ack: true });
                 }
             }
             return "linkedState";
