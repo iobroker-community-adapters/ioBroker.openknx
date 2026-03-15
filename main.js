@@ -904,7 +904,9 @@ class openknx extends utils.Adapter {
             }
             if (!this.config.noWarnUnknownGa && !this.gaList.getIdsByGa(dest).length) {
                 const hex = rawData ? Buffer.from(rawData).toString("hex") : "";
-                this.log.warn(`Ignoring ${evt} from ${src} for GA ${dest} (not in ETS project). data=[${hex}]`);
+                this.log.warn(
+                    `Ignoring ${evt} from ${src} for GA ${dest} (not in ETS project). data=[${hex}]. Reimport ETS project to add this GA, or enable 'suppress unknown GA warnings'.`,
+                );
                 return;
             }
 
@@ -925,7 +927,7 @@ class openknx extends utils.Adapter {
                         const jsValue = dptlib.fromBuffer(rawData, dptConfig);
                         if (jsValue == null) {
                             this.log.warn(
-                                `Could not decode GA ${dest} (${data.native.dpt}), raw=[${rawData.toString("hex")}]`,
+                                `Could not decode GA ${dest} (${data.native.dpt}), raw=[${rawData.toString("hex")}]. Check DPT configuration in ETS (buffer length mismatch?).`,
                             );
                             convertedVal = rawData.toString("hex");
                         } else if (tools.isStringDPT(data.native.dpt)) {
@@ -934,7 +936,7 @@ class openknx extends utils.Adapter {
                             convertedVal = this.convertType(jsValue);
                         }
                     } catch (e) {
-                        this.log.warn(`Decode error for GA ${dest}: ${e.message}`);
+                        this.log.warn(`Decode error for GA ${dest} (${data.native.dpt}): ${e.message}`);
                         convertedVal = rawData.toString("hex");
                     }
                 }
