@@ -41,30 +41,23 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 
 <!--
   Placeholder for the next version (at the beginning of the line):
-  ### **WORK IN PROGRESS**
-  * .... -> this is used by script to generate a new entry, copy after a new release
-  * npm run release
-  * npm run release major/minor/patch major.minor.patch
-  * update gui: iob upload openknx
-  * update stable: https://github.com/ioBroker/ioBroker.repositories#add-a-new-adapter-to-the-stable-repository
+    ### **WORK IN PROGRESS**
 -->
 ### 1.0.0 (2026-03-14)
 
-- **breaking:** KNX communication switched to KNXUltimate
-- **breaking:** DPT21 property names changed (outofservice → outOfService, inalarm → inAlarm, alarmeunack → alarmUnAck), values must be boolean
-- **breaking:** DPT237 property names changed to camelCase
-- feature: KNX Secure support
-- feature: Extended DPT coverage (9 additional DPTs, including DPT-22, 213, 222, 235, 242, 249, 251)
-- feature: Improved connection stability
-- feature: Improved role detection (switch, level, value, text, date) based on DPT type
-- feature: Direct Link all iobroker states to a KNX state
+- (TA2k) **breaking:** KNX communication switched to KNXUltimate
+- (TA2k) **breaking:** DPT21 property names changed (outofservice → outOfService, inalarm → inAlarm, alarmeunack → alarmUnAck), values must be boolean
+- (TA2k) **breaking:** DPT237 property names changed to camelCase
+- (TA2k) feature: KNX Secure support
+- (TA2k) feature: Extended DPT coverage (9 additional DPTs, including DPT-22, 213, 222, 235, 242, 249, 251)
+- (TA2k) feature: Improved connection stability
+- (TA2k) feature: Improved role detection (switch, level, value, text, date) based on DPT type
+- (TA2k) feature: Direct Link all iobroker states to a KNX state
 
 ### 0.9.1 (2026-03-12)
 - bugfix: Fixing increased delay in knx commands after several days
 - (copilot) Adapter requires admin >= 7.7.22 now
 - (copilot) Adapter requires js-controller >= 6.0.11 now
-- (copilot) Adapter requires admin >= 7.6.17 now
-
 - (@klein0r) Adapter requires node.js >= 20 and js-controller >= 6 now
 
 ### 0.9.0 (2024-04-21)
