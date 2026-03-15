@@ -674,6 +674,12 @@ class openknx extends utils.Adapter {
     }
 
     startKnxStack() {
+        // Clean up previous connection (reconnect case)
+        if (this.knxConnection) {
+            this.knxConnection.removeAllListeners();
+            this.knxConnection = undefined;
+        }
+
         // Determine protocol - KNX Secure requires TunnelTCP or Multicast
         let hostProtocol = this.config.hostProtocol || "TunnelUDP";
         if (this.config.isSecureKNXEnabled && hostProtocol === "TunnelUDP") {
@@ -835,7 +841,11 @@ class openknx extends utils.Adapter {
                 this.reconnectCount++;
                 this.log.info(`Reconnect attempt ${this.reconnectCount}/${reconnectDelays.length} in ${delay}s...`);
                 this.reconnectTimer = setTimeout(() => {
-                    this.knxConnection.Connect();
+                    try {
+                        this.startKnxStack();
+                    } catch (e) {
+                        this.log.error(`Reconnect failed: ${e.message || e}`);
+                    }
                 }, delay * 1000);
             } else if (this.reconnectCount >= reconnectDelays.length) {
                 this.log.error(`Giving up after ${reconnectDelays.length} reconnect attempts`);
