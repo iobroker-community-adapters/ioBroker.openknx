@@ -43,7 +43,7 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
   Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### 1.0.2 (2026-03-16)
+### 1.0.3 (2026-03-16)
 
 - (TA2k) **breaking:** KNX communication switched to KNXUltimate
 - (TA2k) **breaking:** DPT21 property names changed (outofservice → outOfService, inalarm → inAlarm, alarmeunack → alarmUnAck), values must be boolean
