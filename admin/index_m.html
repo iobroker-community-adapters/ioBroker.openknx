@@ -350,8 +350,17 @@
                             showMessage(_("no KNX gateway found"));
                             $("#detectedInterfaces").html('');
                         } else {
-                            applyDetectedInterface(result.interfaces[0]);
-                            showDetectedInterfaces(result.interfaces || []);
+                            if (result.interfaces) {
+                                applyDetectedInterface(result.interfaces[0]);
+                                showDetectedInterfaces(result.interfaces);
+                            } else {
+                                // fallback for older adapter versions without interfaces array
+                                $("#deviceName")[0].innerHTML = result.deviceName;
+                                $("#gwip").val(result.ip).change();
+                                $("#eibadr").val(result.knxAdr).change();
+                                $("#gwipport").val(result.port).change();
+                                $("#detectedInterfaces").html('');
+                            }
                         }
                         window.isProcessingRequest = false;
                     });
@@ -819,7 +828,7 @@
                                 <label for="eibadr" class="translate">Physical KNX address</label>
                             </div>
                             <div class="col s12 l4">
-                                <h7 class="value" id="deviceName"></h7>
+                                <h7 class="value" id="deviceName" style="display:none"></h7>
                                 <div id="detectedInterfaces"></div>
                             </div>
                         </div>
