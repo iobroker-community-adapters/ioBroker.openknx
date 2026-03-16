@@ -83,17 +83,17 @@
       }
     },
     "titleLang": {
-      "en": "Open KNX",
-      "de": "Open KNX",
-      "ru": "Open KNX",
-      "pt": "Open KNX",
-      "nl": "Open KNX",
-      "fr": "Open KNX",
-      "it": "Open KNX",
-      "es": "Open KNX",
-      "pl": "Open KNX",
-      "zh-cn": "Open KNX",
-      "uk": "Відкрийте KNX"
+      "en": "KNX (Open KNX)",
+      "de": "KNX (Open KNX)",
+      "ru": "KNX (Open KNX)",
+      "pt": "KNX (Open KNX)",
+      "nl": "KNX (Open KNX)",
+      "fr": "KNX (Open KNX)",
+      "it": "KNX (Open KNX)",
+      "es": "KNX (Open KNX)",
+      "pl": "KNX (Open KNX)",
+      "zh-cn": "KNX (Open KNX)",
+      "uk": "KNX (Open KNX)"
     },
     "desc": {
       "en": "full featured open-source adapter for KNX",

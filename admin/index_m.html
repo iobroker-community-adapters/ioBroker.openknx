@@ -367,6 +367,59 @@
                 }
             }
 
+            // KNX gateway manufacturer OUI lookup (IEEE MA-L 6 chars, MA-M 7 chars, MA-S 9 chars)
+            var knxOuiMap = [
+                // MA-L (24-bit, 6 hex chars)
+                ['00246D', 'Weinzierl Engineering'],
+                ['00C072', 'KNX LTD'],
+                ['D85DEF', 'Busch-Jaeger Elektro'],
+                ['0022D1', 'Albrecht Jung'],
+                ['5CCA32', 'Theben'],
+                ['CC7E0F', 'Theben'],
+                ['4833DD', 'Zennio'],
+                ['504F94', 'Loxone Electronics'],
+                ['0024C6', 'Hager Electro'],
+                ['001293', 'ABB'],
+                ['000105', 'Beckhoff Automation'],
+                ['0030DE', 'WAGO'],
+                ['9C0E51', 'Schneider Electric'],
+                ['001100', 'Schneider Electric'],
+                ['00A003', 'Siemens Building Technologies'],
+                ['00C0E4', 'Siemens Building Technologies'],
+                ['000519', 'Siemens Building Technologies'],
+                ['384B24', 'Siemens'],
+                ['EC1C5D', 'Siemens'],
+                ['000E8C', 'Siemens'],
+                ['286336', 'Siemens'],
+                // MA-M / MA-S (28-bit / 36-bit, 7-9 hex chars)
+                ['CC1BE08', 'MDT technologies'],
+                ['0050C2793', 'Enertex Bayern'],
+                ['18C3F41', 'Enertex Bayern'],
+                ['70B3D5DC8', 'Enertex Bayern']
+            ];
+
+            function lookupOui(macHex) {
+                // match longest prefix first (MA-S 9, MA-M 7, MA-L 6)
+                for (var len = 9; len >= 6; len--) {
+                    var prefix = macHex.substring(0, len);
+                    for (var i = 0; i < knxOuiMap.length; i++) {
+                        if (knxOuiMap[i][0] === prefix) return knxOuiMap[i][1];
+                    }
+                }
+                return '';
+            }
+
+            function resolveDeviceName(name) {
+                if (!name) return '?';
+                var macStr = name.replace(/[:\-\.]/g, '').toUpperCase();
+                if (/^[0-9A-F]{12}$/.test(macStr)) {
+                    var vendor = lookupOui(macStr);
+                    if (vendor) return vendor + ' (' + name + ')';
+                    return 'KNX Gateway (' + name + ')';
+                }
+                return name;
+            }
+
             function applyDetectedInterface(iface) {
                 $("#deviceName")[0].innerHTML = iface.deviceName;
                 $("#gwip").val(iface.ip).change();
@@ -380,7 +433,7 @@
                     var cls = idx === 0 ? 'style="border:2px solid #26a69a;padding:6px 10px;margin:4px 0;border-radius:4px;cursor:pointer"'
                         : 'style="border:1px solid #ccc;padding:6px 10px;margin:4px 0;border-radius:4px;cursor:pointer"';
                     html += '<div class="detected-iface" data-idx="' + idx + '" ' + cls + '>';
-                    html += '<b>' + (iface.deviceName || '?') + '</b><br/>';
+                    html += '<b>' + resolveDeviceName(iface.deviceName) + '</b><br/>';
                     html += iface.ip + ':' + iface.port;
                     html += ' &middot; IA ' + iface.knxAdr;
                     html += ' &middot; ' + (iface.type || '');
