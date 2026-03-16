@@ -526,9 +526,20 @@ class openknx extends utils.Adapter {
                 );
             }
             // else take plain value
-        } else if (gaData.native.valuetype == "composite") {
-            // input from IOB is either object or string in object notation, type of this conversion is object needed by the knx lib
-            if (typeof knxVal !== "object") {
+        } else if (gaData.native.valuetype == "composite" || /^DPT([23]|18)\b/.test(dpt)) {
+            // composite DPTs: knxultimate expects objects, but accept numeric values too for broad compatibility
+            if (typeof knxVal === "number") {
+                if (/^DPT2\b/.test(dpt)) {
+                    // @ts-expect-error knxVal becomes object for knxultimate
+                    knxVal = { priority: !!(knxVal & 2), data: !!(knxVal & 1) };
+                } else if (/^DPT3\b/.test(dpt)) {
+                    // @ts-expect-error knxVal becomes object for knxultimate
+                    knxVal = { decr_incr: (knxVal >> 3) & 1, data: knxVal & 7 };
+                } else if (/^DPT18\b/.test(dpt)) {
+                    // @ts-expect-error knxVal becomes object for knxultimate
+                    knxVal = { save_recall: (knxVal >> 7) & 1, scenenumber: (knxVal & 0x3f) + 1 };
+                }
+            } else if (typeof knxVal !== "object") {
                 try {
                     // @ts-expect-error knxVal is a string
                     knxVal = JSON.parse(knxVal);

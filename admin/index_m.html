@@ -758,8 +758,8 @@
                 <ul class="tabs">
                     <li class="tab col s3 c-tab translate"><a href="#configDialog">Settings and Import</a></li>
                     <li class="tab col s3 c-tab translate"><a href="#secureDialog">KNX Secure</a></li>
-                    <li class="tab col s3 c-tab translate"><a href="#extendedDialog">Alias Generation</a></li>
-                    <li class="tab col s3 c-tab translate"><a href="#gaToolDialog">GA-Tools</a></li>
+                    <li class="tab col s3 c-tab translate"><a href="#extendedDialog">GA Aliases &amp; Migration</a></li>
+                    <li class="tab col s3 c-tab translate"><a href="#gaToolDialog">GA-Tools / Direct Link</a></li>
                 </ul>
             </div>
             <div id="configDialog" class="row">
@@ -906,14 +906,13 @@
                             <div class="col s12">
                                 <h6>
                                     <span class="translate"
-                                        >To merge action and status GA in one ioBroker object you can let the adapter
-                                        generate
-                                        <a
-                                            href="https://www.iobroker.net/#de/documentation/dev/aliases.md"
-                                            target="_blank"
-                                            >Aliases.</a
-                                        ></span
+                                        >In KNX, action and status often use separate GAs. This tool automatically pairs them into</span
                                     >
+                                    <a
+                                        href="https://www.iobroker.net/#de/documentation/dev/aliases.md"
+                                        target="_blank"
+                                        ><span class="translate">ioBroker Aliases</span></a
+                                    ><span class="translate"> so you get read + write in a single object.</span>
                                 </h6>
                             </div>
                             <div class="input-field col s12 l6">
@@ -948,7 +947,7 @@
                 <div class="card">
                     <div class="card-content">
                         <div class="row">
-                            <span class="translate"><b>Option B: Compatibility</b></span>
+                            <span class="translate"><b>Option B: knx Adapter Migration</b></span>
                             <div class="input-field col s12">
                                 <input class="value" id="knxCompatMode" type="checkbox" />
                                 <label class="translate" for="knxCompatMode">ioBroker.knx Compatibility Mode (link status GAs internally instead of aliases)</label>
@@ -984,6 +983,7 @@
                     <div class="card">
                         <div class="card-content">
                             <span class="card-title">Direct Link</span>
+                            <p style="color:#666;font-size:0.85em;margin-top:0">Connect any ioBroker state to a KNX Group Address</p>
                             <div id="gaLinkContent"><p style="color: #999" class="translate">Select a GA first</p></div>
                         </div>
                     </div>
