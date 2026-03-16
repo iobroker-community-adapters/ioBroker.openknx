@@ -1,6 +1,6 @@
 {
   "name": "iobroker.openknx",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "ioBroker knx Adapter",
   "author": "boellner",
   "contributors": [
