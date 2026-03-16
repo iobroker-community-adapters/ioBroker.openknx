@@ -860,12 +860,15 @@
                 <div class="card">
                     <div class="card-content">
                  
-                        <div class="row">
+                        <div class="row" style="margin-bottom:0">
                             <div class="col s12 l3">
                                 <a id="detectInterface" class="waves-effect waves-light btn"
                                     ><i class="material-icons right">live_help</i
                                     ><span class="translate">detect KNX gateway</span></a>
                             </div>
+                        </div>
+                        <div class="row" style="margin-bottom:8px">
+                            <div class="col s12" id="detectedInterfaces"></div>
                         </div>
                         <div class="row">
                             <div class="col s6 l3 input-field">
@@ -882,7 +885,6 @@
                             </div>
                             <div class="col s12 l4">
                                 <h7 class="value" id="deviceName" style="display:none"></h7>
-                                <div id="detectedInterfaces"></div>
                             </div>
                         </div>
                         <div class="row">
