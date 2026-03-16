@@ -165,27 +165,36 @@ class openknx extends utils.Adapter {
     onMessage(obj) {
         if (typeof obj === "object") {
             switch (obj.command) {
-                case "import":
+                case "import": {
                     this.log.info("ETS project import...");
-                    projectImport.parseInput(this, obj.message.xml, (parseError, res) => {
-                        this.updateObjects(res, 0, obj.message.onlyAddNewObjects, (updateError, length) => {
-                            const msg = {
-                                error:
-                                    parseError && parseError.length == 0
-                                        ? updateError
-                                        : `${parseError ? parseError : ""}<br/>${updateError}`,
-                                count: length,
-                            };
+                    const doImport = () => {
+                        projectImport.parseInput(this, obj.message.xml, (parseError, res) => {
+                            this.updateObjects(res, 0, obj.message.onlyAddNewObjects, (updateError, length) => {
+                                const msg = {
+                                    error:
+                                        parseError && parseError.length == 0
+                                            ? updateError
+                                            : `${parseError ? parseError : ""}<br/>${updateError}`,
+                                    count: length,
+                                };
 
-                            this.removeUnusedObjects(res, obj.message.removeUnusedObjects);
+                                this.removeUnusedObjects(res, obj.message.removeUnusedObjects);
 
-                            this.log.info(`Project import finished with ${length} GAs`);
-                            if (obj.callback) {
-                                this.sendTo(obj.from, obj.command, msg, obj.callback);
-                            }
+                                this.log.info(`Project import finished with ${length} GAs`);
+                                if (obj.callback) {
+                                    this.sendTo(obj.from, obj.command, msg, obj.callback);
+                                }
+                            });
                         });
-                    });
+                    };
+                    if (obj.message.cleanImport) {
+                        this.log.info("Clean import: deleting all existing KNX objects before import...");
+                        this.cleanImport().then(doImport);
+                    } else {
+                        doImport();
+                    }
                     break;
+                }
                 case "createAlias":
                     this.log.info("Create aliases...");
                     projectImport.findStatusGAs(
@@ -297,6 +306,14 @@ class openknx extends utils.Adapter {
                 }
             }
         });
+    }
+
+    /*
+     * delete all existing KNX objects before a clean re-import
+     */
+    async cleanImport() {
+        await this.delObjectAsync("", { recursive: true });
+        this.log.info("cleanImport: deleted all existing KNX objects");
     }
 
     // write found communication objects to adapter object tree
@@ -456,6 +473,19 @@ class openknx extends utils.Adapter {
                 const mode = gaData.native.linkedStateMode || "direct";
                 let writeVal = state.val;
 
+                // Threshold filter: skip if value change is below threshold
+                const threshold = gaData.native.linkedStateThreshold;
+                if (threshold > 0 && typeof state.val === "number") {
+                    const curState = this.isForeign
+                        ? await this.getForeignStateAsync(linkedKnxId)
+                        : await this.getStateAsync(linkedKnxId);
+                    if (curState?.val != null && typeof curState.val === "number") {
+                        if (Math.abs(state.val - curState.val) < threshold) {
+                            return "below threshold";
+                        }
+                    }
+                }
+
                 if (mode === "trigger" || mode === "toggle") {
                     // trigger/toggle: only react on EIN, ignore AUS (release events)
                     if (!state.val) {
@@ -469,6 +499,15 @@ class openknx extends utils.Adapter {
                         ? await this.getForeignStateAsync(linkedKnxId)
                         : await this.getStateAsync(linkedKnxId);
                     writeVal = !curState?.val;
+                }
+
+                // Apply user-defined conversion expression (e.g. "!!value", "value*100")
+                if (gaData.native.linkedStateConvert) {
+                    try {
+                        writeVal = new Function("value", `return ${gaData.native.linkedStateConvert}`)(writeVal);
+                    } catch (e) {
+                        this.log.warn(`Direct Link convert error for ${gaData.native.address}: ${e.message}`);
+                    }
                 }
 
                 this.log.debug(

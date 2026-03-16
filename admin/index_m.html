@@ -283,6 +283,7 @@
                                 xml: event.target.result,
                                 onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked"),
                                 removeUnusedObjects: $("#removeUnusedObjects").prop("checked"),
+                                cleanImport: $("#cleanImport").prop("checked"),
                             },
                             function (result) {
                                 $("#progress").hide();
@@ -665,6 +666,15 @@
                     var mode = obj.native.linkedStateMode || 'direct';
                     html += '<p><b>' + _('Linked to') + ':</b><br/><span style="word-break:break-all">' + linked + '</span></p>';
                     html += '<p><b>' + _('Mode') + ':</b> ' + modeSelect + '</p>';
+                    html += '<p><b>' + _('Threshold') + ':</b> '
+                        + '<input type="number" id="gaLinkThreshold" style="display:inline-block;width:80px;margin-left:8px" step="any" min="0" value="' + (obj.native.linkedStateThreshold || '') + '" />'
+                        + '<p style="color:#666;font-size:0.85em;margin-top:2px">' + _('Minimum change required before sending to KNX bus. Leave empty to send every change.') + '</p>'
+                        + '</p>';
+                    html += '<p><b>' + _('Convert') + ':</b> '
+                        + '<input type="text" id="gaLinkConvert" style="display:inline-block;width:200px;margin-left:8px" placeholder="' + _('e.g. !!value, value*100') + '" value="' + (obj.native.linkedStateConvert || '') + '" />'
+                        + ' <a class="waves-effect waves-light btn-small" onclick="gaSaveLinkSettings()">' + _('Save') + '</a>'
+                        + '<p style="color:#666;font-size:0.85em;margin-top:2px">' + _('JS expression. Variable: value. Examples: !!value, value*100, value>0?100:0, Math.round(value)') + '</p>'
+                        + '</p>';
                     html += '<a class="waves-effect waves-light btn-small red" onclick="gaRemoveLink()">' + _('Remove Link') + '</a>';
                     $('#gaLinkContent').html(html);
                     $('#gaLinkMode').val(mode);
@@ -778,6 +788,30 @@
                     socket.emit('setObject', selectedGaId, gaObj, function () {
                         gaObjects[selectedGaId] = gaObj;
                         showToast(null, 'Mode changed to: ' + mode, null, 2000);
+                    });
+                });
+            }
+
+            function gaSaveLinkSettings() {
+                if (!selectedGaId) return;
+                var thresholdVal = $('#gaLinkThreshold').val();
+                var threshold = thresholdVal ? parseFloat(thresholdVal) : 0;
+                var convert = $('#gaLinkConvert').val().trim();
+                socket.emit('getObject', selectedGaId, function (err, gaObj) {
+                    if (err || !gaObj) return;
+                    if (threshold > 0) {
+                        gaObj.native.linkedStateThreshold = threshold;
+                    } else {
+                        delete gaObj.native.linkedStateThreshold;
+                    }
+                    if (convert) {
+                        gaObj.native.linkedStateConvert = convert;
+                    } else {
+                        delete gaObj.native.linkedStateConvert;
+                    }
+                    socket.emit('setObject', selectedGaId, gaObj, function () {
+                        gaObjects[selectedGaId] = gaObj;
+                        showToast(null, _('Settings saved'), null, 2000);
                     });
                 });
             }
@@ -936,6 +970,11 @@
                                 <input class="value" id="removeUnusedObjects" type="checkbox" />
                                 <label class="translate" for="removeUnusedObjects"
                                     >remove existing IOB objects that are not in ETS import file</label>
+                            </div>
+                            <div class="col s12 input-field">
+                                <input class="value" id="cleanImport" type="checkbox" />
+                                <label class="translate" for="cleanImport"
+                                    >delete all existing KNX objects before import (clean re-import)</label>
                             </div>
                             <div class="col s12 input-field">
                                 <input class="value" id="useBoolean" type="checkbox" />
