@@ -344,19 +344,51 @@
                 } else {
                     disableAllButtons();
                     window.isProcessingRequest = true;
+                    showToast(null, _('Gateway detection started, this takes about 20 seconds...'), null, 5000);
                     sendTo(null, "detectInterface", { ip: $("#localInterface")[0].value }, function (result) {
                         if (!result || result.error || result.devicesFound == 0) {
                             showMessage(_("no KNX gateway found"));
+                            $("#detectedInterfaces").html('');
                         } else {
-                            $("#deviceName")[0].innerHTML = result.deviceName;
-                            $("#gwip").val(result.ip).change();
-                            $("#eibadr").val(result.knxAdr).change();
-                            $("#gwipport").val(result.port).change();
-                            if (result.devicesFound > 1) showMessage(_("more than one KNX gateway found"));
+                            applyDetectedInterface(result.interfaces[0]);
+                            showDetectedInterfaces(result.interfaces || []);
                         }
                         window.isProcessingRequest = false;
                     });
                 }
+            }
+
+            function applyDetectedInterface(iface) {
+                $("#deviceName")[0].innerHTML = iface.deviceName;
+                $("#gwip").val(iface.ip).change();
+                $("#eibadr").val(iface.knxAdr).change();
+                $("#gwipport").val(iface.port).change();
+            }
+
+            function showDetectedInterfaces(interfaces) {
+                var html = '';
+                interfaces.forEach(function (iface, idx) {
+                    var cls = idx === 0 ? 'style="border:2px solid #26a69a;padding:6px 10px;margin:4px 0;border-radius:4px;cursor:pointer"'
+                        : 'style="border:1px solid #ccc;padding:6px 10px;margin:4px 0;border-radius:4px;cursor:pointer"';
+                    html += '<div class="detected-iface" data-idx="' + idx + '" ' + cls + '>';
+                    html += '<b>' + (iface.deviceName || '?') + '</b><br/>';
+                    html += iface.ip + ':' + iface.port;
+                    html += ' &middot; IA ' + iface.knxAdr;
+                    html += ' &middot; ' + (iface.type || '');
+                    html += ' &middot; ' + (iface.transport || '');
+                    if (iface.services && iface.services.length) {
+                        html += '<br/><span style="color:#888;font-size:0.85em">' + iface.services.join(', ') + '</span>';
+                    }
+                    html += '</div>';
+                });
+                $("#detectedInterfaces").html(html);
+                window._detectedInterfaces = interfaces;
+                $(".detected-iface").on("click", function () {
+                    var i = parseInt($(this).data("idx"));
+                    applyDetectedInterface(window._detectedInterfaces[i]);
+                    $(".detected-iface").css("border", "1px solid #ccc");
+                    $(this).css("border", "2px solid #26a69a");
+                });
             }
 
             function isNumber(number) {
@@ -788,6 +820,7 @@
                             </div>
                             <div class="col s12 l4">
                                 <h7 class="value" id="deviceName"></h7>
+                                <div id="detectedInterfaces"></div>
                             </div>
                         </div>
                         <div class="row">

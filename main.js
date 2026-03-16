@@ -211,21 +211,34 @@ class openknx extends utils.Adapter {
                     KNXClient.discoverInterfaces()
                         .then(interfaces => {
                             this.log.info(`Discovery found ${interfaces.length} interface(s)`);
-                            // pick first match or use provided IP
-                            const match = obj.message.ip
-                                ? interfaces.find(i => i.ip === obj.message.ip) || interfaces[0]
-                                : interfaces[0];
                             if (obj.callback) {
-                                const res = match
-                                    ? {
-                                          error: null,
-                                          ip: match.ip,
-                                          port: match.port,
-                                          knxAdr: match.ia,
-                                          deviceName: match.name,
-                                          devicesFound: interfaces.length,
-                                      }
-                                    : { error: "No KNX interfaces found", devicesFound: 0 };
+                                if (interfaces.length === 0) {
+                                    this.sendTo(
+                                        obj.from,
+                                        obj.command,
+                                        { error: "No KNX interfaces found", devicesFound: 0 },
+                                        obj.callback,
+                                    );
+                                    return;
+                                }
+                                const all = interfaces.map(i => ({
+                                    ip: i.ip,
+                                    port: i.port,
+                                    knxAdr: i.ia,
+                                    deviceName: i.name,
+                                    services: i.services,
+                                    type: i.type,
+                                    transport: i.transport,
+                                }));
+                                const res = {
+                                    error: null,
+                                    ip: all[0].ip,
+                                    port: all[0].port,
+                                    knxAdr: all[0].knxAdr,
+                                    deviceName: all[0].deviceName,
+                                    devicesFound: all.length,
+                                    interfaces: all,
+                                };
                                 this.sendTo(obj.from, obj.command, res, obj.callback);
                             }
                         })
