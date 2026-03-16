@@ -345,7 +345,7 @@
                 } else {
                     disableAllButtons();
                     window.isProcessingRequest = true;
-                    showToast(null, _('Gateway detection started, this takes about 20 seconds...'), null, 5000);
+                    showToast(null, _('Gateway detection started, this takes about 20 seconds...'), null, 18000);
                     sendTo(null, "detectInterface", { ip: $("#localInterface")[0].value }, function (result) {
                         if (!result || result.error || result.devicesFound == 0) {
                             showMessage(_("no KNX gateway found"));
@@ -675,7 +675,7 @@
                         + ' <a class="waves-effect waves-light btn-small" onclick="gaSaveLinkSettings()">' + _('Save') + '</a>'
                         + '<p style="color:#666;font-size:0.85em;margin-top:2px">' + _('JS expression. Variable: value. Examples: !!value, value*100, value>0?100:0, Math.round(value)') + '</p>'
                         + '</p>';
-                    html += '<a class="waves-effect waves-light btn-small red" onclick="gaRemoveLink()">' + _('Remove Link') + '</a>';
+                    html += '<div style="margin-top:24px"><a class="waves-effect waves-light btn-small red" onclick="gaRemoveLink()">' + _('Remove Link') + '</a></div>';
                     $('#gaLinkContent').html(html);
                     $('#gaLinkMode').val(mode);
                     $('#gaLinkModeDesc').text(modeDescs[mode] || '');
