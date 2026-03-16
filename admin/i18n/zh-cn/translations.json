@@ -22,6 +22,7 @@
     "Frames per second": "每秒帧数",
     "GA Aliases & Migration": "GA别名和迁移",
     "GA-Tools / Direct Link": "GA-Tools / Direct Link",
+    "Gateway detection started, this takes about 20 seconds...": "Gateway detection started, this takes about 20 seconds...",
     "Gateway IP": "网关IP",
     "generate aliases": "生成别名",
     "Generated %s aliases.": "已生成 %s 别名。",
