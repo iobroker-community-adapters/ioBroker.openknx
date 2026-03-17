@@ -40,6 +40,8 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 
 [🇺🇸 Documentation](./docs/en/README.md)
 
+[🇩🇪 Dokumentation](./docs/de/README.md)
+
 
 ## Changelog
 

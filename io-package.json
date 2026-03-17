@@ -83,8 +83,8 @@
       "uk": "KNX (Open KNX)"
     },
     "desc": {
-      "en": "full featured open-source adapter for KNX with KNX Secure Support",
-      "de": "Kostenloser KNX Open-Source-Adapter, mit KNX Secure Support.",
+      "en": "Free open-source adapter for KNX with KNX Secure Support and knxproj Import",
+      "de": "Kostenloser KNX Open-Source-Adapter, mit KNX Secure Support und knxproj Import",
       "ru": "новый бесплатный open-source-адаптер для KNX",
       "pt": "novo adaptador de código aberto gratuito para KNX",
       "nl": "nieuwe gratis open-source-adapter voor KNX",
