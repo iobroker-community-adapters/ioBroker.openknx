@@ -295,9 +295,9 @@
                                     showMessage(_(message));
                                 } else {
                                     showMessage(_("Imported %s states successfully", result.count));
+                                    sendTo(null, "restart", null);
+                                    showToast(null, _("Restarting adapter" + "..."), null, 10000);
                                 }
-                                sendTo(null, "restart", null);
-                                showToast(null, _("Restarting adapter" + "..."), null, 10000);
                                 window.isProcessingRequest = false;
                             },
                         );
@@ -344,9 +344,9 @@
                                             "<br/><br/>" +
                                             _("knxproj import hint"),
                                     );
+                                    sendTo(null, "restart", null);
+                                    showToast(null, _("Restarting adapter" + "..."), null, 10000);
                                 }
-                                sendTo(null, "restart", null);
-                                showToast(null, _("Restarting adapter" + "..."), null, 10000);
                                 window.isProcessingRequest = false;
                             },
                         );
