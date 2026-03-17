@@ -49,8 +49,8 @@ The import dialog accepts both **.knxproj** (recommended) and **.xml** files.
 Import the ETS project file directly. This provides the most complete data:
 
 1. In ETS, save your project (File > Save). The .knxproj file is located in your ETS project directory.
-2. Upload the .knxproj file in the adapter via the import dialog.
-3. If the project is password-protected, you will be prompted to enter the password.
+2. If the project is password-protected, enter the project password in the password field next to the import button.
+3. Upload the .knxproj file in the adapter via the import dialog.
 4. Import starts immediately and shows a progress estimate based on file size.
 
 Advantages over XML import:
