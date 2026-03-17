@@ -58,22 +58,46 @@ If checked, the import will skip overwriting existing communication objects.
 
 To clean up object tree
 
-### import ETS xml and save
+### import ETS project and save
+
+The file dialog accepts both **.knxproj** and **.xml** files. The adapter supports two import methods:
+
+#### .knxproj import (recommended)
+
+Import the ETS project file directly. This is the recommended method as it provides the most complete data:
+
+1. In ETS, save your project (File > Save). The .knxproj file is located in your ETS project directory.
+2. Upload the .knxproj file in the adapter via the import dialog.
+3. If the project is password-protected, you will be prompted to enter the password.
+4. Import starts immediately and shows a progress estimate based on file size.
+
+Advantages over XML import:
+
+- **Read/Write/Transmit/Update flags** from ComObjects (instead of defaulting to read=true, write=true)
+- **DPT inference** from ComObjects when no DPT is assigned to the GA
+- **Room assignment** from ETS building/location structure (creates enum.rooms automatically)
+- **Autoread flag** derived from the ComObject ReadOnInit flag
+- Supports ETS4, ETS5, and ETS6 projects (including password-protected ones)
+- Future ETS versions work automatically -- no adapter update needed for new ETS patch/minor releases
+
+After a successful .knxproj import, use the "Create Aliases" function below to link status GAs with their corresponding action GAs.
+
+#### XML import (fallback)
 
 ![ETS export](img/exportGA.png)
 
 1. In ETS go to Group Addresses, select export group address and select XML export in latest format version.
    ETS4 Format is not supported, it does not contain DPT information.
-2. upload your ETS Export XML in the adapter via the GA XML-Import dialog
-3. Import will immediatelly start after file selection and give a status report after completion.  
-   After the successful import a message shows how much objects have been recognized.
-   An error dialog will shop problems during import and gives hints how to clean up the ets database.
-   Additional information could be found in the log.
+2. Upload your ETS Export XML in the adapter via the import dialog.
+3. Import will immediately start after file selection and give a status report after completion.
+   After the successful import a message shows how many objects have been recognized.
+   An error dialog will show problems during import and gives hints how to clean up the ETS database.
+   Additional information can be found in the log.
    Data will be stored and the adapter is reset.
 
-Hint on ETS configuration:  
-If you have different DPT Subtypes for the GA and in the communication objets that use this GA, then the ETS seems to use the DPT Type with the lowest number.
-In this case manually ensure that all elements are using the same desired datatype.  
+Hint on ETS configuration:
+If you have different DPT Subtypes for the GA and in the communication objects that use this GA, then the ETS seems to use the DPT Type with the lowest number.
+In this case manually ensure that all elements are using the same desired datatype.
 A GA without DPT basetype cannot be imported with this adapter. ETS4 projects must be converted into ETS5 or later and the DPT must be set to the GA.
 
 ### Group Address Style
@@ -338,14 +362,18 @@ This is the KNX Read flag. Only one communication object on the bus or the IOBro
 The KNX object flags define the bus behavior of the object they represent.
 6 different object flags are defined.
 
-| Flag                       | Flag de                  | Adapter usage                           |                                                |
+With .knxproj import, the flags are read directly from the ETS ComObjects. With XML import, sensible defaults are applied.
+
+| Flag                       | Flag de                  | Adapter usage (.knxproj)                | Adapter usage (XML import)                     |
 | -------------------------- | ------------------------ | --------------------------------------- | ---------------------------------------------- |
-| C: the Communication flag  | K: Kommunikations-Flag   | always set                              |                                                |
-| R: the Read flag           | L: Lese-Flag             | object native.answer_groupValueResponse |                                                |
-| T: the Transmit flag       | Ü: Übertragen-Flag       | object common.write                     |                                                |
-| W: the Write flag          | S: Schreiben-Flag        | object common.read                      | bus can modify the object                      |
-| U: the Update flag         | A: Aktualisieren-Flag    | object common.read                      | update object on incoming GroupValue_Responses |
-| I: the Initialization flag | I: Initialisierungs-Flag | object native.autoread                  |                                                |
+| C: the Communication flag  | K: Kommunikations-Flag   | always set                              | always set                                     |
+| R: the Read flag           | L: Lese-Flag             | object common.read                      | default true                                   |
+| T: the Transmit flag       | Ü: Übertragen-Flag       | object common.update                    | default false                                  |
+| W: the Write flag          | S: Schreiben-Flag        | object common.write                     | default true                                   |
+| U: the Update flag         | A: Aktualisieren-Flag    | object native.update                    | default false                                  |
+| I: the Initialization flag | I: Initialisierungs-Flag | object native.autoread                  | derived from DPT                               |
+
+Note: `native.answer_groupValueResponse` must still be set manually if needed.
 
 ## Monitoring and Error Tracking
 
@@ -357,21 +385,22 @@ Openknx estimates the current bus load of the KNX line it is connected to in obj
 
 ## Features
 
-- compatible with ETS 5 and ETS 6
-- stable and reliable knx stack
-- automatic encoding/deconding of KNX datagrams for most importants DPTs, raw read and write for other DPTs
-- support of KNX group value read and group value write and group value response
-- free open source
-- no dependencies to cloud services, runs offline without internet access
-- autoread on start
-- fast import of group addresses in XML format
-- create joint alias objects that react on status inputs
-- supports project of all possible group address styles
+- Native .knxproj import (ETS4, ETS5, ETS6) with password support
+- Read/Write/Transmit/Update flags from ETS ComObjects
+- DPT inference from ComObjects when GA-level DPT is missing
+- Room assignment (enum.rooms) from ETS building structure
+- XML group address import as fallback
+- KNX Secure (IP Secure tunneling via .knxkeys keyfile or password)
+- Stable and reliable KNX stack powered by KNXUltimate
+- Automatic encoding/decoding of KNX datagrams for most DPTs, raw read and write for other DPTs
+- Support of KNX group value read, group value write, and group value response
+- Free open source, no cloud dependencies, runs offline
+- Autoread on start
+- Create joint alias objects that react on status inputs
+- Supports all group address styles (3-level, 2-level, free)
 
 ## Limitations
 
-- ETS 4 export file format is not supported
-- KNX secure is not supported
 - only IPv4 supported
 
 ## FAQ
@@ -386,4 +415,4 @@ Increase setting for Minimum send delay between two frames to avoid flooding the
 
 **Is secure tunneling supported?**
 
-No. Disable secure tunneling in your IP interface.
+Yes. KNX IP Secure tunneling is supported via .knxkeys keyfile or password.

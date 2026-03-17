@@ -63,7 +63,7 @@
 
         <script type="text/javascript">
             //ref https://github.com/ioBroker/ioBroker.docs/blob/master/docs/en/dev/adapterdev.md#adminhtml -->
-            var etsFile = '<input type="file" id="etsFile" style="display: inline-block"/>';
+            var etsFile = '<input type="file" id="etsFile" accept=".xml,.knxproj" style="display: inline-block"/>';
 
             function disableAllButtons() {
                 $("#etsFile").prop("disabled", true);
@@ -304,11 +304,65 @@
                     });
                     reader.readAsText(file);
                 } else if (file.name.split(".").pop() == "knxproj") {
-                    showMessage(
-                        _(
-                            "KNXproj are not supported, please open in ETS the Group Adresses and right click on group addresses and then group adresse export",
-                        ),
-                    );
+                    disableAllButtons();
+                    window.isProcessingRequest = true;
+                    var reader = new FileReader();
+                    reader.addEventListener("load", function readFile(event) {
+                        $("#etsFile").replaceWith($(etsFile));
+                        $("#etsFile").change(processXmlFile);
+                        var base64 = btoa(
+                            new Uint8Array(event.target.result).reduce(function (data, byte) {
+                                return data + String.fromCharCode(byte);
+                            }, ""),
+                        );
+                        var sizeMB = (event.target.result.byteLength / 1024 / 1024).toFixed(1);
+                        var estSec = Math.max(1, Math.round(sizeMB * 1));
+                        showToast(null, _("Import started") + " (" + sizeMB + " MB, ~" + estSec + "s) ...", null, estSec * 1000 + 3000);
+                        $("#progress").show();
+                        sendTo(
+                            null,
+                            "importKnxproj",
+                            {
+                                knxprojBase64: base64,
+                                password: $("#knxprojPassword").val() || undefined,
+                                language: undefined,
+                                onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked"),
+                                removeUnusedObjects: $("#removeUnusedObjects").prop("checked"),
+                                cleanImport: $("#cleanImport").prop("checked"),
+                            },
+                            function (result) {
+                                $("#progress").hide();
+                                if (!result || result.error) {
+                                    if (result && result.needsPassword) {
+                                        // Show password dialog and retry
+                                        var pw = prompt(_("This project is password-protected. Please enter the password:"));
+                                        if (pw) {
+                                            $("#knxprojPassword").val(pw);
+                                            // Re-trigger file processing
+                                            processXmlFile(event);
+                                        }
+                                        window.isProcessingRequest = false;
+                                        return;
+                                    }
+                                    var message = "Unknown error";
+                                    if (result && result.error) {
+                                        message = "Imported " + result.count + " states successfully<p>" + result.error + "</p><p>See log for more information</p>";
+                                    }
+                                    showMessage(_(message));
+                                } else {
+                                    showMessage(
+                                        _("Imported %s states successfully", result.count) +
+                                            "<br/><br/>" +
+                                            _("knxproj import hint"),
+                                    );
+                                }
+                                sendTo(null, "restart", null);
+                                showToast(null, _("Restarting adapter" + "..."), null, 10000);
+                                window.isProcessingRequest = false;
+                            },
+                        );
+                    });
+                    reader.readAsArrayBuffer(file);
                 } else {
                     showMessage(_("Unsupported file format"));
                 }
@@ -985,12 +1039,13 @@
                             <div class="col s12 m12 l6 file-field input-field">
                                 <div class="btn" id="fileUploadButton">
                                     <i class="material-icons right">input</i>
-                                    <span class="translate">import ETS xml and save</span>
-                                    <input type="file" id="etsFile" />
+                                    <span class="translate">import ETS project and save</span>
+                                    <input type="file" id="etsFile" accept=".xml,.knxproj" />
                                 </div>
                                 <div class="file-path-wrapper">
-                                    <input class="file-path validate" type="text" />
+                                    <input class="file-path validate" type="text" placeholder=".xml or .knxproj" />
                                 </div>
+                                <input type="hidden" id="knxprojPassword" value="" />
                             </div>
                             <div class="col s12" style="margin-top:8px">
                                 <img src="exportGA.png" alt="ETS Group Address Export" style="max-width:320px;border:1px solid #ccc;border-radius:4px" />

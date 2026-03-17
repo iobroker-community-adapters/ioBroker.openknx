@@ -18,6 +18,7 @@ const projectImport = require("./lib/projectImport");
 const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 const similarity = require("./lib/similarity.js");
+const { parseKnxproj } = require("./lib/knxproj/index.js");
 
 class openknx extends utils.Adapter {
     /**
@@ -166,32 +167,52 @@ class openknx extends utils.Adapter {
         if (typeof obj === "object") {
             switch (obj.command) {
                 case "import": {
-                    this.log.info("ETS project import...");
-                    const doImport = () => {
+                    this.log.info("ETS XML import...");
+                    const doXmlImport = () => {
                         projectImport.parseInput(this, obj.message.xml, (parseError, res) => {
-                            this.updateObjects(res, 0, obj.message.onlyAddNewObjects, (updateError, length) => {
-                                const msg = {
-                                    error:
-                                        parseError && parseError.length == 0
-                                            ? updateError
-                                            : `${parseError ? parseError : ""}<br/>${updateError}`,
-                                    count: length,
-                                };
-
-                                this.removeUnusedObjects(res, obj.message.removeUnusedObjects);
-
-                                this.log.info(`Project import finished with ${length} GAs`);
-                                if (obj.callback) {
-                                    this.sendTo(obj.from, obj.command, msg, obj.callback);
-                                }
-                            });
+                            this._finishImport(res, parseError, obj);
                         });
                     };
                     if (obj.message.cleanImport) {
                         this.log.info("Clean import: deleting all existing KNX objects before import...");
-                        this.cleanImport().then(doImport);
+                        this.cleanImport().then(doXmlImport);
                     } else {
-                        doImport();
+                        doXmlImport();
+                    }
+                    break;
+                }
+                case "importKnxproj": {
+                    this.log.info("ETS .knxproj import...");
+                    const doKnxprojImport = async () => {
+                        try {
+                            const buffer = Buffer.from(obj.message.knxprojBase64, "base64");
+                            const password = obj.message.password || undefined;
+                            const language = obj.message.language || undefined;
+                            const knxProject = await parseKnxproj(buffer, password, language);
+                            const res = projectImport.convertKnxProject(this, knxProject);
+                            await this._createRoomEnums(res.rooms);
+                            this._finishImport(res.objects, res.error, obj);
+                        } catch (e) {
+                            this.log.error(`knxproj import failed: ${e.message}`);
+                            if (obj.callback) {
+                                this.sendTo(
+                                    obj.from,
+                                    obj.command,
+                                    {
+                                        error: e.message,
+                                        count: 0,
+                                        needsPassword: e.name === "InvalidPasswordException",
+                                    },
+                                    obj.callback,
+                                );
+                            }
+                        }
+                    };
+                    if (obj.message.cleanImport) {
+                        this.log.info("Clean import: deleting all existing KNX objects before import...");
+                        this.cleanImport().then(doKnxprojImport);
+                    } else {
+                        doKnxprojImport();
                     }
                     break;
                 }
@@ -273,6 +294,67 @@ class openknx extends utils.Adapter {
             }
         }
         return true;
+    }
+
+    /**
+     * Create enum.rooms.* objects from the rooms map produced by convertKnxProject.
+     *
+     * @param {{[key: string]: {name: string, members: string[]}}} rooms
+     */
+    async _createRoomEnums(rooms) {
+        if (!rooms || Object.keys(rooms).length === 0) {
+            return;
+        }
+        for (const [roomPath, roomInfo] of Object.entries(rooms)) {
+            const enumId = `enum.rooms.${roomPath}`;
+            const members = roomInfo.members.map(m => `${this.namespace}.${m}`);
+            try {
+                const existing = await this.getForeignObjectAsync(enumId);
+                if (existing) {
+                    // Merge members into existing enum
+                    const existingMembers = existing.common.members || [];
+                    const merged = [...new Set([...existingMembers, ...members])];
+                    existing.common.members = merged;
+                    await this.setForeignObjectAsync(enumId, existing);
+                } else {
+                    await this.setForeignObjectAsync(enumId, {
+                        _id: enumId,
+                        type: "enum",
+                        common: {
+                            name: roomInfo.name,
+                            members: members,
+                        },
+                        native: {},
+                    });
+                }
+                this.log.debug(`Created/updated room enum ${enumId} with ${members.length} members`);
+            } catch (e) {
+                this.log.warn(`Could not create room enum ${enumId}: ${e.message}`);
+            }
+        }
+        this.log.info(`Created ${Object.keys(rooms).length} room enums from ETS project locations`);
+    }
+
+    /**
+     * Common import finish logic shared between XML and knxproj import.
+     */
+    _finishImport(res, parseError, obj) {
+        this.updateObjects(res, 0, obj.message.onlyAddNewObjects, (updateError, length) => {
+            const msg = {
+                error:
+                    parseError && parseError.length == 0
+                        ? updateError
+                        : `${parseError ? parseError : ""}<br/>${updateError}`,
+                count: length,
+            };
+
+            this.removeUnusedObjects(res, obj.message.removeUnusedObjects);
+
+            this.log.info(`Project import finished with ${length} GAs`);
+            if (obj.callback) {
+                this.sendTo(obj.from, obj.command, msg, obj.callback);
+            }
+        });
     }
 
     /*
@@ -613,7 +695,7 @@ class openknx extends utils.Adapter {
             isRaw = true;
             this.log.info(`Unhandled DPT ${dpt}, assuming raw value`);
         } else {
-            // unhandled common.type (e.g. "mixed", "object" from old knx adapter) — pass through to knxultimate
+            // unhandled common.type (e.g. "mixed", "object") — pass through to knxultimate
             this.log.debug(
                 `${id}: common.type "${gaData.common?.type}" not explicitly handled for DPT ${dpt}, passing value through`,
             );
@@ -1276,8 +1358,12 @@ class openknx extends utils.Adapter {
                             }
                         } else if (!id.startsWith(`${this.mynamespace}.info.`)) {
                             const missing = [];
-                            if (!value?.native?.address) missing.push("native.address");
-                            if (!value?.native?.dpt) missing.push("native.dpt");
+                            if (!value?.native?.address) {
+                                missing.push("native.address");
+                            }
+                            if (!value?.native?.dpt) {
+                                missing.push("native.dpt");
+                            }
                             this.log.warn(
                                 `Skipping ${id}: missing ${missing.join(" and ") || "valid GA format"}. Delete or reconfigure this object.`,
                             );

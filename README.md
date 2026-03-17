@@ -22,7 +22,11 @@
 
 ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://github.com/Supergiovane/knxultimate).
 
-- ETS group address XML import (ETS version independent) with automatic ioBroker object generation
+- Native .knxproj import (ETS4/5/6, password-protected projects supported) -- import dialog accepts both .knxproj and .xml files
+- ETS group address XML import as fallback
+- Read/Write/Transmit/Update flags from ETS ComObjects (no more guessing)
+- DPT inference from ComObjects when GA-level DPT is missing
+- Room assignment (enum.rooms) from ETS building structure
 - KNX Secure (IP Secure tunneling via .knxkeys keyfile or password)
 - Tunneling (UDP/TCP) and Routing (Multicast) protocols
 - Alias generation to merge action and status GAs into a single ioBroker object

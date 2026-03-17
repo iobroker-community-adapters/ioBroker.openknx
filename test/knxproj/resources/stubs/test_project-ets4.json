@@ -1,0 +1,366 @@
+{
+  "info": {
+    "project_id": "P-0600",
+    "name": "Test Project XKNX",
+    "last_modified": "2023-06-15T19:27:33",
+    "group_address_style": "ThreeLevel",
+    "guid": null,
+    "created_by": "ETS4",
+    "schema_version": "11",
+    "tool_version": "ETS 4.2.0 (Build 3884)",
+    "xknxproject_version": "3.8.2",
+    "language_code": "de-DE"
+  },
+  "communication_objects": {
+    "0.0.1/M-0083_A-0013-11-A9D6_O-0_R-10000": {
+      "name": "Channel A",
+      "number": 0,
+      "text": "Channel A",
+      "function_text": "Switch On/Off",
+      "description": "",
+      "device_address": "0.0.1",
+      "device_application": "M-0083_A-0013-11-A9D6",
+      "module_def": null,
+      "channel": null,
+      "dpts": [
+        {
+          "main": 1,
+          "sub": 1
+        }
+      ],
+      "object_size": "1 Bit",
+      "flags": {
+        "read": false,
+        "write": true,
+        "communication": true,
+        "update": false,
+        "read_on_init": false,
+        "transmit": false
+      },
+      "group_address_links": [
+        "0/0/1"
+      ]
+    },
+    "0.0.1/M-0083_A-0013-11-A9D6_O-5_R-10005": {
+      "name": "Channel A",
+      "number": 5,
+      "text": "Channel A",
+      "function_text": "State",
+      "description": "",
+      "device_address": "0.0.1",
+      "device_application": "M-0083_A-0013-11-A9D6",
+      "module_def": null,
+      "channel": null,
+      "dpts": [
+        {
+          "main": 1,
+          "sub": null
+        }
+      ],
+      "object_size": "1 Bit",
+      "flags": {
+        "read": true,
+        "write": false,
+        "communication": true,
+        "update": false,
+        "read_on_init": false,
+        "transmit": true
+      },
+      "group_address_links": [
+        "0/0/2"
+      ]
+    },
+    "0.0.1/M-0083_A-0013-11-A9D6_O-13_R-4": {
+      "name": "Channel B",
+      "number": 13,
+      "text": "Channel B",
+      "function_text": "State",
+      "description": "",
+      "device_address": "0.0.1",
+      "device_application": "M-0083_A-0013-11-A9D6",
+      "module_def": null,
+      "channel": null,
+      "dpts": [
+        {
+          "main": 1,
+          "sub": null
+        }
+      ],
+      "object_size": "1 Bit",
+      "flags": {
+        "read": true,
+        "write": false,
+        "communication": true,
+        "update": false,
+        "read_on_init": false,
+        "transmit": true
+      },
+      "group_address_links": [
+        "0/0/3"
+      ]
+    },
+    "0.0.2/M-0002_A-A061-14-BE27_O-10_R-485": {
+      "name": "Ausgang A",
+      "number": 10,
+      "text": "Ausgang A",
+      "function_text": "Behang Auf-Ab fahren",
+      "description": "",
+      "device_address": "0.0.2",
+      "device_application": "M-0002_A-A061-14-BE27",
+      "module_def": null,
+      "channel": null,
+      "dpts": [
+        {
+          "main": 1,
+          "sub": null
+        }
+      ],
+      "object_size": "1 Bit",
+      "flags": {
+        "read": false,
+        "write": true,
+        "communication": true,
+        "update": false,
+        "read_on_init": false,
+        "transmit": false
+      },
+      "group_address_links": [
+        "0/0/1",
+        "0/0/3"
+      ]
+    },
+    "0.0.2/M-0002_A-A061-14-BE27_O-71_R-1506": {
+      "name": "Ausgang C",
+      "number": 71,
+      "text": "Ausgang C",
+      "function_text": "Lamellenverst./Stopp Auf-Ab",
+      "description": "",
+      "device_address": "0.0.2",
+      "device_application": "M-0002_A-A061-14-BE27",
+      "module_def": null,
+      "channel": null,
+      "dpts": [
+        {
+          "main": 1,
+          "sub": null
+        }
+      ],
+      "object_size": "1 Bit",
+      "flags": {
+        "read": false,
+        "write": true,
+        "communication": true,
+        "update": false,
+        "read_on_init": false,
+        "transmit": false
+      },
+      "group_address_links": [
+        "0/0/2"
+      ]
+    }
+  },
+  "topology": {
+    "0": {
+      "name": "Backbone area",
+      "description": null,
+      "lines": {
+        "0": {
+          "name": "Backbone line",
+          "description": null,
+          "devices": [
+            "0.0.1",
+            "0.0.2"
+          ],
+          "medium_type": "Twisted Pair (TP)"
+        }
+      }
+    }
+  },
+  "devices": {
+    "0.0.1": {
+      "name": "AKS-2016.02 Switch Actuator 20-fold, 12TE, 16A",
+      "hardware_name": "AKS-2016.02 Switch Actuator 20-fold, 12TE, 16A",
+      "order_number": "AKS-2016.02",
+      "description": "",
+      "manufacturer_name": "MDT technologies",
+      "individual_address": "0.0.1",
+      "application": "M-0083_A-0013-11-A9D6",
+      "project_uid": null,
+      "communication_object_ids": [
+        "0.0.1/M-0083_A-0013-11-A9D6_O-0_R-10000",
+        "0.0.1/M-0083_A-0013-11-A9D6_O-5_R-10005",
+        "0.0.1/M-0083_A-0013-11-A9D6_O-13_R-4"
+      ],
+      "channels": {}
+    },
+    "0.0.2": {
+      "name": "JRA/S4.230.5.1 Jal./Rol.Akt.Fahrzt.man.4f,230V,REG",
+      "hardware_name": "JRA/S4.230.5.1 Jal./Rol.Akt.Fahrzt.man.4f,230V,REG",
+      "order_number": "2CDG 110 125 R0011",
+      "description": "",
+      "manufacturer_name": "ABB",
+      "individual_address": "0.0.2",
+      "application": "M-0002_A-A061-14-BE27",
+      "project_uid": null,
+      "communication_object_ids": [
+        "0.0.2/M-0002_A-A061-14-BE27_O-10_R-485",
+        "0.0.2/M-0002_A-A061-14-BE27_O-71_R-1506"
+      ],
+      "channels": {}
+    }
+  },
+  "group_addresses": {
+    "0/0/1": {
+      "name": "Test 1",
+      "identifier": "GA-1",
+      "raw_address": 1,
+      "address": "0/0/1",
+      "project_uid": null,
+      "dpt": {
+        "main": 1,
+        "sub": null
+      },
+      "data_secure": false,
+      "communication_object_ids": [
+        "0.0.1/M-0083_A-0013-11-A9D6_O-0_R-10000",
+        "0.0.2/M-0002_A-A061-14-BE27_O-10_R-485"
+      ],
+      "description": "",
+      "comment": ""
+    },
+    "0/0/2": {
+      "name": "Test 2",
+      "identifier": "GA-2",
+      "raw_address": 2,
+      "address": "0/0/2",
+      "project_uid": null,
+      "dpt": {
+        "main": 1,
+        "sub": null
+      },
+      "data_secure": false,
+      "communication_object_ids": [
+        "0.0.1/M-0083_A-0013-11-A9D6_O-5_R-10005",
+        "0.0.2/M-0002_A-A061-14-BE27_O-71_R-1506"
+      ],
+      "description": "",
+      "comment": ""
+    },
+    "0/0/3": {
+      "name": "Test 3",
+      "identifier": "GA-3",
+      "raw_address": 3,
+      "address": "0/0/3",
+      "project_uid": null,
+      "dpt": {
+        "main": 1,
+        "sub": null
+      },
+      "data_secure": false,
+      "communication_object_ids": [
+        "0.0.1/M-0083_A-0013-11-A9D6_O-13_R-4",
+        "0.0.2/M-0002_A-A061-14-BE27_O-10_R-485"
+      ],
+      "description": "",
+      "comment": ""
+    }
+  },
+  "group_ranges": {
+    "0": {
+      "name": "Test 1st level",
+      "address_start": 1,
+      "address_end": 2047,
+      "group_addresses": [],
+      "comment": "",
+      "group_ranges": {
+        "0/0": {
+          "name": "Test 2nd level",
+          "address_start": 1,
+          "address_end": 255,
+          "group_addresses": [
+            "0/0/1",
+            "0/0/2",
+            "0/0/3"
+          ],
+          "comment": "",
+          "group_ranges": {}
+        }
+      }
+    }
+  },
+  "locations": {
+    "House": {
+      "type": "Building",
+      "identifier": "P-0600-0_BP-0",
+      "name": "House",
+      "usage_id": null,
+      "usage_text": "",
+      "number": "",
+      "description": "",
+      "project_uid": null,
+      "devices": [],
+      "spaces": {
+        "First floor": {
+          "type": "Floor",
+          "identifier": "P-0600-0_BP-1",
+          "name": "First floor",
+          "usage_id": null,
+          "usage_text": "",
+          "number": "",
+          "description": "",
+          "project_uid": null,
+          "devices": [],
+          "spaces": {
+            "Kitchen": {
+              "type": "Room",
+              "identifier": "P-0600-0_BP-2",
+              "name": "Kitchen",
+              "usage_id": null,
+              "usage_text": "",
+              "number": "",
+              "description": "",
+              "project_uid": null,
+              "devices": [
+                "0.0.2"
+              ],
+              "spaces": {},
+              "functions": []
+            }
+          },
+          "functions": []
+        },
+        "Second floor": {
+          "type": "Floor",
+          "identifier": "P-0600-0_BP-3",
+          "name": "Second floor",
+          "usage_id": null,
+          "usage_text": "",
+          "number": "",
+          "description": "",
+          "project_uid": null,
+          "devices": [],
+          "spaces": {
+            "Bathroom": {
+              "type": "Room",
+              "identifier": "P-0600-0_BP-4",
+              "name": "Bathroom",
+              "usage_id": null,
+              "usage_text": "",
+              "number": "",
+              "description": "",
+              "project_uid": null,
+              "devices": [
+                "0.0.1"
+              ],
+              "spaces": {},
+              "functions": []
+            }
+          },
+          "functions": []
+        }
+      },
+      "functions": []
+    }
+  },
+  "functions": {}
+}

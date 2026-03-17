@@ -35,9 +35,10 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.3.2",
-    "knxultimate": "^5.2.11",
-    "ipaddr.js": "^2.3.0",
     "@xmldom/xmldom": "^0.9.8",
+    "ipaddr.js": "^2.3.0",
+    "knxultimate": "^5.2.11",
+    "unzipper": "^0.12.3",
     "xpath": "^0.0.34"
   },
   "devDependencies": {
@@ -66,7 +67,7 @@
     "prebuild": "rimraf admin/build",
     "build": "build-adapter",
     "watch": "build-adapter --watch",
-    "test:js": "mocha --config test/mocharc.custom.json \"{!(node_modules|test)/**/*.test.js,*.test.js,test/**/test!(PackageFiles|Startup).js}\"",
+    "test:js": "mocha --config test/mocharc.custom.json \"{!(node_modules|test)/**/*.test.js,*.test.js,test/**/test!(PackageFiles|Startup).js,test/**/*.test.js}\"",
     "test:package": "mocha test/package --exit",
     "test:integration": "mocha test/integration --exit",
     "test": "npm run test:js && npm run test:package",

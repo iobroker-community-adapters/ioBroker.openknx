@@ -83,8 +83,8 @@
       "uk": "KNX (Open KNX)"
     },
     "desc": {
-      "en": "full featured open-source adapter for KNX",
-      "de": "Kostenloser Open-Source-Adapter, der die KNX Kommunikation über ein IP Gateway ermöglicht.",
+      "en": "full featured open-source adapter for KNX with KNX Secure Support",
+      "de": "Kostenloser KNX Open-Source-Adapter, mit KNX Secure Support.",
       "ru": "новый бесплатный open-source-адаптер для KNX",
       "pt": "novo adaptador de código aberto gratuito para KNX",
       "nl": "nieuwe gratis open-source-adapter voor KNX",
