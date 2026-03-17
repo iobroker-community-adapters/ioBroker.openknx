@@ -54,6 +54,7 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 - (TA2k) **breaking:** KNX communication switched to KNXUltimate
 - (TA2k) **breaking:** DPT21 property names changed (outofservice → outOfService, inalarm → inAlarm, alarmeunack → alarmUnAck), values must be boolean
 - (TA2k) **breaking:** DPT237 property names changed to camelCase
+- (TA2k) feature: Native .knxproj import (ETS4/5/6, password-protected) with flags, DPT inference, room assignment
 - (TA2k) feature: KNX Secure support
 - (TA2k) feature: Extended DPT coverage and compatibility (9 additional DPTs, including DPT-22, 213, 222, 235, 242, 249, 251)
 - (TA2k) feature: Improved connection stability
