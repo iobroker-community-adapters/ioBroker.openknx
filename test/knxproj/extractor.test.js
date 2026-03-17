@@ -75,7 +75,7 @@ describe("knxproj/extractor", function () {
     // This test is skipped until AES ZIP support is added.
     // -----------------------------------------------------------------
     describe("extract protected ETS6 project", function () {
-        it.skip("should read signature and 0.xml header with correct password (requires AES ZIP support)", async function () {
+        it("should read signature and 0.xml header with correct password", async function () {
             const buffer = fs.readFileSync(path.join(RESOURCES, "testprojekt-ets6.knxproj"));
             const contents = await extract(buffer, "test");
 

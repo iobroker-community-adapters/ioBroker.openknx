@@ -26,7 +26,7 @@ describe("knxproj/parser (projectLoader)", function () {
     // NOTE: testprojekt-ets6.knxproj is AES-encrypted; skipped until AES ZIP support is added.
     // -----------------------------------------------------------------
     describe("parse ETS6 project", function () {
-        it.skip("should parse group addresses, areas, and devices from ETS6 archive (requires AES ZIP support)", async function () {
+        it("should parse group addresses, areas, and devices from ETS6 archive", async function () {
             const buffer = fs.readFileSync(path.join(RESOURCES, "testprojekt-ets6.knxproj"));
             const contents = await extract(buffer, "test");
             const result = await projectLoader.load(contents, null);
