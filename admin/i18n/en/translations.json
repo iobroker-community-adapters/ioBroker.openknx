@@ -70,6 +70,7 @@
     "Please select your local network interface first.": "Please select your local network interface first.",
     "Port": "Port",
     "Properties": "Properties",
+    "Project password (if protected)": "Project password (if protected)",
     "Protocol": "Protocol",
     "Read": "Read",
     "readout values of autoread iob objects on startup": "readout values of autoread iob objects on startup",

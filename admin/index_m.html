@@ -333,17 +333,6 @@
                             function (result) {
                                 $("#progress").hide();
                                 if (!result || result.error) {
-                                    if (result && result.needsPassword) {
-                                        // Show password dialog and retry
-                                        var pw = prompt(_("This project is password-protected. Please enter the password:"));
-                                        if (pw) {
-                                            $("#knxprojPassword").val(pw);
-                                            // Re-trigger file processing
-                                            processXmlFile(event);
-                                        }
-                                        window.isProcessingRequest = false;
-                                        return;
-                                    }
                                     var message = "Unknown error";
                                     if (result && result.error) {
                                         message = "Imported " + result.count + " states successfully<p>" + result.error + "</p><p>See log for more information</p>";
@@ -1045,7 +1034,10 @@
                                 <div class="file-path-wrapper">
                                     <input class="file-path validate" type="text" placeholder=".knxproj (recommended) or .xml" />
                                 </div>
-                                <input type="hidden" id="knxprojPassword" value="" />
+                            </div>
+                            <div class="col s12 m12 l6 input-field">
+                                <input type="password" id="knxprojPassword" value="" />
+                                <label for="knxprojPassword" class="translate">Project password (if protected)</label>
                             </div>
                             <div class="col s12 progress" id="progress">
                                 <div class="indeterminate" style="width: 70%"></div>

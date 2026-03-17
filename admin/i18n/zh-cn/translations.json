@@ -46,6 +46,7 @@
     "Physical KNX address": "物理 KNX 地址",
     "Please select your local network interface first.": "请先选择您的本地网络接口。",
     "Port": "港口",
+    "Project password (if protected)": "项目密码（如果受保护）",
     "Properties": "Properties",
     "Protocol": "协议",
     "Read": "Read",

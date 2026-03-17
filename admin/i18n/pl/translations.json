@@ -46,6 +46,7 @@
     "Physical KNX address": "Fizyczny adres KNX",
     "Please select your local network interface first.": "Najpierw wybierz interfejs sieci lokalnej.",
     "Port": "Port",
+    "Project password (if protected)": "Hasło projektu (jeśli chroniony)",
     "Properties": "Properties",
     "Protocol": "Protokół",
     "Read": "Read",
