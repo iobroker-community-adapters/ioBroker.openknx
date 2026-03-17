@@ -24,7 +24,7 @@ In der Adapterliste nach "openknx" suchen und über das + Symbol installieren.
 
 ## Adapterkonfiguration
 
-![Einstellungen](img/setting.png)
+![Einstellungen](../img/setting.png)
 
 Mit "Speichern & Schließen" oder "Speichern" wird der Adapter neu gestartet und die Änderungen übernommen.
 
@@ -56,7 +56,7 @@ Nach einem erfolgreichen .knxproj-Import die Funktion "Aliase erstellen" verwend
 
 Falls .knxproj nicht verwendet werden kann, können Gruppenadressen aus ETS als XML exportiert werden:
 
-![Gruppenadressen als XML in ETS exportieren](img/exportGA.png)
+![Gruppenadressen als XML in ETS exportieren](../img/exportGA.png)
 
 1. In ETS zu Gruppenadressen navigieren, Gruppenadress-Export wählen und XML-Export im neuesten Format auswählen.
    ETS4-Format wird nicht unterstützt, da es keine DPT-Informationen enthält.
@@ -266,7 +266,7 @@ return msg;
 ## Log-Level
 
 Expertenmodus aktivieren, um zwischen Log-Leveln wechseln zu können. Standard ist info.
-![Loglevel](img/loglevel.png)
+![Loglevel](../img/loglevel.png)
 
 ## Monitoring
 
