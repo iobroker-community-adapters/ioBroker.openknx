@@ -11,7 +11,7 @@ The adapter can be searched in the adapter list under "openknx" and installed by
 ![settings](img/setting.png)
 
 Press "save & close" or "save" to restart the adapter and take over the changes.
-When starting, the adapter tries to read all GroupAdresses with have the autoread flag (default setting).
+When starting, the adapter tries to read all GroupAddresses which have the autoread flag (default setting).
 This could take a while and can produce a higher load on your KNX-bus. This ensures that the adapter operates with up-to-date values from the start.
 Autoread is done on the first connection with the knx bus after an adapter start or restart, not on every knx reconnection.  
 After adapter installation, open the adapter configuration. Fill in:
@@ -35,7 +35,7 @@ Searches via a standardized protocol all available KNX IP Gateways on the given 
 ### Minimum send delay between two frames [ms]
 
 This settings protects the KNX bus from data flooding by limiting data frames to a certain rate.
-Not sent frames are delay until the delay time since last send on bus is elapsed. If more send requests are waiting, send order is random.
+Not sent frames are delayed until the delay time since last send on bus is elapsed. If more send requests are waiting, send order is random.
 If you experience disconnects from your KNX IP Gateway in the log then increase this number.
 
 ### use common.type boolean for 1 bit enum instead of number
@@ -54,7 +54,7 @@ Do not create a warn log entry in the protocol on receiving an unknown ga.
 
 If checked, the import will skip overwriting existing communication objects.
 
-### remove existing IOB objects thtat are not in ETS import file
+### remove existing IOB objects that are not in ETS import file
 
 To clean up object tree
 
@@ -115,7 +115,7 @@ Please note that the combined ga and group name must be unique for the IOB objec
 
 ### Alias
 
-KNX devices can have ga's for state feedback that belong to a commanding ga. Some applications like certain VIS widgets expect a combined status and actuation object. You can combine these seperate objects into one so called alias. The menu helps to create matching pairs according to the naming convention with the given filtering rule.
+KNX devices can have GAs for state feedback that belong to a commanding GA. Some applications like certain VIS widgets expect a combined status and actuation object. You can combine these separate objects into one so called alias. The menu helps to create matching pairs according to the naming convention with the given filtering rule.
 Find more information here https://www.iobroker.net/#en/documentation/dev/aliases.md
 
 ### Regex
@@ -130,7 +130,7 @@ Defines how strict the matching algorithm filters out similar entries.
 
 The object folder where the aliases get generated.
 
-### inculde group range in search
+### include group range in search
 
 The whole name including path is used to check for similarity.
 
@@ -182,7 +182,7 @@ The whole name including path is used to check for similarity.
 -   use iobroker (or your specific database listed via command show databases)
 -   list entries with: show measurements
 -   copy tables with command: select \* into "entry_new" from "entry_old";
-    where entry_new points to the old adapter object path and entry_new the openknx adapter instance
+    where entry_old points to the old adapter object path and entry_new the openknx adapter instance
 -   set influx enabled for new object entry_new
 
 ## howto use the adapter & basic concepts
@@ -190,7 +190,7 @@ The whole name including path is used to check for similarity.
 ### ACK flags with tunneling connections
 
 Applications shall not set the ack flag, application is notified from this adapter by the ack flag if data is updated.
-OpenKNX sets the ack flag of the corresponding IoBroker object on receiption of a group address if another knx host writes to the bus.
+OpenKNX sets the ack flag of the corresponding IoBroker object on reception of a group address if another knx host writes to the bus.
 
 | GA is                               | connected to device with an R flag | connected to devices with no R flag | unconnected              |
 | ----------------------------------- | ---------------------------------- | ----------------------------------- | ------------------------ |
@@ -211,22 +211,22 @@ Enable expert mode to enable switching between different log levels. Default log
 ## IOBroker Communication Object description
 
 IoBroker defines Objects to hold communication interfaces settings.  
-GA import generates a communication object folder structure following the ga main-group/middle-group scheme. Each groupaddress is an oject with following automatically generated data.
+GA import generates a communication object folder structure following the ga main-group/middle-group scheme. Each group address is an object with the following automatically generated data.
 
-IoBroker state roles (https://github.com/ioBroker/ioBroker/blob/master/doc/STATE_ROLES.md) have value 'state' by default. Some more granular values are derieved from the DPT, for example Date or Switch.
+IoBroker state roles (https://github.com/ioBroker/ioBroker/blob/master/doc/STATE_ROLES.md) have value 'state' by default. Some more granular values are derived from the DPT, for example Date or Switch.
 
 Autoread is set to false where it is clear from the DPT that this is a trigger signal. This applies to scene numbers.
 
 ```json
 {
-    "_id": "path.and.name.to.object", // derieved from the KNX structure
+    "_id": "path.and.name.to.object", // derived from the KNX structure
     "type": "state",
     "common": {
         // values here can be interpreted by iobroker
         "desc": "Basetype: 1-bit value, Subtype: switch", // informative, from DPT
         "name": "Aussen Melder Licht schalten", // informative description from ets export
         "read": true, // default set, if false incoming bus values are not updating the object
-        "role": "state", // default state, derieved from DPT
+        "role": "state", // default state, derived from DPT
         "type": "boolean", // boolean, number, string, object, derieved from DPT
         "unit": "", // derived from DPT
         "write": true // default true, if set change on object is triggering knx write, succ. write sets then ack flag to true
@@ -236,7 +236,7 @@ Autoread is set to false where it is clear from the DPT that this is a trigger s
         "address": "0/1/2", // knx group address
         "answer_groupValueResponse": false, // default false, if set to true adapter responds with value on GroupValue_Read
         "autoread": true, // default true for non trigger signals , adapter sends a GroupValue_read on start to sync its states
-        "bitlength": 1, // size ob knx data, derived from DPT
+        "bitlength": 1, // size of KNX data, derived from DPT
         "dpt": "DPT1.001", // DPT
         "encoding": {
             // values of the interface if it is an enum DPT type
@@ -255,8 +255,8 @@ Autoread is set to false where it is clear from the DPT that this is a trigger s
 
 ## Adapter communication Interface Description
 
-Handeled DPTs are: 1-21,232,237,238  
-Unhandeled DPTs are written as raw buffers, the interface is a sequencial string of hexadecimal numbers. For example write '0102feff' to send values 0x01 0x02 0xfe 0xff on the bus.
+Handled DPTs are: 1-21,232,237,238  
+Unhandled DPTs are written as raw buffers, the interface is a sequential string of hexadecimal numbers. For example write '0102feff' to send values 0x01 0x02 0xfe 0xff on the bus.
 Where number datatype is used please note that interface values can be scaled.
 
 ### API call
@@ -322,15 +322,15 @@ GroupValue_Read comment does not work for javascript adapter. Use qualityAsNumbe
 | DPT-10    | number for Date Object |                                                                                                      | -                                         |                                                       |
 | DPT-11    | number for Date Object |                                                                                                      | -                                         |                                                       |
 | DPT-19    | number for Date Object |                                                                                                      | -                                         |                                                       |
-| DPT-26    | string                 | e.g. 00010203..                                                                                      | -                                         | Datapoint Type DPT_SceneInfo is not read by autread   |
+| DPT-26    | string                 | e.g. 00010203..                                                                                      | -                                         | Datapoint Type DPT_SceneInfo is not read by autoread  |
 | DPT-28    | string                 |                                                                                                      | variable                                  | Unicode UTF-8 encoded string                          |
 | DPT-29    | string                 | e.g. "123456789000"                                                                                  | 8-byte signed value                       | the datatype in IOB of this numeric value is string   |
-| DPT-238   | string                 | e.g. 00010203..                                                                                      | -                                         | DPT_SceneConfig is not read by autread                |
+| DPT-238   | string                 | e.g. 00010203..                                                                                      | -                                         | DPT_SceneConfig is not read by autoread               |
 | rest      | string                 | e.g. 00010203..                                                                                      | -                                         |                                                       |
 
 Only time and date information is exchanged with KNX time based datatypes, e.g. DPT-19 has unsupported fields for signal quality.
 
-Object send and receive values are of type boolean DPT-1), number (scaled, or unscaled), string.  
+Object send and receive values are of type boolean (DPT-1), number (scaled, or unscaled), string.  
 DPT-2 'expects a object {"priority":0,"data":1}' receive provides a strinified object of same type.  
 Other joint DPTs have similar object notation.  
 DPT-19 expects a Number from a Date Object, Iobroker can not handle objects, fields of KNX ko that cannot be derived from timestamp are not implemented eg. quality flags.
@@ -349,7 +349,7 @@ Communication object is triggered when a write frame is received on the bus.
 
 ### group value read
 
-Sending a group value read can be triggered by writing a communicaton object with comment. Please see API call section for details.
+Sending a group value read can be triggered by writing a communication object with comment. Please see API call section for details.
 Receiving, if configured, will trigger a group value response (limitation: group value write at the moment) of the actual communication object value, see below.
 
 ### group value response
@@ -407,7 +407,7 @@ Openknx estimates the current bus load of the KNX line it is connected to in obj
 
 **Autoread trigger actors on the bus to react**
 
-Check in ETS if group objects of certain devices that are connected to the suspicious GA have the R/L flag configured. This should not be the case if te device is a consumer of the signal. If the signal has an event character, a groupValueRead would trigger that event. Change configuration in ETS or disable autoread for this object.
+Check in ETS if group objects of certain devices that are connected to the suspicious GA have the R/L flag configured. This should not be the case if the device is a consumer of the signal. If the signal has an event character, a groupValueRead would trigger that event. Change configuration in ETS or disable autoread for this object.
 
 **DISCONNECT_REQUEST on startup**
 
