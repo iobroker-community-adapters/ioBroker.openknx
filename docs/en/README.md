@@ -28,6 +28,18 @@ Search for "openknx" in the adapter list and install by clicking the + symbol.
 
 Press "save & close" or "save" to restart the adapter and apply the changes.
 
+- **Detect** -- scans the network for all available KNX IP gateways. Best to select the local network interface first, then run detection -- gateway IP, port, and physical address are filled in automatically.
+- **Local IPv4 network interface** -- the network interface of the ioBroker server that can reach the KNX IP gateway. Select before running detection.
+- **KNX Gateway IP** -- IP address of your KNX IP gateway. Filled in automatically by detection.
+- **Port** -- normally 3671. Filled in automatically by detection.
+- **Protocol** -- connection type to the KNX IP gateway. **UDP tunneling** is the default for most KNX IP interfaces and routers (e.g. Weinzierl, MDT, ABB). **TCP tunneling** provides a more reliable connection and is supported by newer gateways -- recommended when available. **Multicast routing** connects via KNXnet/IP routing (multicast group 224.0.23.12) and is meant for KNX IP routers acting as line couplers -- no tunneling connection is established and multiple clients can access simultaneously.
+- **Physical KNX address** -- the individual address the adapter uses on the KNX bus (e.g. 1.1.250). Must be configured as an additional address in the IP interface in ETS and must not be used by another device.
+- **Minimum send delay between two frames [ms]** -- protects the KNX bus from flooding by too-fast telegrams. Increase this value if you see DISCONNECT_REQUEST errors in the log (e.g. to 80-150ms).
+- **use common.type boolean for 1 bit enum instead of number** -- DPT-1 (switching) is represented as boolean type (true/false) in ioBroker instead of number (0/1). Enable for better compatibility with VIS widgets and scripts that expect boolean.
+- **readout KNX values on startup** -- all objects with the autoread flag are read from the KNX bus on first connection after adapter start, to synchronize current states.
+- **do not warn on unknown KNX group addresses** -- suppress warning log entries when receiving telegrams for GAs not configured in the adapter. Useful in installations with many GAs where only a subset is used in the adapter.
+- **Group Address Style** -- defines the GA presentation matching your ETS configuration. All 3 styles are supported and converted to 3-level format for storage: 3-Level (1/3/5), 2-Level (1/25), or Free (300). The combined GA and group name must be unique in the ioBroker object tree.
+
 ### Import ETS project (.knxproj or .xml)
 
 The import dialog accepts both **.knxproj** (recommended) and **.xml** files.
@@ -73,6 +85,8 @@ Hint: If you have different DPT Subtypes for a GA and the communication objects 
 
 ### KNX Secure
 
+![KNX Secure](../img/knxsecure.png)
+
 The adapter supports KNX IP Secure tunneling. Configuration in the "KNX Secure" tab:
 
 1. **Enable KNX Secure** -- activate the checkbox.
@@ -84,45 +98,57 @@ The adapter supports KNX IP Secure tunneling. Configuration in the "KNX Secure" 
 
 ### GA Aliases and Migration
 
-KNX devices typically use separate GAs for commanding (action) and feedback (status). Applications like VIS widgets often expect a single object for both. The adapter can automatically pair these into ioBroker aliases.
+![GA Aliases and Migration](../img/alias.png)
 
-The regex pattern used for alias matching is also applied when using **knx Compatibility Mode** (linking status GAs internally instead of creating aliases).
+In KNX, action and status often use separate GAs. This tool automatically pairs them into [ioBroker Aliases](https://www.iobroker.net/#en/documentation/dev/aliases.md) so you get read + write in a single object.
 
-- **Regex to identify Status GAs** -- a regular expression to identify the status GA by name (e.g. matching endings like "status", "rm", "Rückmeldung"). This same regex is used for both alias generation and the knx compatibility mode.
+The tab offers two options:
+
+#### Option A: Aliases (recommended)
+
+Creates ioBroker alias objects that merge the action GA (write) and status GA (read) into a single object.
+
+- **Regex to identify Status GAs** -- a regular expression to identify the status GA by name (e.g. matching endings like "status", "rm", "Rückmeldung"). This same regex is used for both alias generation (Option A) and knx compatibility mode (Option B).
 - **Minimum Similarity** -- how strict the matching algorithm filters similar entries (0 = loose, 1 = exact).
 - **Alias path** -- the object folder where aliases are generated (e.g. `alias.0.KNX`).
 - **Include group range in search** -- use the full path including group names for matching, not just the GA name.
-- **Target namespace** -- set to `knx.0` to reuse the old knx adapter object paths, so existing scripts, VIS projects, and dashboards continue to work without changes.
+- **Generate aliases** -- button to start alias generation. The adapter must be running. Shows the number of generated aliases on completion.
 
-More information on aliases: [ioBroker Alias Documentation](https://www.iobroker.net/#en/documentation/dev/aliases.md)
+#### Option B: knx Adapter Migration
 
-### Connection settings
+For users migrating from the old knx adapter who want existing scripts, VIS projects, and dashboards to continue working without changes.
 
-- **KNX Gateway IP** -- IP address of your KNX IP gateway.
-- **Port** -- normally 3671.
-- **Local IPv4 network interface** -- the interface connected to the KNX IP gateway.
-- **Detect** -- searches for all available KNX IP gateways on the selected network interface.
-- **Protocol** -- UDP tunneling, TCP tunneling, or multicast routing.
-- **Physical KNX address** -- the individual address used by the adapter on the KNX bus.
+- **ioBroker.knx Compatibility Mode** -- link status GAs internally with the action GA (like the old knx adapter) instead of creating aliases. Uses the same regex as Option A.
+- **Target namespace** -- set to `knx.0` to reuse the old knx adapter object paths, so existing scripts, VIS projects, and dashboards continue to work without changes. Default is `openknx.0`.
 
-### Advanced settings
+### GA-Tools / Direct Link
 
-- **Minimum send delay between two frames [ms]** -- protects the KNX bus from flooding. Increase this value if you see DISCONNECT_REQUEST errors in the log.
-- **use common.type boolean for 1 bit enum instead of number** -- use boolean type in ioBroker objects for DPT-1 instead of number.
-- **readout KNX values on startup** -- all objects with the autoread flag are read from the bus on first connection after adapter start.
-- **do not warn on unknown KNX group addresses** -- suppress warning log entries when receiving telegrams for unknown GAs.
+![GA-Tools / Direct Link](../img/gatools.png)
 
-### Group Address Style
+Direct Link connects any ioBroker state (from any adapter) to a KNX Group Address. Changes on the foreign state are written to the KNX bus, and values received from KNX are forwarded back to the foreign state.
 
-Defines the GA presentation in ETS. All 3 styles are supported and converted to 3-level format for storage:
+Select a GA from the tree on the left. The properties panel shows GA metadata (name, address, DPT, flags). Use the "Direct Link" card on the right to link a foreign state.
 
-| Style | Name | Example |
-| --- | --- | --- |
-| 3-Level | Main/Middle/Subgroup | 1/3/5 |
-| 2-Level | Main Group/Subgroup | 1/25 |
-| Free-Level | Subgroup | 300 |
+#### Link modes
 
-The combined GA and group name must be unique in the ioBroker object tree.
+- **Direct (1:1)** -- every value change is forwarded as-is to the KNX bus. Use for sensors, dimmers, or sliders.
+- **Trigger (only ON)** -- only truthy values (ON / true / non-zero) are forwarded, falsy values (OFF / false / 0) are ignored. Use for scene triggers or door openers where the source sends ON/OFF (press/release).
+- **Toggle (invert KNX on ON)** -- on each truthy value, the current KNX state is read and the inverse is sent. Falsy values are ignored. Use for buttons that should toggle a KNX light on/off.
+
+#### Threshold
+
+Minimum change required before sending to the KNX bus. If the absolute difference between the incoming value and the current KNX value is less than the threshold, the update is silently dropped. This prevents bus flooding from sources that send many small incremental changes (e.g. analog sensors). Only applies to numeric values. Leave empty to send every change.
+
+#### Convert expression
+
+A JavaScript expression to transform the value before writing to KNX. The variable `value` holds the current write value. Examples:
+
+- `!!value` -- convert any truthy/falsy value to boolean
+- `value*100` -- scale a 0-1 float to 0-100 percentage
+- `value>0?100:0` -- threshold conversion to binary
+- `Math.round(value)` -- round floating point values
+
+The convert expression only applies in the foreign-state-to-KNX direction. The reverse direction (KNX to foreign state) passes values through without conversion.
 
 ## Migrating from knx adapter
 
