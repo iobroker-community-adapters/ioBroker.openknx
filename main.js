@@ -95,6 +95,11 @@ class openknx extends utils.Adapter {
             this.subscribeStates("*");
             await this.subscribeObjectsAsync("*");
         }
+        // Ensure info objects exist (may be missing after clean re-import)
+        await this.setObjectNotExistsAsync("info", { type: "channel", common: { name: "Information" }, native: {} });
+        await this.setObjectNotExistsAsync("info.connection", { type: "state", common: { role: "indicator.connected", name: "KNX Gateway connected", type: "boolean", read: true, write: false, def: false }, native: {} });
+        await this.setObjectNotExistsAsync("info.busload", { type: "state", common: { role: "info", name: "Busload", type: "number", read: true, write: false, def: 0, unit: "%" }, native: {} });
+        await this.setObjectNotExistsAsync("info.messagecount", { type: "state", common: { role: "info", name: "Message count", type: "number", read: true, write: false, def: 0 }, native: {} });
         this.setState("info.busload", 0, true);
 
         this.main(true);
