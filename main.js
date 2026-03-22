@@ -168,6 +168,26 @@ class openknx extends utils.Adapter {
 
     // New message arrived. obj is array with current messages
     // triggered from admin page read in knx project
+    getDptList() {
+        const list = [];
+        for (const dptKey of Object.keys(dptlib.dpts).sort((a, b) => {
+            const na = parseInt(a.replace("DPT", ""));
+            const nb = parseInt(b.replace("DPT", ""));
+            return na - nb;
+        })) {
+            const dptObj = dptlib.dpts[dptKey];
+            const baseNum = dptKey.replace("DPT", "");
+            list.push({ value: dptKey, label: `${baseNum} - ${dptObj.basetype?.desc || dptKey}` });
+            if (dptObj.subtypes) {
+                for (const sub of Object.keys(dptObj.subtypes).sort()) {
+                    const st = dptObj.subtypes[sub];
+                    list.push({ value: `${dptKey}.${sub}`, label: `${baseNum}.${sub} - ${st.name || st.desc || ""}` });
+                }
+            }
+        }
+        return list;
+    }
+
     onMessage(obj) {
         if (typeof obj === "object") {
             switch (obj.command) {
@@ -289,6 +309,13 @@ class openknx extends utils.Adapter {
                             }
                         });
                     break;
+                case "getDptList": {
+                    const list = this.getDptList();
+                    if (obj.callback) {
+                        this.sendTo(obj.from, obj.command, list, obj.callback);
+                    }
+                    break;
+                }
                 case "restart":
                     this.log.info("Restarting...");
                     this.restart();
