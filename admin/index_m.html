@@ -632,11 +632,11 @@
                 // GA Name as title
                 var html = '<div style="font-size:1.3em;font-weight:500;margin-bottom:8px">' + (c.name || '') + '</div>';
                 // Editable checkboxes
-                html += '<div style="margin-bottom:8px;font-size:0.85em">';
-                html += '<label style="display:block;margin:2px 0"><input type="checkbox" id="gaWriteChk"' + (c.write ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'common\',\'write\',\'gaWriteChk\')"/> <span>' + _('Write') + '</span></label>';
-                html += '<label style="display:block;margin:2px 0"><input type="checkbox" id="gaReadChk"' + (c.read ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'common\',\'read\',\'gaReadChk\')"/> <span>' + _('Read') + '</span></label>';
-                html += '<label style="display:block;margin:2px 0"><input type="checkbox" id="gaAutoreadChk"' + (n.autoread ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'native\',\'autoread\',\'gaAutoreadChk\')"/> <span>' + _('Autoread') + '</span></label>';
-                html += '<label style="display:block;margin:2px 0"><input type="checkbox" id="gaResponseChk"' + (n.answer_groupValueResponse ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'native\',\'answer_groupValueResponse\',\'gaResponseChk\')"/> <span>' + _('Response') + '</span></label>';
+                html += '<div style="margin-bottom:8px;font-size:15px">';
+                html += '<label style="display:block;margin:2px 0;font-size:15px"><input type="checkbox" id="gaWriteChk"' + (c.write ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'common\',\'write\',\'gaWriteChk\')"/> <span style="font-size:15px">' + _('Write') + '</span></label>';
+                html += '<label style="display:block;margin:2px 0;font-size:15px"><input type="checkbox" id="gaReadChk"' + (c.read ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'common\',\'read\',\'gaReadChk\')"/> <span style="font-size:15px">' + _('Read') + '</span></label>';
+                html += '<label style="display:block;margin:2px 0;font-size:15px"><input type="checkbox" id="gaAutoreadChk"' + (n.autoread ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'native\',\'autoread\',\'gaAutoreadChk\')"/> <span style="font-size:15px">' + _('Autoread') + '</span></label>';
+                html += '<label style="display:block;margin:2px 0;font-size:15px"><input type="checkbox" id="gaResponseChk"' + (n.answer_groupValueResponse ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'native\',\'answer_groupValueResponse\',\'gaResponseChk\')"/> <span style="font-size:15px">' + _('Response') + '</span></label>';
                 html += '</div>';
                 // DPT dropdown
                 html += '<div style="margin-bottom:8px">';
