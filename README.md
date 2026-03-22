@@ -60,6 +60,7 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 - (TA2k) feature: Improved connection stability
 - (TA2k) feature: Improved role detection (switch, level, value, text, date) based on DPT type
 - (TA2k) feature: Direct Link all iobroker states to a KNX state with a conversion mode
+- (TA2k) feature: GA-Tools: all GA properties editable (DPT, type, role, flags) with compact layout
 
 ### 0.9.1 (2026-03-12)
 - bugfix: Fixing increased delay in knx commands after several days
