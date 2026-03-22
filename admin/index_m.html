@@ -634,7 +634,7 @@
                 html += '<span style="font-size:1.3em;font-weight:500">' + (c.name || '') + '</span>';
                 html += '<span style="font-size:1.3em;font-weight:500;color:#666">' + (n.address || '') + '</span>';
                 html += '</div>';
-                html += '<div style="margin-bottom:4px;font-size:0.8em;color:#888;word-break:break-all">' + id + '</div>';
+                html += '<div style="margin-bottom:4px;font-size:0.95em;color:#888;word-break:break-all">' + id + '</div>';
                 // Editable checkboxes (2x2 grid)
                 html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;margin-bottom:8px">';
                 html += '<label style="margin:0;font-size:12px"><input type="checkbox" id="gaWriteChk"' + (c.write ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'common\',\'write\',\'gaWriteChk\')"/> <span style="font-size:12px">' + _('Write') + ' (write)</span></label>';
@@ -663,7 +663,8 @@
                 html += '<select id="gaRoleSelect" style="display:block;width:100%;margin:0" onchange="gaSaveCommonProp(\'role\',\'gaRoleSelect\')"><option value="">...</option></select>';
                 html += '</div>';
                 html += '</div>';
-                // Collapsible details
+                // Collapsible details (always visible)
+                html += '<details style="margin-bottom:8px;font-size:0.95em"><summary style="cursor:pointer;color:#666">Details</summary>';
                 var detailRows = [];
                 if (n.desc) detailRows.push(['Description', n.desc]);
                 if (n.bitlength != null) detailRows.push(['Bitlength', n.bitlength]);
@@ -672,13 +673,13 @@
                 if (n.min != null) detailRows.push(['Min', n.min]);
                 if (n.max != null) detailRows.push(['Max', n.max]);
                 if (detailRows.length > 0) {
-                    html += '<details style="margin-bottom:8px;font-size:0.95em"><summary style="cursor:pointer;color:#666">Details</summary>';
                     html += '<table class="ga-prop-table">';
                     for (var i = 0; i < detailRows.length; i++) {
                         html += '<tr><td>' + detailRows[i][0] + '</td><td>' + detailRows[i][1] + '</td></tr>';
                     }
-                    html += '</table></details>';
+                    html += '</table>';
                 }
+                html += '</details>';
                 // Editable Status GA / Act GA
                 html += '<div style="margin-top:8px">';
                 html += '<label style="font-size:0.85em">Status GA</label>';
