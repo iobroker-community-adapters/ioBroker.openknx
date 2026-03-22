@@ -1022,19 +1022,30 @@
             function filterGaTree() {
                 var filter = ($('#gaFilter').val() || '').toLowerCase();
                 if (!filter) {
+                    // Reset: show all, collapse all folders
                     $('.ga-leaf, .ga-folder').show();
+                    $('.ga-children').addClass('collapsed');
+                    $('.ga-folder > span > i').text('chevron_right');
                     return;
                 }
+                // Filter leaves
                 $('.ga-leaf').each(function () {
                     var text = $(this).text().toLowerCase();
                     $(this).toggle(text.indexOf(filter) !== -1);
                 });
-                // Show folders that have visible children
+                // Show folders that have visible children, expand them
                 $('.ga-folder').each(function () {
                     var hasVisible = $(this).find('.ga-leaf:visible').length > 0;
                     $(this).toggle(hasVisible);
-                    if (hasVisible) $(this).find('> .ga-children').removeClass('collapsed');
+                    if (hasVisible) {
+                        // Expand all ancestor ga-children
+                        $(this).find('.ga-children').removeClass('collapsed');
+                        $(this).parents('.ga-children').removeClass('collapsed');
+                        $(this).find('> span > i').text('expand_more');
+                    }
                 });
+                // Also expand parents of visible folders
+                $('.ga-folder:visible').parents('.ga-folder').show().find('> span > i').text('expand_more');
             }
         </script>
     </head>
