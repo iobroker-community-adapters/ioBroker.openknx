@@ -663,8 +663,7 @@
                 html += '<select id="gaRoleSelect" style="display:block;width:100%;margin:0" onchange="gaSaveCommonProp(\'role\',\'gaRoleSelect\')"><option value="">...</option></select>';
                 html += '</div>';
                 html += '</div>';
-                // Collapsible details (always visible)
-                html += '<details style="margin-bottom:8px;font-size:0.95em"><summary style="cursor:pointer;color:#666">Details</summary>';
+                // Collapsible details
                 var detailRows = [];
                 if (n.desc) detailRows.push(['Description', n.desc]);
                 if (n.bitlength != null) detailRows.push(['Bitlength', n.bitlength]);
@@ -673,13 +672,13 @@
                 if (n.min != null) detailRows.push(['Min', n.min]);
                 if (n.max != null) detailRows.push(['Max', n.max]);
                 if (detailRows.length > 0) {
+                    html += '<details style="margin-bottom:8px;font-size:0.95em"><summary style="cursor:pointer;color:#666">Details</summary>';
                     html += '<table class="ga-prop-table">';
                     for (var i = 0; i < detailRows.length; i++) {
                         html += '<tr><td>' + detailRows[i][0] + '</td><td>' + detailRows[i][1] + '</td></tr>';
                     }
-                    html += '</table>';
+                    html += '</table></details>';
                 }
-                html += '</details>';
                 // Editable Status GA / Act GA
                 html += '<div style="margin-top:8px">';
                 html += '<label style="font-size:0.85em">Status GA</label>';
@@ -1028,24 +1027,21 @@
                     $('.ga-folder > span > i').text('chevron_right');
                     return;
                 }
+                // First expand all so :visible checks work correctly
+                $('.ga-children').removeClass('collapsed');
                 // Filter leaves
                 $('.ga-leaf').each(function () {
                     var text = $(this).text().toLowerCase();
                     $(this).toggle(text.indexOf(filter) !== -1);
                 });
-                // Show folders that have visible children, expand them
-                $('.ga-folder').each(function () {
+                // Hide folders without visible leaves, process innermost first
+                $($('.ga-folder').get().reverse()).each(function () {
                     var hasVisible = $(this).find('.ga-leaf:visible').length > 0;
                     $(this).toggle(hasVisible);
                     if (hasVisible) {
-                        // Expand all ancestor ga-children
-                        $(this).find('.ga-children').removeClass('collapsed');
-                        $(this).parents('.ga-children').removeClass('collapsed');
                         $(this).find('> span > i').text('expand_more');
                     }
                 });
-                // Also expand parents of visible folders
-                $('.ga-folder:visible').parents('.ga-folder').show().find('> span > i').text('expand_more');
             }
         </script>
     </head>
