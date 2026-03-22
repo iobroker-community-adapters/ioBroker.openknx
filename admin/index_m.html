@@ -652,6 +652,23 @@
                 }
                 html += '</select>';
                 html += '</div>';
+                // Role dropdown
+                var roleOptions = ['state', 'switch', 'value', 'level', 'date', 'text', 'indicator', 'button', 'sensor', 'json'];
+                var currentRole = c.role || 'state';
+                html += '<div style="margin-bottom:8px">';
+                html += '<label style="font-size:0.85em">Role</label>';
+                html += '<select id="gaRoleSelect" style="display:block;width:100%;margin:0" onchange="gaSaveCommonProp(\'role\',\'gaRoleSelect\')">';
+                var roleFound = false;
+                for (var r = 0; r < roleOptions.length; r++) {
+                    var sel = (currentRole === roleOptions[r]) ? ' selected' : '';
+                    if (sel) roleFound = true;
+                    html += '<option value="' + roleOptions[r] + '"' + sel + '>' + roleOptions[r] + '</option>';
+                }
+                if (!roleFound) {
+                    html += '<option value="' + currentRole + '" selected>' + currentRole + '</option>';
+                }
+                html += '</select>';
+                html += '</div>';
                 // Readonly info table
                 var rows = [];
                 rows.push(['Address', n.address || '']);
