@@ -518,7 +518,6 @@
             var gaNamespace = '';
             var gaStateSubscribed = false;
             var cachedDptList = null;
-            var cachedRoleList = null;
 
             function loadGaTree() {
                 var targetNs = ($('#targetNamespace').val() || '').trim();
@@ -706,7 +705,8 @@
                     }
                     sel.html(optHtml);
                 });
-                // Populate Role dropdown async
+                // Populate Role dropdown async (filtered by read/write)
+                var rw = (c.read && c.write) ? 'both' : (c.read ? 'read' : (c.write ? 'write' : 'both'));
                 gaLoadRoleList(function (roles) {
                     var sel = $('#gaRoleSelect');
                     var currentRole = c.role || 'state';
@@ -721,7 +721,7 @@
                         optHtml = '<option value="' + currentRole + '" selected>' + currentRole + '</option>' + optHtml;
                     }
                     sel.html(optHtml);
-                });
+                }, rw);
             }
 
             function updateGaAccess(id) {
@@ -952,6 +952,7 @@
                     socket.emit('setObject', selectedGaId, gaObj, function () {
                         gaObjects[selectedGaId] = gaObj;
                         showToast(null, prop + ' saved', null, 2000);
+                        if (prop === 'read' || prop === 'write') refreshRoleDropdown();
                     });
                 });
             }
@@ -997,15 +998,41 @@
                 });
             }
 
-            function gaLoadRoleList(callback) {
-                if (cachedRoleList) { callback(cachedRoleList); return; }
-                $.getJSON('roles.json', function (list) {
-                    cachedRoleList = Array.isArray(list) ? list : [];
-                    callback(cachedRoleList);
+            var cachedRolesData = null;
+            function gaLoadRoleList(callback, readWrite) {
+                function filter(data) {
+                    if (Array.isArray(data)) return data; // legacy flat array
+                    if (readWrite === 'read') return data.read.concat(data.both);
+                    if (readWrite === 'write') return data.write.concat(data.both);
+                    return data.read.concat(data.write).concat(data.both);
+                }
+                if (cachedRolesData) { callback(filter(cachedRolesData)); return; }
+                $.getJSON('roles.json', function (data) {
+                    cachedRolesData = data;
+                    callback(filter(data));
                 }).fail(function () {
-                    cachedRoleList = ['state', 'switch', 'value', 'level', 'indicator', 'sensor', 'text', 'button', 'date', 'json'];
-                    callback(cachedRoleList);
+                    cachedRolesData = ['state', 'switch', 'value', 'level', 'indicator', 'sensor', 'text', 'button', 'date', 'json'];
+                    callback(cachedRolesData);
                 });
+            }
+
+            function refreshRoleDropdown() {
+                var r = $('#gaReadChk').is(':checked'), w = $('#gaWriteChk').is(':checked');
+                var rw = (r && w) ? 'both' : (r ? 'read' : (w ? 'write' : 'both'));
+                var currentRole = $('#gaRoleSelect').val() || '';
+                gaLoadRoleList(function (roles) {
+                    var optHtml = '';
+                    var roleFound = false;
+                    for (var j = 0; j < roles.length; j++) {
+                        var selected = (roles[j] === currentRole) ? ' selected' : '';
+                        if (selected) roleFound = true;
+                        optHtml += '<option value="' + roles[j] + '"' + selected + '>' + roles[j] + '</option>';
+                    }
+                    if (!roleFound && currentRole) {
+                        optHtml = '<option value="' + currentRole + '" selected>' + currentRole + '</option>' + optHtml;
+                    }
+                    $('#gaRoleSelect').html(optHtml);
+                }, rw);
             }
 
             function gaBrowseStates() {
