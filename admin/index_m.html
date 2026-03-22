@@ -518,6 +518,7 @@
             var gaNamespace = '';
             var gaStateSubscribed = false;
             var cachedDptList = null;
+            var cachedRoleList = null;
 
             function loadGaTree() {
                 var targetNs = ($('#targetNamespace').val() || '').trim();
@@ -631,11 +632,11 @@
                 // GA Name as title
                 var html = '<div style="font-size:1.3em;font-weight:500;margin-bottom:8px">' + (c.name || '') + '</div>';
                 // Editable checkboxes
-                html += '<div style="margin-bottom:8px">';
-                html += '<label style="display:block;margin:4px 0"><input type="checkbox" id="gaWriteChk"' + (c.write ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'common\',\'write\',\'gaWriteChk\')"/> <span>' + _('Write') + '</span></label>';
-                html += '<label style="display:block;margin:4px 0"><input type="checkbox" id="gaReadChk"' + (c.read ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'common\',\'read\',\'gaReadChk\')"/> <span>' + _('Read') + '</span></label>';
-                html += '<label style="display:block;margin:4px 0"><input type="checkbox" id="gaAutoreadChk"' + (n.autoread ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'native\',\'autoread\',\'gaAutoreadChk\')"/> <span>' + _('Autoread') + '</span></label>';
-                html += '<label style="display:block;margin:4px 0"><input type="checkbox" id="gaResponseChk"' + (n.answer_groupValueResponse ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'native\',\'answer_groupValueResponse\',\'gaResponseChk\')"/> <span>' + _('Response') + '</span></label>';
+                html += '<div style="margin-bottom:8px;font-size:0.85em">';
+                html += '<label style="display:block;margin:2px 0"><input type="checkbox" id="gaWriteChk"' + (c.write ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'common\',\'write\',\'gaWriteChk\')"/> <span>' + _('Write') + '</span></label>';
+                html += '<label style="display:block;margin:2px 0"><input type="checkbox" id="gaReadChk"' + (c.read ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'common\',\'read\',\'gaReadChk\')"/> <span>' + _('Read') + '</span></label>';
+                html += '<label style="display:block;margin:2px 0"><input type="checkbox" id="gaAutoreadChk"' + (n.autoread ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'native\',\'autoread\',\'gaAutoreadChk\')"/> <span>' + _('Autoread') + '</span></label>';
+                html += '<label style="display:block;margin:2px 0"><input type="checkbox" id="gaResponseChk"' + (n.answer_groupValueResponse ? ' checked' : '') + ' onchange="gaSaveCheckboxProp(\'native\',\'answer_groupValueResponse\',\'gaResponseChk\')"/> <span>' + _('Response') + '</span></label>';
                 html += '</div>';
                 // DPT dropdown
                 html += '<div style="margin-bottom:8px">';
@@ -652,22 +653,10 @@
                 }
                 html += '</select>';
                 html += '</div>';
-                // Role dropdown
-                var roleOptions = ['state', 'switch', 'value', 'level', 'date', 'text', 'indicator', 'button', 'sensor', 'json'];
-                var currentRole = c.role || 'state';
+                // Role dropdown (loaded from roles.json)
                 html += '<div style="margin-bottom:8px">';
                 html += '<label style="font-size:0.85em">Role</label>';
-                html += '<select id="gaRoleSelect" style="display:block;width:100%;margin:0" onchange="gaSaveCommonProp(\'role\',\'gaRoleSelect\')">';
-                var roleFound = false;
-                for (var r = 0; r < roleOptions.length; r++) {
-                    var sel = (currentRole === roleOptions[r]) ? ' selected' : '';
-                    if (sel) roleFound = true;
-                    html += '<option value="' + roleOptions[r] + '"' + sel + '>' + roleOptions[r] + '</option>';
-                }
-                if (!roleFound) {
-                    html += '<option value="' + currentRole + '" selected>' + currentRole + '</option>';
-                }
-                html += '</select>';
+                html += '<select id="gaRoleSelect" style="display:block;width:100%;margin:0" onchange="gaSaveCommonProp(\'role\',\'gaRoleSelect\')"><option value="">...</option></select>';
                 html += '</div>';
                 // Readonly info table
                 var rows = [];
@@ -711,6 +700,25 @@
                     }
                     sel.html(optHtml);
                     // Re-init Materialize select if available
+                    if (typeof M !== 'undefined' && M.FormSelect) {
+                        M.FormSelect.init(sel[0]);
+                    }
+                });
+                // Populate Role dropdown async
+                gaLoadRoleList(function (roles) {
+                    var sel = $('#gaRoleSelect');
+                    var currentRole = c.role || 'state';
+                    var optHtml = '';
+                    var roleFound = false;
+                    for (var j = 0; j < roles.length; j++) {
+                        var selected = (roles[j] === currentRole) ? ' selected' : '';
+                        if (selected) roleFound = true;
+                        optHtml += '<option value="' + roles[j] + '"' + selected + '>' + roles[j] + '</option>';
+                    }
+                    if (!roleFound) {
+                        optHtml = '<option value="' + currentRole + '" selected>' + currentRole + '</option>' + optHtml;
+                    }
+                    sel.html(optHtml);
                     if (typeof M !== 'undefined' && M.FormSelect) {
                         M.FormSelect.init(sel[0]);
                     }
@@ -987,6 +995,17 @@
                         cachedDptList = [];
                     }
                     callback(cachedDptList);
+                });
+            }
+
+            function gaLoadRoleList(callback) {
+                if (cachedRoleList) { callback(cachedRoleList); return; }
+                $.getJSON('roles.json', function (list) {
+                    cachedRoleList = Array.isArray(list) ? list : [];
+                    callback(cachedRoleList);
+                }).fail(function () {
+                    cachedRoleList = ['state', 'switch', 'value', 'level', 'indicator', 'sensor', 'text', 'button', 'date', 'json'];
+                    callback(cachedRoleList);
                 });
             }
 
