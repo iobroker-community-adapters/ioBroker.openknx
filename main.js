@@ -854,6 +854,11 @@ class openknx extends utils.Adapter {
         // Clean up previous connection (reconnect case)
         if (this.knxConnection) {
             this.knxConnection.removeAllListeners();
+            try {
+                this.knxConnection.Disconnect();
+            } catch (e) {
+                // ignore - old connection may already be in broken state
+            }
             this.knxConnection = undefined;
         }
 
@@ -1107,6 +1112,8 @@ class openknx extends utils.Adapter {
                                 `Could not decode GA ${dest} (${data.native.dpt}), raw=[${rawData.toString("hex")}]. Check DPT configuration in ETS (buffer length mismatch?).`,
                             );
                             convertedVal = rawData.toString("hex");
+                        } else if (typeof jsValue === "bigint") {
+                            convertedVal = jsValue.toString();
                         } else if (tools.isStringDPT(data.native.dpt)) {
                             convertedVal = jsValue;
                         } else {
