@@ -642,10 +642,19 @@
                 html += '<label style="font-size:0.85em">DPT</label>';
                 html += '<select id="gaDptSelect" style="display:block;width:100%;margin:0" onchange="gaSaveDpt()"><option value="">...</option></select>';
                 html += '</div>';
+                // Type dropdown
+                var typeOptions = ['boolean', 'number', 'string', 'object', 'mixed'];
+                html += '<div style="margin-bottom:8px">';
+                html += '<label style="font-size:0.85em">Type</label>';
+                html += '<select id="gaTypeSelect" style="display:block;width:100%;margin:0" onchange="gaSaveCommonProp(\'type\',\'gaTypeSelect\')">';
+                for (var t = 0; t < typeOptions.length; t++) {
+                    html += '<option value="' + typeOptions[t] + '"' + ((c.type === typeOptions[t]) ? ' selected' : '') + '>' + typeOptions[t] + '</option>';
+                }
+                html += '</select>';
+                html += '</div>';
                 // Readonly info table
                 var rows = [];
                 rows.push(['Address', n.address || '']);
-                rows.push(['Type', c.type || '']);
                 if (n.desc) rows.push(['Description', n.desc]);
                 if (n.bitlength != null) rows.push(['Bitlength', n.bitlength]);
                 if (n.valuetype) rows.push(['Valuetype', n.valuetype]);
@@ -916,6 +925,20 @@
                     if (err || !gaObj) return;
                     gaObj[objPath] = gaObj[objPath] || {};
                     gaObj[objPath][prop] = val;
+                    socket.emit('setObject', selectedGaId, gaObj, function () {
+                        gaObjects[selectedGaId] = gaObj;
+                        showToast(null, prop + ' saved', null, 2000);
+                    });
+                });
+            }
+
+            function gaSaveCommonProp(prop, selectId) {
+                if (!selectedGaId) return;
+                var val = ($('#' + selectId).val() || '').trim();
+                socket.emit('getObject', selectedGaId, function (err, gaObj) {
+                    if (err || !gaObj) return;
+                    gaObj.common = gaObj.common || {};
+                    gaObj.common[prop] = val;
                     socket.emit('setObject', selectedGaId, gaObj, function () {
                         gaObjects[selectedGaId] = gaObj;
                         showToast(null, prop + ' saved', null, 2000);
