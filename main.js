@@ -854,11 +854,9 @@ class openknx extends utils.Adapter {
         // Clean up previous connection (reconnect case)
         if (this.knxConnection) {
             this.knxConnection.removeAllListeners();
-            try {
-                this.knxConnection.Disconnect();
-            } catch (e) {
+            this.knxConnection.Disconnect().catch(() => {
                 // ignore - old connection may already be in broken state
-            }
+            });
             this.knxConnection = undefined;
         }
 
