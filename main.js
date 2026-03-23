@@ -627,7 +627,11 @@ class openknx extends utils.Adapter {
                 this.log.debug(
                     `Direct Link [${mode}]: ${id} changed to ${JSON.stringify(state.val)}, writing ${JSON.stringify(writeVal)} to GA ${gaData.native.address}`,
                 );
-                this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
+                try {
+                    this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
+                } catch (e) {
+                    this.log.warn(`Direct Link write failed for ${gaData.native.address}: ${e.message}`);
+                }
                 // Update KNX object state
                 if (this.isForeign) {
                     this.setForeignState(linkedKnxId, { val: writeVal, ack: true });
@@ -736,7 +740,11 @@ class openknx extends utils.Adapter {
         if (state.c == "GroupValue_Read" || state.q == 0x10) {
             // interface to trigger GrouValue_Read is this object comment or StateQuality 16
             this.log.debug(`Outbound GroupValue_Read to GA ${ga}`);
-            this.knxConnection.read(ga);
+            try {
+                this.knxConnection.read(ga);
+            } catch (e) {
+                this.log.warn(`GroupValue_Read failed for ${ga}: ${e.message}`);
+            }
             // ack is generated with GroupValue_Response via indication event
             return "read";
         } else if (gaData.common.write) {
