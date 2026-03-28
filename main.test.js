@@ -90,10 +90,10 @@ const {
     utils,
     MockDatabase
 } = require("@iobroker/testing");
-const EventEmitter = require("events");
+const EventEmitter = require("node:events");
 const {
     exit
-} = require("process");
+} = require("node:process");
 const {
     adapter,
     database
