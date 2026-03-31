@@ -1233,7 +1233,11 @@ class openknx extends utils.Adapter {
         });
 
         // Start connection
-        this.knxConnection.Connect();
+        try {
+            this.knxConnection.Connect();
+        } catch (e) {
+            this.log.error(`Connect failed: ${e.message}`);
+        }
     }
 
     countObjectsNotification(cnt_withDPT) {
