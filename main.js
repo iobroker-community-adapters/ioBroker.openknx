@@ -858,6 +858,29 @@ class openknx extends utils.Adapter {
         }
     }
 
+    // Reconnect delays in seconds: 10, 30, 60, 120, 120, 120, 120
+    static reconnectDelays = [10, 30, 60, 120, 120, 120, 120];
+
+    scheduleReconnect() {
+        if (this.stopping || this.reconnectCount >= openknx.reconnectDelays.length) {
+            if (!this.stopping) {
+                this.log.error(`Giving up after ${openknx.reconnectDelays.length} reconnect attempts`);
+            }
+            return;
+        }
+        const delay = openknx.reconnectDelays[this.reconnectCount];
+        this.reconnectCount++;
+        this.log.info(`Reconnect attempt ${this.reconnectCount}/${openknx.reconnectDelays.length} in ${delay}s...`);
+        this.reconnectTimer = setTimeout(() => {
+            try {
+                this.startKnxStack();
+            } catch (e) {
+                this.log.error(`Reconnect failed: ${e.message || e}`);
+                this.scheduleReconnect();
+            }
+        }, delay * 1000);
+    }
+
     startKnxStack() {
         // Clean up previous connection (reconnect case)
         if (this.knxConnection) {
@@ -1014,8 +1037,6 @@ class openknx extends utils.Adapter {
         });
 
         // Event: disconnected
-        // Reconnect delays in seconds: 10, 30, 60, 120, 120, 120, 120
-        const reconnectDelays = [10, 30, 60, 120, 120, 120, 120];
         this.knxConnection.on(KNXClientEvents.disconnected, reason => {
             if (this.connected) {
                 this.log.error(`Connection lost: ${reason}`);
@@ -1023,21 +1044,7 @@ class openknx extends utils.Adapter {
             this.connected = false;
             this.setState("info.connection", this.connected, true);
             this.setState("info.busload", 0, true);
-
-            if (!this.stopping && this.reconnectCount < reconnectDelays.length) {
-                const delay = reconnectDelays[this.reconnectCount];
-                this.reconnectCount++;
-                this.log.info(`Reconnect attempt ${this.reconnectCount}/${reconnectDelays.length} in ${delay}s...`);
-                this.reconnectTimer = setTimeout(() => {
-                    try {
-                        this.startKnxStack();
-                    } catch (e) {
-                        this.log.error(`Reconnect failed: ${e.message || e}`);
-                    }
-                }, delay * 1000);
-            } else if (this.reconnectCount >= reconnectDelays.length) {
-                this.log.error(`Giving up after ${reconnectDelays.length} reconnect attempts`);
-            }
+            this.scheduleReconnect();
         });
 
         // Event: error
@@ -1236,7 +1243,11 @@ class openknx extends utils.Adapter {
         try {
             this.knxConnection.Connect();
         } catch (e) {
-            this.log.error(`Connect failed: ${e.message}`);
+            if (e.message === "No client socket defined") {
+                this.log.error(`Connect failed: KNX client socket was not created. Check that the configured network interface (${this.config.localInterface || "auto"}) is available and the protocol (${this.config.hostProtocol || "TunnelUDP"}) is correct.`);
+            } else {
+                this.log.error(`Connect failed: ${e.message}`);
+            }
         }
     }
 
