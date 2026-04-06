@@ -200,7 +200,12 @@ class openknx extends utils.Adapter {
                     };
                     if (obj.message.cleanImport) {
                         this.log.info("Clean import: deleting all existing KNX objects before import...");
-                        this.cleanImport().then(doXmlImport);
+                        this.cleanImport().then(doXmlImport).catch(e => {
+                            this.log.error(`Clean import failed: ${e.message}`);
+                            if (obj.callback) {
+                                this.sendTo(obj.from, obj.command, { error: `Clean import failed: ${e.message}`, count: 0 }, obj.callback);
+                            }
+                        });
                     } else {
                         doXmlImport();
                     }
@@ -211,11 +216,17 @@ class openknx extends utils.Adapter {
                     const doKnxprojImport = async () => {
                         try {
                             const buffer = Buffer.from(obj.message.knxprojBase64, "base64");
+                            this.log.info(`knxproj file size: ${(buffer.length / 1024 / 1024).toFixed(1)} MB`);
                             const password = obj.message.password || undefined;
                             const language = obj.message.language || undefined;
+                            this.log.debug("knxproj: extracting ZIP and parsing XML...");
                             const knxProject = await parseKnxproj(buffer, password, language);
+                            const gaCount = knxProject.groupAddresses ? Object.keys(knxProject.groupAddresses).length : 0;
+                            this.log.info(`knxproj: parsed ${gaCount} group addresses`);
                             const res = projectImport.convertKnxProject(this, knxProject);
+                            this.log.info(`knxproj: converted to ${res.objects.length} ioBroker objects`);
                             await this._createRoomEnums(res.rooms);
+                            this.log.debug(`knxproj: created ${Object.keys(res.rooms || {}).length} room enums`);
                             this._finishImport(res.objects, res.error, obj);
                         } catch (e) {
                             this.log.error(`knxproj import failed: ${e.message}`);
@@ -235,7 +246,12 @@ class openknx extends utils.Adapter {
                     };
                     if (obj.message.cleanImport) {
                         this.log.info("Clean import: deleting all existing KNX objects before import...");
-                        this.cleanImport().then(doKnxprojImport);
+                        this.cleanImport().then(doKnxprojImport).catch(e => {
+                            this.log.error(`Clean import failed: ${e.message}`);
+                            if (obj.callback) {
+                                this.sendTo(obj.from, obj.command, { error: `Clean import failed: ${e.message}`, count: 0 }, obj.callback);
+                            }
+                        });
                     } else {
                         doKnxprojImport();
                     }
@@ -371,6 +387,7 @@ class openknx extends utils.Adapter {
      * Common import finish logic shared between XML and knxproj import.
      */
     _finishImport(res, parseError, obj) {
+        this.log.info(`Importing ${res.length} objects into ioBroker...`);
         this.updateObjects(res, 0, obj.message.onlyAddNewObjects, (updateError, length) => {
             const msg = {
                 error:
@@ -426,12 +443,23 @@ class openknx extends utils.Adapter {
      * delete all existing KNX objects before a clean re-import
      */
     async cleanImport() {
-        await this.delObjectAsync("", { recursive: true });
+        try {
+            await this.delObjectAsync("", { recursive: true });
+        } catch (e) {
+            this.log.warn(`delObjectAsync("") failed (${e.message}), falling back to manual deletion`);
+            const objects = await this.getAdapterObjectsAsync();
+            for (const id of Object.keys(objects)) {
+                await this.delObjectAsync(id).catch(() => {});
+            }
+        }
         this.log.info("cleanImport: deleted all existing KNX objects");
     }
 
     // write found communication objects to adapter object tree
     updateObjects(objects, i, onlyAddNewObjects, callback) {
+        if (i > 0 && i % 100 === 0) {
+            this.log.debug(`updateObjects: ${i}/${objects.length} objects written`);
+        }
         if (i >= objects.length) {
             // end of recursion reached
             let err = this.warnDuplicates(objects);
