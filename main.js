@@ -79,6 +79,9 @@ class openknx extends utils.Adapter {
     async onReady() {
         // adapter initialization
 
+        // Ensure meta object exists for file storage (needed for knxproj upload via writeFile)
+        await this.setObjectNotExistsAsync("", { type: "meta", common: { name: "User files", type: "meta.user" }, native: {} });
+
         //after installation
         if (tools.isEmptyObject(this.config)) {
             this.log.warn("Adapter configuration missing, please do configuration first.");
