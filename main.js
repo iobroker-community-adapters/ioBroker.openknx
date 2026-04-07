@@ -215,8 +215,19 @@ class openknx extends utils.Adapter {
                     this.log.info("ETS .knxproj import...");
                     const doKnxprojImport = async () => {
                         try {
-                            const buffer = Buffer.from(obj.message.knxprojBase64, "base64");
-                            this.log.info(`knxproj file size: ${(buffer.length / 1024 / 1024).toFixed(1)} MB`);
+                            let buffer;
+                            if (obj.message.fromFile) {
+                                // Read binary from adapter storage (uploaded via writeFile)
+                                const result = await this.readFileAsync(null, "upload.knxproj");
+                                buffer = Buffer.isBuffer(result.file) ? result.file : Buffer.from(result.file);
+                                this.log.info(`knxproj file size: ${(buffer.length / 1024 / 1024).toFixed(1)} MB (from storage)`);
+                                // Clean up uploaded file
+                                await this.delFileAsync(null, "upload.knxproj").catch(() => {});
+                            } else {
+                                // Legacy: base64 payload in sendTo message
+                                buffer = Buffer.from(obj.message.knxprojBase64, "base64");
+                                this.log.info(`knxproj file size: ${(buffer.length / 1024 / 1024).toFixed(1)} MB (from base64)`);
+                            }
                             const password = obj.message.password || undefined;
                             const language = obj.message.language || undefined;
                             this.log.debug("knxproj: extracting ZIP and parsing XML...");

@@ -310,49 +310,71 @@
                     reader.addEventListener("load", function readFile(event) {
                         $("#etsFile").replaceWith($(etsFile));
                         $("#etsFile").change(processXmlFile);
-                        // readAsDataURL returns "data:application/...;base64,XXXX"
-                        var dataUrl = event.target.result;
-                        var base64 = dataUrl.substring(dataUrl.indexOf(",") + 1);
-                        var sizeMB = (base64.length * 3 / 4 / 1024 / 1024).toFixed(1);
-                        console.log("[openknx] knxproj file read: " + sizeMB + " MB");
+                        var arrayBuffer = event.target.result;
+                        var sizeMB = (arrayBuffer.byteLength / 1024 / 1024).toFixed(1);
+                        console.log("[openknx] knxproj file read: " + sizeMB + " MB (" + arrayBuffer.byteLength + " bytes)");
                         var estSec = Math.max(1, Math.round(sizeMB * 1));
                         showToast(null, _("Import started") + " (" + sizeMB + " MB, ~" + estSec + "s) ...", null, estSec * 1000 + 3000);
                         $("#progress").show();
-                        console.log("[openknx] sending importKnxproj to adapter...");
-                        sendTo(
-                            null,
-                            "importKnxproj",
-                            {
-                                knxprojBase64: base64,
-                                password: $("#knxprojPassword").val() || undefined,
-                                language: undefined,
-                                onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked"),
-                                removeUnusedObjects: $("#removeUnusedObjects").prop("checked"),
-                                cleanImport: $("#cleanImport").prop("checked"),
-                            },
-                            function (result) {
-                                console.log("[openknx] importKnxproj callback:", JSON.stringify(result));
+                        // Upload binary file to adapter storage, then trigger import via small sendTo
+                        var adapterNs = adapter + "." + instance;
+                        console.log("[openknx] uploading knxproj to adapter storage (" + adapterNs + ")...");
+                        socket.emit("writeFile", adapterNs, "upload.knxproj", arrayBuffer, function (err) {
+                            if (err) {
+                                console.error("[openknx] writeFile failed:", err);
                                 $("#progress").hide();
-                                if (!result || result.error) {
-                                    var message = "Unknown error";
-                                    if (result && result.error) {
-                                        message = "Imported " + result.count + " states successfully<p>" + result.error + "</p><p>See log for more information</p>";
-                                    }
-                                    showMessage(_(message));
-                                } else {
-                                    showMessage(
-                                        _("Imported %s states successfully", result.count) +
-                                            "<br/><br/>" +
-                                            _("knxproj import hint"),
-                                    );
-                                    sendTo(null, "restart", null);
-                                    showToast(null, _("Restarting adapter" + "..."), null, 10000);
-                                }
+                                showMessage(_("Upload failed: " + err));
                                 window.isProcessingRequest = false;
-                            },
-                        );
+                                return;
+                            }
+                            console.log("[openknx] writeFile done, sending importKnxproj command...");
+                            sendTo(
+                                null,
+                                "importKnxproj",
+                                {
+                                    fromFile: true,
+                                    password: $("#knxprojPassword").val() || undefined,
+                                    language: undefined,
+                                    onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked"),
+                                    removeUnusedObjects: $("#removeUnusedObjects").prop("checked"),
+                                    cleanImport: $("#cleanImport").prop("checked"),
+                                },
+                                function (result) {
+                                    console.log("[openknx] importKnxproj callback:", JSON.stringify(result));
+                                    $("#progress").hide();
+                                    if (!result || result.error) {
+                                        var message = "Unknown error";
+                                        if (result && result.error) {
+                                            message = "Imported " + result.count + " states successfully<p>" + result.error + "</p><p>See log for more information</p>";
+                                        }
+                                        showMessage(_(message));
+                                    } else {
+                                        showMessage(
+                                            _("Imported %s states successfully", result.count) +
+                                                "<br/><br/>" +
+                                                _("knxproj import hint"),
+                                        );
+                                        sendTo(null, "restart", null);
+                                        showToast(null, _("Restarting adapter" + "..."), null, 10000);
+                                    }
+                                    window.isProcessingRequest = false;
+                                },
+                            );
+                        });
+                        /* Legacy: sendTo with base64 payload (commented out - large files may exceed socket.io message limits)
+                        var dataUrl = event.target.result;
+                        var base64 = dataUrl.substring(dataUrl.indexOf(",") + 1);
+                        sendTo(null, "importKnxproj", {
+                            knxprojBase64: base64,
+                            password: $("#knxprojPassword").val() || undefined,
+                            language: undefined,
+                            onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked"),
+                            removeUnusedObjects: $("#removeUnusedObjects").prop("checked"),
+                            cleanImport: $("#cleanImport").prop("checked"),
+                        }, function (result) { ... });
+                        */
                     });
-                    reader.readAsDataURL(file);
+                    reader.readAsArrayBuffer(file);
                 } else {
                     showMessage(_("Unsupported file format"));
                 }
