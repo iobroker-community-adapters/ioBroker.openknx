@@ -312,16 +312,20 @@
                         $("#etsFile").change(processXmlFile);
                         // Convert ArrayBuffer to base64 in chunks (O(n) instead of O(n²))
                         var bytes = new Uint8Array(event.target.result);
+                        var sizeMB = (event.target.result.byteLength / 1024 / 1024).toFixed(1);
+                        console.log("[openknx] knxproj file read: " + sizeMB + " MB, " + bytes.length + " bytes");
+                        var t0 = Date.now();
                         var chunkSize = 0x8000;
                         var parts = [];
                         for (var i = 0; i < bytes.length; i += chunkSize) {
                             parts.push(String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize)));
                         }
                         var base64 = btoa(parts.join(""));
-                        var sizeMB = (event.target.result.byteLength / 1024 / 1024).toFixed(1);
+                        console.log("[openknx] base64 conversion: " + (Date.now() - t0) + "ms, " + (base64.length / 1024 / 1024).toFixed(1) + " MB");
                         var estSec = Math.max(1, Math.round(sizeMB * 1));
                         showToast(null, _("Import started") + " (" + sizeMB + " MB, ~" + estSec + "s) ...", null, estSec * 1000 + 3000);
                         $("#progress").show();
+                        console.log("[openknx] sending importKnxproj to adapter...");
                         sendTo(
                             null,
                             "importKnxproj",
@@ -334,6 +338,7 @@
                                 cleanImport: $("#cleanImport").prop("checked"),
                             },
                             function (result) {
+                                console.log("[openknx] importKnxproj callback:", JSON.stringify(result));
                                 $("#progress").hide();
                                 if (!result || result.error) {
                                     var message = "Unknown error";
