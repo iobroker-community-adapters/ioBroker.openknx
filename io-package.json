@@ -184,15 +184,6 @@
   "objects": [],
   "instanceObjects": [
     {
-      "_id": "",
-      "type": "meta",
-      "common": {
-        "name": "User files",
-        "type": "meta.user"
-      },
-      "native": {}
-    },
-    {
       "_id": "info",
       "type": "channel",
       "common": {
