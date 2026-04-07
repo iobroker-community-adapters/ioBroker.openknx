@@ -310,11 +310,14 @@
                     reader.addEventListener("load", function readFile(event) {
                         $("#etsFile").replaceWith($(etsFile));
                         $("#etsFile").change(processXmlFile);
-                        var base64 = btoa(
-                            new Uint8Array(event.target.result).reduce(function (data, byte) {
-                                return data + String.fromCharCode(byte);
-                            }, ""),
-                        );
+                        // Convert ArrayBuffer to base64 in chunks (O(n) instead of O(n²))
+                        var bytes = new Uint8Array(event.target.result);
+                        var chunkSize = 0x8000;
+                        var parts = [];
+                        for (var i = 0; i < bytes.length; i += chunkSize) {
+                            parts.push(String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize)));
+                        }
+                        var base64 = btoa(parts.join(""));
                         var sizeMB = (event.target.result.byteLength / 1024 / 1024).toFixed(1);
                         var estSec = Math.max(1, Math.round(sizeMB * 1));
                         showToast(null, _("Import started") + " (" + sizeMB + " MB, ~" + estSec + "s) ...", null, estSec * 1000 + 3000);
