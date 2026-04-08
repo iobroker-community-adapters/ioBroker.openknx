@@ -318,39 +318,61 @@
                         var estSec = Math.max(1, Math.round(sizeMB * 1));
                         showToast(null, _("Import started") + " (" + sizeMB + " MB, ~" + estSec + "s) ...", null, estSec * 1000 + 3000);
                         $("#progress").show();
-                        console.log("[openknx] sending importKnxproj to adapter...");
-                        sendTo(
-                            null,
-                            "importKnxproj",
-                            {
-                                knxprojBase64: base64,
-                                password: $("#knxprojPassword").val() || undefined,
-                                language: undefined,
-                                onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked"),
-                                removeUnusedObjects: $("#removeUnusedObjects").prop("checked"),
-                                cleanImport: $("#cleanImport").prop("checked"),
-                            },
-                            function (result) {
-                                console.log("[openknx] importKnxproj callback:", JSON.stringify(result));
-                                $("#progress").hide();
-                                if (!result || result.error) {
-                                    var message = "Unknown error";
-                                    if (result && result.error) {
-                                        message = "Imported " + result.count + " states successfully<p>" + result.error + "</p><p>See log for more information</p>";
-                                    }
-                                    showMessage(_(message));
-                                } else {
-                                    showMessage(
-                                        _("Imported %s states successfully", result.count) +
-                                            "<br/><br/>" +
-                                            _("knxproj import hint"),
-                                    );
-                                    sendTo(null, "restart", null);
-                                    showToast(null, _("Restarting adapter" + "..."), null, 10000);
-                                }
-                                window.isProcessingRequest = false;
-                            },
-                        );
+
+                        // Split base64 into 500KB chunks to avoid socket.io message size limits
+                        var CHUNK_SIZE = 500000;
+                        var totalChunks = Math.ceil(base64.length / CHUNK_SIZE);
+                        console.log("[openknx] sending " + totalChunks + " chunks...");
+
+                        var sendChunk = function (index) {
+                            if (index >= totalChunks) {
+                                // All chunks sent, trigger import
+                                console.log("[openknx] all chunks sent, triggering import...");
+                                sendTo(
+                                    null,
+                                    "importKnxprojEnd",
+                                    {
+                                        password: $("#knxprojPassword").val() || undefined,
+                                        language: undefined,
+                                        onlyAddNewObjects: $("#onlyAddNewObjects").prop("checked"),
+                                        removeUnusedObjects: $("#removeUnusedObjects").prop("checked"),
+                                        cleanImport: $("#cleanImport").prop("checked"),
+                                    },
+                                    function (result) {
+                                        console.log("[openknx] importKnxproj callback:", JSON.stringify(result));
+                                        $("#progress").hide();
+                                        if (!result || result.error) {
+                                            var message = "Unknown error";
+                                            if (result && result.error) {
+                                                message = "Imported " + result.count + " states successfully<p>" + result.error + "</p><p>See log for more information</p>";
+                                            }
+                                            showMessage(_(message));
+                                        } else {
+                                            showMessage(
+                                                _("Imported %s states successfully", result.count) +
+                                                    "<br/><br/>" +
+                                                    _("knxproj import hint"),
+                                            );
+                                            sendTo(null, "restart", null);
+                                            showToast(null, _("Restarting adapter" + "..."), null, 10000);
+                                        }
+                                        window.isProcessingRequest = false;
+                                    },
+                                );
+                                return;
+                            }
+                            var chunk = base64.substring(index * CHUNK_SIZE, (index + 1) * CHUNK_SIZE);
+                            sendTo(null, "importKnxprojChunk", { index: index, data: chunk }, function () {
+                                console.log("[openknx] chunk " + (index + 1) + "/" + totalChunks + " sent");
+                                sendChunk(index + 1);
+                            });
+                        };
+
+                        // Start: tell adapter how many chunks to expect
+                        sendTo(null, "importKnxprojStart", { totalChunks: totalChunks, sizeMB: sizeMB }, function () {
+                            console.log("[openknx] import started, sending chunks...");
+                            sendChunk(0);
+                        });
                     });
                     reader.readAsDataURL(file);
                 } else {

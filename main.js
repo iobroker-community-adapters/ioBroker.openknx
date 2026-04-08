@@ -211,11 +211,28 @@ class openknx extends utils.Adapter {
                     }
                     break;
                 }
-                case "importKnxproj": {
-                    this.log.info("ETS .knxproj import...");
+                case "importKnxprojStart": {
+                    this.knxprojChunks = [];
+                    this.log.info(`ETS .knxproj chunked import started (${obj.message.totalChunks} chunks, ${obj.message.sizeMB} MB)`);
+                    if (obj.callback) {
+                        this.sendTo(obj.from, obj.command, {}, obj.callback);
+                    }
+                    break;
+                }
+                case "importKnxprojChunk": {
+                    this.knxprojChunks[obj.message.index] = obj.message.data;
+                    if (obj.callback) {
+                        this.sendTo(obj.from, obj.command, {}, obj.callback);
+                    }
+                    break;
+                }
+                case "importKnxprojEnd": {
+                    this.log.info("ETS .knxproj all chunks received, assembling...");
+                    const base64 = this.knxprojChunks.join("");
+                    this.knxprojChunks = null;
                     const doKnxprojImport = async () => {
                         try {
-                            const buffer = Buffer.from(obj.message.knxprojBase64, "base64");
+                            const buffer = Buffer.from(base64, "base64");
                             this.log.info(`knxproj file size: ${(buffer.length / 1024 / 1024).toFixed(1)} MB`);
                             const password = obj.message.password || undefined;
                             const language = obj.message.language || undefined;
