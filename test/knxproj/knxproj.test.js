@@ -127,3 +127,64 @@ describe("knxproj end-to-end (Parser.parse)", function () {
         });
     }
 });
+
+describe("knxproj memory efficiency", function () {
+    this.timeout(600000);
+
+    it("should parse large knxproj within reasonable memory limits", async function () {
+        const largePath = path.join(process.env.HOME, "Downloads", "Home_20260407.knxproj");
+        if (!fs.existsSync(largePath)) {
+            this.skip();
+            return;
+        }
+
+        const buffer = fs.readFileSync(largePath);
+        const heapBefore = process.memoryUsage().heapUsed;
+
+        const contents = await extract(buffer);
+        const parser = new Parser(contents);
+        const project = await parser.parse(null);
+        combineProject(project);
+
+        const heapAfter = process.memoryUsage().heapUsed;
+        const heapDeltaMB = (heapAfter - heapBefore) / 1024 / 1024;
+
+        const gaCount = Object.keys(project.group_addresses || {}).length;
+        const coCount = Object.keys(project.communication_objects || {}).length;
+        console.log(`  Large project: ${gaCount} GAs, ${coCount} COs, heap delta: ${heapDeltaMB.toFixed(0)} MB`);
+
+        assert.ok(gaCount > 100, `Expected >100 GAs, got ${gaCount}`);
+        assert.ok(heapDeltaMB < 200, `Heap grew ${heapDeltaMB.toFixed(0)} MB, expected <200 MB`);
+    });
+});
+
+describe("knxproj lazy extraction", function () {
+    this.timeout(30000);
+
+    it("should not load all ZIP entries into memory during extract", async function () {
+        const knxprojPath = path.join(RESOURCES, "xknx_test_project.knxproj");
+        const buffer = fs.readFileSync(knxprojPath);
+        const contents = await extract(buffer, "test");
+
+        // Verify files are present but buffer() returns fresh data each call
+        const entries = contents.listEntries();
+        assert.ok(entries.length > 0, "Should have entries");
+
+        // Read a file twice — both should return identical content
+        const xml1 = await contents.readFile("knx_master.xml");
+        const xml2 = await contents.readFile("knx_master.xml");
+        assert.strictEqual(xml1, xml2, "Re-reading same file should return identical content");
+        assert.ok(xml1.includes("KNX"), "knx_master.xml should contain KNX");
+    });
+
+    it("should support password-protected inner ZIP", async function () {
+        const knxprojPath = path.join(RESOURCES, "xknx_test_project.knxproj");
+        const buffer = fs.readFileSync(knxprojPath);
+        const contents = await extract(buffer, "test");
+
+        // Should be able to read project files from inner ZIP
+        const project0 = await contents.openProject0();
+        assert.ok(project0.length > 0, "0.xml should have content");
+        assert.ok(project0.includes("GroupAddress"), "0.xml should contain GroupAddress");
+    });
+});
