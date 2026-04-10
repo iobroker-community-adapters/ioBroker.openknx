@@ -220,7 +220,8 @@ class openknx extends utils.Adapter {
                     break;
                 }
                 case "importKnxprojChunk": {
-                    this.knxprojChunks[obj.message.index] = obj.message.data;
+                    // Decode each chunk to Buffer immediately to avoid keeping full base64 string in memory
+                    this.knxprojChunks[obj.message.index] = Buffer.from(obj.message.data, "base64");
                     if (obj.callback) {
                         this.sendTo(obj.from, obj.command, {}, obj.callback);
                     }
@@ -228,11 +229,10 @@ class openknx extends utils.Adapter {
                 }
                 case "importKnxprojEnd": {
                     this.log.info("ETS .knxproj all chunks received, assembling...");
-                    const base64 = this.knxprojChunks.join("");
+                    const buffer = Buffer.concat(this.knxprojChunks);
                     this.knxprojChunks = null;
                     const doKnxprojImport = async () => {
                         try {
-                            const buffer = Buffer.from(base64, "base64");
                             this.log.info(`knxproj file size: ${(buffer.length / 1024 / 1024).toFixed(1)} MB`);
                             const password = obj.message.password || undefined;
                             const language = obj.message.language || undefined;
