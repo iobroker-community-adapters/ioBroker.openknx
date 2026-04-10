@@ -132,8 +132,9 @@ describe("knxproj memory efficiency", function () {
     this.timeout(600000);
 
     it("should parse large knxproj within reasonable memory limits", async function () {
-        const largePath = path.join(process.env.HOME, "Downloads", "Home_20260407.knxproj");
-        if (!fs.existsSync(largePath)) {
+        // Set KNXPROJ_LARGE_FILE env variable to a large .knxproj path to run this test
+        const largePath = process.env.KNXPROJ_LARGE_FILE;
+        if (!largePath || !fs.existsSync(largePath)) {
             this.skip();
             return;
         }
