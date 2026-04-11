@@ -478,6 +478,9 @@ class openknx extends utils.Adapter {
             }
         }
         this.log.info("cleanImport: deleted all existing KNX objects");
+        // Re-create info objects that are needed during runtime
+        await this.setObjectNotExistsAsync("info.busload", { type: "state", common: { role: "info", name: "Busload", type: "number", read: true, write: false, def: 0, unit: "%" }, native: {} });
+        await this.setObjectNotExistsAsync("info.messagecount", { type: "state", common: { role: "info", name: "Message count", type: "number", read: true, write: false, def: 0 }, native: {} });
     }
 
     // write found communication objects to adapter object tree
