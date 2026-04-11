@@ -315,7 +315,7 @@
                         var base64 = dataUrl.substring(dataUrl.indexOf(",") + 1);
                         var sizeMB = (base64.length * 3 / 4 / 1024 / 1024).toFixed(1);
                         console.log("[openknx] knxproj file read: " + sizeMB + " MB");
-                        var estSec = Math.max(1, Math.round(sizeMB * 1));
+                        var estSec = Math.max(1, Math.round(sizeMB * 0.75));
                         showToast(null, _("Import started") + " (" + sizeMB + " MB, ~" + estSec + "s) ...", null, estSec * 1000 + 3000);
                         $("#progress").show();
 
