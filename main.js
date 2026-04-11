@@ -234,6 +234,14 @@ class openknx extends utils.Adapter {
                     const doKnxprojImport = async () => {
                         try {
                             this.log.info(`knxproj file size: ${(buffer.length / 1024 / 1024).toFixed(1)} MB`);
+                            // Warn if heap limit might be too low for large projects
+                            const v8 = require("v8");
+                            const heapStats = v8.getHeapStatistics();
+                            const heapLimitMB = Math.round(heapStats.heap_size_limit / 1024 / 1024);
+                            const fileSizeMB = buffer.length / 1024 / 1024;
+                            if (fileSizeMB > 10 && heapLimitMB < 1024) {
+                                this.log.warn(`Large knxproj (${fileSizeMB.toFixed(0)} MB) with ${heapLimitMB} MB heap limit. If the adapter crashes with "heap out of memory", increase Node.js memory: Instances > openknx > wrench icon > Node.js Options: --max-old-space-size=2048`);
+                            }
                             const password = obj.message.password || undefined;
                             const language = obj.message.language || undefined;
                             this.log.debug("knxproj: extracting ZIP and parsing XML...");
