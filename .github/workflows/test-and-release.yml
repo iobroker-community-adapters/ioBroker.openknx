@@ -80,7 +80,7 @@ jobs:
         steps:
             - uses: ioBroker/testing-action-deploy@v1
               with:
-                  node-version: '22.x'
+                  node-version: '24.x'
                   # Uncomment the following line if your adapter cannot be installed using 'npm ci'
                   # install-command: 'npm install'
                   # npm-token: ${{ secrets.NPM_TOKEN }}  # Commented out for migration to Trusted Publishing
@@ -96,5 +96,3 @@ jobs:
                   sentry-version-prefix: "iobroker.openknx"
                   # If your sentry project is linked to a GitHub repository, you can enable the following option
                   sentry-github-integration: true
-
-                  environment: production
