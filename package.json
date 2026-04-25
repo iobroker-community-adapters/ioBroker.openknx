@@ -39,6 +39,7 @@
     "@zip.js/zip.js": "^2.8.26",
     "ipaddr.js": "^2.3.0",
     "knxultimate": "^5.4.0",
+    "sax": "^1.6.0",
     "xpath": "^0.0.34"
   },
   "devDependencies": {
