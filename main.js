@@ -235,7 +235,7 @@ class openknx extends utils.Adapter {
                         try {
                             this.log.info(`knxproj file size: ${(buffer.length / 1024 / 1024).toFixed(1)} MB`);
                             // Warn if heap limit might be too low for large projects
-                            const v8 = require("v8");
+                            const v8 = require("node:v8");
                             const heapStats = v8.getHeapStatistics();
                             const heapLimitMB = Math.round(heapStats.heap_size_limit / 1024 / 1024);
                             const fileSizeMB = buffer.length / 1024 / 1024;
