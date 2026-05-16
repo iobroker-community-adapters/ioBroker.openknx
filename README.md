@@ -52,6 +52,11 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
   Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+- feat: cyclic sending for Direct Links (periodically re-send current value to KNX bus)
+- fix: pass OS interface name to KNXUltimate instead of ignored localIPAddress
+
 ### 1.1.11 (2026-05-08)
 - fix for UDP interface connection
 
