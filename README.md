@@ -32,7 +32,7 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 - KNX Secure (IP Secure tunneling via .knxkeys keyfile or password)
 - Tunneling (UDP/TCP) and Routing (Multicast) protocols
 - GA-Tools: edit all GA properties (DPT, type, role, read/write flags) with filter and tree view
-- Direct Link: connect any ioBroker state to a KNX group address (1:1, trigger, toggle modes)
+- Direct Link: connect any ioBroker state to a KNX group address (1:1, trigger, toggle modes, cyclic send)
 - Alias generation to merge action and status GAs into a single ioBroker object
 - Status/Act GA linking without alias mode for migration
 - Automatic gateway discovery
