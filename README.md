@@ -54,6 +54,7 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 -->
 ### **WORK IN PROGRESS**
 - feat: cyclic sending for Direct Links (periodically re-send current value to KNX bus)
+- fix: DPT19 accepts numeric timestamps and ISO strings
 
 ### 1.1.11 (2026-05-08)
 - fix for UDP interface connection
