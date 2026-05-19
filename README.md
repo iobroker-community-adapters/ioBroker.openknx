@@ -52,7 +52,7 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
   Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.1.12 (2026-05-19)
 - feat: cyclic sending for Direct Links (periodically re-send current value to KNX bus)
 - fix: DPT19 accepts numeric timestamps and ISO strings
 
@@ -68,9 +68,6 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 ### 1.1.8 (2026-04-30)
 - add compatiblity mode für raw DPT5.*
 - reduce default delay to 25ms
-
-### 1.1.7 (2026-04-29)
-- improve Umlaute handling for DPT-16
 
 ### initial version
 

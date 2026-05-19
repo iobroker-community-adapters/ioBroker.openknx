@@ -1,4 +1,7 @@
 # Older changes
+## 1.1.7 (2026-04-29)
+- improve Umlaute handling for DPT-16
+
 ## 1.1.6 (2026-04-12)
 
 - (TA2k) **breaking:** KNX communication switched to KNXUltimate
