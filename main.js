@@ -21,6 +21,11 @@ const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 const similarity = require("./lib/similarity.js");
 const { parseKnxproj } = require("./lib/knxproj/index.js");
 
+// When mtd_support is active, throttle Direct Link writes globally to avoid
+// drowning sensitive gateways (e.g. MDT SCN-IP100.03) with bursts from many
+// foreign-state changes hitting the same tunnel.
+const MTD_LINKED_WRITE_MIN_GAP_MS = 500;
+
 class openknx extends utils.Adapter {
     /**
      * @param {Partial<utils.AdapterOptions>} [options]
@@ -54,6 +59,7 @@ class openknx extends utils.Adapter {
         this.cyclicLastSent = new Map(); // knxObjectId → timestamp (ms)
         this.cyclicTimeouts = [];
         this.syncTimeouts = [];
+        this.lastLinkedWriteAt = 0; // ms timestamp of last Direct Link write (global rate limit when mtd_support active)
         this.queueHealthTimer = undefined;
         this.queueStuckSinceMs = 0; // ms timestamp when stuck condition first observed
 
@@ -766,6 +772,16 @@ class openknx extends utils.Adapter {
                     }
                 }
 
+                if (this.config.mtd_support) {
+                    const sinceLast = Date.now() - this.lastLinkedWriteAt;
+                    if (sinceLast < MTD_LINKED_WRITE_MIN_GAP_MS) {
+                        this.log.debug(
+                            `Direct Link rate-limited (mtd_support): skipping write to ${gaData.native.address} (${sinceLast}ms since last)`,
+                        );
+                        return "rate-limited";
+                    }
+                }
+
                 // Apply user-defined conversion expression (e.g. "!!value", "value*100")
                 if (gaData.native.linkedStateConvert) {
                     try {
@@ -781,6 +797,7 @@ class openknx extends utils.Adapter {
                 try {
                     this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
                     this.cyclicLastSent.set(linkedKnxId, Date.now());
+                    this.lastLinkedWriteAt = Date.now();
                 } catch (e) {
                     this.log.warn(`Direct Link write failed for ${gaData.native.address}: ${e.message}`);
                 }
@@ -1052,6 +1069,7 @@ class openknx extends utils.Adapter {
                 try {
                     this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
                     this.cyclicLastSent.set(knxId, Date.now());
+                    this.lastLinkedWriteAt = Date.now();
                     this.log.debug(
                         `Direct Link sync: ${foreignId}=${JSON.stringify(writeVal)} → ${gaData.native.address}`,
                     );
@@ -1119,6 +1137,7 @@ class openknx extends utils.Adapter {
                         }
                         this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
                         this.cyclicLastSent.set(knxId, Date.now());
+                        this.lastLinkedWriteAt = Date.now();
                         this.log.debug(
                             `Cyclic send: ${foreignId}=${JSON.stringify(writeVal)} → ${gaData.native.address}`,
                         );
