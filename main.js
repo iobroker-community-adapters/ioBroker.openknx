@@ -1037,6 +1037,26 @@ class openknx extends utils.Adapter {
         if (toWrite.length === 0) {
             return;
         }
+
+        // When the coalescing queue is active, route sync writes through it
+        // so the global maxSendRate is honored. Otherwise stagger directly.
+        if (this.linkedWriteIntervalMs > 0) {
+            this.log.debug(
+                `Direct Link sync: ${toWrite.length}/${entries.length} states differ, queued for drain`,
+            );
+            for (const { foreignId, knxId, gaData, writeVal } of toWrite) {
+                this.linkedWriteQueue.set(gaData.native.address, {
+                    writeVal,
+                    dpt: gaData.native.dpt,
+                    knxId,
+                    foreignId,
+                    mode: "sync",
+                });
+            }
+            this.startLinkedWriteDrain();
+            return;
+        }
+
         this.log.debug(`Direct Link sync: ${toWrite.length}/${entries.length} states differ, writing staggered`);
 
         const SYNC_STAGGER_MS = 500;
