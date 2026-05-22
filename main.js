@@ -1306,7 +1306,7 @@ class openknx extends utils.Adapter {
             return;
         }
         const now = Date.now();
-        const buckets = Array.from({ length: 10 }, () => ({}));
+        const buckets = new Array(10).fill(0);
         const totals10 = {};
         const totals60 = {};
         let total10 = 0;
@@ -1316,37 +1316,36 @@ class openknx extends utils.Adapter {
             totals60[mode] = (totals60[mode] || 0) + 1;
             total60++;
             if (ageMs < 10000) {
-                const idx = Math.min(9, Math.floor(ageMs / 1000));
-                buckets[idx][mode] = (buckets[idx][mode] || 0) + 1;
+                buckets[Math.min(9, Math.floor(ageMs / 1000))]++;
                 totals10[mode] = (totals10[mode] || 0) + 1;
                 total10++;
             }
         }
-        const fmtTotals = t =>
+        const peakPerSec = Math.max(...buckets);
+
+        // Plain-language labels for the internal mode tags.
+        const labels = {
+            "direct:write": "Direct Link",
+            "direct:notify": "Direct Link (Notify)",
+            sync: "Sync",
+            cyclic: "Cyclic Send",
+            autoread: "Autoread",
+            read: "Read-Requests",
+            raw: "Raw Write",
+            write: "Write",
+            "queue:direct:write": "Direct Link (Queue)",
+            "queue:sync": "Sync (Queue)",
+            "queue:cyclic": "Cyclic (Queue)",
+        };
+        const fmt = t =>
             Object.entries(t)
                 .sort((a, b) => b[1] - a[1])
-                .map(([m, c]) => `${m}=${c}`)
+                .map(([m, c]) => `${labels[m] || m}: ${c}`)
                 .join(", ");
-        const summary = buckets
-            .map((b, i) => {
-                const sum = Object.values(b).reduce((a, c) => a + c, 0);
-                if (!sum) {
-                    return null;
-                }
-                const parts = Object.entries(b)
-                    .map(([m, c]) => `${m}=${c}`)
-                    .join(",");
-                return `[-${i}s:${sum}(${parts})]`;
-            })
-            .filter(Boolean)
-            .reverse()
-            .join(" ");
-        this.log.warn(`Disconnect reason: "${reason}"`);
-        this.log.warn(`Outbound traffic last 60s: ${total60} total — ${fmtTotals(totals60)}`);
-        this.log.warn(`Outbound traffic last 10s: ${total10} total — ${fmtTotals(totals10)}`);
-        if (summary) {
-            this.log.warn(`Per-second breakdown last 10s: ${summary}`);
-        }
+
+        this.log.warn(`Verbindung verloren: ${reason}`);
+        this.log.warn(`Telegramme in letzter Minute: ${total60} (${fmt(totals60)})`);
+        this.log.warn(`Telegramme in letzten 10s: ${total10} (${fmt(totals10)}) — Spitze ${peakPerSec}/s`);
 
         // Action-oriented recommendations based on what was happening at disconnect time.
         const recs = [];
