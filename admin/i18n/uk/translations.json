@@ -29,7 +29,6 @@
     "Imported %s states successfully": "%s станів успішно імпортовано",
     "In KNX, action and status often use separate GAs. This tool automatically pairs them into": "У KNX дія та статус часто використовують окремі GA. Цей інструмент автоматично об'єднує їх у",
     "JS expression. Variable: value. Examples: !!value, value*100, value>0?100:0, Math.round(value)": "JS expression. Variable: value. Examples: !!value, value*100, value>0?100:0, Math.round(value)",
-    "KNX engine trace (forward knxultimate debug logs — very verbose)": "Трасування рушія KNX (перенаправляти налагоджувальні логи knxultimate — дуже докладно)",
     "KNX Secure": "KNX Secure",
     "KNX Secure (optional)": "KNX Secure (додатково)",
     "Keyfile content (paste .knxkeys file content)": "Вміст файлу ключів (вставити вміст файлу .knxkeys)",

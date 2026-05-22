@@ -195,7 +195,6 @@
     "noWarnUnknownGa": false,
     "useBoolean": true,
     "knxCompatMode": false,
-    "knxEngineTrace": false,
     "targetNamespace": ""
   },
   "encryptedNative": [

@@ -45,7 +45,6 @@
     "JS expression. Variable: value. Examples: !!value, value*100, value>0?100:0, Math.round(value)": "JS expression. Variable: value. Examples: !!value, value*100, value>0?100:0, Math.round(value)",
     "Keyfile content (paste .knxkeys file content)": "Keyfile content (paste .knxkeys file content)",
     "Keyfile password": "Keyfile password",
-    "KNX engine trace (forward knxultimate debug logs — very verbose)": "KNX engine trace (forward knxultimate debug logs — very verbose)",
     "KNX Secure": "KNX Secure",
     "KNX Secure (optional)": "KNX Secure (optional)",
     "knxproj import hint": "Flags and DPTs imported from ComObjects. Use Create Aliases to pair status and action GAs.",
