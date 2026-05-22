@@ -29,6 +29,7 @@
     "Imported %s states successfully": "已成功导入 %s 状态",
     "In KNX, action and status often use separate GAs. This tool automatically pairs them into": "在 KNX 中，操作和状态通常使用单独的 GA。此工具自动将它们配对为",
     "JS expression. Variable: value. Examples: !!value, value*100, value>0?100:0, Math.round(value)": "JS expression. Variable: value. Examples: !!value, value*100, value>0?100:0, Math.round(value)",
+    "KNX engine trace (forward knxultimate debug logs — very verbose)": "KNX 引擎跟踪（转发 knxultimate 调试日志 — 非常详细）",
     "KNX Secure": "KNX 安全",
     "KNX Secure (optional)": "KNX 安全（可选）",
     "Keyfile content (paste .knxkeys file content)": "密钥文件内容（粘贴.knxkeys文件内容）",

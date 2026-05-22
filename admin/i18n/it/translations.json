@@ -29,6 +29,7 @@
     "Imported %s states successfully": "%s importato correttamente",
     "In KNX, action and status often use separate GAs. This tool automatically pairs them into": "In KNX, azione e stato usano spesso GA separati. Questo strumento li accoppia automaticamente in",
     "JS expression. Variable: value. Examples: !!value, value*100, value>0?100:0, Math.round(value)": "JS expression. Variable: value. Examples: !!value, value*100, value>0?100:0, Math.round(value)",
+    "KNX engine trace (forward knxultimate debug logs — very verbose)": "Traccia motore KNX (inoltra i log di debug di knxultimate — molto dettagliato)",
     "KNX Secure": "KNX sicuro",
     "KNX Secure (optional)": "KNX Sicuro (opzionale)",
     "Keyfile content (paste .knxkeys file content)": "Contenuto del file di chiavi (incolla il contenuto del file .knxkeys)",

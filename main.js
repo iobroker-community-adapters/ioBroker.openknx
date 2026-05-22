@@ -83,6 +83,13 @@ class openknx extends utils.Adapter {
     }
 
     _knxultimateLogLevel() {
+        // knxultimate is extremely verbose at debug (every telegram is logged twice
+        // with full JSON). Forward debug only when the user explicitly opts in via
+        // the "KNX engine trace" config flag — otherwise stay at info so warnings
+        // and errors (incl. the stuck-write patches) still surface.
+        if (!this.config || !this.config.knxEngineTrace) {
+            return "info";
+        }
         const candidates = [
             this.log && this.log.level,
             this.common && this.common.loglevel,
@@ -92,10 +99,7 @@ class openknx extends utils.Adapter {
         if (lvl === "silly") {
             return "trace";
         }
-        if (lvl === "debug") {
-            return "debug";
-        }
-        return "info";
+        return "debug";
     }
 
     /**
