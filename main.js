@@ -13,6 +13,7 @@
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
 const { KNXClient, KNXClientEvents, dptlib, logStream } = require("knxultimate");
+const { setLogLevel: setKnxLogLevel } = require("knxultimate/build/KnxLog");
 const loadMeasurement = require("./lib/loadMeasurement");
 const projectImport = require("./lib/projectImport");
 const tools = require("./lib/tools.js");
@@ -52,6 +53,8 @@ class openknx extends utils.Adapter {
         this.cyclicTimer = undefined;
         this.cyclicLastSent = new Map(); // knxObjectId → timestamp (ms)
         this.cyclicTimeouts = [];
+        this.queueHealthTimer = undefined;
+        this.queueStuckSinceMs = 0; // ms timestamp when stuck condition first observed
 
         // redirect log from KNXUltimate (winston-based logStream) to adapter log
         // Collapse multiline messages (stack traces) into a single line
@@ -81,6 +84,37 @@ class openknx extends utils.Adapter {
      */
     async onReady() {
         // adapter initialization
+
+        // Verify that the local knxultimate diagnostic patches (patches/knxultimate+*.patch)
+        // have been applied. If postinstall did not run (e.g. user installed with
+        // --ignore-scripts), the patch is missing and we lose the stuck-write diagnostics.
+        try {
+            const fs = require("fs");
+            const knxClientPath = require.resolve("knxultimate/build/KNXClient.js");
+            const src = fs.readFileSync(knxClientPath, "utf8");
+            if (src.includes("NEGATIVE confirmation (C-flag error bit set)")) {
+                this.log.info("knxultimate patches applied: stuck-write diagnostics active");
+            } else {
+                this.log.warn(
+                    "knxultimate patches NOT applied. Run 'npx patch-package' or reinstall without --ignore-scripts to enable stuck-write diagnostics.",
+                );
+            }
+        } catch (e) {
+            this.log.debug(`knxultimate patch check failed: ${e.message}`);
+        }
+
+        // Forward adapter log level to knxultimate (winston). When the adapter is in
+        // debug or silly mode, the user wants to see knxultimate's internal traces too.
+        try {
+            const adapterLevel = (this.log.level || "info").toLowerCase();
+            const knxLevel = adapterLevel === "silly" || adapterLevel === "debug" ? "debug" : "info";
+            setKnxLogLevel(knxLevel);
+            if (knxLevel === "debug") {
+                this.log.info("knxultimate log level set to debug (adapter is in debug mode)");
+            }
+        } catch (e) {
+            this.log.debug(`knxultimate setLogLevel failed: ${e.message}`);
+        }
 
         //after installation
         if (tools.isEmptyObject(this.config)) {
@@ -122,6 +156,7 @@ class openknx extends utils.Adapter {
             clearInterval(this.autoreadTimer);
             clearTimeout(this.reconnectTimer);
             clearInterval(this.cyclicTimer);
+            clearInterval(this.queueHealthTimer);
             this.stopping = true;
             this.connected = false;
 
@@ -998,6 +1033,81 @@ class openknx extends utils.Adapter {
         this.cyclicTimeouts = [];
     }
 
+    /**
+     * Periodic health check on the KNXUltimate send queue. Detects the case where
+     * outbound writes silently stop being processed (gateway lost tunnel state,
+     * stuck queueLock, missing TUNNELING_ACK that never resets clearToSend, etc.).
+     * Logs INFO snapshot every 60s; escalates to ERROR after 120s of stuck state.
+     */
+    startQueueHealthMonitor() {
+        this.stopQueueHealthMonitor();
+        this.queueStuckSinceMs = 0;
+        this.queueLastSeq = undefined;
+        this.queueLastInFlightSeq = undefined;
+        this.queueLastQueueLen = undefined;
+        this.queueHealthTimer = setInterval(() => {
+            try {
+                if (!this.knxConnection || !this.connected) {
+                    return;
+                }
+                const c = this.knxConnection;
+                const clearToSend = c.clearToSend;
+                const queueLen = Array.isArray(c.commandQueue) ? c.commandQueue.length : -1;
+                const channelID = c.channelID;
+                let seqNum;
+                let inFlightSeq;
+                try {
+                    seqNum = typeof c.getSeqNumber === "function" ? c.getSeqNumber() : undefined;
+                    inFlightSeq = typeof c.getCurrentItemHandledByTheQueue === "function" ? c.getCurrentItemHandledByTheQueue() : undefined;
+                } catch {
+                    /* accessor missing on older versions */
+                }
+                const stuck = clearToSend === false && queueLen > 0;
+                const seqFrozen =
+                    this.queueLastSeq !== undefined &&
+                    this.queueLastSeq === seqNum &&
+                    this.queueLastInFlightSeq === inFlightSeq &&
+                    this.queueLastQueueLen === queueLen;
+                this.queueLastSeq = seqNum;
+                this.queueLastInFlightSeq = inFlightSeq;
+                this.queueLastQueueLen = queueLen;
+
+                const detail = `clearToSend=${clearToSend} queueLen=${queueLen} channelID=${channelID} sendSeq=${seqNum} inFlightSeq=${inFlightSeq}`;
+                if (stuck) {
+                    if (this.queueStuckSinceMs === 0) {
+                        this.queueStuckSinceMs = Date.now();
+                    }
+                    const stuckSec = Math.round((Date.now() - this.queueStuckSinceMs) / 1000);
+                    if (stuckSec >= 120) {
+                        this.log.error(
+                            `KNX queue stuck for ${stuckSec}s: ${detail}${seqFrozen ? " (sequence counter frozen)" : ""}. Outbound writes are not being processed. Restart adapter or check gateway/network.`,
+                        );
+                    } else {
+                        this.log.warn(`KNX queue health: ${detail} stuckSince=${stuckSec}s`);
+                    }
+                } else {
+                    if (this.queueStuckSinceMs !== 0) {
+                        const wasStuckSec = Math.round((Date.now() - this.queueStuckSinceMs) / 1000);
+                        this.log.info(`KNX queue recovered after ${wasStuckSec}s. ${detail}`);
+                        this.queueStuckSinceMs = 0;
+                    } else {
+                        this.log.debug(`KNX queue health: ${detail}`);
+                    }
+                }
+            } catch (e) {
+                this.log.debug(`Queue health check error: ${e.message}`);
+            }
+        }, 60 * 1000);
+    }
+
+    stopQueueHealthMonitor() {
+        if (this.queueHealthTimer) {
+            clearInterval(this.queueHealthTimer);
+            this.queueHealthTimer = undefined;
+        }
+        this.queueStuckSinceMs = 0;
+    }
+
     // Reconnect delays in seconds: 10, 30, 60, 120, 120, 120, 120
     static reconnectDelays = [10, 30, 60, 120, 120, 120, 120];
 
@@ -1209,6 +1319,7 @@ class openknx extends utils.Adapter {
             // Direct Link: Sync linked foreign state values to KNX bus
             this.syncLinkedStates();
             this.startCyclicSending();
+            this.startQueueHealthMonitor();
         });
 
         // Event: disconnected
@@ -1220,6 +1331,7 @@ class openknx extends utils.Adapter {
             this.setState("info.connection", this.connected, true);
             this.setState("info.busload", 0, true);
             this.stopCyclicSending();
+            this.stopQueueHealthMonitor();
             this.scheduleReconnect();
         });
 
@@ -1228,17 +1340,28 @@ class openknx extends utils.Adapter {
             this.log.warn(err.message || String(err));
         });
 
-        // Event: ackReceived - only useful for ack:false (timeout), since ack:true packet has no GA info
+        // Event: ackReceived - fires for both transport-level success (ack=true) and timeout (ack=false)
         this.knxConnection.on(KNXClientEvents.ackReceived, (packet, ack) => {
+            const dest = packet?.cEMIMessage?.dstAddress?.toString?.();
+            const seq = packet?.seqCounter;
             if (ack) {
-                return; // Success case handled via echoed indication
+                // Gateway acknowledged the TUNNELLING_REQUEST at the IP layer.
+                // This does NOT confirm bus delivery — that's L_DATA_CON.
+                this.log.debug(`Gateway TUNNELING_ACK received seqCounter=${seq}${dest ? ` (last GA=${dest})` : ""}`);
+                return;
             }
-            const dest = packet.cEMIMessage?.dstAddress?.toString();
+            // ack=false means KNXUltimate gave up after retransmits without seeing an ACK.
+            // This is a transport-level failure: the IP gateway did not reply, regardless of bus state.
             if (!dest) {
+                this.log.error(
+                    `KNX gateway did not ACK TUNNELING_REQUEST after retries (seqCounter=${seq}). Transport/network issue: gateway unreachable or tunnel dropped.`,
+                );
                 return;
             }
             for (const id of this.gaList.getIdsByGa(dest)) {
-                this.log.info(`No ACK received for ${dest} ${id}. Possibly no receiver or missing ETS configuration.`);
+                this.log.error(
+                    `KNX gateway did not ACK TUNNELING_REQUEST for GA ${dest} (${id}) seqCounter=${seq}. Transport/network issue: gateway unreachable, tunnel dropped, or busload too high. Frame was NOT delivered.`,
+                );
             }
         });
 
@@ -1400,7 +1523,7 @@ class openknx extends utils.Adapter {
 
                         if (echoed) {
                             this.log.debug(
-                                `Acknowledged own message for GA ${dest} to Object ${id} value: ${convertedVal} dpt: ${data.native.dpt}`,
+                                `Local echo (queued, NOT bus delivery confirmation) for GA ${dest} to Object ${id} value: ${convertedVal} dpt: ${data.native.dpt}`,
                             );
                         } else {
                             this.log.debug(

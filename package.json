@@ -52,6 +52,7 @@
     "@iobroker/testing": "^5.2.2",
     "@tsconfig/node20": "^20.1.9",
     "@types/node": "^20.19.41",
+    "patch-package": "^8.0.1",
     "typescript": "~5.9.3"
   },
   "main": "main.js",
@@ -60,11 +61,13 @@
     "admin{,/!(src)/**}/*.{html,css,png,svg,jpg,js}",
     "lib/",
     "www/",
+    "patches/",
     "io-package.json",
     "LICENSE",
     "main.js"
   ],
   "scripts": {
+    "postinstall": "patch-package",
     "prebuild": "rimraf admin/build",
     "build": "build-adapter",
     "watch": "build-adapter --watch",

@@ -1,0 +1,65 @@
+diff --git a/node_modules/knxultimate/build/KNXClient.js b/node_modules/knxultimate/build/KNXClient.js
+index 978f524..cef7581 100644
+--- a/node_modules/knxultimate/build/KNXClient.js
++++ b/node_modules/knxultimate/build/KNXClient.js
+@@ -2217,13 +2217,22 @@ class KNXClient extends TypedEmitter_1.TypedEventEmitter {
+                 }
+                 else if (knxTunnelingRequest.cEMIMessage.msgCode ===
+                     CEMIConstants_1.default.L_DATA_CON) {
+-                    this.sysLogger.debug(`[${(0, utils_1.getTimestamp)()}] ` +
+-                        `Received KNX packet: TUNNELING: L_DATA_CON, dont' care.`);
++                    const cemi = knxTunnelingRequest.cEMIMessage;
++                    const hasError = cemi.control && (cemi.control.control1 & 0x01) === 1;
++                    if (hasError) {
++                        this.sysLogger.error(`[${(0, utils_1.getTimestamp)()}] ` +
++                            `Received KNX packet: TUNNELING: L_DATA_CON with NEGATIVE confirmation (C-flag error bit set). Bus delivery FAILED for src=${cemi.srcAddress?.toString?.() ?? '?'} dst=${cemi.dstAddress?.toString?.() ?? '?'} seqCounter=${knxTunnelingRequest.seqCounter}. The frame was sent by the gateway but the destination did not acknowledge.`);
++                    }
++                    else {
++                        this.sysLogger.debug(`[${(0, utils_1.getTimestamp)()}] ` +
++                            `Received KNX packet: TUNNELING: L_DATA_CON, dont' care.`);
++                    }
+                 }
+             }
+             else if (knxHeader.service_type === KNXConstants_1.KNX_CONSTANTS.TUNNELING_ACK) {
+                 const knxTunnelingAck = knxMessage;
+                 if (knxTunnelingAck.channelID !== this._channelID) {
++                    this.sysLogger.error(`Received KNX packet: TUNNELING_ACK with mismatched channelID: received=${knxTunnelingAck.channelID} expected=${this._channelID} seqCounter=${knxTunnelingAck.seqCounter} Host:${this._options.ipAddr}:${this._options.ipPort}. This may indicate the gateway lost tunnel state — outbound writes will stall until reconnect.`);
+                     return;
+                 }
+                 if (!this._options.suppress_ack_ldatareq) {
+diff --git a/node_modules/knxultimate/src/KNXClient.ts b/node_modules/knxultimate/src/KNXClient.ts
+index dc33a40..6709bc4 100644
+--- a/node_modules/knxultimate/src/KNXClient.ts
++++ b/node_modules/knxultimate/src/KNXClient.ts
+@@ -3445,14 +3445,27 @@ export default class KNXClient extends TypedEventEmitter<KNXClientEventCallbacks
+ 					knxTunnelingRequest.cEMIMessage.msgCode ===
+ 					CEMIConstants.L_DATA_CON
+ 				) {
+-					this.sysLogger.debug(
+-						`[${getTimestamp()}] ` +
+-							`Received KNX packet: TUNNELING: L_DATA_CON, dont' care.`,
+-					)
++					const cemi = knxTunnelingRequest.cEMIMessage as any
++					const hasError =
++						cemi.control && (cemi.control.control1 & 0x01) === 1
++					if (hasError) {
++						this.sysLogger.error(
++							`[${getTimestamp()}] ` +
++								`Received KNX packet: TUNNELING: L_DATA_CON with NEGATIVE confirmation (C-flag error bit set). Bus delivery FAILED for src=${cemi.srcAddress?.toString?.() ?? '?'} dst=${cemi.dstAddress?.toString?.() ?? '?'} seqCounter=${(knxTunnelingRequest as any).seqCounter}. The frame was sent by the gateway but the destination did not acknowledge.`,
++						)
++					} else {
++						this.sysLogger.debug(
++							`[${getTimestamp()}] ` +
++								`Received KNX packet: TUNNELING: L_DATA_CON, dont' care.`,
++						)
++					}
+ 				}
+ 			} else if (knxHeader.service_type === KNX_CONSTANTS.TUNNELING_ACK) {
+ 				const knxTunnelingAck = knxMessage as KNXTunnelingAck
+ 				if (knxTunnelingAck.channelID !== this._channelID) {
++					this.sysLogger.error(
++						`Received KNX packet: TUNNELING_ACK with mismatched channelID: received=${knxTunnelingAck.channelID} expected=${this._channelID} seqCounter=${knxTunnelingAck.seqCounter} Host:${this._options.ipAddr}:${this._options.ipPort}. This may indicate the gateway lost tunnel state — outbound writes will stall until reconnect.`,
++					)
+ 					return
+ 				}
+ 
