@@ -39,9 +39,11 @@
             // ---- Translation loading ----
             // Load flat i18n files created during jsonConfig migration
             (function () {
-                var lang = ((window.navigator.language || window.navigator.userLanguage) || 'en')
-                    .split('-')[0].toLowerCase();
-                var supported = ['de', 'en', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru', 'uk'];
+                var rawLang = ((window.navigator.language || window.navigator.userLanguage) || 'en').toLowerCase();
+                var lang = rawLang.split('-')[0];
+                // Handle zh-cn explicitly (browser may report 'zh-cn' or 'zh-tw' etc.)
+                if (lang === 'zh') lang = rawLang.indexOf('tw') !== -1 ? 'en' : 'zh-cn';
+                var supported = ['de', 'en', 'es', 'fr', 'it', 'nl', 'pl', 'pt', 'ru', 'uk', 'zh-cn'];
                 if (supported.indexOf(lang) === -1) lang = 'en';
 
                 function populateDict(data, l) {
