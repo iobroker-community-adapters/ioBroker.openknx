@@ -1295,7 +1295,7 @@ class openknx extends utils.Adapter {
     trackOutboundWrite(mode) {
         const now = Date.now();
         this.outboundWriteLog.push({ ts: now, mode });
-        const cutoff = now - 10000;
+        const cutoff = now - 60000;
         while (this.outboundWriteLog.length && this.outboundWriteLog[0].ts < cutoff) {
             this.outboundWriteLog.shift();
         }
@@ -1307,14 +1307,26 @@ class openknx extends utils.Adapter {
         }
         const now = Date.now();
         const buckets = Array.from({ length: 10 }, () => ({}));
-        const totals = {};
-        let total = 0;
+        const totals10 = {};
+        const totals60 = {};
+        let total10 = 0;
+        let total60 = 0;
         for (const { ts, mode } of this.outboundWriteLog) {
-            const idx = Math.min(9, Math.floor((now - ts) / 1000));
-            buckets[idx][mode] = (buckets[idx][mode] || 0) + 1;
-            totals[mode] = (totals[mode] || 0) + 1;
-            total++;
+            const ageMs = now - ts;
+            totals60[mode] = (totals60[mode] || 0) + 1;
+            total60++;
+            if (ageMs < 10000) {
+                const idx = Math.min(9, Math.floor(ageMs / 1000));
+                buckets[idx][mode] = (buckets[idx][mode] || 0) + 1;
+                totals10[mode] = (totals10[mode] || 0) + 1;
+                total10++;
+            }
         }
+        const fmtTotals = t =>
+            Object.entries(t)
+                .sort((a, b) => b[1] - a[1])
+                .map(([m, c]) => `${m}=${c}`)
+                .join(", ");
         const summary = buckets
             .map((b, i) => {
                 const sum = Object.values(b).reduce((a, c) => a + c, 0);
@@ -1329,26 +1341,31 @@ class openknx extends utils.Adapter {
             .filter(Boolean)
             .reverse()
             .join(" ");
-        this.log.warn(`Outbound burst before disconnect (${total} writes / 10s, reason="${reason}"): ${summary}`);
+        this.log.warn(`Disconnect reason: "${reason}"`);
+        this.log.warn(`Outbound traffic last 60s: ${total60} total — ${fmtTotals(totals60)}`);
+        this.log.warn(`Outbound traffic last 10s: ${total10} total — ${fmtTotals(totals10)}`);
+        if (summary) {
+            this.log.warn(`Per-second breakdown last 10s: ${summary}`);
+        }
 
         // Action-oriented recommendations based on what was happening at disconnect time.
         const recs = [];
-        const writeModes = Object.keys(totals).filter(m => m !== "read" && m !== "autoread");
-        const writeCount = writeModes.reduce((a, m) => a + (totals[m] || 0), 0);
+        const writeModes = Object.keys(totals60).filter(m => m !== "read" && m !== "autoread");
+        const writeCount60 = writeModes.reduce((a, m) => a + (totals60[m] || 0), 0);
         const currentRate = Number(this.config.maxSendRate) || 0;
 
-        if (totals.autoread || this.autoreadTimer) {
+        if (totals60.autoread || this.autoreadTimer) {
             recs.push(
-                "Autoread war zum Zeitpunkt des Disconnects aktiv. Empfehlung: Autoread deaktivieren (Settings → Autoread on startup).",
+                `Autoread war aktiv (${totals60.autoread || 0} Reads in 60s). Empfehlung: Autoread deaktivieren (Settings → Autoread on startup).`,
             );
         }
-        if (writeCount > 0 && currentRate === 0) {
+        if (writeCount60 > 0 && currentRate === 0) {
             recs.push(
-                'Direct Link Schreibrate ist unbegrenzt (maxSendRate=0). Empfehlung: "Max Direct Link send rate" auf 2 setzen (für MDT) bzw. langsam erhöhen.',
+                `Direct Link Schreibrate ist unbegrenzt (${writeCount60} Writes in 60s). Empfehlung: "Max Direct Link send rate" auf 2 setzen (für MDT) bzw. langsam erhöhen.`,
             );
-        } else if (writeCount > 0 && currentRate > 2) {
+        } else if (writeCount60 > 0 && currentRate > 2) {
             recs.push(
-                `Direct Link Schreibrate ist ${currentRate} tel/s. Empfehlung: "Max Direct Link send rate" auf 2 absenken.`,
+                `Direct Link Schreibrate ist ${currentRate} tel/s (${writeCount60} Writes in 60s). Empfehlung: "Max Direct Link send rate" auf 2 absenken.`,
             );
         }
         if (/MDT|SCN-IP/i.test(this.config.deviceName || "") && !this.waitForAck) {
