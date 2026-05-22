@@ -1393,7 +1393,11 @@ class openknx extends utils.Adapter {
                 }
 
                 // Phase 2: send autoread requests (asynchronous, non-blocking)
-                if (autoreadGAs.length > 0) {
+                if (this.config.mtd_support && autoreadGAs.length > 0) {
+                    this.log.info(
+                        `Autoread skipped: mtd_support is enabled (${autoreadGAs.length} GAs would have been read). The MDT gateway cannot keep up with the read burst.`,
+                    );
+                } else if (autoreadGAs.length > 0) {
                     // use realistic per-telegram time so queue stays empty between reads
                     const autoreadInterval = Math.max(this.config.sendInterval || 25, 200);
                     const estimatedSec = Math.ceil((autoreadGAs.length * autoreadInterval) / 1000);
@@ -1781,7 +1785,7 @@ class openknx extends utils.Adapter {
             this.log.info(
                 `Connecting to knx gateway: ${this.config.gwip}:${this.config.gwipport} device name: ${
                     this.config.deviceName
-                } with physical adr: ${this.config.eibadr} minimum send delay: ${this.config.sendInterval} ms` +
+                } with physical adr: ${this.config.eibadr} minimum send delay: ${this.effectiveSendInterval} ms` +
                     ` debug level: ${this.log.level}`,
             );
         }
