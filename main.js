@@ -1391,6 +1391,9 @@ class openknx extends utils.Adapter {
             const chId = this.knxConnection?.channelID;
             const pa = this.knxConnection?.physAddr ? this.knxConnection.physAddr.toString() : "";
             this.log.info(`Connected! channelID=${chId} physAddr=${pa}`);
+            this.log.info(
+                `Active settings: waitForAck=${this.waitForAck}, maxSendRate=${Number(this.config.maxSendRate) || 0} tel/s, sendInterval=${this.effectiveSendInterval}ms, autoread=${!!this.config.autoreadEnabled}`,
+            );
             this.setState("info.messagecount", 0, true);
 
             // MDT IP-Router/Interface compatibility check: warn when settings are
