@@ -893,6 +893,7 @@ class openknx extends utils.Adapter {
             this.log.debug(`Outbound GroupValue_Read to GA ${ga}`);
             try {
                 this.knxConnection.read(ga);
+                this.trackOutboundWrite("read");
             } catch (e) {
                 this.log.warn(`GroupValue_Read failed for ${ga}: ${e.message}`);
             }
@@ -1306,10 +1307,12 @@ class openknx extends utils.Adapter {
         }
         const now = Date.now();
         const buckets = Array.from({ length: 10 }, () => ({}));
+        const totals = {};
         let total = 0;
         for (const { ts, mode } of this.outboundWriteLog) {
             const idx = Math.min(9, Math.floor((now - ts) / 1000));
             buckets[idx][mode] = (buckets[idx][mode] || 0) + 1;
+            totals[mode] = (totals[mode] || 0) + 1;
             total++;
         }
         const summary = buckets
@@ -1327,6 +1330,34 @@ class openknx extends utils.Adapter {
             .reverse()
             .join(" ");
         this.log.warn(`Outbound burst before disconnect (${total} writes / 10s, reason="${reason}"): ${summary}`);
+
+        // Action-oriented recommendations based on what was happening at disconnect time.
+        const recs = [];
+        const writeModes = Object.keys(totals).filter(m => m !== "read" && m !== "autoread");
+        const writeCount = writeModes.reduce((a, m) => a + (totals[m] || 0), 0);
+        const currentRate = Number(this.config.maxSendRate) || 0;
+
+        if (totals.autoread || this.autoreadTimer) {
+            recs.push(
+                "Autoread war zum Zeitpunkt des Disconnects aktiv. Empfehlung: Autoread deaktivieren (Settings → Autoread on startup).",
+            );
+        }
+        if (writeCount > 0 && currentRate === 0) {
+            recs.push(
+                'Direct Link Schreibrate ist unbegrenzt (maxSendRate=0). Empfehlung: "Max Direct Link send rate" auf 2 setzen (für MDT) bzw. langsam erhöhen.',
+            );
+        } else if (writeCount > 0 && currentRate > 2) {
+            recs.push(
+                `Direct Link Schreibrate ist ${currentRate} tel/s. Empfehlung: "Max Direct Link send rate" auf 2 absenken.`,
+            );
+        }
+        if (/MDT|SCN-IP/i.test(this.config.deviceName || "") && !this.waitForAck) {
+            recs.push('MDT-Gateway erkannt aber "Wait for ACK" deaktiviert. Empfehlung: "Wait for ACK" aktivieren.');
+        }
+
+        for (const r of recs) {
+            this.log.warn(r);
+        }
     }
 
     // Reconnect delays in seconds: 10, 30, 60, 120, 120, 120, 120
@@ -1549,6 +1580,7 @@ class openknx extends utils.Adapter {
                         }
                         try {
                             this.knxConnection.read(autoreadGAs[i]);
+                            this.trackOutboundWrite("autoread");
                             this.log.debug(`Autoread GroupValueRead sent ${autoreadGAs[i]}`);
                         } catch (e) {
                             this.log.warn(`Autoread failed for ${autoreadGAs[i]}: ${e.message}`);
