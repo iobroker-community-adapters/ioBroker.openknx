@@ -57,6 +57,7 @@ class openknx extends utils.Adapter {
         this.linkedWriteQueue = new Map(); // ga → {writeVal, dpt, knxId, foreignId, mode}
         this.linkedWriteDrainTimer = undefined;
         this.linkedWriteIntervalMs = 0;
+        this.outboundWriteLog = []; // {ts, mode} ring of last 10s of outbound writes for burst diagnostics
         this.queueHealthTimer = undefined;
         this.queueStuckSinceMs = 0; // ms timestamp when stuck condition first observed
 
@@ -778,6 +779,7 @@ class openknx extends utils.Adapter {
                 );
                 try {
                     this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
+                    this.trackOutboundWrite(`direct:${mode}`);
                     this.cyclicLastSent.set(linkedKnxId, Date.now());
                 } catch (e) {
                     this.log.warn(`Direct Link write failed for ${gaData.native.address}: ${e.message}`);
@@ -905,6 +907,7 @@ class openknx extends utils.Adapter {
                     // KNXUltimate requires bitlength as 3rd parameter
                     const bitlength = rawVal.byteLength * 8;
                     this.knxConnection.writeRaw(ga, rawVal, bitlength);
+                    this.trackOutboundWrite("raw");
                     return "write raw";
                 }
                 // check if knxultimate can encode the value before sending
@@ -915,6 +918,7 @@ class openknx extends utils.Adapter {
                     this.log.warn(`Value ${JSON.stringify(knxVal)} could not be encoded for DPT ${dpt} on ${ga}`);
                 }
                 this.knxConnection.write(ga, knxVal, dpt);
+                this.trackOutboundWrite("write");
 
                 // KNX Compat Mode: After write, sync value from linked status GA
                 if (this.config.knxCompatMode) {
@@ -1068,6 +1072,7 @@ class openknx extends utils.Adapter {
                 }
                 try {
                     this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
+                    this.trackOutboundWrite("sync");
                     this.cyclicLastSent.set(knxId, Date.now());
                     this.log.debug(
                         `Direct Link sync: ${foreignId}=${JSON.stringify(writeVal)} → ${gaData.native.address}`,
@@ -1135,6 +1140,7 @@ class openknx extends utils.Adapter {
                             }
                         }
                         this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
+                        this.trackOutboundWrite("cyclic");
                         this.cyclicLastSent.set(knxId, Date.now());
                         this.log.debug(
                             `Cyclic send: ${foreignId}=${JSON.stringify(writeVal)} → ${gaData.native.address}`,
@@ -1258,6 +1264,7 @@ class openknx extends utils.Adapter {
             this.linkedWriteQueue.delete(firstKey);
             try {
                 this.knxConnection.write(firstKey, entry.writeVal, entry.dpt);
+                this.trackOutboundWrite(`queue:${entry.mode}`);
                 this.cyclicLastSent.set(entry.knxId, Date.now());
                 this.log.debug(
                     `Direct Link drained [${entry.mode}]: ${firstKey}=${JSON.stringify(entry.writeVal)} (queue=${this.linkedWriteQueue.size})`,
@@ -1282,6 +1289,44 @@ class openknx extends utils.Adapter {
             clearInterval(this.linkedWriteDrainTimer);
             this.linkedWriteDrainTimer = undefined;
         }
+    }
+
+    trackOutboundWrite(mode) {
+        const now = Date.now();
+        this.outboundWriteLog.push({ ts: now, mode });
+        const cutoff = now - 10000;
+        while (this.outboundWriteLog.length && this.outboundWriteLog[0].ts < cutoff) {
+            this.outboundWriteLog.shift();
+        }
+    }
+
+    logRecentWriteBurst(reason) {
+        if (!this.outboundWriteLog.length) {
+            return;
+        }
+        const now = Date.now();
+        const buckets = Array.from({ length: 10 }, () => ({}));
+        let total = 0;
+        for (const { ts, mode } of this.outboundWriteLog) {
+            const idx = Math.min(9, Math.floor((now - ts) / 1000));
+            buckets[idx][mode] = (buckets[idx][mode] || 0) + 1;
+            total++;
+        }
+        const summary = buckets
+            .map((b, i) => {
+                const sum = Object.values(b).reduce((a, c) => a + c, 0);
+                if (!sum) {
+                    return null;
+                }
+                const parts = Object.entries(b)
+                    .map(([m, c]) => `${m}=${c}`)
+                    .join(",");
+                return `[-${i}s:${sum}(${parts})]`;
+            })
+            .filter(Boolean)
+            .reverse()
+            .join(" ");
+        this.log.warn(`Outbound burst before disconnect (${total} writes / 10s, reason="${reason}"): ${summary}`);
     }
 
     // Reconnect delays in seconds: 10, 30, 60, 120, 120, 120, 120
@@ -1528,6 +1573,7 @@ class openknx extends utils.Adapter {
         this.knxConnection.on(KNXClientEvents.disconnected, reason => {
             if (this.connected) {
                 this.log.error(`Connection lost: ${reason}`);
+                this.logRecentWriteBurst(reason);
             }
             this.connected = false;
             this.setState("info.connection", this.connected, true);
