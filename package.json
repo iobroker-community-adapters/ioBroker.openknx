@@ -39,7 +39,6 @@
     "@zip.js/zip.js": "^2.8.26",
     "ipaddr.js": "^2.4.0",
     "knxultimate": "^5.5.7",
-    "patch-package": "^8.0.1",
     "sax": "^1.6.0",
     "xpath": "^0.0.34"
   },
@@ -60,14 +59,14 @@
     "admin{,/!(src)/**}/!(tsconfig|tsconfig.*|.eslintrc).json",
     "admin{,/!(src)/**}/*.{html,css,png,svg,jpg,js}",
     "lib/",
+    "scripts/",
     "www/",
-    "patches/",
     "io-package.json",
     "LICENSE",
     "main.js"
   ],
   "scripts": {
-    "postinstall": "patch-package",
+    "postinstall": "node scripts/apply-patches.js",
     "prebuild": "rimraf admin/build",
     "build": "build-adapter",
     "watch": "build-adapter --watch",

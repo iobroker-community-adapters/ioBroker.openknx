@@ -85,7 +85,7 @@ class openknx extends utils.Adapter {
     async onReady() {
         // adapter initialization
 
-        // Verify that the local knxultimate diagnostic patches (patches/knxultimate+*.patch)
+        // Verify that the knxultimate diagnostic patches (scripts/apply-patches.js)
         // have been applied. If postinstall did not run (e.g. user installed with
         // --ignore-scripts), the patch is missing and we lose the stuck-write diagnostics.
         try {
@@ -96,7 +96,7 @@ class openknx extends utils.Adapter {
                 this.log.info("knxultimate patches applied: stuck-write diagnostics active");
             } else {
                 this.log.warn(
-                    "knxultimate patches NOT applied. Run 'npx patch-package' or reinstall without --ignore-scripts to enable stuck-write diagnostics.",
+                    "knxultimate patches NOT applied. Run 'node scripts/apply-patches.js' or reinstall without --ignore-scripts to enable stuck-write diagnostics.",
                 );
             }
         } catch (e) {
