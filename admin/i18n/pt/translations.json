@@ -81,8 +81,6 @@
     "detect KNX gateway": "detectar gateway KNX",
     "do not overwrite existing IOB objects": "não substitua objetos IOB existentes",
     "do not warn on unknown KNX group adresses": "não avisar sobre endereços de grupos KNX desconhecidos",
-    "MDT gateway compatibility (ACK-based flow control, min delay 50ms)": "Compatibilidade gateway MDT (controlo de fluxo por ACK, atraso mín. 50 ms)",
-    "In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s).": "No ETS deve ser ativado o parâmetro do router IP MDT \"Tunneling: intervalo de monitorização mais longo\" (define o intervalo keep-alive para 60 s em vez de 10 s).",
     "e.g. !!value, value*100": "e.g. !!value, value*100",
     "generate aliases": "gerar aliases",
     "import ETS project (.knxproj or .xml)": "importar projeto ETS (.knxproj ou .xml)",
@@ -105,5 +103,8 @@
     "remove existing IOB objects that are not in ETS import file": "remova objetos IOB existentes que não estão no arquivo de importação ETS",
     "set acknowledgement flag when application writes to object": "definir sinalizador de reconhecimento quando o aplicativo grava no objeto",
     "this is not a number": "este não é um número",
-    "use common.type boolean for 1 bit enum instead of number": "use common.type booleano para enum de 1 bit em vez de número"
+    "use common.type boolean for 1 bit enum instead of number": "use common.type booleano para enum de 1 bit em vez de número",
+    "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Taxa máx. de envio Direct Link [telegramas/s, 0=ilimitado]",
+    "Wait for ACK (check for sensitive gateways like MDT)": "Aguardar ACK (marcar para gateways sensíveis como MDT)",
+    "Recommended for MDT IP router: check \"Wait for ACK\", set send rate to 2, disable autoread. In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s).": "Recomendado para o router IP MDT: marcar \"Aguardar ACK\", definir taxa de envio para 2, desativar autoread. No ETS o parâmetro do router IP MDT \"Tunneling: longer monitoring interval\" deve estar ativado (define o intervalo keep-alive para 60 s em vez de 10 s)."
 }

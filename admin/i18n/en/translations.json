@@ -17,8 +17,6 @@
     "Direct Link removed": "Direct Link removed",
     "do not overwrite existing IOB objects": "do not overwrite existing IOB objects",
     "do not warn on unknown KNX group adresses": "do not warn on unknown KNX group adresses",
-    "MDT gateway compatibility (ACK-based flow control, min delay 50ms)": "MDT gateway compatibility (ACK-based flow control, min delay 50ms)",
-    "In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s).": "In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s).",
     "e.g. !!value, value*100": "e.g. !!value, value*100",
     "Enable KNX Secure": "Enable KNX Secure",
     "Error": "Error",
@@ -105,5 +103,8 @@
     "Unsupported file format": "Unsupported file format",
     "use common.type boolean for 1 bit enum instead of number": "use common.type boolean for 1 bit enum instead of number",
     "Value": "Value",
-    "Write": "Write"
+    "Write": "Write",
+    "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Max Direct Link send rate [telegrams/s, 0=unlimited]",
+    "Wait for ACK (check for sensitive gateways like MDT)": "Wait for ACK (check for sensitive gateways like MDT)",
+    "Recommended for MDT IP router: check \"Wait for ACK\", set send rate to 2, disable autoread. In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s).": "Recommended for MDT IP router: check \"Wait for ACK\", set send rate to 2, disable autoread. In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s)."
 }

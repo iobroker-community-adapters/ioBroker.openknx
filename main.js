@@ -21,11 +21,6 @@ const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
 const similarity = require("./lib/similarity.js");
 const { parseKnxproj } = require("./lib/knxproj/index.js");
 
-// When mtd_support is active, throttle Direct Link writes globally to avoid
-// drowning sensitive gateways (e.g. MDT SCN-IP100.03) with bursts from many
-// foreign-state changes hitting the same tunnel.
-const MTD_LINKED_WRITE_MIN_GAP_MS = 500;
-
 class openknx extends utils.Adapter {
     /**
      * @param {Partial<utils.AdapterOptions>} [options]
@@ -59,7 +54,9 @@ class openknx extends utils.Adapter {
         this.cyclicLastSent = new Map(); // knxObjectId → timestamp (ms)
         this.cyclicTimeouts = [];
         this.syncTimeouts = [];
-        this.lastLinkedWriteAt = 0; // ms timestamp of last Direct Link write (global rate limit when mtd_support active)
+        this.linkedWriteQueue = new Map(); // ga → {writeVal, dpt, knxId, foreignId, mode}
+        this.linkedWriteDrainTimer = undefined;
+        this.linkedWriteIntervalMs = 0;
         this.queueHealthTimer = undefined;
         this.queueStuckSinceMs = 0; // ms timestamp when stuck condition first observed
 
@@ -111,24 +108,6 @@ class openknx extends utils.Adapter {
     async onReady() {
         // adapter initialization
 
-        // Verify that the knxultimate diagnostic patches (scripts/apply-patches.js)
-        // have been applied. If postinstall did not run (e.g. user installed with
-        // --ignore-scripts), the patch is missing and we lose the stuck-write diagnostics.
-        try {
-            const fs = require("fs");
-            const knxClientPath = require.resolve("knxultimate/build/KNXClient.js");
-            const src = fs.readFileSync(knxClientPath, "utf8");
-            if (src.includes("NEGATIVE confirmation (C-flag error bit set)")) {
-                this.log.info("knxultimate patches applied: stuck-write diagnostics active");
-            } else {
-                this.log.warn(
-                    "knxultimate patches NOT applied. Run 'node scripts/apply-patches.js' or reinstall without --ignore-scripts to enable stuck-write diagnostics.",
-                );
-            }
-        } catch (e) {
-            this.log.debug(`knxultimate patch check failed: ${e.message}`);
-        }
-
         // Note: knxultimate creates its winston logger lazily inside KNXClient's
         // constructor, so calling setLogLevel here is a no-op (no loggers exist yet).
         // The actual level is forwarded via the `loglevel` option passed to KNXClient
@@ -151,20 +130,17 @@ class openknx extends utils.Adapter {
             return;
         }
 
-        // MDT gateway compatibility: SCN-IP100.x and similar gateways close the
-        // tunnel under sustained traffic when ACK-based flow control is bypassed.
-        // When mtd_support is enabled we re-enable ACK waits and enforce a minimum
-        // send delay of 50 ms (KNX TP1 delivers ~5 telegrams/s; bursts above this
-        // overflow the gateway's internal buffer → DISCONNECT_REQUEST).
-        this.suppressAckLdataReq = !this.config.mtd_support;
-        this.effectiveSendInterval = this.config.mtd_support
-            ? Math.max(this.config.sendInterval || 25, 50)
-            : this.config.sendInterval || 25;
-        if (this.config.mtd_support) {
-            this.log.info(
-                `MDT gateway compatibility active: ACK-based flow control on, min send delay ${this.effectiveSendInterval} ms`,
-            );
-        }
+        // waitForAck: pass-through to knxultimate (inverted). Default false skips
+        // the L_DATA.con wait for highest throughput on robust gateways. Set
+        // true (recommended for MDT SCN-IP100.x) to enable ACK-based flow
+        // control which prevents tunnel buffer overflows.
+        // maxSendRate: Direct Link write throttle in telegrams/s. 0 = unlimited.
+        // When > 0, writes are coalesced per GA (latest value wins) and drained
+        // at 1000/maxSendRate ms intervals.
+        this.waitForAck = this.config.waitForAck === true;
+        this.effectiveSendInterval = this.config.sendInterval || 25;
+        const maxRate = Number(this.config.maxSendRate) || 0;
+        this.linkedWriteIntervalMs = maxRate > 0 ? Math.ceil(1000 / maxRate) : 0;
 
         if (this.config.targetNamespace && this.config.targetNamespace !== this.namespace) {
             this.mynamespace = this.config.targetNamespace;
@@ -206,7 +182,9 @@ class openknx extends utils.Adapter {
             for (const t of this.cyclicTimeouts || []) {
                 clearTimeout(t);
             }
-            clearInterval(this.queueHealthTimer);
+            this.stopQueueHealthMonitor();
+            this.stopLinkedWriteDrain();
+            this.linkedWriteQueue.clear();
             this.stopping = true;
             this.connected = false;
 
@@ -772,17 +750,6 @@ class openknx extends utils.Adapter {
                     }
                 }
 
-                if (this.config.mtd_support) {
-                    const sinceLast = Date.now() - this.lastLinkedWriteAt;
-                    if (sinceLast < MTD_LINKED_WRITE_MIN_GAP_MS) {
-                        this.log.debug(
-                            `Direct Link rate-limited (mtd_support): skipping write to ${gaData.native.address} (${sinceLast}ms since last)`,
-                        );
-                        return "rate-limited";
-                    }
-                }
-
-                // Apply user-defined conversion expression (e.g. "!!value", "value*100")
                 if (gaData.native.linkedStateConvert) {
                     try {
                         writeVal = new Function("value", `return ${gaData.native.linkedStateConvert}`)(writeVal);
@@ -791,17 +758,30 @@ class openknx extends utils.Adapter {
                     }
                 }
 
+                if (this.linkedWriteIntervalMs > 0) {
+                    this.linkedWriteQueue.set(gaData.native.address, {
+                        writeVal,
+                        dpt: gaData.native.dpt,
+                        knxId: linkedKnxId,
+                        foreignId: id,
+                        mode,
+                    });
+                    this.log.debug(
+                        `Direct Link queued [${mode}]: ${id}=${JSON.stringify(writeVal)} → ${gaData.native.address} (queue=${this.linkedWriteQueue.size})`,
+                    );
+                    this.startLinkedWriteDrain();
+                    return "queued";
+                }
+
                 this.log.debug(
                     `Direct Link [${mode}]: ${id} changed to ${JSON.stringify(state.val)}, writing ${JSON.stringify(writeVal)} to GA ${gaData.native.address}`,
                 );
                 try {
                     this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
                     this.cyclicLastSent.set(linkedKnxId, Date.now());
-                    this.lastLinkedWriteAt = Date.now();
                 } catch (e) {
                     this.log.warn(`Direct Link write failed for ${gaData.native.address}: ${e.message}`);
                 }
-                // Update KNX object state
                 if (this.isForeign) {
                     this.setForeignState(linkedKnxId, { val: writeVal, ack: true });
                 } else {
@@ -1069,7 +1049,6 @@ class openknx extends utils.Adapter {
                 try {
                     this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
                     this.cyclicLastSent.set(knxId, Date.now());
-                    this.lastLinkedWriteAt = Date.now();
                     this.log.debug(
                         `Direct Link sync: ${foreignId}=${JSON.stringify(writeVal)} → ${gaData.native.address}`,
                     );
@@ -1137,7 +1116,6 @@ class openknx extends utils.Adapter {
                         }
                         this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
                         this.cyclicLastSent.set(knxId, Date.now());
-                        this.lastLinkedWriteAt = Date.now();
                         this.log.debug(
                             `Cyclic send: ${foreignId}=${JSON.stringify(writeVal)} → ${gaData.native.address}`,
                         );
@@ -1236,6 +1214,56 @@ class openknx extends utils.Adapter {
         this.queueStuckSinceMs = 0;
     }
 
+    startLinkedWriteDrain() {
+        if (this.linkedWriteDrainTimer || this.linkedWriteIntervalMs <= 0) {
+            return;
+        }
+        this.linkedDrainIdleTicks = 0;
+        this.linkedWriteDrainTimer = setInterval(() => {
+            if (!this.linkedWriteQueue.size) {
+                this.stopLinkedWriteDrain();
+                return;
+            }
+            if (!this.knxConnection || !this.connected) {
+                this.linkedDrainIdleTicks++;
+                if (this.linkedDrainIdleTicks >= 20) {
+                    this.log.debug("Direct Link drain stopped: connection unavailable for 20 ticks");
+                    this.stopLinkedWriteDrain();
+                }
+                return;
+            }
+            this.linkedDrainIdleTicks = 0;
+            const firstKey = this.linkedWriteQueue.keys().next().value;
+            const entry = this.linkedWriteQueue.get(firstKey);
+            this.linkedWriteQueue.delete(firstKey);
+            try {
+                this.knxConnection.write(firstKey, entry.writeVal, entry.dpt);
+                this.cyclicLastSent.set(entry.knxId, Date.now());
+                this.log.debug(
+                    `Direct Link drained [${entry.mode}]: ${firstKey}=${JSON.stringify(entry.writeVal)} (queue=${this.linkedWriteQueue.size})`,
+                );
+            } catch (e) {
+                this.log.warn(`Direct Link drain write failed for ${firstKey}: ${e.message}`);
+            }
+            try {
+                if (this.isForeign) {
+                    this.setForeignState(entry.knxId, { val: entry.writeVal, ack: true });
+                } else {
+                    this.setState(entry.knxId, { val: entry.writeVal, ack: true });
+                }
+            } catch (e) {
+                this.log.debug(`Direct Link drain state update failed for ${entry.knxId}: ${e.message}`);
+            }
+        }, this.linkedWriteIntervalMs);
+    }
+
+    stopLinkedWriteDrain() {
+        if (this.linkedWriteDrainTimer) {
+            clearInterval(this.linkedWriteDrainTimer);
+            this.linkedWriteDrainTimer = undefined;
+        }
+    }
+
     // Reconnect delays in seconds: 10, 30, 60, 120, 120, 120, 120
     static reconnectDelays = [10, 30, 60, 120, 120, 120, 120];
 
@@ -1312,9 +1340,9 @@ class openknx extends utils.Adapter {
             interface: ifaceName,
             KNXQueueSendIntervalMilliseconds: this.effectiveSendInterval,
             // https://github.com/Supergiovane/node-red-contrib-knx-ultimate/issues/78
-            // Disabled when mtd_support is set: MDT SCN-IP100.x needs ACK-based flow
-            // control or it disconnects under sustained load.
-            suppress_ack_ldatareq: this.suppressAckLdataReq,
+            // waitForAck=true (recommended for MDT SCN-IP100.x) enables ACK-based
+            // flow control to prevent tunnel disconnects under sustained load.
+            suppress_ack_ldatareq: !this.waitForAck,
             // Forward adapter log level to knxultimate. Read from ioBroker's logger
             // config (this.log.level may be unset on the adapter instance itself).
             loglevel: this._knxultimateLogLevel(),
@@ -1365,6 +1393,26 @@ class openknx extends utils.Adapter {
             this.log.info(`Connected! channelID=${chId} physAddr=${pa}`);
             this.setState("info.messagecount", 0, true);
 
+            // MDT IP-Router/Interface compatibility check: warn when settings are
+            // likely to cause tunnel disconnects under sustained load.
+            if (/MDT|SCN-IP/i.test(this.config.deviceName || "")) {
+                const recommendations = [];
+                if (!this.waitForAck) {
+                    recommendations.push("waitForAck=true");
+                }
+                if (this.linkedWriteIntervalMs <= 0) {
+                    recommendations.push("maxSendRate=2");
+                }
+                if (this.config.autoreadEnabled) {
+                    recommendations.push("autoread disabled");
+                }
+                if (recommendations.length > 0) {
+                    this.log.warn(
+                        `MDT gateway detected (${this.config.deviceName}). Recommended settings to avoid tunnel disconnects: ${recommendations.join(", ")}.`,
+                    );
+                }
+            }
+
             // Phase 1: resolve DPT configs (synchronous, immediate)
             let cnt_withDPT = 0;
             const autoreadGAs = [];
@@ -1412,11 +1460,7 @@ class openknx extends utils.Adapter {
                 }
 
                 // Phase 2: send autoread requests (asynchronous, non-blocking)
-                if (this.config.mtd_support && autoreadGAs.length > 0) {
-                    this.log.info(
-                        `Autoread skipped: mtd_support is enabled (${autoreadGAs.length} GAs would have been read). The MDT gateway cannot keep up with the read burst.`,
-                    );
-                } else if (autoreadGAs.length > 0) {
+                if (autoreadGAs.length > 0) {
                     // use realistic per-telegram time so queue stays empty between reads
                     const autoreadInterval = Math.max(this.config.sendInterval || 25, 200);
                     const estimatedSec = Math.ceil((autoreadGAs.length * autoreadInterval) / 1000);
@@ -1467,6 +1511,8 @@ class openknx extends utils.Adapter {
             this.setState("info.busload", 0, true);
             this.stopCyclicSending();
             this.stopQueueHealthMonitor();
+            this.stopLinkedWriteDrain();
+            this.linkedWriteQueue.clear();
             this.scheduleReconnect();
         });
 

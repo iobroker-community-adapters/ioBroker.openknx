@@ -81,8 +81,6 @@
     "detect KNX gateway": "обнаружить шлюз KNX",
     "do not overwrite existing IOB objects": "не перезаписывайте существующие объекты IOB",
     "do not warn on unknown KNX group adresses": "не предупреждать о неизвестных адресах групп KNX",
-    "MDT gateway compatibility (ACK-based flow control, min delay 50ms)": "Совместимость со шлюзом MDT (управление потоком по ACK, мин. задержка 50 мс)",
-    "In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s).": "В ETS должен быть включён параметр IP-роутера MDT \"Tunneling: более длинный интервал мониторинга\" (устанавливает интервал keep-alive 60 с вместо 10 с).",
     "e.g. !!value, value*100": "e.g. !!value, value*100",
     "generate aliases": "генерировать псевдонимы",
     "import ETS project (.knxproj or .xml)": "импорт проекта ETS (.knxproj или .xml)",
@@ -105,5 +103,8 @@
     "remove existing IOB objects that are not in ETS import file": "удалить существующие объекты IOB, которых нет в файле импорта ETS",
     "set acknowledgement flag when application writes to object": "установить флаг подтверждения, когда приложение записывает в объект",
     "this is not a number": "это не число",
-    "use common.type boolean for 1 bit enum instead of number": "используйте логическое значение common.type для 1-битного перечисления вместо числа"
+    "use common.type boolean for 1 bit enum instead of number": "используйте логическое значение common.type для 1-битного перечисления вместо числа",
+    "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Макс. скорость отправки Direct Link [телеграмм/с, 0=без ограничений]",
+    "Wait for ACK (check for sensitive gateways like MDT)": "Ждать ACK (отметьте для чувствительных шлюзов, таких как MDT)",
+    "Recommended for MDT IP router: check \"Wait for ACK\", set send rate to 2, disable autoread. In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s).": "Рекомендуется для IP-маршрутизатора MDT: отметить \"Ждать ACK\", установить скорость отправки 2, отключить autoread. В ETS должен быть включён параметр IP-маршрутизатора MDT \"Tunneling: longer monitoring interval\" (интервал keep-alive 60 с вместо 10 с)."
 }
