@@ -106,6 +106,7 @@
                 if (settings.localInterface === undefined) settings.localInterface = "";
                 if (settings.hostProtocol === undefined) settings.hostProtocol = "TunnelUDP";
                 if (settings.sendInterval === undefined) settings.sendInterval = 25;
+                if (settings.mtd_support === undefined) settings.mtd_support = false;
                 if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
                 if (settings.removeUnusedObjects === undefined) settings.removeUnusedObjects = false;
                 if (settings.setAckOnWrite === undefined) settings.setAckOnWrite = false;
@@ -802,6 +803,12 @@
                         + ' <span style="color:#666;font-size:0.85em">min</span>'
                         + '<p style="color:#666;font-size:0.85em;margin-top:2px">' + _('Periodically re-send current value to KNX bus. Leave empty to disable.') + '</p>'
                         + '</p>';
+                    var debounceVal = (obj.native.linkedStateDebounce === undefined) ? 1 : obj.native.linkedStateDebounce;
+                    html += '<p id="gaLinkDebounceRow"><b>' + _('Debounce') + ':</b> '
+                        + '<input type="number" id="gaLinkDebounce" style="display:inline-block;width:80px;margin-left:8px" step="any" min="0" value="' + debounceVal + '" />'
+                        + ' <span style="color:#666;font-size:0.85em">s</span>'
+                        + '<p style="color:#666;font-size:0.85em;margin-top:2px">' + _('Minimum interval between two writes for this GA. 0 = disabled.') + '</p>'
+                        + '</p>';
                     html += '<div style="margin-top:16px"><a class="waves-effect waves-light btn-small" onclick="gaSaveLinkSettings()">' + _('Save') + '</a></div>';
                     html += '<div style="margin-top:24px"><a class="waves-effect waves-light btn-small red" onclick="gaRemoveLink()">' + _('Remove Link') + '</a></div>';
                     $('#gaLinkContent').html(html);
@@ -933,6 +940,8 @@
                 var convert = $('#gaLinkConvert').val().trim();
                 var cyclicVal = $('#gaLinkCyclic').val();
                 var cyclic = cyclicVal ? parseInt(cyclicVal, 10) : 0;
+                var debounceRaw = $('#gaLinkDebounce').val();
+                var debounce = (debounceRaw === '' || debounceRaw === null) ? 1 : Math.max(0, parseFloat(debounceRaw) || 0);
                 socket.emit('getObject', selectedGaId, function (err, gaObj) {
                     if (err || !gaObj) return;
                     if (threshold > 0) {
@@ -950,6 +959,7 @@
                     } else {
                         delete gaObj.native.linkedStateCyclic;
                     }
+                    gaObj.native.linkedStateDebounce = debounce;
                     socket.emit('setObject', selectedGaId, gaObj, function () {
                         gaObjects[selectedGaId] = gaObj;
                         showToast(null, _('Settings saved'), null, 2000);
@@ -1191,6 +1201,13 @@
                                 <input class="value" id="noWarnUnknownGa" type="checkbox" />
                                 <label class="translate" for="noWarnUnknownGa"
                                     >do not warn on unknown KNX group adresses</label>
+                            </div>
+                            <div class="col s12 input-field">
+                                <input class="value" id="mtd_support" type="checkbox" />
+                                <label class="translate" for="mtd_support"
+                                    >MDT gateway compatibility (ACK-based flow control, min delay 50ms)</label>
+                                <span class="translate" style="display:block; margin-top:4px; color:#888; font-size:0.9em;"
+                                    >In ETS the MDT IP router parameter "Tunneling: longer monitoring interval" must be enabled (sets keep-alive interval to 60 s instead of 10 s).</span>
                             </div>
 
                         </div>

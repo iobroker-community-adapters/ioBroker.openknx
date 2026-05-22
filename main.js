@@ -53,6 +53,7 @@ class openknx extends utils.Adapter {
         this.cyclicTimer = undefined;
         this.cyclicLastSent = new Map(); // knxObjectId → timestamp (ms)
         this.cyclicTimeouts = [];
+        this.syncTimeouts = [];
         this.queueHealthTimer = undefined;
         this.queueStuckSinceMs = 0; // ms timestamp when stuck condition first observed
 
@@ -144,6 +145,21 @@ class openknx extends utils.Adapter {
             return;
         }
 
+        // MDT gateway compatibility: SCN-IP100.x and similar gateways close the
+        // tunnel under sustained traffic when ACK-based flow control is bypassed.
+        // When mtd_support is enabled we re-enable ACK waits and enforce a minimum
+        // send delay of 50 ms (KNX TP1 delivers ~5 telegrams/s; bursts above this
+        // overflow the gateway's internal buffer → DISCONNECT_REQUEST).
+        this.suppressAckLdataReq = !this.config.mtd_support;
+        this.effectiveSendInterval = this.config.mtd_support
+            ? Math.max(this.config.sendInterval || 25, 50)
+            : this.config.sendInterval || 25;
+        if (this.config.mtd_support) {
+            this.log.info(
+                `MDT gateway compatibility active: ACK-based flow control on, min send delay ${this.effectiveSendInterval} ms`,
+            );
+        }
+
         if (this.config.targetNamespace && this.config.targetNamespace !== this.namespace) {
             this.mynamespace = this.config.targetNamespace;
             this.isForeign = true;
@@ -178,6 +194,12 @@ class openknx extends utils.Adapter {
             clearInterval(this.autoreadTimer);
             clearTimeout(this.reconnectTimer);
             clearInterval(this.cyclicTimer);
+            for (const t of this.syncTimeouts || []) {
+                clearTimeout(t);
+            }
+            for (const t of this.cyclicTimeouts || []) {
+                clearTimeout(t);
+            }
             clearInterval(this.queueHealthTimer);
             this.stopping = true;
             this.connected = false;
@@ -733,6 +755,17 @@ class openknx extends utils.Adapter {
                     writeVal = !curState?.val;
                 }
 
+                // Debounce: skip if a previous write happened within linkedStateDebounce seconds.
+                // Default 1s when undefined (e.g. legacy GA without explicit setting); 0 disables.
+                const debounceSecRaw = gaData.native.linkedStateDebounce;
+                const debounceSec = debounceSecRaw === undefined ? 1 : Number(debounceSecRaw);
+                if (debounceSec > 0) {
+                    const lastWrite = this.cyclicLastSent.get(linkedKnxId) || 0;
+                    if (Date.now() - lastWrite < debounceSec * 1000) {
+                        return "debounced";
+                    }
+                }
+
                 // Apply user-defined conversion expression (e.g. "!!value", "value*100")
                 if (gaData.native.linkedStateConvert) {
                     try {
@@ -957,25 +990,76 @@ class openknx extends utils.Adapter {
 
     /**
      * Direct Link: Sync linked foreign state values to KNX bus after connection established.
+     * Writes are staggered (500 ms apart) so a large set of linked states does not flood
+     * the gateway's tunnel buffer immediately on (re)connect.
      */
     async syncLinkedStates() {
         if (!this.knxConnection) {
             return;
         }
-        for (const [foreignId, knxId] of Object.entries(this.linkedStateMap)) {
-            try {
-                const foreignState = await this.getForeignStateAsync(foreignId);
-                if (foreignState?.val != null) {
-                    const gaData = this.gaList.getDataById(knxId);
-                    if (gaData?.native?.address && gaData?.native?.dpt) {
-                        this.knxConnection.write(gaData.native.address, foreignState.val, gaData.native.dpt);
-                        this.cyclicLastSent.set(knxId, Date.now());
-                        this.log.debug(`Direct Link sync: ${foreignId}=${foreignState.val} → ${gaData.native.address}`);
+        for (const t of this.syncTimeouts || []) {
+            clearTimeout(t);
+        }
+        this.syncTimeouts = [];
+
+        const entries = Object.entries(this.linkedStateMap);
+        const candidates = await Promise.all(
+            entries.map(async ([foreignId, knxId]) => {
+                try {
+                    const foreignState = await this.getForeignStateAsync(foreignId);
+                    if (foreignState?.val == null) {
+                        return null;
                     }
+                    const gaData = this.gaList.getDataById(knxId);
+                    if (!gaData?.native?.address || !gaData?.native?.dpt) {
+                        return null;
+                    }
+                    let writeVal = foreignState.val;
+                    if (gaData.native.linkedStateConvert) {
+                        try {
+                            writeVal = new Function("value", `return ${gaData.native.linkedStateConvert}`)(writeVal);
+                        } catch (e) {
+                            this.log.warn(
+                                `Direct Link sync convert error for ${gaData.native.address}: ${e.message}`,
+                            );
+                            return null;
+                        }
+                    }
+                    const knxState = await this.getStateAsync(knxId);
+                    if (knxState && knxState.val === writeVal) {
+                        return null;
+                    }
+                    return { foreignId, knxId, gaData, writeVal };
+                } catch (e) {
+                    this.log.warn(`Direct Link sync prepare failed for ${foreignId}: ${e.message}`);
+                    return null;
                 }
-            } catch (e) {
-                this.log.warn(`Direct Link sync failed for ${foreignId}: ${e.message}`);
-            }
+            }),
+        );
+        const toWrite = candidates.filter(Boolean);
+        if (toWrite.length === 0) {
+            return;
+        }
+        this.log.debug(`Direct Link sync: ${toWrite.length}/${entries.length} states differ, writing staggered`);
+
+        const SYNC_STAGGER_MS = 500;
+        for (let i = 0; i < toWrite.length; i++) {
+            const { foreignId, knxId, gaData, writeVal } = toWrite[i];
+            const t = setTimeout(() => {
+                if (!this.connected || !this.knxConnection) {
+                    return;
+                }
+                try {
+                    this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
+                    this.cyclicLastSent.set(knxId, Date.now());
+                    this.log.debug(
+                        `Direct Link sync: ${foreignId}=${JSON.stringify(writeVal)} → ${gaData.native.address}`,
+                    );
+                } catch (e) {
+                    this.log.warn(`Direct Link sync failed for ${foreignId}: ${e.message}`);
+                }
+            }, i * SYNC_STAGGER_MS);
+            this.syncTimeouts.push(t);
         }
     }
 
@@ -1007,10 +1091,12 @@ class openknx extends utils.Adapter {
                 }
             }
 
+            for (const t of this.cyclicTimeouts) {
+                clearTimeout(t);
+            }
             this.cyclicTimeouts = [];
             for (let i = 0; i < toSend.length; i++) {
                 const { foreignId, knxId, gaData } = toSend[i];
-                this.cyclicLastSent.set(knxId, now);
                 const t = setTimeout(async () => {
                     if (!this.connected || !this.knxConnection) {
                         return;
@@ -1032,6 +1118,7 @@ class openknx extends utils.Adapter {
                             }
                         }
                         this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
+                        this.cyclicLastSent.set(knxId, Date.now());
                         this.log.debug(
                             `Cyclic send: ${foreignId}=${JSON.stringify(writeVal)} → ${gaData.native.address}`,
                         );
@@ -1204,9 +1291,11 @@ class openknx extends utils.Adapter {
             ipPort: this.config.gwipport,
             physAddr: this.config.eibadr || "0.0.0",
             interface: ifaceName,
-            KNXQueueSendIntervalMilliseconds: this.config.sendInterval || 25,
+            KNXQueueSendIntervalMilliseconds: this.effectiveSendInterval,
             // https://github.com/Supergiovane/node-red-contrib-knx-ultimate/issues/78
-            suppress_ack_ldatareq: true,
+            // Disabled when mtd_support is set: MDT SCN-IP100.x needs ACK-based flow
+            // control or it disconnects under sustained load.
+            suppress_ack_ldatareq: this.suppressAckLdataReq,
             // Forward adapter log level to knxultimate. Read from ioBroker's logger
             // config (this.log.level may be unset on the adapter instance itself).
             loglevel: this._knxultimateLogLevel(),

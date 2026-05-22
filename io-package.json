@@ -192,6 +192,7 @@
     "tunnelUserId": "",
     "localInterface": "",
     "sendInterval": 25,
+    "mtd_support": false,
     "noWarnUnknownGa": false,
     "useBoolean": true,
     "knxCompatMode": false,
