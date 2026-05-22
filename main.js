@@ -59,8 +59,11 @@ class openknx extends utils.Adapter {
         // redirect log from KNXUltimate (winston-based logStream) to adapter log
         // Collapse multiline messages (stack traces) into a single line
         this.logHandler = entry => {
-            const level = entry.level?.toLowerCase();
-            const msg = (entry.message || String(entry)).replace(/\n/g, " | ");
+            // knxultimate's customKNXFormat wraps info.level in ANSI color codes;
+            // strip them before comparing or the level falls through to silly.
+            const stripAnsi = s => (typeof s === "string" ? s.replace(new RegExp(String.fromCharCode(27) + "\\[[0-9;]*m", "g"), "") : s);
+            const level = stripAnsi(entry.level)?.toLowerCase();
+            const msg = stripAnsi(entry.message || String(entry)).replace(/\n/g, " | ");
             if (level === "error") {
                 if (this.stopping) {
                     return;
@@ -77,6 +80,22 @@ class openknx extends utils.Adapter {
             }
         };
         logStream.on("data", this.logHandler);
+    }
+
+    _knxultimateLogLevel() {
+        const candidates = [
+            this.log && this.log.level,
+            this.common && this.common.loglevel,
+            this.systemConfig && this.systemConfig.log && this.systemConfig.log.level,
+        ];
+        const lvl = (candidates.find(v => typeof v === "string" && v.length) || "info").toLowerCase();
+        if (lvl === "silly") {
+            return "trace";
+        }
+        if (lvl === "debug") {
+            return "debug";
+        }
+        return "info";
     }
 
     /**
@@ -103,14 +122,17 @@ class openknx extends utils.Adapter {
             this.log.debug(`knxultimate patch check failed: ${e.message}`);
         }
 
-        // Forward adapter log level to knxultimate (winston). When the adapter is in
-        // debug or silly mode, the user wants to see knxultimate's internal traces too.
+        // Note: knxultimate creates its winston logger lazily inside KNXClient's
+        // constructor, so calling setLogLevel here is a no-op (no loggers exist yet).
+        // The actual level is forwarded via the `loglevel` option passed to KNXClient
+        // (see _knxultimateLogLevel), which the constructor applies after creating
+        // the logger. We keep this call only to update an already-created logger on
+        // a later reconnect/reload.
         try {
-            const adapterLevel = (this.log.level || "info").toLowerCase();
-            const knxLevel = adapterLevel === "silly" || adapterLevel === "debug" ? "debug" : "info";
+            const knxLevel = this._knxultimateLogLevel();
             setKnxLogLevel(knxLevel);
-            if (knxLevel === "debug") {
-                this.log.info("knxultimate log level set to debug (adapter is in debug mode)");
+            if (knxLevel !== "info") {
+                this.log.info(`knxultimate log level: ${knxLevel}`);
             }
         } catch (e) {
             this.log.debug(`knxultimate setLogLevel failed: ${e.message}`);
@@ -1185,8 +1207,9 @@ class openknx extends utils.Adapter {
             KNXQueueSendIntervalMilliseconds: this.config.sendInterval || 25,
             // https://github.com/Supergiovane/node-red-contrib-knx-ultimate/issues/78
             suppress_ack_ldatareq: true,
-            // Enable KNXUltimate internal logging at debug level to see L_DATA_CON timing
-            loglevel: this.log.level === "silly" ? "trace" : this.log.level === "debug" ? "debug" : "info",
+            // Forward adapter log level to knxultimate. Read from ioBroker's logger
+            // config (this.log.level may be unset on the adapter instance itself).
+            loglevel: this._knxultimateLogLevel(),
         };
 
         // KNX Secure options

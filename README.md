@@ -55,6 +55,8 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 ### **WORK IN PROGRESS**
 - feat: stuck-write diagnostics — periodic queue health monitor, error logs for gateway ACK timeout, channelID mismatch and negative bus confirmation (L_DATA_CON error flag)
 - feat: forward adapter debug log level to knxultimate
+- fix: knxultimate logs were silently dropped because winston wraps the level in ANSI color codes; strip them before routing to ioBroker logger
+- fix: replace patch-package with pure-JS postinstall to handle npm hoisting in ioBroker installs
 
 ### 1.1.12 (2026-05-19)
 - feat: cyclic sending for Direct Links (periodically re-send current value to KNX bus)
