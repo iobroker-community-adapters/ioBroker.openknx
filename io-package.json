@@ -148,7 +148,25 @@
       "notifications": true
     },
     "adminUI": {
-      "config": "materialize"
+      "config": "json"
+    },
+    "adminTab": {
+      "name": {
+        "en": "ETS Import & GA-Tools",
+        "de": "ETS Import & GA-Tools",
+        "ru": "Импорт ETS и GA-Tools",
+        "pt": "Importação ETS e GA-Tools",
+        "nl": "ETS Importeren & GA-Tools",
+        "fr": "Import ETS & GA-Tools",
+        "it": "Importazione ETS e GA-Tools",
+        "es": "Importación ETS y GA-Tools",
+        "pl": "Import ETS i GA-Tools",
+        "uk": "Імпорт ETS та GA-Tools",
+        "zh-cn": "ETS导入和GA工具"
+      },
+      "link": "tab_m.html",
+      "fa-icon": "fas fa-tools",
+      "singleton": false
     },
     "docs": {
       "en": [
@@ -195,7 +213,10 @@
     "noWarnUnknownGa": false,
     "useBoolean": true,
     "knxCompatMode": false,
-    "targetNamespace": ""
+    "targetNamespace": "",
+    "onlyAddNewObjects": false,
+    "removeUnusedObjects": false,
+    "cleanImport": false
   },
   "encryptedNative": [
     "knxKeysContent",

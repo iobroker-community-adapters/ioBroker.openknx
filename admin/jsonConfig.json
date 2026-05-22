@@ -1,0 +1,274 @@
+{
+    "type": "tabs",
+    "i18n": true,
+    "items": {
+        "tab_settings": {
+            "type": "tab",
+            "label": "Settings and Import",
+            "items": {
+                "_detect_btn": {
+                    "type": "sendTo",
+                    "command": "detectInterface",
+                    "label": "detect KNX gateway",
+                    "jsonData": "{\"ip\": \"${localInterface}\"}",
+                    "showProcess": true,
+                    "timeout": 30000,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
+                "gwip": {
+                    "type": "text",
+                    "label": "Gateway IP",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3
+                },
+                "gwipport": {
+                    "type": "text",
+                    "label": "Port",
+                    "xs": 6,
+                    "sm": 6,
+                    "md": 2,
+                    "lg": 2
+                },
+                "eibadr": {
+                    "type": "text",
+                    "label": "Physical KNX address",
+                    "xs": 6,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3
+                },
+                "localInterface": {
+                    "type": "ip",
+                    "label": "Local IPv4 network interface",
+                    "onlyIp4": true,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                },
+                "hostProtocol": {
+                    "type": "select",
+                    "label": "Protocol",
+                    "options": [
+                        {"label": "Tunnel UDP", "value": "TunnelUDP"},
+                        {"label": "Tunnel TCP", "value": "TunnelTCP"},
+                        {"label": "Multicast (Routing)", "value": "Multicast"}
+                    ],
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3
+                },
+                "sendInterval": {
+                    "type": "number",
+                    "label": "Minimum send delay between two frames [ms]",
+                    "min": 0,
+                    "max": 1000,
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3
+                },
+                "autoreadEnabled": {
+                    "type": "checkbox",
+                    "label": "readout values of autoread iob objects on startup",
+                    "xs": 12,
+                    "sm": 12
+                },
+                "noWarnUnknownGa": {
+                    "type": "checkbox",
+                    "label": "do not warn on unknown KNX group adresses",
+                    "xs": 12,
+                    "sm": 12
+                },
+                "_import_divider": {
+                    "type": "divider"
+                },
+                "_import_header": {
+                    "type": "staticText",
+                    "text": "Import settings",
+                    "style": {"fontWeight": "bold", "fontSize": "1.1em", "marginTop": "8px"},
+                    "xs": 12
+                },
+                "onlyAddNewObjects": {
+                    "type": "checkbox",
+                    "label": "do not overwrite existing IOB objects",
+                    "xs": 12,
+                    "sm": 12
+                },
+                "removeUnusedObjects": {
+                    "type": "checkbox",
+                    "label": "remove existing IOB objects that are not in ETS import file",
+                    "xs": 12,
+                    "sm": 12
+                },
+                "cleanImport": {
+                    "type": "checkbox",
+                    "label": "delete all existing KNX objects before import (clean re-import)",
+                    "xs": 12,
+                    "sm": 12
+                },
+                "useBoolean": {
+                    "type": "checkbox",
+                    "label": "use common.type boolean for 1 bit enum instead of number",
+                    "xs": 12,
+                    "sm": 12
+                }
+            }
+        },
+        "tab_secure": {
+            "type": "tab",
+            "label": "KNX Secure",
+            "items": {
+                "_secure_header": {
+                    "type": "staticText",
+                    "text": "KNX Secure (optional)",
+                    "style": {"fontWeight": "bold", "fontSize": "1.1em"},
+                    "xs": 12
+                },
+                "isSecureKNXEnabled": {
+                    "type": "checkbox",
+                    "label": "Enable KNX Secure",
+                    "xs": 12,
+                    "sm": 12
+                },
+                "knxKeysContent": {
+                    "type": "text",
+                    "label": "Keyfile content (paste .knxkeys file content)",
+                    "multiline": true,
+                    "rows": 6,
+                    "xs": 12,
+                    "sm": 12
+                },
+                "knxKeysPassword": {
+                    "type": "password",
+                    "label": "Keyfile password",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tunnelInterfaceAddress": {
+                    "type": "text",
+                    "label": "Tunnel Interface IA (optional, e.g. 1.1.254)",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tunnelUserPassword": {
+                    "type": "password",
+                    "label": "Tunnel User Password (alternative to keyfile)",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                },
+                "tunnelUserId": {
+                    "type": "text",
+                    "label": "Tunnel User ID (default: 2)",
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4
+                }
+            }
+        },
+        "tab_aliases": {
+            "type": "tab",
+            "label": "GA Aliases & Migration",
+            "items": {
+                "_optA_header": {
+                    "type": "staticText",
+                    "text": "Option A: Aliases",
+                    "style": {"fontWeight": "bold", "fontSize": "1.1em"},
+                    "xs": 12
+                },
+                "_optA_desc1": {
+                    "type": "staticText",
+                    "text": "In KNX, action and status often use separate GAs. This tool automatically pairs them into",
+                    "xs": 12
+                },
+                "_optA_desc2": {
+                    "type": "staticLink",
+                    "href": "https://www.iobroker.net/#de/documentation/dev/aliases.md",
+                    "text": "ioBroker Aliases",
+                    "xs": 12
+                },
+                "_optA_desc3": {
+                    "type": "staticText",
+                    "text": " so you get read + write in a single object.",
+                    "xs": 12
+                },
+                "aliasRegexp": {
+                    "type": "text",
+                    "label": "Regex to identify Status GAs",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 6
+                },
+                "aliasSimilarity": {
+                    "type": "number",
+                    "label": "Minimum Similarity 0-1",
+                    "min": 0,
+                    "max": 1,
+                    "step": 0.01,
+                    "xs": 6,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2
+                },
+                "aliasPath": {
+                    "type": "text",
+                    "label": "Alias path",
+                    "xs": 6,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2
+                },
+                "aliasRange": {
+                    "type": "checkbox",
+                    "label": "include group range in search",
+                    "xs": 12,
+                    "sm": 12
+                },
+                "_createAlias_btn": {
+                    "type": "sendTo",
+                    "command": "createAlias",
+                    "label": "generate aliases",
+                    "jsonData": "{\"aliasRegexp\": \"${aliasRegexp}\", \"aliasSimilarity\": ${aliasSimilarity}, \"aliasPath\": \"${aliasPath}\", \"aliasRange\": ${aliasRange}}",
+                    "showProcess": true,
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6
+                },
+                "_optB_divider": {
+                    "type": "divider"
+                },
+                "_optB_header": {
+                    "type": "staticText",
+                    "text": "Option B: knx Adapter Migration",
+                    "style": {"fontWeight": "bold", "fontSize": "1.1em"},
+                    "xs": 12
+                },
+                "knxCompatMode": {
+                    "type": "checkbox",
+                    "label": "ioBroker.knx Compatibility Mode (link status GAs internally instead of aliases)",
+                    "xs": 12,
+                    "sm": 12
+                },
+                "targetNamespace": {
+                    "type": "text",
+                    "label": "Target namespace (e.g. knx.0 to avoid script adjustments)",
+                    "placeholder": "openknx.0",
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4
+                }
+            }
+        }
+    }
+}
