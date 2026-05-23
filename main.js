@@ -57,7 +57,7 @@ class openknx extends utils.Adapter {
         this.linkedWriteQueue = new Map(); // ga → {writeVal, dpt, knxId, foreignId, mode}
         this.linkedWriteDrainTimer = undefined;
         this.linkedWriteIntervalMs = 0;
-        this.outboundWriteLog = []; // {ts, mode} ring of last 10s of outbound writes for burst diagnostics
+        this.outboundWriteLog = []; // {ts, mode, ga} ring of last 60s of outbound writes for burst diagnostics
         this.queueHealthTimer = undefined;
         this.queueStuckSinceMs = 0; // ms timestamp when stuck condition first observed
 
@@ -779,7 +779,7 @@ class openknx extends utils.Adapter {
                 );
                 try {
                     this.knxConnection.write(gaData.native.address, writeVal, gaData.native.dpt);
-                    this.trackOutboundWrite(`direct:${mode}`);
+                    this.trackOutboundWrite(`direct:${mode}`, gaData.native.address);
                     this.cyclicLastSent.set(linkedKnxId, Date.now());
                 } catch (e) {
                     this.log.warn(`Direct Link write failed for ${gaData.native.address}: ${e.message}`);
@@ -1292,9 +1292,9 @@ class openknx extends utils.Adapter {
         }
     }
 
-    trackOutboundWrite(mode) {
+    trackOutboundWrite(mode, ga) {
         const now = Date.now();
-        this.outboundWriteLog.push({ ts: now, mode });
+        this.outboundWriteLog.push({ ts: now, mode, ga });
         const cutoff = now - 60000;
         while (this.outboundWriteLog.length && this.outboundWriteLog[0].ts < cutoff) {
             this.outboundWriteLog.shift();
@@ -1657,8 +1657,12 @@ class openknx extends utils.Adapter {
                 return;
             }
             for (const id of this.gaList.getIdsByGa(dest)) {
+                const gaData = this.gaList.getDataById(id);
+                const hint = gaData?.native?.linkedState
+                    ? ` Direct Link aktiv. Empfehlung: linkedStateDebounce für ${dest} erhöhen.`
+                    : "";
                 this.log.error(
-                    `KNX gateway did not ACK TUNNELING_REQUEST for GA ${dest} (${id}) seqCounter=${seq}. Transport/network issue: gateway unreachable, tunnel dropped, or busload too high. Frame was NOT delivered.`,
+                    `KNX gateway did not ACK TUNNELING_REQUEST for GA ${dest} (${id}) seqCounter=${seq}. Transport/network issue: gateway unreachable, tunnel dropped, or busload too high. Frame was NOT delivered.${hint}`,
                 );
             }
         });
