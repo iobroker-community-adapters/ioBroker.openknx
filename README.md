@@ -45,6 +45,16 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 
 [🇩🇪 Dokumentation](./docs/de/README.md)
 
+## MDT IP Interface / Router (SCN-IP100, SCN-IP000)
+
+MDT IP-Gateways bestätigen Tunnel-Frames langsamer als die meisten Wettbewerber (ca. 2 Telegramme/Sekunde). Bei höherem Durchsatz reagiert das Gerät mit ACK-Timeouts oder dropt die Tunnel-Verbindung. Der Adapter erkennt MDT automatisch (deviceName-Match) und warnt im Log, falls die Einstellungen nicht passen.
+
+Empfohlene Konfiguration für MDT:
+
+- "Wait for ACK" aktivieren (ACK-basierte Flow Control)
+- "Max Direct Link send rate [tel/s]" auf 2 setzen (Coalescing-Queue throttelt Bursts)
+- "Autoread on startup" deaktivieren oder reduzieren
+- Bei chronisch flappenden Quellen "linkedStateDebounce" für die jeweilige GA setzen — der Adapter weist im Fehlerfall direkt auf die betroffene GA hin
 
 ## Changelog
 
