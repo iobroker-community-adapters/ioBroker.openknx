@@ -105,6 +105,5 @@
     "this is not a number": "dit is geen nummer",
     "use common.type boolean for 1 bit enum instead of number": "gebruik common.type boolean voor 1 bit enum in plaats van getal",
     "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Max. Direct Link verzendsnelheid [telegrammen/s, 0=onbeperkt]",
-    "Wait for ACK (check for sensitive gateways like MDT)": "Wacht op ACK (aanvinken voor gevoelige gateways zoals MDT)",
-    "Recommended for MDT IP router: check \"Wait for ACK\", set send rate to 2, disable autoread. In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s).": "Aanbevolen voor MDT IP-router: \"Wacht op ACK\" aanvinken, verzendsnelheid op 2 zetten, autoread uitschakelen. In ETS moet de MDT IP-router parameter \"Tunneling: longer monitoring interval\" worden ingeschakeld (zet keep-alive interval op 60 s in plaats van 10 s)."
+    "Wait for ACK (check for sensitive gateways like MDT)": "Wacht op ACK (aanvinken voor gevoelige gateways zoals MDT)"
 }

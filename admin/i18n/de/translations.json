@@ -100,11 +100,19 @@
     "physical KNX address in format a/b/c not valid": "Physikalische KNX-Adresse im Format a/b/c ungültig",
     "please provide a valid minimum send delay value between 0 and 1000 [ms]": "Bitte geben Sie einen gültigen Wert für die Sendeverzögerung zwischen 0 und 1000 [ms] an",
     "readout values of autoread iob objects on startup": "Werte von Autoread-IOB-Objekten beim Start des Adapters auslesen",
+    "readout values of autoread iob objects on startup (uncheck for MDT)": "Werte von Autoread-IOB-Objekten beim Start des Adapters auslesen (für MDT deaktivieren)",
     "remove existing IOB objects that are not in ETS import file": "Vorhandene IOB-Objekte entfernen, die nicht in der ETS-Importdatei enthalten sind",
     "set acknowledgement flag when application writes to object": "Bestätigungsflag setzen, wenn Anwendung auf Objekt schreibt",
     "this is not a number": "dies ist keine Zahl",
     "use common.type boolean for 1 bit enum instead of number": "common.type boolean für 1-Bit-Enum anstelle von Zahl verwenden",
     "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Max. Direct-Link-Senderate [Telegramme/s, 0=unbegrenzt]",
+    "Max Direct Link send rate [telegrams/s, 0=unlimited, MDT: 2]": "Max. Direct-Link-Senderate [Telegramme/s, 0=unbegrenzt, MDT: 2]",
     "Wait for ACK (check for sensitive gateways like MDT)": "Auf ACK warten (für empfindliche Gateways wie MDT aktivieren)",
-    "Recommended for MDT IP router: check \"Wait for ACK\", set send rate to 2, disable autoread. In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s).": "Empfehlung für MDT IP-Router: \"Auf ACK warten\" aktivieren, Senderate auf 2 setzen, Autoread deaktivieren. In der ETS muss am MDT-IP-Router der Parameter \"Tunneling: längeres Überwachungsintervall\" aktiviert werden (setzt den Keep-Alive-Intervall auf 60 s statt 10 s)."
+    "MDT IP router — recommended steps:": "MDT IP-Router — empfohlene Schritte:",
+    "ETS: enable \"Tunneling: longer monitoring interval\" (60 s keep-alive)": "ETS: Parameter \"Tunneling: längeres Überwachungsintervall\" aktivieren (60 s Keep-Alive)",
+    "Disable autoread": "Autoread deaktivieren",
+    "Set \"Max Direct Link send rate\" to 2": "\"Max Direct-Link-Senderate\" auf 2 setzen",
+    "Enable \"Wait for ACK\"": "\"Auf ACK warten\" aktivieren",
+    "Set \"linkedStateDebounce\" on flapping GAs": "\"linkedStateDebounce\" für flappende GAs setzen",
+    "Last resort: switch protocol to \"Multicast (Routing)\"": "Last Resort: Protokoll auf \"Multicast (Routing)\" umstellen"
 }

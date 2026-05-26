@@ -105,6 +105,5 @@
     "this is not a number": "这不是一个数字",
     "use common.type boolean for 1 bit enum instead of number": "使用 common.type boolean 作为 1 位枚举而不是数字",
     "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Direct Link 最大发送速率 [电报/秒, 0=不限]",
-    "Wait for ACK (check for sensitive gateways like MDT)": "等待 ACK（对 MDT 等敏感网关请勾选）",
-    "Recommended for MDT IP router: check \"Wait for ACK\", set send rate to 2, disable autoread. In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s).": "推荐用于 MDT IP 路由器：勾选\"等待 ACK\"，将发送速率设为 2，禁用 autoread。在 ETS 中必须启用 MDT IP 路由器参数 \"Tunneling: longer monitoring interval\"（将 keep-alive 间隔设为 60 秒而不是 10 秒）。"
+    "Wait for ACK (check for sensitive gateways like MDT)": "等待 ACK（对 MDT 等敏感网关请勾选）"
 }

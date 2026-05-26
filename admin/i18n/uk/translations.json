@@ -105,6 +105,5 @@
     "this is not a number": "це не число",
     "use common.type boolean for 1 bit enum instead of number": "використовуйте common.type boolean для 1-бітового enum замість числа",
     "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Макс. швидкість надсилання Direct Link [телеграм/с, 0=без обмежень]",
-    "Wait for ACK (check for sensitive gateways like MDT)": "Чекати на ACK (позначте для чутливих шлюзів, таких як MDT)",
-    "Recommended for MDT IP router: check \"Wait for ACK\", set send rate to 2, disable autoread. In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s).": "Рекомендовано для IP-роутера MDT: позначити \"Чекати на ACK\", встановити швидкість надсилання 2, вимкнути autoread. В ETS має бути увімкнено параметр IP-роутера MDT \"Tunneling: longer monitoring interval\" (інтервал keep-alive 60 с замість 10 с)."
+    "Wait for ACK (check for sensitive gateways like MDT)": "Чекати на ACK (позначте для чутливих шлюзів, таких як MDT)"
 }

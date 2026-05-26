@@ -105,6 +105,5 @@
     "Value": "Value",
     "Write": "Write",
     "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Max Direct Link send rate [telegrams/s, 0=unlimited]",
-    "Wait for ACK (check for sensitive gateways like MDT)": "Wait for ACK (check for sensitive gateways like MDT)",
-    "Recommended for MDT IP router: check \"Wait for ACK\", set send rate to 2, disable autoread. In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s).": "Recommended for MDT IP router: check \"Wait for ACK\", set send rate to 2, disable autoread. In ETS the MDT IP router parameter \"Tunneling: longer monitoring interval\" must be enabled (sets keep-alive interval to 60 s instead of 10 s)."
+    "Wait for ACK (check for sensitive gateways like MDT)": "Wait for ACK (check for sensitive gateways like MDT)"
 }
