@@ -104,6 +104,5 @@
     "set acknowledgement flag when application writes to object": "установить флаг подтверждения, когда приложение записывает в объект",
     "this is not a number": "это не число",
     "use common.type boolean for 1 bit enum instead of number": "используйте логическое значение common.type для 1-битного перечисления вместо числа",
-    "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Макс. скорость отправки Direct Link [телеграмм/с, 0=без ограничений]",
     "Wait for ACK (check for sensitive gateways like MDT)": "Ждать ACK (отметьте для чувствительных шлюзов, таких как MDT)"
 }

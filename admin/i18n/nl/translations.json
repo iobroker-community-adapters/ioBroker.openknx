@@ -104,6 +104,5 @@
     "set acknowledgement flag when application writes to object": "bevestigingsvlag instellen wanneer toepassing naar object schrijft",
     "this is not a number": "dit is geen nummer",
     "use common.type boolean for 1 bit enum instead of number": "gebruik common.type boolean voor 1 bit enum in plaats van getal",
-    "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Max. Direct Link verzendsnelheid [telegrammen/s, 0=onbeperkt]",
     "Wait for ACK (check for sensitive gateways like MDT)": "Wacht op ACK (aanvinken voor gevoelige gateways zoals MDT)"
 }

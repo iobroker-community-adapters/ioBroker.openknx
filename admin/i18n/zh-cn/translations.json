@@ -104,6 +104,5 @@
     "set acknowledgement flag when application writes to object": "当应用程序写入对象时设置确认标志",
     "this is not a number": "这不是一个数字",
     "use common.type boolean for 1 bit enum instead of number": "使用 common.type boolean 作为 1 位枚举而不是数字",
-    "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Direct Link 最大发送速率 [电报/秒, 0=不限]",
     "Wait for ACK (check for sensitive gateways like MDT)": "等待 ACK（对 MDT 等敏感网关请勾选）"
 }

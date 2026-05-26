@@ -104,6 +104,5 @@
     "set acknowledgement flag when application writes to object": "встановити позначку підтвердження, коли програма записує об’єкт",
     "this is not a number": "це не число",
     "use common.type boolean for 1 bit enum instead of number": "використовуйте common.type boolean для 1-бітового enum замість числа",
-    "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Макс. швидкість надсилання Direct Link [телеграм/с, 0=без обмежень]",
     "Wait for ACK (check for sensitive gateways like MDT)": "Чекати на ACK (позначте для чутливих шлюзів, таких як MDT)"
 }

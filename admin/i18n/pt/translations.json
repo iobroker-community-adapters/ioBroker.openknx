@@ -104,6 +104,5 @@
     "set acknowledgement flag when application writes to object": "definir sinalizador de reconhecimento quando o aplicativo grava no objeto",
     "this is not a number": "este não é um número",
     "use common.type boolean for 1 bit enum instead of number": "use common.type booleano para enum de 1 bit em vez de número",
-    "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Taxa máx. de envio Direct Link [telegramas/s, 0=ilimitado]",
     "Wait for ACK (check for sensitive gateways like MDT)": "Aguardar ACK (marcar para gateways sensíveis como MDT)"
 }

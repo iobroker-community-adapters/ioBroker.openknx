@@ -104,6 +104,6 @@
     "use common.type boolean for 1 bit enum instead of number": "use common.type boolean for 1 bit enum instead of number",
     "Value": "Value",
     "Write": "Write",
-    "Max Direct Link send rate [telegrams/s, 0=unlimited]": "Max Direct Link send rate [telegrams/s, 0=unlimited]",
+    "Max Direct Link send rate [tel/s] 0=Unlimited, MDT: 2": "Max Direct Link send rate [tel/s] 0=Unlimited, MDT: 2",
     "Wait for ACK (check for sensitive gateways like MDT)": "Wait for ACK (check for sensitive gateways like MDT)"
 }
