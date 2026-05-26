@@ -1360,11 +1360,15 @@ class openknx extends utils.Adapter {
         }
         if (writeCount60 > 0 && currentRate === 0) {
             recs.push(
-                `Direct Link Schreibrate ist unbegrenzt (${writeCount60} Writes in 60s). Empfehlung: "Max Direct Link send rate" auf 2 setzen (für MDT) bzw. langsam erhöhen.`,
+                `Direct Link Schreibrate ist unbegrenzt (${writeCount60} Writes in 60s). Empfehlung: "Max Direct Link send rate" auf 2 setzen bzw. langsam erhöhen.`,
             );
         } else if (writeCount60 > 0 && currentRate > 2) {
             recs.push(
                 `Direct Link Schreibrate ist ${currentRate} tel/s (${writeCount60} Writes in 60s). Empfehlung: "Max Direct Link send rate" auf 2 absenken.`,
+            );
+        } else if (currentRate === 0) {
+            recs.push(
+                'Hinweis: "Max Direct Link send rate" ist deaktiviert. Falls Disconnects häufiger auftreten, einen Wert (z.B. 2 tel/s) setzen.',
             );
         }
         if (/MDT|SCN-IP/i.test(this.config.deviceName || "") && !this.waitForAck) {

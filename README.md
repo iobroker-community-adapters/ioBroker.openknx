@@ -49,12 +49,14 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 
 MDT IP-Gateways bestätigen Tunnel-Frames langsamer als die meisten Wettbewerber (ca. 2 Telegramme/Sekunde). Bei höherem Durchsatz reagiert das Gerät mit ACK-Timeouts oder dropt die Tunnel-Verbindung. Der Adapter erkennt MDT automatisch (deviceName-Match) und warnt im Log, falls die Einstellungen nicht passen.
 
-Empfohlene Konfiguration für MDT:
+Empfohlene Reihenfolge (mit dem günstigsten Schritt anfangen, nur eskalieren wenn nötig):
 
-- "Wait for ACK" aktivieren (ACK-basierte Flow Control)
-- "Max Direct Link send rate [tel/s]" auf 2 setzen (Coalescing-Queue throttelt Bursts)
-- "Autoread on startup" deaktivieren oder reduzieren
-- Bei chronisch flappenden Quellen "linkedStateDebounce" für die jeweilige GA setzen — der Adapter weist im Fehlerfall direkt auf die betroffene GA hin
+1. **In der ETS** beim MDT IP-Router den Parameter "Tunneling: longer monitoring interval" aktivieren — Keep-alive auf 60 s statt 10 s. Größter Effekt bei null Adapter-Aufwand.
+2. **Autoread deaktivieren** — eliminiert den Startup-Burst (häufigster Auslöser des ersten Disconnects).
+3. **"Max Direct Link send rate"** auf 2 setzen — Coalescing-Queue throttelt Bursts im laufenden Betrieb.
+4. **"Wait for ACK"** aktivieren — ACK-basierte Flow Control auf knxultimate-Ebene; allein nicht ausreichend, in Kombination sinnvoll.
+5. **"linkedStateDebounce"** für chronisch flappende Quellen setzen — der Adapter weist im Fehlerfall direkt auf die betroffene GA hin.
+6. **Last Resort: Protokoll auf "Multicast (Routing)" umstellen.** Stateless, umgeht den kompletten Tunnel-Session-Stack — löst hartnäckige Disconnects definitiv. Voraussetzungen: Multicast-fähiges Netzwerk (IGMP-Snooping korrekt konfiguriert). Trade-off: keine Per-Frame-Bestätigung mehr — verlorene Telegramme werden nicht auf Transport-Ebene erkannt.
 
 ## Changelog
 
@@ -63,10 +65,9 @@ Empfohlene Konfiguration für MDT:
     ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-- feat: stuck-write diagnostics — periodic queue health monitor, error logs for gateway ACK timeout, channelID mismatch and negative bus confirmation (L_DATA_CON error flag)
-- feat: forward adapter debug log level to knxultimate
-- fix: knxultimate logs were silently dropped because winston wraps the level in ANSI color codes; strip them before routing to ioBroker logger
-- fix: replace patch-package with pure-JS postinstall to handle npm hoisting in ioBroker installs
+
+- feat: improve disconnect handling on high bus load (MDT) — new options "Wait for ACK", "Max Direct Link send rate" (coalescing queue) and per-GA "linkedStateDebounce"; burst log with actionable recommendations on tunnel drop, hint at linkedStateDebounce in TUNNELING_REQUEST ACK errors for Direct Link GAs
+- docs: add hint to switch to Multicast/Routing on persistent TUNNELING_ACK timeouts (network-side unicast filtering)
 
 ### 1.1.12 (2026-05-19)
 - feat: cyclic sending for Direct Links (periodically re-send current value to KNX bus)

@@ -1196,7 +1196,7 @@
                             <div class="col s12 input-field">
                                 <input class="value" id="autoreadEnabled" type="checkbox" />
                                 <label class="translate" for="autoreadEnabled"
-                                    >readout values of autoread iob objects on startup (uncheck for MDT Gateways)</label>
+                                    >readout values of autoread iob objects on startup (uncheck for MDT)</label>
                             </div>
                             <div class="col s12 input-field">
                                 <input class="value" id="noWarnUnknownGa" type="checkbox" />
@@ -1211,9 +1211,11 @@
                             <div class="col s12 l3 input-field">
                                 <input class="value" id="maxSendRate" type="text" />
                                 <label class="translate" for="maxSendRate"
-                                    >Max Direct Link send rate [telegrams/s, 0=unlimited]</label>
-                                <span class="translate" style="display:block; margin-top:4px; color:#888; font-size:0.9em;"
-                                    >Recommended for MDT IP router: check "Wait for ACK", set send rate to 2, disable autoread. In ETS the MDT IP router parameter "Tunneling: longer monitoring interval" must be enabled (sets keep-alive interval to 60 s instead of 10 s).</span>
+                                    >Max Direct Link send rate [telegrams/s, 0=unlimited, MDT: 2]</label>
+                            </div>
+                            <div class="col s12" style="margin-top:8px; color:#888; font-size:0.9em;">
+                                <span class="translate"
+                                    >Recommended steps for MDT IP routers (start with the cheapest, escalate only if needed): 1) In ETS enable the MDT parameter "Tunneling: longer monitoring interval" (60 s keep-alive). 2) Disable autoread. 3) Set "Max Direct Link send rate" to 2. 4) Enable "Wait for ACK". 5) Set "linkedStateDebounce" on flapping GAs. 6) As a last resort switch Protocol to "Multicast (Routing)" — stateless, but requires multicast-capable network and has no per-frame delivery feedback.</span>
                             </div>
 
                         </div>
