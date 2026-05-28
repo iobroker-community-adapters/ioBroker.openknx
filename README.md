@@ -51,7 +51,11 @@ MDT IP-Gateways bestätigen Tunnel-Frames langsamer als die meisten Wettbewerber
 
 Empfohlene Reihenfolge (mit dem günstigsten Schritt anfangen, nur eskalieren wenn nötig):
 
-1. **In der ETS** beim MDT IP-Router den Parameter "Tunneling: longer monitoring interval" aktivieren — Keep-alive auf 60 s statt 10 s. Größter Effekt bei null Adapter-Aufwand.
+1. **In der ETS** Keep-alive-Timeout erhöhen — Größter Effekt bei null Adapter-Aufwand:
+   - **SCN-IP100 (Router):** Parameter "Tunneling: längeres Überwachungsintervall" → auf "Ja"
+   - **SCN-IP000 (Interface):** Parameter "Langsame Tunneling-Verbindungen unterstützen" → auf "Ja"
+   
+   Beide setzen den Keep-alive-Timeout von ~10 s auf 60 s. Kurze Netzwackler lösen dann keinen DISCONNECT_REQUEST mehr aus.
 2. **Autoread deaktivieren** — eliminiert den Startup-Burst (häufigster Auslöser des ersten Disconnects).
 3. **"Max Direct Link send rate"** auf 2 setzen — Coalescing-Queue throttelt Bursts im laufenden Betrieb.
 4. **"Wait for ACK"** aktivieren — ACK-basierte Flow Control auf knxultimate-Ebene; allein nicht ausreichend, in Kombination sinnvoll.

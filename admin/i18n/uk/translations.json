@@ -16,6 +16,7 @@
     "Direct Link removed": "Direct Link removed",
     "Disable autoread": "Вимкнути авточитання",
     "ETS: enable \"Tunneling: longer monitoring interval\" (60 s keep-alive)": "ETS: увімкніть «Тунелювання: довший інтервал моніторингу» (60 с підтримка)",
+    "ETS: set 60 s keep-alive (SCN-IP100: \"Tunneling: longer monitoring interval\", SCN-IP000: \"Support slow tunneling connections\")": "ETS: установіть 60 с для підтримки активності (SCN-IP100: «Тунелювання: довший інтервал моніторингу», SCN-IP000: «Підтримка повільних тунельних з’єднань»)",
     "Enable \"Wait for ACK\"": "Увімкнути «Очікувати ACK»",
     "Enable KNX Secure": "Увімкніть KNX Secure",
     "Error": "Помилка",
