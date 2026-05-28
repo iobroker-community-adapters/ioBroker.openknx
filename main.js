@@ -60,6 +60,7 @@ class openknx extends utils.Adapter {
         this.outboundWriteLog = []; // {ts, mode, ga} ring of last 60s of outbound writes for burst diagnostics
         this.queueHealthTimer = undefined;
         this.queueStuckSinceMs = 0; // ms timestamp when stuck condition first observed
+        this.ackTimeoutByGa = new Map(); // ga → count of ACK timeouts since last connect
 
         // redirect log from KNXUltimate (winston-based logStream) to adapter log
         // Collapse multiline messages (stack traces) into a single line
@@ -1375,6 +1376,26 @@ class openknx extends utils.Adapter {
             recs.push('MDT-Gateway erkannt aber "Wait for ACK" deaktiviert. Empfehlung: "Wait for ACK" aktivieren.');
         }
 
+        // If one GA caused all (or most) ACK timeouts, it's likely a dead/unresponsive device.
+        if (this.ackTimeoutByGa.size > 0) {
+            const sorted = [...this.ackTimeoutByGa.entries()].sort((a, b) => b[1] - a[1]);
+            const [topGa, topCount] = sorted[0];
+            const totalAckTimeouts = sorted.reduce((s, [, n]) => s + n, 0);
+            const dominated = topCount >= totalAckTimeouts * 0.7;
+            if (dominated && topCount >= 2) {
+                const ids = this.gaList.getIdsByGa(topGa);
+                const idHint = ids.length ? ` (${ids[0]})` : '';
+                recs.push(
+                    `GA ${topGa}${idHint} hat ${topCount} von ${totalAckTimeouts} ACK-Timeouts verursacht. Das Gerät an dieser GA antwortet nicht auf den Bus. Prüfen: ETS-Group-Monitor → Write auf ${topGa} → kommt L_DATA.con zurück? Falls nicht: Gerät offline oder defekt. Bis zur Behebung: Protokoll auf Multicast/Routing umstellen oder waitForAck deaktivieren.`
+                );
+            } else if (totalAckTimeouts >= 2) {
+                const gaList = sorted.slice(0, 3).map(([ga, n]) => `${ga}×${n}`).join(', ');
+                recs.push(
+                    `${totalAckTimeouts} ACK-Timeouts auf GAs: ${gaList}. Gerät(e) antworten nicht auf den Bus. ETS-Group-Monitor prüfen.`
+                );
+            }
+        }
+
         for (const r of recs) {
             this.log.warn(r);
         }
@@ -1510,6 +1531,7 @@ class openknx extends utils.Adapter {
             this.log.info(
                 `Active settings: waitForAck=${this.waitForAck}, maxSendRate=${Number(this.config.maxSendRate) || 0} tel/s, sendInterval=${this.effectiveSendInterval}ms, autoread=${!!this.config.autoreadEnabled}`,
             );
+            this.ackTimeoutByGa.clear();
             this.setState("info.messagecount", 0, true);
 
             // MDT IP-Router/Interface compatibility check: warn when settings are
@@ -1654,6 +1676,9 @@ class openknx extends utils.Adapter {
             }
             // ack=false means KNXUltimate gave up after retransmits without seeing an ACK.
             // This is a transport-level failure: the IP gateway did not reply, regardless of bus state.
+            if (dest) {
+                this.ackTimeoutByGa.set(dest, (this.ackTimeoutByGa.get(dest) || 0) + 1);
+            }
             if (!dest) {
                 this.log.error(
                     `KNX gateway did not ACK TUNNELING_REQUEST after retries (seqCounter=${seq}). Transport/network issue: gateway unreachable or tunnel dropped.`,
