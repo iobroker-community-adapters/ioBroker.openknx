@@ -1487,6 +1487,29 @@ class openknx extends utils.Adapter {
 
         // KNX Secure options
         if (this.config.isSecureKNXEnabled) {
+            // Validate that at least one complete authentication source is configured.
+            // Without this, knxultimate later throws an opaque TypeError ("key argument must be ...
+            // Received undefined") deep inside secureBuildSessionAuthenticate, which is hard to
+            // diagnose. Fail fast with a clear message and abort the connection setup.
+            const hasKeyring = !!(this.config.knxKeysContent && this.config.knxKeysPassword);
+            const hasManualPassword = !!this.config.tunnelUserPassword;
+            if (!hasKeyring && !hasManualPassword) {
+                const missing = [];
+                if (!this.config.knxKeysContent) {
+                    missing.push("Keyfile content");
+                }
+                if (!this.config.knxKeysPassword) {
+                    missing.push("Keyfile password");
+                }
+                this.log.error(
+                    `KNX Secure is enabled but no authentication credentials are configured. ` +
+                        `Provide either (a) Keyfile content + Keyfile password (export .knxkeys from ETS), ` +
+                        `or (b) Tunnel User Password. Missing for keyring auth: ${missing.join(", ")}. ` +
+                        `Disable KNX Secure in adapter settings if your gateway does not require it.`,
+                );
+                return;
+            }
+
             knxOptions.isSecureKNXEnabled = true;
 
             // Build secureTunnelConfig
