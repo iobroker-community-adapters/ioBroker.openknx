@@ -1454,11 +1454,13 @@ class openknx extends utils.Adapter {
 
         // KNXUltimate "interface" option expects an OS name (e.g. "eth0"), config stores an IP
         let ifaceName = "";
+        let ifaceMatchedIp = "";
         if (this.config.localInterface) {
             const interfaces = require("os").networkInterfaces();
             for (const [name, addrs] of Object.entries(interfaces)) {
                 if (addrs && addrs.some(a => a.address === this.config.localInterface)) {
                     ifaceName = name;
+                    ifaceMatchedIp = this.config.localInterface;
                     break;
                 }
             }
@@ -1467,6 +1469,33 @@ class openknx extends utils.Adapter {
                     `Configured local interface IP ${this.config.localInterface} not found on this system. Using auto-detection.`,
                 );
             }
+        }
+
+        // Log network setup so users can diagnose UDP connect issues. The previous knx
+        // library bound UDP to INADDR_ANY (any interface). knxultimate binds explicitly
+        // to localIPAddress, derived from the chosen network interface — wrong selection
+        // on multi-homed hosts (Docker, VPN, multiple NICs) is the most common cause of
+        // "v0.7 worked, v1.x doesn't" reports.
+        const allIfs = require("os").networkInterfaces();
+        const ipv4Candidates = [];
+        for (const [name, addrs] of Object.entries(allIfs)) {
+            if (!addrs) {
+                continue;
+            }
+            for (const a of addrs) {
+                if (a.family === "IPv4" && !a.internal) {
+                    ipv4Candidates.push(`${name}=${a.address}`);
+                }
+            }
+        }
+        if (ifaceName) {
+            this.log.info(
+                `Network: protocol=${hostProtocol}, interface=${ifaceName} (${ifaceMatchedIp}) [user-selected], gateway=${ipAddr}:${this.config.gwipport}`,
+            );
+        } else {
+            this.log.info(
+                `Network: protocol=${hostProtocol}, interface=auto, gateway=${ipAddr}:${this.config.gwipport}. Available IPv4: [${ipv4Candidates.join(", ")}]. If connect fails on UDP, set "Local IPv4 network interface" explicitly in adapter settings.`,
+            );
         }
 
         const knxOptions = {
@@ -1550,7 +1579,16 @@ class openknx extends utils.Adapter {
         this.knxConnection.on(KNXClientEvents.connected, () => {
             const chId = this.knxConnection?.channelID;
             const pa = this.knxConnection?.physAddr ? this.knxConnection.physAddr.toString() : "";
-            this.log.info(`Connected! channelID=${chId} physAddr=${pa}`);
+            // Surface the IP knxultimate actually bound the UDP socket to. With auto-detect this
+            // is the heuristic's pick; users on multi-homed hosts can verify it matches the LAN
+            // their gateway is on.
+            const boundIp =
+                this.knxConnection?._options?.localIPAddress ||
+                this.knxConnection?._options?.localSocketAddress ||
+                "";
+            this.log.info(
+                `Connected! channelID=${chId} physAddr=${pa}${boundIp ? ` (bound to ${boundIp})` : ""}`,
+            );
             this.log.info(
                 `Active settings: waitForAck=${this.waitForAck}, maxSendRate=${Number(this.config.maxSendRate) || 0} tel/s, sendInterval=${this.effectiveSendInterval}ms, autoread=${!!this.config.autoreadEnabled}`,
             );
