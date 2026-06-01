@@ -1,4 +1,8 @@
 # Older changes
+## 1.1.8 (2026-04-30)
+- add compatiblity mode für raw DPT5.*
+- reduce default delay to 25ms
+
 ## 1.1.7 (2026-04-29)
 - improve Umlaute handling for DPT-16
 

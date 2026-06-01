@@ -68,10 +68,10 @@ Empfohlene Reihenfolge (mit dem günstigsten Schritt anfangen, nur eskalieren we
   Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.1.13 (2026-06-01)
 
-- feat: improve disconnect handling on high bus load (MDT) — new options "Wait for ACK", "Max Direct Link send rate" (coalescing queue) and per-GA "linkedStateDebounce"; burst log with actionable recommendations on tunnel drop, hint at linkedStateDebounce in TUNNELING_REQUEST ACK errors for Direct Link GAs
-- docs: add hint to switch to Multicast/Routing on persistent TUNNELING_ACK timeouts (network-side unicast filtering)
+- feat: improve disconnect handling on high bus load for MDT Gateways
+- new options "Wait for ACK", "Max Direct Link send rate" (coalescing queue) and per-GA "linkedStateDebounce"; burst log with, hint at linkedStateDebounce GAs
 
 ### 1.1.12 (2026-05-19)
 - feat: cyclic sending for Direct Links (periodically re-send current value to KNX bus)
@@ -85,10 +85,6 @@ Empfohlene Reihenfolge (mit dem günstigsten Schritt anfangen, nur eskalieren we
 
 ### 1.1.9 (2026-05-04)
 - fix handling of unkown DPT
-
-### 1.1.8 (2026-04-30)
-- add compatiblity mode für raw DPT5.*
-- reduce default delay to 25ms
 
 ### initial version
 
