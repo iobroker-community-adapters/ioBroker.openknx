@@ -1647,10 +1647,14 @@ class openknx extends utils.Adapter {
         //   4 = knxultimate default minus setMulticastInterface/setTTL on unicast socket
         //
         // Index can be pinned via `this.config.compatBindVariant` (number) for manual testing.
+        // Empty string / null / undefined → auto-cycle. Number("") is 0, so we must check
+        // the raw value first (otherwise we'd silently pin to variant 0 forever).
         const useCompatBind = (this.config.compatBindAny || this.compatBindAnyActive) && hostProtocol === "TunnelUDP";
         let createSocketCallback;
         if (useCompatBind) {
-            const pinned = Number(this.config.compatBindVariant);
+            const rawPin = this.config.compatBindVariant;
+            const pinIsSet = rawPin !== undefined && rawPin !== null && String(rawPin).trim() !== "";
+            const pinned = pinIsSet ? Number(rawPin) : NaN;
             const variant = Number.isFinite(pinned) && pinned >= 0 ? pinned : this.compatBindVariantIdx || 0;
             this.activeCompatVariant = variant;
             const variantNames = [
@@ -1934,8 +1938,13 @@ class openknx extends utils.Adapter {
             // Variant cycler: advance to the next compat variant on a connect failure
             // (we never reached connected). Stops at total — last attempt sticks.
             const useCompat = (this.config.compatBindAny || this.compatBindAnyActive) && hostProtocol === "TunnelUDP";
-            const pinned = Number(this.config.compatBindVariant);
-            const isPinned = Number.isFinite(pinned) && pinned >= 0;
+            const rawPin = this.config.compatBindVariant;
+            const isPinned =
+                rawPin !== undefined &&
+                rawPin !== null &&
+                String(rawPin).trim() !== "" &&
+                Number.isFinite(Number(rawPin)) &&
+                Number(rawPin) >= 0;
             if (useCompat && !wasConnected && !isPinned) {
                 if (this.compatBindVariantIdx < this.compatBindVariantTotal - 1) {
                     this.compatBindVariantIdx++;
@@ -2014,8 +2023,13 @@ class openknx extends utils.Adapter {
                 hostProtocol === "TunnelUDP" &&
                 !this.connected
             ) {
-                const pinned = Number(this.config.compatBindVariant);
-                const isPinned = Number.isFinite(pinned) && pinned >= 0;
+                const rawPin = this.config.compatBindVariant;
+                const isPinned =
+                    rawPin !== undefined &&
+                    rawPin !== null &&
+                    String(rawPin).trim() !== "" &&
+                    Number.isFinite(Number(rawPin)) &&
+                    Number(rawPin) >= 0;
                 if (!isPinned && this.compatBindVariantIdx < this.compatBindVariantTotal - 1) {
                     this.compatBindVariantIdx++;
                     this.log.warn(
