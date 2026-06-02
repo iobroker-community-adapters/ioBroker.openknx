@@ -1,0 +1,4 @@
+chore: release v1.1.13
+
+- feat: improve disconnect handling on high bus load for MDT Gateways
+- new options "Wait for ACK", "Max Direct Link send rate" (coalescing queue) and per-GA "linkedStateDebounce"; burst log with, hint at linkedStateDebounce GAs

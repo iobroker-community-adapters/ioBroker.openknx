@@ -83,6 +83,7 @@
     "Tunnel Interface IA (optional, e.g. 1.1.254)": "Interface de túnel IA (opcional, por exemplo, 1.1.254)",
     "Tunnel User ID (default: 2)": "ID do usuário do túnel (padrão: 2)",
     "Tunnel User Password (alternative to keyfile)": "Senha do usuário do túnel (alternativa ao arquivo-chave)",
+    "UDP compatibility bind (bind to any interface; enable if gateway rejects CONNECT_REQUEST with status 0x22)": "Ligação de compatibilidade UDP (ligação a qualquer interface; habilitada se o gateway rejeitar CONNECT_REQUEST com status 0x22)",
     "Unknown error": "Erro desconhecido",
     "Unsupported file format": "Formato de arquivo não suportado",
     "Value": "Value",
