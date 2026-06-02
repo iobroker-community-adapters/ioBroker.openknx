@@ -1649,6 +1649,39 @@ class openknx extends utils.Adapter {
         // Create KNXUltimate client
         this.knxConnection = new KNXClient(knxOptions, createSocketCallback);
 
+        // One-shot UDP wire-trace: log source endpoint + hex of the FIRST outgoing
+        // CONNECT_REQUEST so we can verify what the gateway actually receives. Some
+        // gateways (observed: MDT SCN-IP100.03 with Secure) reject CONNECT_REQUEST with
+        // 0x22 E_CONNECTION_TYPE. To rule out wire-level differences vs v0.7.x, this
+        // dumps the exact bytes + source IP/port. Self-disables after first send.
+        try {
+            const sock = this.knxConnection?._clientSocket;
+            if (sock && typeof sock.send === "function" && !sock.__openknxTraced) {
+                sock.__openknxTraced = true;
+                const origSend = sock.send.bind(sock);
+                let traced = false;
+                sock.send = (buf, ...rest) => {
+                    if (!traced) {
+                        traced = true;
+                        try {
+                            const addr = sock.address();
+                            const hex = Buffer.isBuffer(buf)
+                                ? buf.toString("hex").match(/.{2}/g).join(" ")
+                                : "(non-buffer)";
+                            this.log.info(
+                                `UDP wire-trace: src=${addr.address}:${addr.port} → ${rest[1]}:${rest[0]} bytes=${hex}`,
+                            );
+                        } catch (e) {
+                            this.log.warn(`UDP wire-trace failed: ${e.message}`);
+                        }
+                    }
+                    return origSend(buf, ...rest);
+                };
+            }
+        } catch (e) {
+            this.log.warn(`UDP wire-trace install failed: ${e.message}`);
+        }
+
         // Event: connected
         this.knxConnection.on(KNXClientEvents.connected, () => {
             const chId = this.knxConnection?.channelID;
