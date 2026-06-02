@@ -83,7 +83,6 @@
     "Tunnel Interface IA (optional, e.g. 1.1.254)": "隧道接口 IA（可选，例如 1.1.254）",
     "Tunnel User ID (default: 2)": "隧道用户 ID（默认值：2）",
     "Tunnel User Password (alternative to keyfile)": "隧道用户密码（密钥文件的替代方案）",
-    "UDP compatibility bind (bind to any interface; enable if gateway rejects CONNECT_REQUEST with status 0x22)": "UDP 兼容性绑定（绑定到任何接口；如果网关拒绝状态为 0x22 的 CONNECT_REQUEST，则启用）",
     "Unknown error": "未知错误",
     "Unsupported file format": "不支持的文件格式",
     "Value": "Value",

@@ -83,7 +83,6 @@
     "Tunnel Interface IA (optional, e.g. 1.1.254)": "Туннельный интерфейс IA (необязательно, например 1.1.254)",
     "Tunnel User ID (default: 2)": "Идентификатор пользователя туннеля (по умолчанию: 2)",
     "Tunnel User Password (alternative to keyfile)": "Пароль пользователя туннеля (альтернатива ключевому файлу)",
-    "UDP compatibility bind (bind to any interface; enable if gateway rejects CONNECT_REQUEST with status 0x22)": "Привязка совместимости UDP (привязка к любому интерфейсу; включить, если шлюз отклоняет CONNECT_REQUEST со статусом 0x22)",
     "Unknown error": "Неизвестная ошибка",
     "Unsupported file format": "Неподдерживаемый формат файла",
     "Value": "Значение",

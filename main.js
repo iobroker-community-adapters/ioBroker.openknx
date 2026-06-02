@@ -12,7 +12,6 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
-const dgram = require("dgram");
 const { KNXClient, KNXClientEvents, dptlib, logStream } = require("knxultimate");
 const { setLogLevel: setKnxLogLevel } = require("knxultimate/build/KnxLog");
 const loadMeasurement = require("./lib/loadMeasurement");
@@ -62,27 +61,13 @@ class openknx extends utils.Adapter {
         this.queueHealthTimer = undefined;
         this.queueStuckSinceMs = 0; // ms timestamp when stuck condition first observed
         this.ackTimeoutByGa = new Map(); // ga → count of ACK timeouts since last connect
-        // Compat bind state: when set true, the next startKnxStack() will leave
-        // knxultimate's UDP bind on INADDR_ANY (legacy v0.7.x behavior). Some gateways
-        // reject CONNECT_REQUEST with 0x22 E_CONNECTION_TYPE when the source IP is bound
-        // explicitly. Auto-retry sets this on 0x22 once per startKnxStack() call.
-        this.compatBindAnyActive = false;
-        this.compatBindAnyAutoRetried = false;
-        // Variant cycler: when compatBindAny is on and pinned variant is not set, the
-        // adapter rotates through socket-creation variants on each failed connect until
-        // one succeeds. Reset to 0 once a connection succeeds.
-        this.compatBindVariantIdx = 0;
-        this.compatBindVariantTotal = 5;
-        this.activeCompatVariant = 0;
-        this.compatBindCycleExhausted = false;
 
         // redirect log from KNXUltimate (winston-based logStream) to adapter log
         // Collapse multiline messages (stack traces) into a single line
         this.logHandler = entry => {
             // knxultimate's customKNXFormat wraps info.level in ANSI color codes;
             // strip them before comparing or the level falls through to silly.
-            const stripAnsi = s =>
-                typeof s === "string" ? s.replace(new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, "g"), "") : s;
+            const stripAnsi = s => (typeof s === "string" ? s.replace(new RegExp(String.fromCharCode(27) + "\\[[0-9;]*m", "g"), "") : s);
             const level = stripAnsi(entry.level)?.toLowerCase();
             const msg = stripAnsi(entry.message || String(entry)).replace(/\n/g, " | ");
             if (level === "error") {
@@ -171,28 +156,9 @@ class openknx extends utils.Adapter {
         }
         // Ensure info objects exist (may be missing after clean re-import)
         await this.setObjectNotExistsAsync("info", { type: "channel", common: { name: "Information" }, native: {} });
-        await this.setObjectNotExistsAsync("info.connection", {
-            type: "state",
-            common: {
-                role: "indicator.connected",
-                name: "KNX Gateway connected",
-                type: "boolean",
-                read: true,
-                write: false,
-                def: false,
-            },
-            native: {},
-        });
-        await this.setObjectNotExistsAsync("info.busload", {
-            type: "state",
-            common: { role: "info", name: "Busload", type: "number", read: true, write: false, def: 0, unit: "%" },
-            native: {},
-        });
-        await this.setObjectNotExistsAsync("info.messagecount", {
-            type: "state",
-            common: { role: "info", name: "Message count", type: "number", read: true, write: false, def: 0 },
-            native: {},
-        });
+        await this.setObjectNotExistsAsync("info.connection", { type: "state", common: { role: "indicator.connected", name: "KNX Gateway connected", type: "boolean", read: true, write: false, def: false }, native: {} });
+        await this.setObjectNotExistsAsync("info.busload", { type: "state", common: { role: "info", name: "Busload", type: "number", read: true, write: false, def: 0, unit: "%" }, native: {} });
+        await this.setObjectNotExistsAsync("info.messagecount", { type: "state", common: { role: "info", name: "Message count", type: "number", read: true, write: false, def: 0 }, native: {} });
         this.setState("info.busload", 0, true);
 
         this.main(true);
@@ -303,19 +269,12 @@ class openknx extends utils.Adapter {
                     };
                     if (obj.message.cleanImport) {
                         this.log.info("Clean import: deleting all existing KNX objects before import...");
-                        this.cleanImport()
-                            .then(doXmlImport)
-                            .catch(e => {
-                                this.log.error(`Clean import failed: ${e.message}`);
-                                if (obj.callback) {
-                                    this.sendTo(
-                                        obj.from,
-                                        obj.command,
-                                        { error: `Clean import failed: ${e.message}`, count: 0 },
-                                        obj.callback,
-                                    );
-                                }
-                            });
+                        this.cleanImport().then(doXmlImport).catch(e => {
+                            this.log.error(`Clean import failed: ${e.message}`);
+                            if (obj.callback) {
+                                this.sendTo(obj.from, obj.command, { error: `Clean import failed: ${e.message}`, count: 0 }, obj.callback);
+                            }
+                        });
                     } else {
                         doXmlImport();
                     }
@@ -323,9 +282,7 @@ class openknx extends utils.Adapter {
                 }
                 case "importKnxprojStart": {
                     this.knxprojChunks = [];
-                    this.log.info(
-                        `ETS .knxproj chunked import started (${obj.message.totalChunks} chunks, ${obj.message.sizeMB} MB)`,
-                    );
+                    this.log.info(`ETS .knxproj chunked import started (${obj.message.totalChunks} chunks, ${obj.message.sizeMB} MB)`);
                     if (obj.callback) {
                         this.sendTo(obj.from, obj.command, {}, obj.callback);
                     }
@@ -352,17 +309,13 @@ class openknx extends utils.Adapter {
                             const heapLimitMB = Math.round(heapStats.heap_size_limit / 1024 / 1024);
                             const fileSizeMB = buffer.length / 1024 / 1024;
                             if (fileSizeMB > 10 && heapLimitMB < 1024) {
-                                this.log.warn(
-                                    `Large knxproj (${fileSizeMB.toFixed(0)} MB) with ${heapLimitMB} MB heap limit. If the adapter crashes with "heap out of memory", increase Node.js memory: Instances > openknx > wrench icon > Node.js Options: --max-old-space-size=2048`,
-                                );
+                                this.log.warn(`Large knxproj (${fileSizeMB.toFixed(0)} MB) with ${heapLimitMB} MB heap limit. If the adapter crashes with "heap out of memory", increase Node.js memory: Instances > openknx > wrench icon > Node.js Options: --max-old-space-size=2048`);
                             }
                             const password = obj.message.password || undefined;
                             const language = obj.message.language || undefined;
                             this.log.debug("knxproj: extracting ZIP and parsing XML...");
                             const knxProject = await parseKnxproj(buffer, password, language);
-                            const gaCount = knxProject.groupAddresses
-                                ? Object.keys(knxProject.groupAddresses).length
-                                : 0;
+                            const gaCount = knxProject.groupAddresses ? Object.keys(knxProject.groupAddresses).length : 0;
                             this.log.info(`knxproj: parsed ${gaCount} group addresses`);
                             const res = projectImport.convertKnxProject(this, knxProject);
                             this.log.info(`knxproj: converted to ${res.objects.length} ioBroker objects`);
@@ -387,19 +340,12 @@ class openknx extends utils.Adapter {
                     };
                     if (obj.message.cleanImport) {
                         this.log.info("Clean import: deleting all existing KNX objects before import...");
-                        this.cleanImport()
-                            .then(doKnxprojImport)
-                            .catch(e => {
-                                this.log.error(`Clean import failed: ${e.message}`);
-                                if (obj.callback) {
-                                    this.sendTo(
-                                        obj.from,
-                                        obj.command,
-                                        { error: `Clean import failed: ${e.message}`, count: 0 },
-                                        obj.callback,
-                                    );
-                                }
-                            });
+                        this.cleanImport().then(doKnxprojImport).catch(e => {
+                            this.log.error(`Clean import failed: ${e.message}`);
+                            if (obj.callback) {
+                                this.sendTo(obj.from, obj.command, { error: `Clean import failed: ${e.message}`, count: 0 }, obj.callback);
+                            }
+                        });
                     } else {
                         doKnxprojImport();
                     }
@@ -603,16 +549,8 @@ class openknx extends utils.Adapter {
         }
         this.log.info("cleanImport: deleted all existing KNX objects");
         // Re-create info objects that are needed during runtime
-        await this.setObjectNotExistsAsync("info.busload", {
-            type: "state",
-            common: { role: "info", name: "Busload", type: "number", read: true, write: false, def: 0, unit: "%" },
-            native: {},
-        });
-        await this.setObjectNotExistsAsync("info.messagecount", {
-            type: "state",
-            common: { role: "info", name: "Message count", type: "number", read: true, write: false, def: 0 },
-            native: {},
-        });
+        await this.setObjectNotExistsAsync("info.busload", { type: "state", common: { role: "info", name: "Busload", type: "number", read: true, write: false, def: 0, unit: "%" }, native: {} });
+        await this.setObjectNotExistsAsync("info.messagecount", { type: "state", common: { role: "info", name: "Message count", type: "number", read: true, write: false, def: 0 }, native: {} });
     }
 
     // write found communication objects to adapter object tree
@@ -716,6 +654,7 @@ class openknx extends utils.Adapter {
         }
         return duplicates.length ? message : "";
     }
+
 
     // obj to string and date to number for iobroker from knx stack
     convertType(val) {
@@ -1084,7 +1023,9 @@ class openknx extends utils.Adapter {
                         try {
                             writeVal = new Function("value", `return ${gaData.native.linkedStateConvert}`)(writeVal);
                         } catch (e) {
-                            this.log.warn(`Direct Link sync convert error for ${gaData.native.address}: ${e.message}`);
+                            this.log.warn(
+                                `Direct Link sync convert error for ${gaData.native.address}: ${e.message}`,
+                            );
                             return null;
                         }
                     }
@@ -1107,7 +1048,9 @@ class openknx extends utils.Adapter {
         // When the coalescing queue is active, route sync writes through it
         // so the global maxSendRate is honored. Otherwise stagger directly.
         if (this.linkedWriteIntervalMs > 0) {
-            this.log.debug(`Direct Link sync: ${toWrite.length}/${entries.length} states differ, queued for drain`);
+            this.log.debug(
+                `Direct Link sync: ${toWrite.length}/${entries.length} states differ, queued for drain`,
+            );
             for (const { foreignId, knxId, gaData, writeVal } of toWrite) {
                 this.linkedWriteQueue.set(gaData.native.address, {
                     writeVal,
@@ -1250,10 +1193,7 @@ class openknx extends utils.Adapter {
                 let inFlightSeq;
                 try {
                     seqNum = typeof c.getSeqNumber === "function" ? c.getSeqNumber() : undefined;
-                    inFlightSeq =
-                        typeof c.getCurrentItemHandledByTheQueue === "function"
-                            ? c.getCurrentItemHandledByTheQueue()
-                            : undefined;
+                    inFlightSeq = typeof c.getCurrentItemHandledByTheQueue === "function" ? c.getCurrentItemHandledByTheQueue() : undefined;
                 } catch {
                     /* accessor missing on older versions */
                 }
@@ -1445,17 +1385,14 @@ class openknx extends utils.Adapter {
             const dominated = topCount >= totalAckTimeouts * 0.7;
             if (dominated && topCount >= 2) {
                 const ids = this.gaList.getIdsByGa(topGa);
-                const idHint = ids.length ? ` (${ids[0]})` : "";
+                const idHint = ids.length ? ` (${ids[0]})` : '';
                 recs.push(
-                    `GA ${topGa}${idHint} hat ${topCount} von ${totalAckTimeouts} ACK-Timeouts verursacht. Das Gerät an dieser GA antwortet nicht auf den Bus. Prüfen: ETS-Group-Monitor → Write auf ${topGa} → kommt L_DATA.con zurück? Falls nicht: Gerät offline oder defekt. Bis zur Behebung: Protokoll auf Multicast/Routing umstellen oder waitForAck deaktivieren.`,
+                    `GA ${topGa}${idHint} hat ${topCount} von ${totalAckTimeouts} ACK-Timeouts verursacht. Das Gerät an dieser GA antwortet nicht auf den Bus. Prüfen: ETS-Group-Monitor → Write auf ${topGa} → kommt L_DATA.con zurück? Falls nicht: Gerät offline oder defekt. Bis zur Behebung: Protokoll auf Multicast/Routing umstellen oder waitForAck deaktivieren.`
                 );
             } else if (totalAckTimeouts >= 2) {
-                const gaList = sorted
-                    .slice(0, 3)
-                    .map(([ga, n]) => `${ga}×${n}`)
-                    .join(", ");
+                const gaList = sorted.slice(0, 3).map(([ga, n]) => `${ga}×${n}`).join(', ');
                 recs.push(
-                    `${totalAckTimeouts} ACK-Timeouts auf GAs: ${gaList}. Gerät(e) antworten nicht auf den Bus. ETS-Group-Monitor prüfen.`,
+                    `${totalAckTimeouts} ACK-Timeouts auf GAs: ${gaList}. Gerät(e) antworten nicht auf den Bus. ETS-Group-Monitor prüfen.`
                 );
             }
         }
@@ -1636,161 +1573,8 @@ class openknx extends utils.Adapter {
             this.log.info("KNX Secure enabled");
         }
 
-        // Compatibility mode: cycle through socket-creation variants when the gateway
-        // refuses our CONNECT_REQUEST (status 0x22 / silent timeout). All variants live
-        // behind the `compatBindAny` flag so the entire block can be removed in one go.
-        //
-        // Variants (incremented on each reconnect until one succeeds):
-        //   0 = knxultimate default minus localIPAddress  (only force INADDR_ANY)
-        //   1 = v0.7-style minimal: dgram.createSocket('udp4'), bind() no args, no TTL/multicast/reuseAddr
-        //   2 = v0.7-style minimal but bind to localIPAddress (tests if the SOURCE IP itself matters)
-        //   3 = knxultimate default minus reuseAddr (tests if reuseAddr is the differentiator)
-        //   4 = knxultimate default minus setMulticastInterface/setTTL on unicast socket
-        //
-        // Diagnostic: cycle through all variants once. After the last failed variant
-        // the adapter STOPS reconnecting (via this.compatBindCycleExhausted) so the
-        // user can read off which (if any) variant got further.
-        const useCompatBind = (this.config.compatBindAny || this.compatBindAnyActive) && hostProtocol === "TunnelUDP";
-        let createSocketCallback;
-        if (useCompatBind) {
-            if (this.compatBindCycleExhausted) {
-                this.log.error(
-                    "Compat bind: all variants (0..4) failed. Stopping reconnect. " +
-                        "Disable 'UDP compatibility bind' to return to default behavior.",
-                );
-                return;
-            }
-            const variant = this.compatBindVariantIdx || 0;
-            this.activeCompatVariant = variant;
-            const variantNames = [
-                "0:any-bind-only",
-                "1:v0.7-minimal-anybind",
-                "2:v0.7-minimal-explicitbind",
-                "3:no-reuseAddr",
-                "4:no-setMulticast/TTL",
-            ];
-            const vname = variantNames[variant] || `${variant}:custom`;
-
-            const attachListeners = (client, sock) => {
-                sock.on("message", (msg, rinfo) => {
-                    try {
-                        client.processInboundMessage(msg, rinfo);
-                    } catch (e) {
-                        client.emit("error", e instanceof Error ? e : new Error("UDP data error"));
-                    }
-                });
-                sock.on("error", err => {
-                    client.socketReady = false;
-                    client.emit("error", err);
-                });
-                sock.on("close", () => {
-                    client.socketReady = false;
-                    client.exitProcessingKNXQueueLoop = true;
-                    if (client._connectionState !== "DISCONNECTING" && client._connectionState !== "DISCONNECTED") {
-                        try {
-                            client.setDisconnected("Socket closed by peer").catch(() => {});
-                        } catch {
-                            // ignore
-                        }
-                    }
-                    client.emit("close");
-                });
-                sock.on("listening", () => {
-                    client.socketReady = true;
-                    if (typeof client.handleKNXQueue === "function") {
-                        client.handleKNXQueue();
-                    }
-                });
-            };
-
-            createSocketCallback = client => {
-                if (variant === 0) {
-                    // Variant 0: knxultimate's createSocket but with INADDR_ANY
-                    client._options.localIPAddress = "";
-                    client.createSocket();
-                    return;
-                }
-
-                // Variants 1-4 build the socket ourselves
-                const opts = variant === 3 ? { type: "udp4" } : { type: "udp4", reuseAddr: true };
-                if (variant === 1 || variant === 2) {
-                    // v0.7-minimal: plain udp4, no reuseAddr at all
-                    delete opts.reuseAddr;
-                }
-                const sock = dgram.createSocket(opts);
-                client._clientSocket = sock;
-
-                attachListeners(client, sock);
-
-                const bindAddr =
-                    variant === 2
-                        ? client._options.localIPAddress // explicit local IP
-                        : ""; // INADDR_ANY for 1, 3, 4
-
-                if (variant !== 2) {
-                    client._options.localIPAddress = "";
-                }
-
-                const bindCb = () => {
-                    try {
-                        // Variant 4 explicitly skips setMulticastInterface + setTTL
-                        if (variant === 3 || variant === 2 || variant === 1) {
-                            // 1,2: skip TTL/multicast like v0.7
-                            // 3: skip too — just testing reuseAddr difference
-                        } else if (variant === 4) {
-                            // explicit no-multicast-tweak (matches "default minus those")
-                        }
-                        if (client._options.localSocketAddress === undefined) {
-                            client._options.localSocketAddress = sock.address().address;
-                        }
-                    } catch {
-                        // ignore
-                    }
-                };
-                if (bindAddr) {
-                    sock.bind({ address: bindAddr }, bindCb);
-                } else {
-                    sock.bind(bindCb);
-                }
-            };
-            this.log.info(`Compat bind: variant=${vname} active.`);
-        }
-
         // Create KNXUltimate client
-        this.knxConnection = new KNXClient(knxOptions, createSocketCallback);
-
-        // One-shot UDP wire-trace: log source endpoint + hex of the FIRST outgoing
-        // CONNECT_REQUEST so we can verify what the gateway actually receives. Some
-        // gateways (observed: MDT SCN-IP100.03 with Secure) reject CONNECT_REQUEST with
-        // 0x22 E_CONNECTION_TYPE. To rule out wire-level differences vs v0.7.x, this
-        // dumps the exact bytes + source IP/port. Self-disables after first send.
-        try {
-            const sock = this.knxConnection?._clientSocket;
-            if (sock && typeof sock.send === "function" && !sock.__openknxTraced) {
-                sock.__openknxTraced = true;
-                const origSend = sock.send.bind(sock);
-                let traced = false;
-                sock.send = (buf, ...rest) => {
-                    if (!traced) {
-                        traced = true;
-                        try {
-                            const addr = sock.address();
-                            const hex = Buffer.isBuffer(buf)
-                                ? buf.toString("hex").match(/.{2}/g).join(" ")
-                                : "(non-buffer)";
-                            this.log.info(
-                                `UDP wire-trace: src=${addr.address}:${addr.port} → ${rest[1]}:${rest[0]} bytes=${hex}`,
-                            );
-                        } catch (e) {
-                            this.log.warn(`UDP wire-trace failed: ${e.message}`);
-                        }
-                    }
-                    return origSend(buf, ...rest);
-                };
-            }
-        } catch (e) {
-            this.log.warn(`UDP wire-trace install failed: ${e.message}`);
-        }
+        this.knxConnection = new KNXClient(knxOptions);
 
         // Event: connected
         this.knxConnection.on(KNXClientEvents.connected, () => {
@@ -1800,12 +1584,12 @@ class openknx extends utils.Adapter {
             // is the heuristic's pick; users on multi-homed hosts can verify it matches the LAN
             // their gateway is on.
             const boundIp =
-                this.knxConnection?._options?.localIPAddress || this.knxConnection?._options?.localSocketAddress || "";
-            this.log.info(`Connected! channelID=${chId} physAddr=${pa}${boundIp ? ` (bound to ${boundIp})` : ""}`);
-            // Variant probe: lock in the winning variant for any further reconnects.
-            if ((this.config.compatBindAny || this.compatBindAnyActive) && hostProtocol === "TunnelUDP") {
-                this.log.info(`Compat bind: variant ${this.activeCompatVariant} succeeded — pinning for this session.`);
-            }
+                this.knxConnection?._options?.localIPAddress ||
+                this.knxConnection?._options?.localSocketAddress ||
+                "";
+            this.log.info(
+                `Connected! channelID=${chId} physAddr=${pa}${boundIp ? ` (bound to ${boundIp})` : ""}`,
+            );
             this.log.info(
                 `Active settings: waitForAck=${this.waitForAck}, maxSendRate=${Number(this.config.maxSendRate) || 0} tel/s, sendInterval=${this.effectiveSendInterval}ms, autoread=${!!this.config.autoreadEnabled}`,
             );
@@ -1865,12 +1649,7 @@ class openknx extends utils.Adapter {
                     const data = this.gaList.getDataById(key);
                     if (data.native.answer_groupValueResponse && data.native.dpt) {
                         const dptUpper = data.native.dpt.toUpperCase();
-                        if (
-                            dptUpper.startsWith("DPT16") ||
-                            dptUpper.startsWith("DPT14") ||
-                            dptUpper.startsWith("DPT13") ||
-                            dptUpper.startsWith("DPT12")
-                        ) {
+                        if (dptUpper.startsWith("DPT16") || dptUpper.startsWith("DPT14") || dptUpper.startsWith("DPT13") || dptUpper.startsWith("DPT12")) {
                             largeDptResponders.push(`${data.native.address} (${data.native.dpt})`);
                         }
                     }
@@ -1878,8 +1657,8 @@ class openknx extends utils.Adapter {
                 if (largeDptResponders.length > 0) {
                     this.log.info(
                         `${largeDptResponders.length} large DPT objects (DPT12-16) with answer_groupValueResponse enabled detected. ` +
-                            `These consume significant bus time (~65ms each). Consider disabling answer_groupValueResponse on these GAs ` +
-                            `if a physical device already responds or if the value is sent via GroupValue_Write on change.`,
+                        `These consume significant bus time (~65ms each). Consider disabling answer_groupValueResponse on these GAs ` +
+                        `if a physical device already responds or if the value is sent via GroupValue_Write on change.`,
                     );
                 }
 
@@ -1928,8 +1707,7 @@ class openknx extends utils.Adapter {
 
         // Event: disconnected
         this.knxConnection.on(KNXClientEvents.disconnected, reason => {
-            const wasConnected = this.connected;
-            if (wasConnected) {
+            if (this.connected) {
                 this.log.error(`Connection lost: ${reason}`);
                 this.logRecentWriteBurst(reason);
             }
@@ -1940,22 +1718,6 @@ class openknx extends utils.Adapter {
             this.stopQueueHealthMonitor();
             this.stopLinkedWriteDrain();
             this.linkedWriteQueue.clear();
-            // Variant cycler (debug): advance through all variants. After the last one
-            // also fails, set the exhausted flag so startKnxStack stops trying.
-            const useCompat = (this.config.compatBindAny || this.compatBindAnyActive) && hostProtocol === "TunnelUDP";
-            if (useCompat && !wasConnected) {
-                if (this.compatBindVariantIdx < this.compatBindVariantTotal - 1) {
-                    this.compatBindVariantIdx++;
-                    this.log.warn(
-                        `Compat bind: variant ${this.activeCompatVariant} failed. Trying variant ${this.compatBindVariantIdx} on next attempt.`,
-                    );
-                } else {
-                    this.compatBindCycleExhausted = true;
-                    this.log.error(
-                        `Compat bind: variant ${this.activeCompatVariant} (last) also failed. Will stop reconnecting after this.`,
-                    );
-                }
-            }
             this.scheduleReconnect();
         });
 
@@ -1977,10 +1739,7 @@ class openknx extends utils.Adapter {
             0x24: ["E_NO_MORE_CONNECTIONS", "Server has reached its maximum number of concurrent data connections."],
             0x25: ["E_NO_MORE_UNIQUE_CONNECTIONS", "Requested individual address is already in use multiple times."],
             0x26: ["E_DATA_CONNECTION", "Server detected an error in the data connection with the specified ID."],
-            0x27: [
-                "E_KNX_CONNECTION",
-                "Server detected an error in the KNX subnetwork connection with the specified ID.",
-            ],
+            0x27: ["E_KNX_CONNECTION", "Server detected an error in the KNX subnetwork connection with the specified ID."],
             0x28: ["E_AUTHORISATION_ERROR", "Authorisation error."],
             0x29: ["E_TUNNELLING_LAYER", "The requested tunnelling layer is not supported."],
             0x2d: ["E_NO_TUNNELLING_ADDRESS", "No tunnelling address available."],
@@ -1996,46 +1755,7 @@ class openknx extends utils.Adapter {
                     this.log.error(
                         `KNX gateway rejected CONNECT_REQUEST: ${entry[0]} (status 0x${code.toString(16).padStart(2, "0")}). ${entry[1]}`,
                     );
-                    // Auto-retry on E_CONNECTION_TYPE: some gateways (observed: MDT
-                    // SCN-IP100.03 with Secure routing) reject explicit-source-IP binds
-                    // but accept INADDR_ANY. Try once with compat bind enabled before
-                    // falling through to the normal exponential reconnect schedule.
-                    if (
-                        code === 0x22 &&
-                        !this.compatBindAnyAutoRetried &&
-                        !this.config.compatBindAny &&
-                        (this.config.hostProtocol || "TunnelUDP") === "TunnelUDP"
-                    ) {
-                        this.compatBindAnyAutoRetried = true;
-                        this.compatBindAnyActive = true;
-                        this.log.warn(
-                            "Retrying CONNECT_REQUEST with compat bind (INADDR_ANY) once. " +
-                                "If this succeeds, enable 'UDP compatibility bind' in adapter settings to make it permanent.",
-                        );
-                        // Skip normal reconnect backoff; reconnect path is driven by the
-                        // disconnected event that follows a 0x22.
-                    }
                     return;
-                }
-            }
-            // Compat variant cycler: also advance on plain Connection timeouts (no
-            // disconnected event fires for those — knxultimate only emits error).
-            if (
-                /Connection timeout/i.test(msg) &&
-                (this.config.compatBindAny || this.compatBindAnyActive) &&
-                hostProtocol === "TunnelUDP" &&
-                !this.connected
-            ) {
-                if (this.compatBindVariantIdx < this.compatBindVariantTotal - 1) {
-                    this.compatBindVariantIdx++;
-                    this.log.warn(
-                        `Compat bind: variant ${this.activeCompatVariant} timed out. Trying variant ${this.compatBindVariantIdx} on next attempt.`,
-                    );
-                } else {
-                    this.compatBindCycleExhausted = true;
-                    this.log.error(
-                        `Compat bind: variant ${this.activeCompatVariant} (last) also timed out. Will stop reconnecting after this.`,
-                    );
                 }
             }
             this.log.warn(msg);
@@ -2183,9 +1903,7 @@ class openknx extends utils.Adapter {
                                             stateval,
                                             this.gaList.getDataById(id).native.dpt,
                                         );
-                                        this.log.debug(
-                                            `responding to ${dest} with value ${state.val} (queue: ${this.knxConnection.commandQueue?.length || 0})`,
-                                        );
+                                        this.log.debug(`responding to ${dest} with value ${state.val} (queue: ${this.knxConnection.commandQueue?.length || 0})`);
                                     } catch (e) {
                                         this.log.error(`Failed to respond to ${dest}: ${e.message || e}`);
                                     }
@@ -2253,9 +1971,7 @@ class openknx extends utils.Adapter {
             this.knxConnection.Connect();
         } catch (e) {
             if (e.message === "No client socket defined") {
-                this.log.error(
-                    `Connect failed: KNX client socket was not created. Check that the configured network interface (${this.config.localInterface || "auto"}) is available and the protocol (${this.config.hostProtocol || "TunnelUDP"}) is correct.`,
-                );
+                this.log.error(`Connect failed: KNX client socket was not created. Check that the configured network interface (${this.config.localInterface || "auto"}) is available and the protocol (${this.config.hostProtocol || "TunnelUDP"}) is correct.`);
             } else {
                 this.log.error(`Connect failed: ${e.message}`);
             }

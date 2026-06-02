@@ -108,7 +108,6 @@
                 if (settings.sendInterval === undefined) settings.sendInterval = 25;
                 if (settings.waitForAck === undefined) settings.waitForAck = false;
                 if (settings.maxSendRate === undefined) settings.maxSendRate = 0;
-                if (settings.compatBindAny === undefined) settings.compatBindAny = false;
                 if (settings.onlyAddNewObjects === undefined) settings.onlyAddNewObjects = false;
                 if (settings.removeUnusedObjects === undefined) settings.removeUnusedObjects = false;
                 if (settings.setAckOnWrite === undefined) settings.setAckOnWrite = false;
@@ -1213,11 +1212,6 @@
                                 <input class="value" id="maxSendRate" type="text" />
                                 <label class="translate" for="maxSendRate"
                                     >Max Direct Link send rate [tel/s] 0=Unlimited, MDT: 2</label>
-                            </div>
-                            <div class="col s12 input-field">
-                                <input class="value" id="compatBindAny" type="checkbox" />
-                                <label class="translate" for="compatBindAny"
-                                    >UDP compatibility bind (bind to any interface; enable if gateway rejects CONNECT_REQUEST with status 0x22)</label>
                             </div>
                             <div class="col s12" style="margin-top:12px;">
                                 <div style="border-left:3px solid #888; padding:8px 12px; background:#f5f5f5; color:#555; font-size:0.9em;">
