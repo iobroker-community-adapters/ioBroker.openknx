@@ -12,6 +12,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
+const dgram = require("dgram");
 const { KNXClient, KNXClientEvents, dptlib, logStream } = require("knxultimate");
 const { setLogLevel: setKnxLogLevel } = require("knxultimate/build/KnxLog");
 const loadMeasurement = require("./lib/loadMeasurement");
@@ -1628,22 +1629,73 @@ class openknx extends utils.Adapter {
             this.log.info("KNX Secure enabled");
         }
 
-        // Compatibility mode: bind UDP socket to INADDR_ANY instead of the resolved
-        // local interface IP (mirrors v0.7.x behavior). Some gateways — observed:
-        // MDT SCN-IP100.03 with KNX Secure routing — reject the CONNECT_REQUEST with
-        // status 0x22 E_CONNECTION_TYPE when the source IP is explicitly bound; letting
-        // the OS pick the source via the routing table avoids it. Triggered by either
-        // the user's "compat bind" checkbox or by the auto-retry path after 0x22.
-        // knxultimate creates the socket inside its constructor, so the override must
-        // happen via the createSocket callback BEFORE the bind runs.
+        // Compatibility mode: replicate v0.7.x UDP socket behavior 1:1.
+        //
+        // v0.7 (vendored knx@2.5.2) creates the socket as `dgram.createSocket('udp4')`
+        // — no reuseAddr, no setTTL, no setMulticastInterface — and binds without
+        // any address argument so the OS picks the source via routing.
+        //
+        // knxultimate uses `{type:'udp4', reuseAddr:true}`, binds to `localIPAddress`,
+        // and sets multicast TTL/iface even on Tunnel UDP. Some gateways (observed:
+        // MDT SCN-IP100.03 with KNX Secure routing) refuse the resulting CONNECT_REQUEST
+        // even though the byte content is identical.
+        //
+        // We replace the socket via the createSocket callback: build it v0.7-style,
+        // wire it onto the client, and re-attach the message/error/close handlers
+        // knxultimate would have installed. Triggered by the user's "compat bind"
+        // checkbox or by auto-retry after 0x22.
         const useCompatBind = (this.config.compatBindAny || this.compatBindAnyActive) && hostProtocol === "TunnelUDP";
         let createSocketCallback;
         if (useCompatBind) {
             createSocketCallback = client => {
+                // v0.7-style socket: no reuseAddr, no TTL/multicast tweaks for unicast.
+                const sock = dgram.createSocket("udp4");
+                client._clientSocket = sock;
                 client._options.localIPAddress = "";
-                client.createSocket();
+
+                sock.on("message", (msg, rinfo) => {
+                    try {
+                        client.processInboundMessage(msg, rinfo);
+                    } catch (e) {
+                        client.emit("error", e instanceof Error ? e : new Error("UDP data error"));
+                    }
+                });
+                sock.on("error", err => {
+                    client.socketReady = false;
+                    client.emit("error", err);
+                });
+                sock.on("close", () => {
+                    client.socketReady = false;
+                    client.exitProcessingKNXQueueLoop = true;
+                    if (client._connectionState !== "DISCONNECTING" && client._connectionState !== "DISCONNECTED") {
+                        try {
+                            client.setDisconnected("Socket closed by peer").catch(() => {});
+                        } catch {
+                            // ignore
+                        }
+                    }
+                    client.emit("close");
+                });
+                sock.on("listening", () => {
+                    client.socketReady = true;
+                    if (typeof client.handleKNXQueue === "function") {
+                        client.handleKNXQueue();
+                    }
+                });
+
+                // No address arg → INADDR_ANY, OS picks source via routing.
+                // Mirrors v0.7's `udpSocket.bind(() => {...})`.
+                sock.bind(() => {
+                    if (client._options.localSocketAddress === undefined) {
+                        try {
+                            client._options.localSocketAddress = sock.address().address;
+                        } catch {
+                            // ignore
+                        }
+                    }
+                });
             };
-            this.log.info("Compat bind: UDP socket will bind on INADDR_ANY (legacy v0.7 mode).");
+            this.log.info("Compat bind: UDP socket created v0.7-style (no reuseAddr, no TTL, INADDR_ANY).");
         }
 
         // Create KNXUltimate client
