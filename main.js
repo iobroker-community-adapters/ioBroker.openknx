@@ -376,6 +376,7 @@ class openknx extends utils.Adapter {
                     KNXClient.discoverInterfaces()
                         .then(interfaces => {
                             this.log.info(`Discovery found ${interfaces.length} interface(s)`);
+                            this.log.info(`Discovery raw result: ${JSON.stringify(interfaces)}`);
                             if (obj.callback) {
                                 if (interfaces.length === 0) {
                                     this.sendTo(
