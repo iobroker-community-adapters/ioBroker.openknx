@@ -68,6 +68,12 @@ class openknx extends utils.Adapter {
         // explicitly. Auto-retry sets this on 0x22 once per startKnxStack() call.
         this.compatBindAnyActive = false;
         this.compatBindAnyAutoRetried = false;
+        // Variant cycler: when compatBindAny is on and pinned variant is not set, the
+        // adapter rotates through socket-creation variants on each failed connect until
+        // one succeeds. Reset to 0 once a connection succeeds.
+        this.compatBindVariantIdx = 0;
+        this.compatBindVariantTotal = 5;
+        this.activeCompatVariant = 0;
 
         // redirect log from KNXUltimate (winston-based logStream) to adapter log
         // Collapse multiline messages (stack traces) into a single line
@@ -1629,30 +1635,34 @@ class openknx extends utils.Adapter {
             this.log.info("KNX Secure enabled");
         }
 
-        // Compatibility mode: replicate v0.7.x UDP socket behavior 1:1.
+        // Compatibility mode: cycle through socket-creation variants when the gateway
+        // refuses our CONNECT_REQUEST (status 0x22 / silent timeout). All variants live
+        // behind the `compatBindAny` flag so the entire block can be removed in one go.
         //
-        // v0.7 (vendored knx@2.5.2) creates the socket as `dgram.createSocket('udp4')`
-        // — no reuseAddr, no setTTL, no setMulticastInterface — and binds without
-        // any address argument so the OS picks the source via routing.
+        // Variants (incremented on each reconnect until one succeeds):
+        //   0 = knxultimate default minus localIPAddress  (only force INADDR_ANY)
+        //   1 = v0.7-style minimal: dgram.createSocket('udp4'), bind() no args, no TTL/multicast/reuseAddr
+        //   2 = v0.7-style minimal but bind to localIPAddress (tests if the SOURCE IP itself matters)
+        //   3 = knxultimate default minus reuseAddr (tests if reuseAddr is the differentiator)
+        //   4 = knxultimate default minus setMulticastInterface/setTTL on unicast socket
         //
-        // knxultimate uses `{type:'udp4', reuseAddr:true}`, binds to `localIPAddress`,
-        // and sets multicast TTL/iface even on Tunnel UDP. Some gateways (observed:
-        // MDT SCN-IP100.03 with KNX Secure routing) refuse the resulting CONNECT_REQUEST
-        // even though the byte content is identical.
-        //
-        // We replace the socket via the createSocket callback: build it v0.7-style,
-        // wire it onto the client, and re-attach the message/error/close handlers
-        // knxultimate would have installed. Triggered by the user's "compat bind"
-        // checkbox or by auto-retry after 0x22.
+        // Index can be pinned via `this.config.compatBindVariant` (number) for manual testing.
         const useCompatBind = (this.config.compatBindAny || this.compatBindAnyActive) && hostProtocol === "TunnelUDP";
         let createSocketCallback;
         if (useCompatBind) {
-            createSocketCallback = client => {
-                // v0.7-style socket: no reuseAddr, no TTL/multicast tweaks for unicast.
-                const sock = dgram.createSocket("udp4");
-                client._clientSocket = sock;
-                client._options.localIPAddress = "";
+            const pinned = Number(this.config.compatBindVariant);
+            const variant = Number.isFinite(pinned) && pinned >= 0 ? pinned : this.compatBindVariantIdx || 0;
+            this.activeCompatVariant = variant;
+            const variantNames = [
+                "0:any-bind-only",
+                "1:v0.7-minimal-anybind",
+                "2:v0.7-minimal-explicitbind",
+                "3:no-reuseAddr",
+                "4:no-setMulticast/TTL",
+            ];
+            const vname = variantNames[variant] || `${variant}:custom`;
 
+            const attachListeners = (client, sock) => {
                 sock.on("message", (msg, rinfo) => {
                     try {
                         client.processInboundMessage(msg, rinfo);
@@ -1682,20 +1692,59 @@ class openknx extends utils.Adapter {
                         client.handleKNXQueue();
                     }
                 });
-
-                // No address arg → INADDR_ANY, OS picks source via routing.
-                // Mirrors v0.7's `udpSocket.bind(() => {...})`.
-                sock.bind(() => {
-                    if (client._options.localSocketAddress === undefined) {
-                        try {
-                            client._options.localSocketAddress = sock.address().address;
-                        } catch {
-                            // ignore
-                        }
-                    }
-                });
             };
-            this.log.info("Compat bind: UDP socket created v0.7-style (no reuseAddr, no TTL, INADDR_ANY).");
+
+            createSocketCallback = client => {
+                if (variant === 0) {
+                    // Variant 0: knxultimate's createSocket but with INADDR_ANY
+                    client._options.localIPAddress = "";
+                    client.createSocket();
+                    return;
+                }
+
+                // Variants 1-4 build the socket ourselves
+                const opts = variant === 3 ? { type: "udp4" } : { type: "udp4", reuseAddr: true };
+                if (variant === 1 || variant === 2) {
+                    // v0.7-minimal: plain udp4, no reuseAddr at all
+                    delete opts.reuseAddr;
+                }
+                const sock = dgram.createSocket(opts);
+                client._clientSocket = sock;
+
+                attachListeners(client, sock);
+
+                const bindAddr =
+                    variant === 2
+                        ? client._options.localIPAddress // explicit local IP
+                        : ""; // INADDR_ANY for 1, 3, 4
+
+                if (variant !== 2) {
+                    client._options.localIPAddress = "";
+                }
+
+                const bindCb = () => {
+                    try {
+                        // Variant 4 explicitly skips setMulticastInterface + setTTL
+                        if (variant === 3 || variant === 2 || variant === 1) {
+                            // 1,2: skip TTL/multicast like v0.7
+                            // 3: skip too — just testing reuseAddr difference
+                        } else if (variant === 4) {
+                            // explicit no-multicast-tweak (matches "default minus those")
+                        }
+                        if (client._options.localSocketAddress === undefined) {
+                            client._options.localSocketAddress = sock.address().address;
+                        }
+                    } catch {
+                        // ignore
+                    }
+                };
+                if (bindAddr) {
+                    sock.bind({ address: bindAddr }, bindCb);
+                } else {
+                    sock.bind(bindCb);
+                }
+            };
+            this.log.info(`Compat bind: variant=${vname} active.`);
         }
 
         // Create KNXUltimate client
@@ -1744,6 +1793,10 @@ class openknx extends utils.Adapter {
             const boundIp =
                 this.knxConnection?._options?.localIPAddress || this.knxConnection?._options?.localSocketAddress || "";
             this.log.info(`Connected! channelID=${chId} physAddr=${pa}${boundIp ? ` (bound to ${boundIp})` : ""}`);
+            // Variant probe: lock in the winning variant for any further reconnects.
+            if ((this.config.compatBindAny || this.compatBindAnyActive) && hostProtocol === "TunnelUDP") {
+                this.log.info(`Compat bind: variant ${this.activeCompatVariant} succeeded — pinning for this session.`);
+            }
             this.log.info(
                 `Active settings: waitForAck=${this.waitForAck}, maxSendRate=${Number(this.config.maxSendRate) || 0} tel/s, sendInterval=${this.effectiveSendInterval}ms, autoread=${!!this.config.autoreadEnabled}`,
             );
@@ -1866,7 +1919,8 @@ class openknx extends utils.Adapter {
 
         // Event: disconnected
         this.knxConnection.on(KNXClientEvents.disconnected, reason => {
-            if (this.connected) {
+            const wasConnected = this.connected;
+            if (wasConnected) {
                 this.log.error(`Connection lost: ${reason}`);
                 this.logRecentWriteBurst(reason);
             }
@@ -1877,6 +1931,19 @@ class openknx extends utils.Adapter {
             this.stopQueueHealthMonitor();
             this.stopLinkedWriteDrain();
             this.linkedWriteQueue.clear();
+            // Variant cycler: advance to the next compat variant on a connect failure
+            // (we never reached connected). Stops at total — last attempt sticks.
+            const useCompat = (this.config.compatBindAny || this.compatBindAnyActive) && hostProtocol === "TunnelUDP";
+            const pinned = Number(this.config.compatBindVariant);
+            const isPinned = Number.isFinite(pinned) && pinned >= 0;
+            if (useCompat && !wasConnected && !isPinned) {
+                if (this.compatBindVariantIdx < this.compatBindVariantTotal - 1) {
+                    this.compatBindVariantIdx++;
+                    this.log.warn(
+                        `Compat bind: variant ${this.activeCompatVariant} failed. Trying variant ${this.compatBindVariantIdx} on next attempt.`,
+                    );
+                }
+            }
             this.scheduleReconnect();
         });
 
@@ -1937,6 +2004,23 @@ class openknx extends utils.Adapter {
                         // disconnected event that follows a 0x22.
                     }
                     return;
+                }
+            }
+            // Compat variant cycler: also advance on plain Connection timeouts (no
+            // disconnected event fires for those — knxultimate only emits error).
+            if (
+                /Connection timeout/i.test(msg) &&
+                (this.config.compatBindAny || this.compatBindAnyActive) &&
+                hostProtocol === "TunnelUDP" &&
+                !this.connected
+            ) {
+                const pinned = Number(this.config.compatBindVariant);
+                const isPinned = Number.isFinite(pinned) && pinned >= 0;
+                if (!isPinned && this.compatBindVariantIdx < this.compatBindVariantTotal - 1) {
+                    this.compatBindVariantIdx++;
+                    this.log.warn(
+                        `Compat bind: variant ${this.activeCompatVariant} timed out. Trying variant ${this.compatBindVariantIdx} on next attempt.`,
+                    );
                 }
             }
             this.log.warn(msg);

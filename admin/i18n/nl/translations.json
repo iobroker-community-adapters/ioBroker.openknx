@@ -4,6 +4,7 @@
     "Alias path": "Alias-pad",
     "Autoread": "Autoread",
     "Browse": "Browse",
+    "Compat bind variant (0-4, empty = auto-cycle)": "Compat bindvariant (0-4, leeg = auto-cycle)",
     "Connect any ioBroker state to a KNX Group Address": "Connect any ioBroker state to a KNX Group Address",
     "Convert": "Convert",
     "Current Value": "Current Value",
