@@ -1721,21 +1721,41 @@ class openknx extends utils.Adapter {
         });
 
         // Event: error
+        // Event: error
+        // KNXnet/IP CONNECT_RESPONSE status codes (per KNXnet/IP spec, values mirrored from
+        // xknx/xknx/knxip/error_code.py). knxultimate surfaces them as "Connect response error N"
+        // with N in decimal. Map known codes to their official name + standard meaning so users
+        // get the documented error instead of a stack trace.
+        const knxErrorCodes = {
+            0x00: ["E_NO_ERROR", "Connection accepted (no error)."],
+            0x01: ["E_HOST_PROTOCOL_TYPE", "The requested host protocol type is not supported."],
+            0x02: ["E_VERSION_NOT_SUPPORTED", "The requested protocol version is not supported."],
+            0x04: ["E_SEQUENCE_NUMBER", "The received sequence number is out of order."],
+            0x0f: ["E_ERROR", "Generic error."],
+            0x21: ["E_CONNECTION_ID", "No active data connection with the specified ID found."],
+            0x22: ["E_CONNECTION_TYPE", "The requested connection type is not supported."],
+            0x23: ["E_CONNECTION_OPTION", "One or more requested connection options are not supported."],
+            0x24: ["E_NO_MORE_CONNECTIONS", "Server has reached its maximum number of concurrent data connections."],
+            0x25: ["E_NO_MORE_UNIQUE_CONNECTIONS", "Requested individual address is already in use multiple times."],
+            0x26: ["E_DATA_CONNECTION", "Server detected an error in the data connection with the specified ID."],
+            0x27: ["E_KNX_CONNECTION", "Server detected an error in the KNX subnetwork connection with the specified ID."],
+            0x28: ["E_AUTHORISATION_ERROR", "Authorisation error."],
+            0x29: ["E_TUNNELLING_LAYER", "The requested tunnelling layer is not supported."],
+            0x2d: ["E_NO_TUNNELLING_ADDRESS", "No tunnelling address available."],
+            0x2e: ["E_CONNECTION_IN_USE", "Connection already in use."],
+        };
         this.knxConnection.on(KNXClientEvents.error, err => {
             const msg = err?.message || String(err);
-            // KNXnet/IP error 0x22 = E_CONNECTION_TYPE — "server does not support the requested
-            // connection type". Most common cause: the gateway is configured for KNX Secure only
-            // and rejects plain TunnelUDP/TunnelTCP. Translate the cryptic upstream message into
-            // an actionable hint.
-            if (/Invalid Connection Type|Connect response error 34/i.test(msg)) {
-                this.log.error(
-                    `Gateway rejected the connection (E_CONNECTION_TYPE / status 0x22). ` +
-                        `The gateway likely requires KNX Secure but the adapter is connecting in plain ${this.config.hostProtocol || "TunnelUDP"} mode. ` +
-                        `Either (a) enable "KNX Secure" in adapter settings and provide keyfile or tunnel user password, ` +
-                        `(b) disable "Secure Tunneling" on the gateway in ETS, or ` +
-                        `(c) switch protocol to "Multicast (Routing)".`,
-                );
-                return;
+            const m = msg.match(/Connect response error (\d+)/i);
+            if (m) {
+                const code = parseInt(m[1], 10);
+                const entry = knxErrorCodes[code];
+                if (entry) {
+                    this.log.error(
+                        `KNX gateway rejected CONNECT_REQUEST: ${entry[0]} (status 0x${code.toString(16).padStart(2, "0")}). ${entry[1]}`,
+                    );
+                    return;
+                }
             }
             this.log.warn(msg);
         });
