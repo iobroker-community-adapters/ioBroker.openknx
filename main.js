@@ -74,6 +74,7 @@ class openknx extends utils.Adapter {
         this.compatBindVariantIdx = 0;
         this.compatBindVariantTotal = 5;
         this.activeCompatVariant = 0;
+        this.compatBindCycleExhausted = false;
 
         // redirect log from KNXUltimate (winston-based logStream) to adapter log
         // Collapse multiline messages (stack traces) into a single line
@@ -1646,16 +1647,20 @@ class openknx extends utils.Adapter {
         //   3 = knxultimate default minus reuseAddr (tests if reuseAddr is the differentiator)
         //   4 = knxultimate default minus setMulticastInterface/setTTL on unicast socket
         //
-        // Index can be pinned via `this.config.compatBindVariant` (number) for manual testing.
-        // Empty string / null / undefined → auto-cycle. Number("") is 0, so we must check
-        // the raw value first (otherwise we'd silently pin to variant 0 forever).
+        // Diagnostic: cycle through all variants once. After the last failed variant
+        // the adapter STOPS reconnecting (via this.compatBindCycleExhausted) so the
+        // user can read off which (if any) variant got further.
         const useCompatBind = (this.config.compatBindAny || this.compatBindAnyActive) && hostProtocol === "TunnelUDP";
         let createSocketCallback;
         if (useCompatBind) {
-            const rawPin = this.config.compatBindVariant;
-            const pinIsSet = rawPin !== undefined && rawPin !== null && String(rawPin).trim() !== "";
-            const pinned = pinIsSet ? Number(rawPin) : NaN;
-            const variant = Number.isFinite(pinned) && pinned >= 0 ? pinned : this.compatBindVariantIdx || 0;
+            if (this.compatBindCycleExhausted) {
+                this.log.error(
+                    "Compat bind: all variants (0..4) failed. Stopping reconnect. " +
+                        "Disable 'UDP compatibility bind' to return to default behavior.",
+                );
+                return;
+            }
+            const variant = this.compatBindVariantIdx || 0;
             this.activeCompatVariant = variant;
             const variantNames = [
                 "0:any-bind-only",
@@ -1935,21 +1940,19 @@ class openknx extends utils.Adapter {
             this.stopQueueHealthMonitor();
             this.stopLinkedWriteDrain();
             this.linkedWriteQueue.clear();
-            // Variant cycler: advance to the next compat variant on a connect failure
-            // (we never reached connected). Stops at total — last attempt sticks.
+            // Variant cycler (debug): advance through all variants. After the last one
+            // also fails, set the exhausted flag so startKnxStack stops trying.
             const useCompat = (this.config.compatBindAny || this.compatBindAnyActive) && hostProtocol === "TunnelUDP";
-            const rawPin = this.config.compatBindVariant;
-            const isPinned =
-                rawPin !== undefined &&
-                rawPin !== null &&
-                String(rawPin).trim() !== "" &&
-                Number.isFinite(Number(rawPin)) &&
-                Number(rawPin) >= 0;
-            if (useCompat && !wasConnected && !isPinned) {
+            if (useCompat && !wasConnected) {
                 if (this.compatBindVariantIdx < this.compatBindVariantTotal - 1) {
                     this.compatBindVariantIdx++;
                     this.log.warn(
                         `Compat bind: variant ${this.activeCompatVariant} failed. Trying variant ${this.compatBindVariantIdx} on next attempt.`,
+                    );
+                } else {
+                    this.compatBindCycleExhausted = true;
+                    this.log.error(
+                        `Compat bind: variant ${this.activeCompatVariant} (last) also failed. Will stop reconnecting after this.`,
                     );
                 }
             }
@@ -2023,17 +2026,15 @@ class openknx extends utils.Adapter {
                 hostProtocol === "TunnelUDP" &&
                 !this.connected
             ) {
-                const rawPin = this.config.compatBindVariant;
-                const isPinned =
-                    rawPin !== undefined &&
-                    rawPin !== null &&
-                    String(rawPin).trim() !== "" &&
-                    Number.isFinite(Number(rawPin)) &&
-                    Number(rawPin) >= 0;
-                if (!isPinned && this.compatBindVariantIdx < this.compatBindVariantTotal - 1) {
+                if (this.compatBindVariantIdx < this.compatBindVariantTotal - 1) {
                     this.compatBindVariantIdx++;
                     this.log.warn(
                         `Compat bind: variant ${this.activeCompatVariant} timed out. Trying variant ${this.compatBindVariantIdx} on next attempt.`,
+                    );
+                } else {
+                    this.compatBindCycleExhausted = true;
+                    this.log.error(
+                        `Compat bind: variant ${this.activeCompatVariant} (last) also timed out. Will stop reconnecting after this.`,
                     );
                 }
             }

@@ -4,7 +4,6 @@
     "Alias path": "Alias-Pfad",
     "Autoread": "Aktualisieren",
     "Browse": "Durchsuchen",
-    "Compat bind variant (0-4, empty = auto-cycle)": "Kompatible Bindungsvariante (0-4, leer = automatischer Zyklus)",
     "Connect any ioBroker state to a KNX Group Address": "Beliebigen ioBroker-State mit einer KNX-Gruppenadresse verbinden",
     "Convert": "Konvertierung",
     "Current Value": "Aktueller Wert",

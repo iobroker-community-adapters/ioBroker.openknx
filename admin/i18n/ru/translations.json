@@ -4,7 +4,6 @@
     "Alias path": "Путь псевдонима",
     "Autoread": "Автоматическое чтение",
     "Browse": "Обзор",
-    "Compat bind variant (0-4, empty = auto-cycle)": "Совместимый вариант привязки (0–4, пусто = автоцикл)",
     "Connect any ioBroker state to a KNX Group Address": "Связать любое состояние ioBroker с групповым адресом KNX",
     "Convert": "Convert",
     "Current Value": "Текущее значение",

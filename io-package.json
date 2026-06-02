@@ -195,7 +195,6 @@
     "waitForAck": false,
     "maxSendRate": 0,
     "compatBindAny": false,
-    "compatBindVariant": "",
     "noWarnUnknownGa": false,
     "useBoolean": true,
     "knxCompatMode": false,

@@ -4,7 +4,6 @@
     "Alias path": "别名路径",
     "Autoread": "Autoread",
     "Browse": "Browse",
-    "Compat bind variant (0-4, empty = auto-cycle)": "兼容绑定变体（0-4，空=自动循环）",
     "Connect any ioBroker state to a KNX Group Address": "Connect any ioBroker state to a KNX Group Address",
     "Convert": "Convert",
     "Current Value": "Current Value",
