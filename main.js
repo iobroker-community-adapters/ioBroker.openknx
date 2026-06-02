@@ -1722,7 +1722,22 @@ class openknx extends utils.Adapter {
 
         // Event: error
         this.knxConnection.on(KNXClientEvents.error, err => {
-            this.log.warn(err.message || String(err));
+            const msg = err?.message || String(err);
+            // KNXnet/IP error 0x22 = E_CONNECTION_TYPE — "server does not support the requested
+            // connection type". Most common cause: the gateway is configured for KNX Secure only
+            // and rejects plain TunnelUDP/TunnelTCP. Translate the cryptic upstream message into
+            // an actionable hint.
+            if (/Invalid Connection Type|Connect response error 34/i.test(msg)) {
+                this.log.error(
+                    `Gateway rejected the connection (E_CONNECTION_TYPE / status 0x22). ` +
+                        `The gateway likely requires KNX Secure but the adapter is connecting in plain ${this.config.hostProtocol || "TunnelUDP"} mode. ` +
+                        `Either (a) enable "KNX Secure" in adapter settings and provide keyfile or tunnel user password, ` +
+                        `(b) disable "Secure Tunneling" on the gateway in ETS, or ` +
+                        `(c) switch protocol to "Multicast (Routing)".`,
+                );
+                return;
+            }
+            this.log.warn(msg);
         });
 
         // Event: ackReceived - fires for both transport-level success (ack=true) and timeout (ack=false)
