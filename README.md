@@ -47,20 +47,20 @@ ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://gith
 
 ## MDT IP Interface / Router (SCN-IP100, SCN-IP000)
 
-MDT IP-Gateways bestätigen Tunnel-Frames langsamer als die meisten Wettbewerber (ca. 2 Telegramme/Sekunde). Bei höherem Durchsatz reagiert das Gerät mit ACK-Timeouts oder dropt die Tunnel-Verbindung. Der Adapter erkennt MDT automatisch (deviceName-Match) und warnt im Log, falls die Einstellungen nicht passen.
+MDT IP gateways acknowledge tunnel frames more slowly than most competitors (around 2 telegrams per second). At higher throughput the device reacts with ACK timeouts or drops the tunnel connection. The adapter detects MDT automatically (deviceName match) and warns in the log if the settings do not fit.
 
-Empfohlene Reihenfolge (mit dem günstigsten Schritt anfangen, nur eskalieren wenn nötig):
+Recommended order (start with the cheapest step, only escalate if needed):
 
-1. **In der ETS** Keep-alive-Timeout erhöhen — Größter Effekt bei null Adapter-Aufwand:
-   - **SCN-IP100 (Router):** Parameter "Tunneling: längeres Überwachungsintervall" → auf "Ja"
-   - **SCN-IP000 (Interface):** Parameter "Langsame Tunneling-Verbindungen unterstützen" → auf "Ja"
-   
-   Beide setzen den Keep-alive-Timeout von ~10 s auf 60 s. Kurze Netzwackler lösen dann keinen DISCONNECT_REQUEST mehr aus.
-2. **Autoread deaktivieren** — eliminiert den Startup-Burst (häufigster Auslöser des ersten Disconnects).
-3. **"Max Direct Link send rate"** auf 2 setzen — Coalescing-Queue throttelt Bursts im laufenden Betrieb.
-4. **"Wait for ACK"** aktivieren — ACK-basierte Flow Control auf knxultimate-Ebene; allein nicht ausreichend, in Kombination sinnvoll.
-5. **"linkedStateDebounce"** für chronisch flappende Quellen setzen — der Adapter weist im Fehlerfall direkt auf die betroffene GA hin.
-6. **Last Resort: Protokoll auf "Multicast (Routing)" umstellen.** Stateless, umgeht den kompletten Tunnel-Session-Stack — löst hartnäckige Disconnects definitiv. Voraussetzungen: Multicast-fähiges Netzwerk (IGMP-Snooping korrekt konfiguriert). Trade-off: keine Per-Frame-Bestätigung mehr — verlorene Telegramme werden nicht auf Transport-Ebene erkannt.
+1. **In ETS** raise the keep-alive timeout — biggest effect at zero adapter cost:
+   - **SCN-IP100 (Router):** parameter "Tunneling: longer monitoring interval" → "Yes"
+   - **SCN-IP000 (Interface):** parameter "Support slow tunneling connections" → "Yes"
+
+   Both raise the keep-alive timeout from ~10 s to 60 s. Short network glitches then no longer trigger a DISCONNECT_REQUEST.
+2. **Disable autoread** — eliminates the startup burst (most common cause of the first disconnect).
+3. **"Max Direct Link send rate"** set to 2 — the coalescing queue throttles bursts during normal operation.
+4. **"Wait for ACK"** enable — ACK-based flow control at the knxultimate layer; not sufficient alone, useful in combination.
+5. **"linkedStateDebounce"** set on chronically flapping sources — the adapter points to the affected GA in the error message.
+6. **Last resort: switch protocol to "Multicast (Routing)".** Stateless, bypasses the entire tunnel session stack — resolves stubborn disconnects definitively. Requirements: a multicast-capable network (IGMP snooping configured correctly). Trade-off: no per-frame acknowledgement — lost telegrams are no longer detected at the transport layer.
 
 ## Changelog
 
