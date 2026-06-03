@@ -41,6 +41,47 @@
                 background-color: #000;
             }
 
+            /* Dark-mode readability: text inputs / selects / textareas render white-on-light
+               by default in Materialize. Force a darker background when ioBroker is in dark
+               mode so content is legible. */
+            .m.react-dark input.value[type="text"],
+            .m.react-dark input.value[type="password"],
+            .m.react-dark input.value[type="number"],
+            .m.react-dark textarea.value,
+            .m.react-dark select.value,
+            .m.react-dark .select-wrapper input.select-dropdown {
+                background-color: #2a2a2a !important;
+                color: #e0e0e0 !important;
+                border-bottom-color: #555 !important;
+            }
+            .m.react-dark .dropdown-content {
+                background-color: #2a2a2a !important;
+            }
+            .m.react-dark .dropdown-content li > span,
+            .m.react-dark .dropdown-content li > a {
+                color: #e0e0e0 !important;
+            }
+            .m.react-dark .dropdown-content li:hover,
+            .m.react-dark .dropdown-content li.selected {
+                background-color: #444 !important;
+            }
+            /* GA-tree leaf hover/selected colors clash with dark backgrounds */
+            .m.react-dark .ga-tree .ga-leaf {
+                border-bottom-color: #333;
+            }
+            .m.react-dark .ga-tree .ga-leaf:hover {
+                background-color: #2a3a4a;
+            }
+            .m.react-dark .ga-tree .ga-leaf.selected {
+                background-color: #1e3a5f;
+            }
+            .m.react-dark .ga-tree .ga-folder > span:hover {
+                background-color: #2a2a2a;
+            }
+            .m.react-dark .ga-tree .ga-val {
+                color: #64b5f6;
+            }
+
             /* GA-Tools tree styles */
             .ga-tree { list-style: none; padding: 0 !important; margin: 0; }
             .ga-tree ul { list-style: none; padding-left: 16px; margin: 0; }
