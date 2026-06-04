@@ -1522,6 +1522,25 @@ class openknx extends utils.Adapter {
             loglevel: this._knxultimateLogLevel(),
         };
 
+        // TunnelTCP precheck: knxultimate's TCP path always runs the KNX Secure
+        // session handshake on connect — there is no plain (non-secure) TCP tunnel
+        // implementation. Without credentials the connect either hangs or throws
+        // an opaque error deep inside secureBuildSessionAuthenticate. Fail fast.
+        if (hostProtocol === "TunnelTCP") {
+            const hasKeyring = !!(this.config.knxKeysContent && this.config.knxKeysPassword);
+            const hasManualPassword = !!this.config.tunnelUserPassword;
+            if (!hasKeyring && !hasManualPassword) {
+                this.log.error(
+                    "TunnelTCP requires KNX Secure credentials (keyring or tunnel password). " +
+                        "Plain TCP tunnel is not supported by knxultimate. " +
+                        "Either: (a) enable KNX Secure and provide a .knxkeys file + password from ETS, " +
+                        "(b) enable KNX Secure and provide Tunnel User Password + ID, " +
+                        "or (c) switch the protocol to TunnelUDP.",
+                );
+                return;
+            }
+        }
+
         // KNX Secure options
         if (this.config.isSecureKNXEnabled) {
             // Validate that at least one complete authentication source is configured.
