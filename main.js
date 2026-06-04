@@ -1402,19 +1402,26 @@ class openknx extends utils.Adapter {
         }
     }
 
-    // Reconnect delays in seconds: 10, 30, 60, 120, 120, 120, 120
-    static reconnectDelays = [10, 30, 60, 120, 120, 120, 120];
+    // Reconnect schedule: first 3 attempts after 10 s each, then unbounded retry
+    // every 30 s. The adapter never gives up on its own — long outages (LTE down,
+    // WireGuard down, gateway power-cycle) recover automatically once the path is
+    // back, no external watchdog script needed.
+    static reconnectInitialDelays = [10, 10, 10];
+    static reconnectFollowUpDelay = 30;
 
     scheduleReconnect() {
-        if (this.stopping || this.reconnectCount >= openknx.reconnectDelays.length) {
-            if (!this.stopping) {
-                this.log.error(`Giving up after ${openknx.reconnectDelays.length} reconnect attempts`);
-            }
+        if (this.stopping) {
             return;
         }
-        const delay = openknx.reconnectDelays[this.reconnectCount];
+        const initial = openknx.reconnectInitialDelays;
+        const delay =
+            this.reconnectCount < initial.length ? initial[this.reconnectCount] : openknx.reconnectFollowUpDelay;
         this.reconnectCount++;
-        this.log.info(`Reconnect attempt ${this.reconnectCount}/${openknx.reconnectDelays.length} in ${delay}s...`);
+        const label =
+            this.reconnectCount <= initial.length
+                ? `${this.reconnectCount}/${initial.length}`
+                : `${this.reconnectCount} (follow-up)`;
+        this.log.info(`Reconnect attempt ${label} in ${delay}s...`);
         this.reconnectTimer = setTimeout(() => {
             try {
                 this.startKnxStack();
