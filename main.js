@@ -1751,7 +1751,12 @@ class openknx extends utils.Adapter {
             this.stopQueueHealthMonitor();
             this.stopLinkedWriteDrain();
             this.linkedWriteQueue.clear();
-            this.scheduleReconnect();
+            // Idempotent reschedule: if the error event already queued a reconnect
+            // for the same incident, skip — otherwise reconnectCount would double-
+            // increment and the user-facing N/3 numbering loses meaning.
+            if (!this.reconnectTimer) {
+                this.scheduleReconnect();
+            }
         });
 
         // Event: error
@@ -1792,13 +1797,18 @@ class openknx extends utils.Adapter {
                 }
             }
             this.log.warn(msg);
-            // Connect-time failures (timeout, ECONNREFUSED, ENETUNREACH, EHOSTUNREACH)
-            // do NOT emit a `disconnected` event — knxultimate only surfaces them as
-            // `error`. Without an explicit reschedule the reconnect loop dies after
-            // the first attempt. Trigger a follow-up reconnect ourselves, but only
-            // when no reconnect is already pending and we are not connected.
+            // Connect-time failures (timeout, ECONNREFUSED, ENETUNREACH, EHOSTUNREACH,
+            // Secure session/connect timeouts) do NOT emit a `disconnected` event —
+            // knxultimate only surfaces them as `error`. Without an explicit reschedule
+            // the reconnect loop dies after the first attempt. Trigger a follow-up
+            // reconnect ourselves, but only when no reconnect is already pending and
+            // we are not connected.
             if (!this.connected && !this.reconnectTimer && !this.stopping) {
-                if (/Connection timeout|ECONNREFUSED|ENETUNREACH|EHOSTUNREACH|EHOSTDOWN|getaddrinfo/i.test(msg)) {
+                if (
+                    /Connection timeout|ECONNREFUSED|ENETUNREACH|EHOSTUNREACH|EHOSTDOWN|getaddrinfo|Timeout waiting for SESSION_(?:RESPONSE|STATUS)|Timeout waiting for CONNECT_RESPONSE|Secure TCP connect timeout|Socket closed during connect|No secure IA candidates found/i.test(
+                        msg,
+                    )
+                ) {
                     this.scheduleReconnect();
                 }
             }
