@@ -1413,6 +1413,12 @@ class openknx extends utils.Adapter {
         if (this.stopping) {
             return;
         }
+        // Drop any stale handle so concurrent paths (error event + disconnected event)
+        // see a consistent "no pending timer" state. The timer below replaces it.
+        if (this.reconnectTimer) {
+            clearTimeout(this.reconnectTimer);
+            this.reconnectTimer = undefined;
+        }
         const initial = openknx.reconnectInitialDelays;
         const delay =
             this.reconnectCount < initial.length ? initial[this.reconnectCount] : openknx.reconnectFollowUpDelay;
@@ -1423,6 +1429,7 @@ class openknx extends utils.Adapter {
                 : `${this.reconnectCount} (follow-up)`;
         this.log.info(`Reconnect attempt ${label} in ${delay}s...`);
         this.reconnectTimer = setTimeout(() => {
+            this.reconnectTimer = undefined;
             try {
                 this.startKnxStack();
             } catch (e) {
@@ -1785,6 +1792,16 @@ class openknx extends utils.Adapter {
                 }
             }
             this.log.warn(msg);
+            // Connect-time failures (timeout, ECONNREFUSED, ENETUNREACH, EHOSTUNREACH)
+            // do NOT emit a `disconnected` event — knxultimate only surfaces them as
+            // `error`. Without an explicit reschedule the reconnect loop dies after
+            // the first attempt. Trigger a follow-up reconnect ourselves, but only
+            // when no reconnect is already pending and we are not connected.
+            if (!this.connected && !this.reconnectTimer && !this.stopping) {
+                if (/Connection timeout|ECONNREFUSED|ENETUNREACH|EHOSTUNREACH|EHOSTDOWN|getaddrinfo/i.test(msg)) {
+                    this.scheduleReconnect();
+                }
+            }
         });
 
         // Event: ackReceived - fires for both transport-level success (ack=true) and timeout (ack=false)
