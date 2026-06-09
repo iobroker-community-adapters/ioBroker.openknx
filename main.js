@@ -506,6 +506,7 @@ class openknx extends utils.Adapter {
      */
     async removeUnusedObjects(importObjects, removeUnusedObjects) {
         const objects = await this.getAdapterObjectsAsync();
+        let staleCount = 0;
 
         Object.entries(objects).forEach(object => {
             if (
@@ -518,20 +519,28 @@ class openknx extends utils.Adapter {
                 const found = importObjects.find(element => `${this.mynamespace}.${element._id}` === object[0]);
                 if (!found) {
                     // knx element in object tree not found in import file
-                    this.log.info(
-                        `${removeUnusedObjects ? "deleting" : ""} 
-                         existing element in object tree not found in import file: ${object[0]}`,
-                    );
+                    staleCount++;
                     if (removeUnusedObjects) {
+                        this.log.info(`Deleting stale KNX object: ${object[0]}`);
                         this.delObject(object[0], err => {
                             if (err) {
                                 this.log.warn(`could not delete object ${object[0]}`);
                             }
                         });
+                    } else {
+                        this.log.info(
+                            `Stale KNX object kept: ${object[0]} (not in current import file). Enable "remove unused objects" in adapter settings to delete it automatically.`,
+                        );
                     }
                 }
             }
         });
+
+        if (staleCount > 0 && !removeUnusedObjects) {
+            this.log.info(
+                `${staleCount} stale KNX object(s) kept (not in current import file). Enable "remove unused objects" in adapter settings if you want them deleted on import.`,
+            );
+        }
     }
 
     /*
