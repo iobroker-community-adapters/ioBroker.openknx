@@ -1853,20 +1853,23 @@ class openknx extends utils.Adapter {
                 }
             }
             this.log.warn(msg);
-            // Connect-time failures (timeout, ECONNREFUSED, ENETUNREACH, EHOSTUNREACH,
-            // Secure session/connect timeouts) do NOT emit a `disconnected` event —
-            // knxultimate only surfaces them as `error`. Without an explicit reschedule
-            // the reconnect loop dies after the first attempt. Trigger a follow-up
-            // reconnect ourselves, but only when no reconnect is already pending and
-            // we are not connected.
-            if (!this.connected && !this.reconnectTimer && !this.stopping) {
-                if (
-                    /Connection timeout|ECONNREFUSED|ENETUNREACH|EHOSTUNREACH|EHOSTDOWN|getaddrinfo|Timeout waiting for SESSION_(?:RESPONSE|STATUS)|Timeout waiting for CONNECT_RESPONSE|Secure TCP connect timeout|Socket closed during connect|No secure IA candidates found/i.test(
-                        msg,
-                    )
-                ) {
-                    this.scheduleReconnect();
+            // Any error that left knxultimate in a non-CONNECTED internal state means
+            // we'll never see traffic again on this socket. The `disconnected` event is
+            // not always emitted (Connect timeout, dead heartbeat on TCP — see knxultimate
+            // closeSocket() bug). Single source of truth: knxConnection.isConnected().
+            // If the lib says it's not connected and we have no reconnect pending, we
+            // start one ourselves and reconcile our adapter-side state.
+            if (!this.knxConnection?.isConnected?.() && !this.reconnectTimer && !this.stopping) {
+                if (this.connected) {
+                    this.connected = false;
+                    this.setState("info.connection", false, true);
+                    this.setState("info.busload", 0, true);
+                    this.stopCyclicSending();
+                    this.stopQueueHealthMonitor();
+                    this.stopLinkedWriteDrain();
+                    this.linkedWriteQueue.clear();
                 }
+                this.scheduleReconnect();
             }
         });
 
