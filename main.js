@@ -505,7 +505,28 @@ class openknx extends utils.Adapter {
      * remove knx elements that are not found in the current import file
      */
     async removeUnusedObjects(importObjects, removeUnusedObjects) {
-        const objects = await this.getAdapterObjectsAsync();
+        // In foreign-namespace mode (targetNamespace set), the adapter's own
+        // getAdapterObjectsAsync would return openknx.0.* — empty for our purposes.
+        // List from the configured target namespace instead and use the foreign API
+        // for deletion accordingly.
+        let objects;
+        if (this.isForeign) {
+            const list = await new Promise(resolve => {
+                this.getObjectList(
+                    { startkey: `${this.mynamespace}.`, endkey: `${this.mynamespace}.香` },
+                    (err, result) => resolve(err ? null : result),
+                );
+            });
+            objects = {};
+            if (list && Array.isArray(list.rows)) {
+                for (const row of list.rows) {
+                    objects[row.id] = row.value;
+                }
+            }
+        } else {
+            objects = await this.getAdapterObjectsAsync();
+        }
+        const delFn = this.isForeign ? this.delForeignObject.bind(this) : this.delObject.bind(this);
         let staleCount = 0;
 
         Object.entries(objects).forEach(object => {
@@ -522,7 +543,7 @@ class openknx extends utils.Adapter {
                     staleCount++;
                     if (removeUnusedObjects) {
                         this.log.info(`Deleting stale KNX object: ${object[0]}`);
-                        this.delObject(object[0], err => {
+                        delFn(object[0], err => {
                             if (err) {
                                 this.log.warn(`could not delete object ${object[0]}`);
                             }
@@ -547,13 +568,33 @@ class openknx extends utils.Adapter {
      * delete all existing KNX objects before a clean re-import
      */
     async cleanImport() {
-        try {
-            await this.delObjectAsync("", { recursive: true });
-        } catch (e) {
-            this.log.warn(`delObjectAsync("") failed (${e.message}), falling back to manual deletion`);
-            const objects = await this.getAdapterObjectsAsync();
-            for (const id of Object.keys(objects)) {
-                await this.delObjectAsync(id).catch(() => {});
+        if (this.isForeign) {
+            // foreign-namespace mode: KNX objects live under mynamespace, not the
+            // adapter's own namespace. delObjectAsync('') would only delete openknx.0.*
+            // (info.connection etc.) and miss the actual KNX states.
+            const list = await new Promise(resolve => {
+                this.getObjectList(
+                    { startkey: `${this.mynamespace}.`, endkey: `${this.mynamespace}.香` },
+                    (err, result) => resolve(err ? null : result),
+                );
+            });
+            if (list && Array.isArray(list.rows)) {
+                for (const row of list.rows) {
+                    if (row.id.indexOf(".info.") !== -1) {
+                        continue;
+                    }
+                    await this.delForeignObjectAsync(row.id).catch(() => {});
+                }
+            }
+        } else {
+            try {
+                await this.delObjectAsync("", { recursive: true });
+            } catch (e) {
+                this.log.warn(`delObjectAsync("") failed (${e.message}), falling back to manual deletion`);
+                const objects = await this.getAdapterObjectsAsync();
+                for (const id of Object.keys(objects)) {
+                    await this.delObjectAsync(id).catch(() => {});
+                }
             }
         }
         this.log.info("cleanImport: deleted all existing KNX objects");
@@ -573,8 +614,8 @@ class openknx extends utils.Adapter {
 
             this.getObjectList(
                 {
-                    startkey: this.namespace,
-                    endkey: `${this.namespace}\u9999`,
+                    startkey: this.mynamespace,
+                    endkey: `${this.mynamespace}\u9999`,
                 },
                 (e, result) => {
                     const gas = [];
@@ -608,7 +649,11 @@ class openknx extends utils.Adapter {
         if (onlyAddNewObjects) {
             // if user setting Add only new Objects write only new objects
             // extend object would overwrite user made element changes if known in the import, not intended
-            this.setObjectNotExists(`${this.mynamespace}.${objects[i]._id}`, objects[i], err => {
+            const id = `${this.mynamespace}.${objects[i]._id}`;
+            const setNotExists = this.isForeign
+                ? this.setForeignObjectNotExists.bind(this)
+                : this.setObjectNotExists.bind(this);
+            setNotExists(id, objects[i], err => {
                 if (err) {
                     this.log.warn(`error store Object ${objects[i]._id} ${err ? ` ${err}` : ""}`);
                 }
@@ -623,7 +668,9 @@ class openknx extends utils.Adapter {
             });
         } else {
             // setObjet to overwrite all existing settings, default
-            this.setObject(`${this.mynamespace}.${objects[i]._id}`, objects[i], err => {
+            const id = `${this.mynamespace}.${objects[i]._id}`;
+            const setObj = this.isForeign ? this.setForeignObject.bind(this) : this.setObject.bind(this);
+            setObj(id, objects[i], err => {
                 if (err) {
                     this.log.warn(`error store Object ${objects[i]._id}${err ? ` ${err}` : ""}`);
                 }
