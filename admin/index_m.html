@@ -41,44 +41,73 @@
                 background-color: #000;
             }
 
-            /* Dark-mode readability: text inputs / selects / textareas render white-on-light
-               by default in Materialize. Force a darker background when ioBroker is in dark
-               mode so content is legible. */
-            .m.react-dark input.value[type="text"],
-            .m.react-dark input.value[type="password"],
-            .m.react-dark input.value[type="number"],
-            .m.react-dark textarea.value,
-            .m.react-dark select.value,
-            .m.react-dark .select-wrapper input.select-dropdown {
+            /* Dark mode: body.dark is set by the inline script (reads ?react=dark). */
+            body.dark input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]),
+            body.dark textarea,
+            body.dark select,
+            body.dark .select-wrapper input.select-dropdown {
                 background-color: #2a2a2a !important;
                 color: #e0e0e0 !important;
                 border-bottom-color: #555 !important;
             }
-            .m.react-dark .dropdown-content {
+            body.dark .dropdown-content {
                 background-color: #2a2a2a !important;
             }
-            .m.react-dark .dropdown-content li > span,
-            .m.react-dark .dropdown-content li > a {
+            body.dark .dropdown-content li > span,
+            body.dark .dropdown-content li > a {
                 color: #e0e0e0 !important;
             }
-            .m.react-dark .dropdown-content li:hover,
-            .m.react-dark .dropdown-content li.selected {
+            body.dark .dropdown-content li:hover,
+            body.dark .dropdown-content li.selected {
                 background-color: #444 !important;
             }
-            /* GA-tree leaf hover/selected colors clash with dark backgrounds */
-            .m.react-dark .ga-tree .ga-leaf {
+            /* Materialize buttons render dark grey on dark background — make them readable. */
+            body.dark .btn,
+            body.dark .btn-flat,
+            body.dark .btn-large,
+            body.dark .btn-small {
+                background-color: #5a6470 !important;
+                color: #ffffff !important;
+                border: 1px solid #7a8593 !important;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+            }
+            body.dark .btn:hover,
+            body.dark .btn-flat:hover,
+            body.dark .btn-large:hover,
+            body.dark .btn-small:hover {
+                background-color: #6e7989 !important;
+                border-color: #9aa6b4 !important;
+            }
+            body.dark .btn[disabled],
+            body.dark .btn-flat[disabled] {
+                background-color: #2a2a2a !important;
+                color: #777 !important;
+                border-color: #444 !important;
+                box-shadow: none !important;
+            }
+            /* Hint boxes (e.g. MDT recommended steps) */
+            .hint-box {
+                background: #f5f5f5;
+                color: #555;
+            }
+            body.dark .hint-box {
+                background: #2a2a2a !important;
+                color: #c0c0c0 !important;
+            }
+            /* GA-tree hover/selected on dark background */
+            body.dark .ga-tree .ga-leaf {
                 border-bottom-color: #333;
             }
-            .m.react-dark .ga-tree .ga-leaf:hover {
+            body.dark .ga-tree .ga-leaf:hover {
                 background-color: #2a3a4a;
             }
-            .m.react-dark .ga-tree .ga-leaf.selected {
+            body.dark .ga-tree .ga-leaf.selected {
                 background-color: #1e3a5f;
             }
-            .m.react-dark .ga-tree .ga-folder > span:hover {
+            body.dark .ga-tree .ga-folder > span:hover {
                 background-color: #2a2a2a;
             }
-            .m.react-dark .ga-tree .ga-val {
+            body.dark .ga-tree .ga-val {
                 color: #64b5f6;
             }
 
@@ -1167,6 +1196,18 @@
     </head>
 
     <body>
+        <script>
+            // ioBroker.admin signals theme via the iframe URL (?react=dark|light). Mirror it
+            // onto <body> so our `body.dark` CSS rules match.
+            (function () {
+                try {
+                    var m = (location.search || "").match(/[?&]react=([^&]+)/);
+                    if (m && decodeURIComponent(m[1]) === "dark") {
+                        document.body.classList.add("dark");
+                    }
+                } catch (e) {}
+            })();
+        </script>
         <!-- you have to put your config page in a div with id adapter-container -->
         <div class="m adapter-container">
             <nav>
@@ -1255,7 +1296,7 @@
                                     >Max Direct Link send rate [tel/s] 0=Unlimited, MDT: 2</label>
                             </div>
                             <div class="col s12" style="margin-top:12px;">
-                                <div style="border-left:3px solid #888; padding:8px 12px; background:#f5f5f5; color:#555; font-size:0.9em;">
+                                <div class="hint-box" style="border-left:3px solid #888; padding:8px 12px; font-size:0.9em;">
                                     <div class="translate" style="font-weight:500; margin-bottom:6px;">MDT IP router — recommended steps:</div>
                                     <ol style="margin:0; padding-left:20px;">
                                         <li class="translate">ETS: set 60 s keep-alive (SCN-IP100: "Tunneling: longer monitoring interval", SCN-IP000: "Support slow tunneling connections")</li>
