@@ -1,4 +1,7 @@
 # Older changes
+## 1.1.9 (2026-05-04)
+- fix handling of unkown DPT
+
 ## 1.1.8 (2026-04-30)
 - add compatiblity mode für raw DPT5.*
 - reduce default delay to 25ms

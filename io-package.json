@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "1.1.13",
+    "version": "1.1.14",
     "news": {
+      "1.1.14": {
+        "en": "improve reconnect logic\nimprove project import",
+        "de": "reconnect logik verbessert\nprojektimport verbessert",
+        "ru": "улучшить логику подключения\nулучшение импорта проектов",
+        "pt": "melhorar a lógica de reconexão\nmelhorar a importação do projecto",
+        "nl": "de herverbindingslogica verbeteren\nprojectimport verbeteren",
+        "fr": "améliorer la logique de reconnect\naméliorer l'importation des projets",
+        "it": "migliorare la logica di riconnettere\nmigliorare l'importazione di progetti",
+        "es": "mejorar la lógica de reconexión\nmejoramiento de la importación de proyectos",
+        "pl": "poprawić logikę ponownego połączenia\npoprawa importu projektów",
+        "uk": "поліпшення логіки відключення\nвдосконалення імпорту проекту",
+        "zh-cn": "改进重联逻辑\n改进项目导入"
+      },
       "1.1.13": {
         "en": "feat: improve disconnect handling on high bus load for MDT Gateways\nnew options \"Wait for ACK\", \"Max Direct Link send rate\" (coalescing queue) and per-GA \"linkedStateDebounce\"; burst log with, hint at linkedStateDebounce GAs",
         "de": "feat: Bessere Behandlung von Verbindungsabbrüchen bei hoher Buslast für MDT-Gateways\nNeue Optionen \"Wait for ACK\", \"Max Direct Link send rate\" (Coalescing-Queue) und pro GA \"linkedStateDebounce\"; Burst-Log bei Disconnect mit Hinweis auf störende GAs",
@@ -80,19 +93,6 @@
         "pl": "dodać tryb kompatybilności für raw DPT5. *\nzmniejszyć domyślne opóźnienie do 25ms",
         "uk": "додати режим сумісності für raw DPT5.*\nзменшити затримку за замовчуванням до 25ms",
         "zh-cn": "添加相容性模式 für 原始 DPT5. *\n将默认延迟减少至 25 ms"
-      },
-      "1.1.7": {
-        "en": "improve Umlaute handling for DPT-16",
-        "de": "Verbesserung der Umlaute Handhabung für DPT-16",
-        "ru": "улучшение управляемости Umlaute для DPT-16",
-        "pt": "melhorar o manuseio de Umlaute para o DPT-16",
-        "nl": "umlautebehandeling verbeteren voor DPT-16",
-        "fr": "améliorer la manipulation Umlaute pour DPT-16",
-        "it": "migliorare la gestione Umlaute per DPT-16",
-        "es": "mejorar el manejo de Umlaute para DPT-16",
-        "pl": "poprawa obsługi Umlaute dla DPT- 16",
-        "uk": "поліпшити роботу Umlaute для DPT-16",
-        "zh-cn": "改进 DPT-16 的 Umlaute 处理"
       }
     },
     "titleLang": {

@@ -1,6 +1,6 @@
 {
   "name": "iobroker.openknx",
-  "version": "1.1.13",
+  "version": "1.1.14",
   "description": "ioBroker knx Adapter",
   "author": "boellner",
   "contributors": [
@@ -51,7 +51,7 @@
     "@iobroker/eslint-config": "^2.3.4",
     "@iobroker/testing": "^5.2.2",
     "@tsconfig/node20": "^20.1.9",
-    "@types/node": "^20.19.42",
+    "@types/node": "^20.19.43",
     "typescript": "~5.9.3"
   },
   "main": "main.js",

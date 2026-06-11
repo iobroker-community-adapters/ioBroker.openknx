@@ -68,6 +68,10 @@ Recommended order (start with the cheapest step, only escalate if needed):
   Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### 1.1.14 (2026-06-11)
+- improve reconnect logic
+- improve project import
+
 ### 1.1.13 (2026-06-01)
 
 - feat: improve disconnect handling on high bus load for MDT Gateways
@@ -82,9 +86,6 @@ Recommended order (start with the cheapest step, only escalate if needed):
 
 ### 1.1.10 (2026-05-05)
 - add new DPTs and units
-
-### 1.1.9 (2026-05-04)
-- fix handling of unkown DPT
 
 ### initial version
 
