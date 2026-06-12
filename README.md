@@ -87,10 +87,6 @@ Recommended order (start with the cheapest step, only escalate if needed):
 ### 1.1.10 (2026-05-05)
 - add new DPTs and units
 
-### initial version
-
--   initial version from https://www.npmjs.com/package/iobroker.knx/v/0.8.3
-
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 
 ## License
