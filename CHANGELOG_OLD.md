@@ -303,3 +303,8 @@
 ## 0.0.14
 
 -   (boellner) feature: import ga xml
+
+### initial version
+
+-   initial version from https://www.npmjs.com/package/iobroker.knx/v/0.8.3
+
