@@ -20,6 +20,11 @@
 ![Stable](http://iobroker.live/badges/openknx-stable.svg)
 ![Installed](http://iobroker.live/badges/openknx-installed.svg)
 
+## Sentry
+**This adapter uses Sentry libraries to automatically report exceptions and code errors to the developers.**
+For more details and for information how to disable the error reporting see [Sentry-Plugin Documentation](https://github.com/ioBroker/plugin-sentry#plugin-sentry)! Sentry reporting is used starting with js-controller 3.0.
+
+## Info
 ioBroker adapter for KNX IP communication, powered by [KNXUltimate](https://github.com/Supergiovane/knxultimate).
 
 - Native .knxproj import (ETS4/5/6, password-protected projects supported) -- import dialog accepts both .knxproj and .xml files
