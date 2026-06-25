@@ -260,7 +260,7 @@
       "_id": "info.busload",
       "type": "state",
       "common": {
-        "role": "info",
+        "role": "value",
         "name": {
           "en": "Busload in the last 5 seconds",
           "de": "Buslast in den letzten 5 Sekunden",
@@ -286,7 +286,7 @@
       "_id": "info.messagecount",
       "type": "state",
       "common": {
-        "role": "info",
+        "role": "value",
         "name": {
           "en": "Message count",
           "de": "Meldungszahl",
