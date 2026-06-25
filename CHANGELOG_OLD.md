@@ -1,4 +1,8 @@
 # Older changes
+## 1.1.10 (2026-05-05)
+- add new DPTs and units
+
+
 ## 1.1.9 (2026-05-04)
 - fix handling of unkown DPT
 
@@ -307,4 +311,3 @@
 ### initial version
 
 -   initial version from https://www.npmjs.com/package/iobroker.knx/v/0.8.3
-

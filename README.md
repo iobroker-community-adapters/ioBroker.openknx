@@ -73,7 +73,7 @@ Recommended order (start with the cheapest step, only escalate if needed):
   Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.2.0 (2026-06-25)
 - (copilot) Adapter requires node.js >= 22 now
 
 ### 1.1.14 (2026-06-11)
@@ -91,9 +91,6 @@ Recommended order (start with the cheapest step, only escalate if needed):
 
 ### 1.1.11 (2026-05-08)
 - fix for UDP interface connection
-
-### 1.1.10 (2026-05-05)
-- add new DPTs and units
 
 [Older changelogs can be found there](CHANGELOG_OLD.md)
 

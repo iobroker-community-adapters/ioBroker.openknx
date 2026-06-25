@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "openknx",
-    "version": "1.1.14",
+    "version": "1.2.0",
     "news": {
+      "1.2.0": {
+        "en": "Adapter requires node.js >= 22 now",
+        "de": "Der Adapter benötigt jetzt Node.js >= 22.",
+        "ru": "Для работы адаптера требуется Node.js версии >= 22.",
+        "pt": "O adaptador agora requer Node.js >= 22.",
+        "nl": "De adapter vereist nu Node.js versie 22 of hoger.",
+        "fr": "L'adaptateur nécessite désormais Node.js >= 22.",
+        "it": "L'adattatore ora richiede Node.js >= 22",
+        "es": "El adaptador ahora requiere node.js >= 22.",
+        "pl": "Adapter wymaga teraz node.js >= 22",
+        "uk": "Адаптер тепер вимагає node.js >= 22",
+        "zh-cn": "适配器现在需要 node.js 版本 >= 22。"
+      },
       "1.1.14": {
         "en": "improve reconnect logic\nimprove project import",
         "de": "reconnect logik verbessert\nprojektimport verbessert",
@@ -80,19 +93,6 @@
         "pl": "fix handling of unkown DPT",
         "uk": "фіксувати обробку unkown DPT",
         "zh-cn": "固定处理未隐藏的 DPT"
-      },
-      "1.1.8": {
-        "en": "add compatiblity mode für raw DPT5.*\nreduce default delay to 25ms",
-        "de": "Kombatiblitäts-Modus für raw DPT5.*\nDefault-Delay auf 25m reduziert",
-        "ru": "добавить режим совместимости с сырым DPT5.*\nуменьшить задержку до 25 мс",
-        "pt": "adicionar o modo de compatibilidade für cru DPT5.*\nreduzir o atraso padrão para 25ms",
-        "nl": "compatiblity mode für raw DPT5.*\nde standaardvertraging verlagen naar 25ms",
-        "fr": "ajouter le mode de compatibilité für brut DPT5.*\nréduire le délai par défaut à 25ms",
-        "it": "aggiungere la modalità compatiblity für raw DPT5.*\nridurre il ritardo predefinito a 25ms",
-        "es": "añadir compatiblity mode für raw DPT5.*\nreducir el retraso predeterminado a 25 ms",
-        "pl": "dodać tryb kompatybilności für raw DPT5. *\nzmniejszyć domyślne opóźnienie do 25ms",
-        "uk": "додати режим сумісності für raw DPT5.*\nзменшити затримку за замовчуванням до 25ms",
-        "zh-cn": "添加相容性模式 für 原始 DPT5. *\n将默认延迟减少至 25 ms"
       }
     },
     "titleLang": {
