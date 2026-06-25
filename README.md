@@ -73,6 +73,9 @@ Recommended order (start with the cheapest step, only escalate if needed):
   Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (copilot) Adapter requires node.js >= 22 now
+
 ### 1.1.14 (2026-06-11)
 - improve reconnect logic
 - improve project import
