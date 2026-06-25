@@ -1527,7 +1527,7 @@ class openknx extends utils.Adapter {
         let ifaceName = "";
         let ifaceMatchedIp = "";
         if (this.config.localInterface) {
-            const interfaces = require("os").networkInterfaces();
+            const interfaces = require("node:os").networkInterfaces();
             for (const [name, addrs] of Object.entries(interfaces)) {
                 if (addrs && addrs.some(a => a.address === this.config.localInterface)) {
                     ifaceName = name;
@@ -1547,7 +1547,7 @@ class openknx extends utils.Adapter {
         // to localIPAddress, derived from the chosen network interface — wrong selection
         // on multi-homed hosts (Docker, VPN, multiple NICs) is the most common cause of
         // "v0.7 worked, v1.x doesn't" reports.
-        const allIfs = require("os").networkInterfaces();
+        const allIfs = require("node:os").networkInterfaces();
         const ipv4Candidates = [];
         for (const [name, addrs] of Object.entries(allIfs)) {
             if (!addrs) {
