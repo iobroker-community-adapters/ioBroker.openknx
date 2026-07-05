@@ -93,8 +93,9 @@ Der Adapter unterstützt KNX IP Secure Tunneling. Konfiguration im Tab "KNX Secu
 2. **Keyfile (.knxkeys)** -- Den Inhalt der .knxkeys-Datei in das Textfeld einfügen. Die Datei wird in ETS unter Extras > KNX-Keyring exportieren erzeugt.
 3. **Keyfile-Passwort** -- Das Passwort, das beim Export des Keyrings in ETS vergeben wurde.
 4. **Alternativ: Tunnel-Benutzer-Passwort** -- Statt Keyfile kann auch direkt das Tunnel-Passwort eingegeben werden (aus der ETS-Projektkonfiguration des IP-Interfaces).
-5. **Tunnel Interface IA** -- Optional die individuelle Adresse des Tunnel-Interfaces angeben (z.B. 1.1.254).
-6. **Tunnel User ID** -- Standard ist 2. Nur ändern wenn mehrere Tunneling-Verbindungen am selben Interface konfiguriert sind.
+5. **Geräteauthentifizierungspasswort (Backbone-Key)** -- Nur nötig im manuellen Modus (ohne Keyfile). Ab knxultimate 6.0 wird der `SESSION_RESPONSE`-MAC beim Handshake verifiziert; ohne dieses Passwort läuft der Handshake im Downgrade-Modus (Verbindung kommt zustande, aber mit Warnung im Log). Bei Verwendung eines Keyfiles wird der Wert automatisch daraus entnommen.
+6. **Tunnel Interface IA** -- Optional die individuelle Adresse des Tunnel-Interfaces angeben (z.B. 1.1.254).
+7. **Tunnel User ID** -- Standard ist 2. Nur ändern wenn mehrere Tunneling-Verbindungen am selben Interface konfiguriert sind.
 
 ### GA-Aliase und Migration
 
