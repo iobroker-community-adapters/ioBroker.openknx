@@ -190,6 +190,7 @@
     "tunnelInterfaceAddress": "",
     "tunnelUserPassword": "",
     "tunnelUserId": "",
+    "deviceAuthPassword": "",
     "localInterface": "",
     "sendInterval": 25,
     "waitForAck": false,
@@ -202,12 +203,14 @@
   "encryptedNative": [
     "knxKeysContent",
     "knxKeysPassword",
-    "tunnelUserPassword"
+    "tunnelUserPassword",
+    "deviceAuthPassword"
   ],
   "protectedNative": [
     "knxKeysContent",
     "knxKeysPassword",
-    "tunnelUserPassword"
+    "tunnelUserPassword",
+    "deviceAuthPassword"
   ],
   "objects": [],
   "instanceObjects": [

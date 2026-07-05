@@ -9,6 +9,7 @@
     "Current Value": "Current Value",
     "Cyclic send": "Cyclic send",
     "Debounce": "去抖延迟",
+    "Device Authentication Password (Backbone-Key, only for manual mode without keyfile)": "设备认证密码（Backbone-Key，仅适用于没有密钥文件的手动模式）",
     "Direct (1:1)": "Direct (1:1)",
     "Direct Access": "Direct Access",
     "Direct Link": "Direct Link",

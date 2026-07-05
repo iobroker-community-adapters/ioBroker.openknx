@@ -185,6 +185,7 @@
                 if (settings.tunnelInterfaceAddress === undefined) settings.tunnelInterfaceAddress = "";
                 if (settings.tunnelUserPassword === undefined) settings.tunnelUserPassword = "";
                 if (settings.tunnelUserId === undefined) settings.tunnelUserId = "";
+                if (settings.deviceAuthPassword === undefined) settings.deviceAuthPassword = "";
 
                 //fill dropdown list from adapter-settings.js
                 getIPs(function (ips) {
@@ -1387,6 +1388,10 @@
                             <div class="col s12 l4 input-field">
                                 <input class="value" id="tunnelUserPassword" type="password" />
                                 <label class="translate" for="tunnelUserPassword">Tunnel User Password (alternative to keyfile)</label>
+                            </div>
+                            <div class="col s12 l4 input-field">
+                                <input class="value" id="deviceAuthPassword" type="password" />
+                                <label class="translate" for="deviceAuthPassword">Device Authentication Password (Backbone-Key, only for manual mode without keyfile)</label>
                             </div>
                             <div class="col s12 l4 input-field">
                                 <input class="value" id="tunnelUserId" type="text" />

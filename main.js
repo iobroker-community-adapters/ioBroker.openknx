@@ -1654,6 +1654,21 @@ class openknx extends utils.Adapter {
             if (this.config.tunnelUserId) {
                 secureTunnelConfig.tunnelUserId = parseInt(this.config.tunnelUserId, 10) || 2;
             }
+            // Device authentication password (Backbone-Key from ETS).
+            // knxultimate >=6.0 uses this to verify the SESSION_RESPONSE MAC in manual
+            // (no-keyring) mode. If a keyring is provided, this value is extracted
+            // from it automatically. Without it in manual mode, the handshake is
+            // downgraded (MAC not verified) and knxultimate logs a warning.
+            if (this.config.deviceAuthPassword) {
+                secureTunnelConfig.deviceAuthenticationPassword = this.config.deviceAuthPassword;
+            } else if (!hasKeyring && hasManualPassword) {
+                this.log.warn(
+                    "KNX Secure in manual mode without device authentication password (Backbone-Key). " +
+                        "The SESSION_RESPONSE MAC will not be verified — the connection is possible but not " +
+                        "fully authenticated (knxultimate >=6.0). Add the Backbone-Key from ETS as " +
+                        '"Device Authentication Password" in adapter settings, or use a keyfile instead.',
+                );
+            }
 
             if (Object.keys(secureTunnelConfig).length > 0) {
                 knxOptions.secureTunnelConfig = secureTunnelConfig;

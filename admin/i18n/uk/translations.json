@@ -9,6 +9,7 @@
     "Current Value": "Current Value",
     "Cyclic send": "Cyclic send",
     "Debounce": "Антидребезг",
+    "Device Authentication Password (Backbone-Key, only for manual mode without keyfile)": "Пароль автентифікації пристрою (магістральний ключ, лише для ручного режиму без файлу ключа)",
     "Direct (1:1)": "Direct (1:1)",
     "Direct Access": "Direct Access",
     "Direct Link": "Direct Link",
