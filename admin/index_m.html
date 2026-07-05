@@ -858,25 +858,25 @@
                     var mode = obj.native.linkedStateMode || 'direct';
                     html += '<p><b>' + _('Linked to') + ':</b><br/><span style="word-break:break-all">' + linked + '</span></p>';
                     html += '<p><b>' + _('Mode') + ':</b> ' + modeSelect + '</p>';
-                    html += '<p><b>' + _('Threshold') + ':</b> '
+                    html += '<div style="margin:8px 0"><b>' + _('Threshold') + ':</b> '
                         + '<input type="number" id="gaLinkThreshold" style="display:inline-block;width:80px;margin-left:8px" step="any" min="0" value="' + (obj.native.linkedStateThreshold || '') + '" />'
-                        + '<p style="color:#666;font-size:0.85em;margin-top:2px">' + _('Minimum change required before sending to KNX bus. Leave empty to send every change.') + '</p>'
-                        + '</p>';
-                    html += '<p><b>' + _('Convert') + ':</b> '
+                        + '<div style="color:#666;font-size:0.85em;margin-top:2px">' + _('Minimum change required before sending to KNX bus. Leave empty to send every change.') + '</div>'
+                        + '</div>';
+                    html += '<div style="margin:8px 0"><b>' + _('Convert') + ':</b> '
                         + '<input type="text" id="gaLinkConvert" style="display:inline-block;width:200px;margin-left:8px" placeholder="' + _('e.g. !!value, value*100') + '" value="' + (obj.native.linkedStateConvert || '') + '" />'
-                        + '<p style="color:#666;font-size:0.85em;margin-top:2px">' + _('JS expression. Variable: value. Examples: !!value, value*100, value>0?100:0, Math.round(value)') + '</p>'
-                        + '</p>';
-                    html += '<p id="gaLinkCyclicRow"><b>' + _('Cyclic send') + ':</b> '
+                        + '<div style="color:#666;font-size:0.85em;margin-top:2px">' + _('JS expression. Variable: value. Examples: !!value, value*100, value>0?100:0, Math.round(value)') + '</div>'
+                        + '</div>';
+                    html += '<div id="gaLinkCyclicRow" style="margin:8px 0"><b>' + _('Cyclic send') + ':</b> '
                         + '<input type="number" id="gaLinkCyclic" style="display:inline-block;width:80px;margin-left:8px" step="1" min="1" value="' + (obj.native.linkedStateCyclic || '') + '" />'
                         + ' <span style="color:#666;font-size:0.85em">min</span>'
-                        + '<p style="color:#666;font-size:0.85em;margin-top:2px">' + _('Periodically re-send current value to KNX bus. Leave empty to disable.') + '</p>'
-                        + '</p>';
+                        + '<div style="color:#666;font-size:0.85em;margin-top:2px">' + _('Periodically re-send current value to KNX bus. Leave empty to disable.') + '</div>'
+                        + '</div>';
                     var debounceVal = (obj.native.linkedStateDebounce === undefined) ? 1 : obj.native.linkedStateDebounce;
-                    html += '<p id="gaLinkDebounceRow"><b>' + _('Debounce') + ':</b> '
+                    html += '<div id="gaLinkDebounceRow" style="margin:8px 0"><b>' + _('Debounce') + ':</b> '
                         + '<input type="number" id="gaLinkDebounce" style="display:inline-block;width:80px;margin-left:8px" step="any" min="0" value="' + debounceVal + '" />'
                         + ' <span style="color:#666;font-size:0.85em">s</span>'
-                        + '<p style="color:#666;font-size:0.85em;margin-top:2px">' + _('Minimum interval between two writes for this GA. 0 = disabled.') + '</p>'
-                        + '</p>';
+                        + '<div style="color:#666;font-size:0.85em;margin-top:2px">' + _('Minimum interval between two writes for this GA. 0 = disabled.') + '</div>'
+                        + '</div>';
                     html += '<div style="margin-top:16px"><a class="waves-effect waves-light btn-small" onclick="gaSaveLinkSettings()">' + _('Save') + '</a></div>';
                     html += '<div style="margin-top:24px"><a class="waves-effect waves-light btn-small red" onclick="gaRemoveLink()">' + _('Remove Link') + '</a></div>';
                     $('#gaLinkContent').html(html);
