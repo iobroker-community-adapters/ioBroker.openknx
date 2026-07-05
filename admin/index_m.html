@@ -848,7 +848,7 @@
                     + '<option value="trigger">' + _('Trigger (only ON)') + '</option>'
                     + '<option value="toggle">' + _('Toggle (invert KNX on ON)') + '</option>'
                     + '</select>'
-                    + '<p id="gaLinkModeDesc" style="color:#666;font-size:0.85em;margin-top:4px"></p>';
+                    + '<div id="gaLinkModeDesc" style="color:#666;font-size:0.85em;margin-top:4px"></div>';
                 var modeDescs = {
                     direct: _('Every value is forwarded as-is. Use for sensors, dimmers, or sliders.'),
                     trigger: _('Only ON values are forwarded, OFF is ignored. Use for scene triggers or door openers where the source sends ON/OFF (press/release).'),
@@ -857,7 +857,7 @@
                 if (linked) {
                     var mode = obj.native.linkedStateMode || 'direct';
                     html += '<p><b>' + _('Linked to') + ':</b><br/><span style="word-break:break-all">' + linked + '</span></p>';
-                    html += '<p><b>' + _('Mode') + ':</b> ' + modeSelect + '</p>';
+                    html += '<div style="margin:8px 0"><b>' + _('Mode') + ':</b> ' + modeSelect + '</div>';
                     html += '<div style="margin:8px 0"><b>' + _('Threshold') + ':</b> '
                         + '<input type="number" id="gaLinkThreshold" style="display:inline-block;width:80px;margin-left:8px" step="any" min="0" value="' + (obj.native.linkedStateThreshold || '') + '" />'
                         + '<div style="color:#666;font-size:0.85em;margin-top:2px">' + _('Minimum change required before sending to KNX bus. Leave empty to send every change.') + '</div>'
@@ -896,7 +896,7 @@
                     html += '<div class="col s2" style="margin-top:22px"><a class="waves-effect waves-light btn-small" onclick="gaBrowseStates()" title="' + _('Browse') + '"><i class="material-icons">search</i></a></div>';
                     html += '<div class="col s3" style="margin-top:22px"><a class="waves-effect waves-light btn-small" onclick="gaSetLink()">' + _('Link') + '</a></div>';
                     html += '</div>';
-                    html += '<p><b>' + _('Mode') + ':</b> ' + modeSelect + '</p>';
+                    html += '<div style="margin:8px 0"><b>' + _('Mode') + ':</b> ' + modeSelect + '</div>';
                 }
                 $('#gaLinkContent').html(html);
                 $('#gaLinkModeDesc').text(modeDescs.direct);
