@@ -34,7 +34,7 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^3.4.1",
+    "@iobroker/adapter-core": "^3.4.3",
     "@xmldom/xmldom": "^0.9.10",
     "@zip.js/zip.js": "^2.8.31",
     "ipaddr.js": "^2.4.0",
