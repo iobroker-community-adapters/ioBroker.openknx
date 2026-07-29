@@ -939,13 +939,22 @@
                 if (!selectedGaId) return;
                 var obj = gaObjects[selectedGaId];
                 if (!obj) return;
+                // Capture id + address up front so an async selection change cannot make
+                // us read GA B while showing GA A's address.
+                var readId = selectedGaId;
+                var readAddr = obj.native.address;
                 // Use a sendTo "read" command so the adapter issues a GroupValue_Read
                 // WITHOUT writing the ioBroker state. Writing a dummy value via setState
                 // triggered a "read-only state written without ack" warning and a short
                 // value flicker on status GAs (write=false).
                 checkAdapterAlive(function () {
-                    sendTo(null, 'read', { id: selectedGaId }, function () {});
-                    showToast(null, 'Read request → ' + obj.native.address, null, 2000);
+                    sendTo(null, 'read', { id: readId }, function (res) {
+                        if (res && res.error) {
+                            showMessage(_('Read failed') + ': ' + res.error);
+                        } else {
+                            showToast(null, 'Read request → ' + readAddr, null, 2000);
+                        }
+                    });
                 });
             }
 

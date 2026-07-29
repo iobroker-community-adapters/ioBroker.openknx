@@ -63,6 +63,7 @@
     "Properties": "Properties",
     "Protocol": "Протокол",
     "Read": "Read",
+    "Read failed": "Прочитати не вдалося",
     "Regex to identify Status GAs": "Регулярне вираз для ідентифікації статусу GA",
     "Regex to identify Status GAs (ending with status, rm, rückmeldung..).": "Регулярне вираз для ідентифікації статусу GA (закінчується на status, rm, rückmeldung..)",
     "Remove Link": "Remove Link",

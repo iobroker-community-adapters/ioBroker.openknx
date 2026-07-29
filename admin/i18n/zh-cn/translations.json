@@ -63,6 +63,7 @@
     "Properties": "Properties",
     "Protocol": "协议",
     "Read": "Read",
+    "Read failed": "读取失败",
     "Regex to identify Status GAs": "用于识别状态 GA 的正则表达式",
     "Regex to identify Status GAs (ending with status, rm, rückmeldung..).": "用于识别状态 GA 的正则表达式（以状态、rm、rückmeldung 结尾...）。",
     "Remove Link": "Remove Link",

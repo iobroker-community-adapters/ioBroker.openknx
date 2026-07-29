@@ -63,6 +63,7 @@
     "Properties": "Properties",
     "Protocol": "Protocol",
     "Read": "Read",
+    "Read failed": "Lezen mislukt",
     "Regex to identify Status GAs": "Regex om Status GA's te identificeren",
     "Regex to identify Status GAs (ending with status, rm, rückmeldung..).": "Regex om Status GA's te identificeren (eindigend met status, rm, rückmeldung..). ",
     "Remove Link": "Remove Link",
