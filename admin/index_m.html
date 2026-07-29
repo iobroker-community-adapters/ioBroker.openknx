@@ -939,10 +939,12 @@
                 if (!selectedGaId) return;
                 var obj = gaObjects[selectedGaId];
                 if (!obj) return;
-                // Send type-matching dummy value, adapter only checks comment 'GroupValue_Read'
-                var dummyVal = obj.common.type === 'number' ? 0 : obj.common.type === 'string' ? '' : false;
+                // Use a sendTo "read" command so the adapter issues a GroupValue_Read
+                // WITHOUT writing the ioBroker state. Writing a dummy value via setState
+                // triggered a "read-only state written without ack" warning and a short
+                // value flicker on status GAs (write=false).
                 checkAdapterAlive(function () {
-                    socket.emit('setState', selectedGaId, { val: dummyVal, ack: false, q: 0x10 });
+                    sendTo(null, 'read', { id: selectedGaId }, function () {});
                     showToast(null, 'Read request → ' + obj.native.address, null, 2000);
                 });
             }
