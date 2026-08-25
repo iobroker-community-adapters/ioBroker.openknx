@@ -36,7 +36,7 @@
   "dependencies": {
     "@iobroker/adapter-core": "^3.4.3",
     "@xmldom/xmldom": "^0.9.10",
-    "@zip.js/zip.js": "^2.8.31",
+    "@zip.js/zip.js": "^2.8.51",
     "ipaddr.js": "^2.4.0",
     "knxultimate": "^6.0.2",
     "sax": "^1.6.0",
