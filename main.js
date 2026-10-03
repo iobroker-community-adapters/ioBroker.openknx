@@ -18,7 +18,6 @@ const loadMeasurement = require("./lib/loadMeasurement");
 const projectImport = require("./lib/projectImport");
 const tools = require("./lib/tools.js");
 const DoubleKeyedMap = require("./lib/doubleKeyedMap.js");
-const similarity = require("./lib/similarity.js");
 const { parseKnxproj } = require("./lib/knxproj/index.js");
 
 class openknx extends utils.Adapter {
@@ -400,6 +399,7 @@ class openknx extends utils.Adapter {
                         obj.message.aliasSimilarity,
                         obj.message.aliasPath,
                         obj.message.aliasRange,
+                        obj.message.aliasNoOverwrite,
                         (count, err) => {
                             if (obj.callback) {
                                 const res = {
@@ -2250,10 +2250,10 @@ class openknx extends utils.Adapter {
                     continue;
                 }
 
-                // Compare similarity
-                const candidateBase = candidateId.toLowerCase().replace(/_/g, "");
-                const statusBase = statusBaseName.toLowerCase().replace(/_/g, "");
-                const sim = similarity(candidateBase, statusBase);
+                // Compare similarity on the differing part only (same metric as alias generation)
+                const candidateBase = projectImport.unify(candidateId, true);
+                const statusBase = projectImport.unify(statusBaseName, true);
+                const sim = projectImport.affixSimilarity(candidateBase, statusBase);
 
                 if (sim > bestSimilarity && sim >= minSimilarity) {
                     bestSimilarity = sim;

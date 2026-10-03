@@ -176,6 +176,7 @@
   "native": {
     "aliasPath": "alias.0",
     "aliasRange": false,
+    "aliasNoOverwrite": false,
     "aliasRegexp": "stat(e|us)(\\.|$)|rm(\\.|$)|r(ü|ue)ckmeldung(\\.|$)",
     "aliasSimilarity": 0.9,
     "autoreadEnabled": true,

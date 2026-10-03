@@ -94,6 +94,7 @@
     "delete all existing KNX objects before import (clean re-import)": "delete all existing KNX objects before import (clean re-import)",
     "detect KNX gateway": "KNX-gateway detecteren",
     "do not overwrite existing IOB objects": "overschrijf geen bestaande IOB-objecten",
+    "do not overwrite existing aliases": "",
     "do not warn on unknown KNX group adresses": "waarschuw niet voor onbekende KNX-groepsadressen",
     "e.g. !!value, value*100": "e.g. !!value, value*100",
     "generate aliases": "aliassen genereren",

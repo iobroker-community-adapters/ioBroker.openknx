@@ -461,7 +461,8 @@
                         aliasRegexp: $("#aliasRegexp")[0].value,
                         aliasSimilarity: $("#aliasSimilarity")[0].value,
                         aliasPath: $("#aliasPath")[0].value,
-                        aliasRange: $("#aliasRange")[0].value,
+                        aliasRange: $("#aliasRange").prop("checked"),
+                        aliasNoOverwrite: $("#aliasNoOverwrite").prop("checked"),
                     },
                     function (result) {
                         if (!result /*|| result.error*/) {
@@ -1444,6 +1445,10 @@
                             <div class="input-field col s12">
                                 <input class="value" id="aliasRange" type="checkbox" />
                                 <label class="translate" for="aliasRange">include group range in search</label>
+                            </div>
+                            <div class="input-field col s12">
+                                <input class="value" id="aliasNoOverwrite" type="checkbox" />
+                                <label class="translate" for="aliasNoOverwrite">do not overwrite existing aliases</label>
                             </div>
 
                             <div class="col s12">
