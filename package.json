@@ -36,9 +36,9 @@
   "dependencies": {
     "@iobroker/adapter-core": "^3.4.3",
     "@xmldom/xmldom": "^0.9.12",
-    "@zip.js/zip.js": "^2.15.0",
-    "ipaddr.js": "^2.4.0",
-    "knxultimate": "^6.0.6",
+    "@zip.js/zip.js": "^2.22.0",
+    "ipaddr.js": "^2.5.0",
+    "knxultimate": "^6.0.8",
     "sax": "^1.6.1",
     "xpath": "^0.0.34"
   },
@@ -49,9 +49,9 @@
     "@alcalzone/release-script-plugin-manual-review": "^5.2.0",
     "@iobroker/adapter-dev": "^1.5.0",
     "@iobroker/eslint-config": "^2.3.4",
-    "@iobroker/testing": "^6.2.2",
+    "@iobroker/testing": "^6.3.0",
     "@tsconfig/node22": "^22.0.6",
-    "@types/node": "^22.20.3",
+    "@types/node": "^22.20.5",
     "typescript": "~6.0.3"
   },
   "main": "main.js",
