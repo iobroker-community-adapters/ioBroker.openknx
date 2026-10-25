@@ -40,7 +40,7 @@
     "ipaddr.js": "^2.5.0",
     "knxultimate": "^6.0.8",
     "sax": "^1.6.1",
-    "xpath": "^0.0.34"
+    "xpath": "^0.0.35"
   },
   "devDependencies": {
     "@alcalzone/release-script": "^5.2.1",
